@@ -1,0 +1,1 @@
+pscp.exe -i "C:\Users\bruno\Google Drive\Gnocchi\bruno+git+gops+pinesolita.ppk" wcguser@glidingops.com:/var/www/backups/gliding.sql C:\dev\glidingops\gliding.sql
