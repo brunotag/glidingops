@@ -1,5 +1,5 @@
-SET @startDateInclusive = 20200101;
-SET @endDateExclusive = 20200201;
+SET @startDateInclusive = 20191201;
+SET @endDateExclusive = 20200101;
 
 /*** BEGIN							***/
 /*** Utilisation + to solo quality 	***/
@@ -92,7 +92,7 @@ SELECT 	(CASE
 			WHEN FIND_IN_SET(TRIM(glider),@club_singles) > 0 THEN 'club_singles' 
 			ELSE 'private_owners' 
 		END) as category_of_customer,
-	 count(*) as Winch_Launches,
+	 count(*) as aerotows,
 	ROUND(SUM(land - start) / 3600000) as hours,
     (SUM(land - start) / 3600000) div SUM(CASE WHEN launchtype = @LaunchType then 1 else 0 end)  as Hours_of_flight_per_launch,
     TRUNCATE(MOD((SUM(land - start) / 3600000) / SUM(CASE WHEN launchtype = @LaunchType then 1 else 0 end), 1) * 60, 0) as Minutes_of_flight_per_launch
@@ -113,7 +113,7 @@ SELECT 	(CASE
 			WHEN FIND_IN_SET(TRIM(glider),@club_singles) > 0 THEN 'club_singles' 
 			ELSE 'private_owners' 
 		END) as category_of_customer,
-	 count(*) as Winch_Launches,
+	 count(*) as Self_Launches,
 	ROUND(SUM(land - start) / 3600000) as hours,
     (SUM(land - start) / 3600000) div SUM(CASE WHEN launchtype = @LaunchType then 1 else 0 end)  as Hours_of_flight_per_launch,
     TRUNCATE(MOD((SUM(land - start) / 3600000) / SUM(CASE WHEN launchtype = @LaunchType then 1 else 0 end), 1) * 60, 0) as Minutes_of_flight_per_launch
@@ -133,7 +133,7 @@ SELECT 	(CASE
 			WHEN FIND_IN_SET(TRIM(glider),@club_singles) > 0 THEN 'club_singles' 
 			ELSE 'private_owners' 
 		END) as category_of_customer,
-	 count(*) as Winch_Launches,
+	 count(*) as flights,
 	ROUND(SUM(land - start) / 3600000) as hours,
     (SUM(land - start) / 3600000) div SUM(CASE WHEN true then 1 else 0 end)  as Hours_of_flight_per_launch,
     TRUNCATE(MOD((SUM(land - start) / 3600000) / SUM(CASE WHEN true then 1 else 0 end), 1) * 60, 0) as Minutes_of_flight_per_launch
