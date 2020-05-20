@@ -1,0 +1,91 @@
+<?php
+require dirname(__FILE__) . '/includes/classGlidingDB.php';
+$con_params = require( dirname(__FILE__) .'/config/database.php'); 
+$DB = new GlidingDB($con_params['gliding']);
+
+$dateTimeZone = new DateTimeZone($DB->getOrgTimezone(1));
+$tz = $DB->getOrgTimezone(1);
+$r = $DB->allTracksForOrgToday(1,' order by glider, point_time');
+$glider = '';
+$flights = array();
+$flight = null;
+$bstarted = false;
+while ($track = $r->fetch_array())
+{
+    if ($glider != $track['glider'])
+    {
+        if (strlen($glider) > 0 && $flight)
+        {
+            array_push($flights,$flight);
+            $flight = null;
+        }
+        $bstarted = false;
+        $glider = $track['glider'];
+    }
+
+    
+    if (!$bstarted && $track['altitude'] > 150)
+    {
+        $bstarted = true;
+        $flight = array();
+        $flight['glider'] = $track['glider'];
+        $flight['start'] = $track['point_time'];
+    }
+
+    if ($bstarted && $track['altitude'] < 150)
+    {
+        $flight['end'] = $track['point_time'];
+        array_push($flights,$flight);
+        $flight = null;
+        $bstarted = false;
+    }
+}
+
+if ($bstarted && is_array($flight))
+{
+    array_push($flights,$flight);
+}
+
+?>
+<!DOCTYPE HTML>
+<html>
+<meta name="viewport" content="width=device-width">
+<meta name="viewport" content="initial-scale=1.0">
+<head>
+<title>GLIDER DAY TIMES</title>
+<style>
+body {font-family: Arial, Helvetica, sans-serif;font-size: 10pt;margin: 0;}
+#main {margin: 20px;}
+h1{color: #666; font-size: 12pt;}
+p {color: #666;}
+th, td {padding-right: 8px;}
+.r {text-align: right;}
+.l {text-align: left;}
+</style>
+</head>
+<body>
+    <div id="main">
+        <h1>TODAYS LAUNCH AND LANDING BASED ON TRACKING</h1>
+        <p>ORDERED BY GLIDER THEN TIME</p>
+        <table>
+            <tr><th class="l">GLIDER</th><th class="r">LAUNCH</th><th class="r">LAND</th></tr>
+            <?php
+                foreach($flights as $flight)
+                {
+                    $dtStart = new DateTime($flight['start']);
+                    $dtStart->setTimezone($dateTimeZone);
+                    $strStart = $dtStart->format('H:i');
+                    $strEnd = '';
+                    if (isset($flight['end']))
+                    {
+                        $dtEnd = new DateTime($flight['end']);
+                        $dtEnd->setTimezone($dateTimeZone);
+                        $strEnd = $dtEnd->format('H:i');
+                    }
+                    echo "<tr><td>{$flight['glider']}</td><td class='r'>{$strStart}</td><td class='r'>{$strEnd}</td></tr>";
+                }
+            ?>
+        </table>
+    </div>
+</body>
+
