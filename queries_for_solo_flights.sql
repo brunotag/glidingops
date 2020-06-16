@@ -60,6 +60,7 @@ select 	displayname
         ,(SUM((land - start) * (CASE WHEN DATEDIFF(first_solo_at_WGC,localdate) >= 0 then 1 else 0 end)) / 3600000) as raw_hours_before_solo
         #,(SUM((land - start) * (CASE WHEN DATEDIFF(first_solo_at_WGC,localdate) >= 0 then 1 else 0 end)) div 3600000) as Hours_before_solo
         #,TRUNCATE(MOD((SUM((land - start) * (CASE WHEN DATEDIFF(first_solo_at_WGC,localdate) >= 0 then 1 else 0 end)) / 3600000), 1) * 60, 0) as Minutes_before_solo		
+        ,COUNT(DISTINCT CASE WHEN DATEDIFF(first_solo_at_WGC,localdate) >= 0 then f.pic else 0 end) - 1 as Instructors_Before_Solo
 from tmp_table t
 join flights f on t.id = f.p2
 group by displayname
