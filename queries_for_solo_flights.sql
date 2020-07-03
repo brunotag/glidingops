@@ -38,7 +38,7 @@ where solo.displayname in
 "James Goldsworthy",
 "Sam Higgins",
 "Victor Lenting",
-"Ben Wilson",
+#"Ben Wilson",
 "Mark Wilson2",
 "Nick Lewis",
 "Rowan Higgins",
@@ -56,7 +56,8 @@ select * from
 tmp_table;
 
 select 	displayname
-		,SUM(CASE WHEN DATEDIFF(first_solo_at_WGC,localdate) >= 0 then 1 else 0 end) as Flights_Before_Solo
+		,SUM(CASE WHEN DATEDIFF(first_solo_at_WGC,localdate) >= 0 AND launchtype = 2  then 1 else 0 end) as Flights_Before_Solo_winch
+        ,SUM(CASE WHEN DATEDIFF(first_solo_at_WGC,localdate) >= 0 AND launchtype = 1 then 1 else 0 end) as Flights_Before_Solo_aerotow
         ,(SUM((land - start) * (CASE WHEN DATEDIFF(first_solo_at_WGC,localdate) >= 0 then 1 else 0 end)) / 3600000) as raw_hours_before_solo
         #,(SUM((land - start) * (CASE WHEN DATEDIFF(first_solo_at_WGC,localdate) >= 0 then 1 else 0 end)) div 3600000) as Hours_before_solo
         #,TRUNCATE(MOD((SUM((land - start) * (CASE WHEN DATEDIFF(first_solo_at_WGC,localdate) >= 0 then 1 else 0 end)) / 3600000), 1) * 60, 0) as Minutes_before_solo		
