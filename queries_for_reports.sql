@@ -1,16 +1,19 @@
-SET @startDateInclusive = 20191201;
-SET @endDateExclusive = 20200101;
+SET @startDateInclusive = 20201201;
+SET @endDateExclusive = 20210101;
 
 /*** BEGIN							***/
 /*** Utilisation + to solo quality 	***/
 /*** BEGIN							***/
 
+/*** Total flights ***/
 SELECT 
 	count(*) as Total_flights, 
     count(distinct localdate) as Flying_days
 FROM gliding.flights
 WHERE localdate >= @startDateInclusive AND localdate < @endDateExclusive AND org = 1;
 
+
+/*** Service levels ***/
 SELECT 
     SUM(Raw_hours_of_service) as total_Raw_hours_of_service,
     /*TRUNCATE(SUM(Raw_hours_of_service),0) as total_hours_of_service,
@@ -28,10 +31,34 @@ FROM(
 	GROUP BY localdate
 ) as tmp;
 
+
+/*** Soaring flights ***/
+SELECT 
+    SUM(CASE WHEN number_of_flights_exceeding_90_mins >= 2 then 1 else 0 end) as cat_1_soaring_days,
+    SUM(CASE WHEN number_of_flights_exceeding_90_mins < 2 AND number_of_flights_between_30_and_90_minutes >= 4 then 1 else 0 end) as cat_2_soaring_days
+FROM(	
+	SELECT 
+		SUM(CASE WHEN CAST((land - start) /60000 as unsigned) >= 90 then 1 else 0 end) as number_of_flights_exceeding_90_mins,
+		SUM(CASE WHEN 
+			CAST((land - start) /60000 as unsigned) < 90 
+			AND
+			CAST((land - start) /60000 as unsigned) >= 30
+			then 1 else 0 end) as number_of_flights_between_30_and_90_minutes
+	FROM gliding.flights
+	WHERE localdate >= @startDateInclusive AND localdate < @endDateExclusive AND org = 1
+		  AND start > 0
+	GROUP BY localdate
+) as tmp;
+
+/**number of launches per type **/
+
 SELECT lt.name, lt.id, count(*) as count
 FROM gliding.flights f JOIN gliding.launchtypes lt on f.launchtype = lt.id
 WHERE localdate >= @startDateInclusive AND localdate < @endDateExclusive AND org = 1
 GROUP BY lt.name, lt.id;
+
+
+/**analytic query **/
 
 SELECT 
 	CAST(localdate as date) as date,
