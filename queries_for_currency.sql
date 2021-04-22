@@ -31,8 +31,20 @@ SELECT * FROM flights_as_PIC
 RIGHT OUTER JOIN flights_as_P2
 ON flights_as_PIC.id1 = flights_as_P2.id2;
 
+SELECT (CASE WHEN displayname1 IS NULL THEN displayname2 ELSE displayname1 END) as displayname,
+	last_flight_as_PIC,
+    flights_as_PIC,
+    hours_as_PIC,
+    last_flight_as_P2,
+    flights_as_P2,
+    hours_as_P2
+from
+(
 SELECT *
 FROM left_join 
-UNION 
+UNION ALL
 SELECT *
-FROM right_join;
+FROM right_join
+WHERE id1 IS NULL
+)a
+order by displayname;
