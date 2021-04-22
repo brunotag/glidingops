@@ -1,5 +1,5 @@
-SET @startDateInclusive = 20190510;
-SET @endDateExclusive = 20200510;
+SET @startDateInclusive = 20200422;
+SET @endDateExclusive = 20210422;
 
 DROP TEMPORARY TABLE IF EXISTS flights_as_PIC;
 CREATE TEMPORARY TABLE flights_as_PIC AS 
@@ -32,12 +32,12 @@ RIGHT OUTER JOIN flights_as_P2
 ON flights_as_PIC.id1 = flights_as_P2.id2;
 
 SELECT (CASE WHEN displayname1 IS NULL THEN displayname2 ELSE displayname1 END) as displayname,
-	last_flight_as_PIC,
-    flights_as_PIC,
-    hours_as_PIC,
-    last_flight_as_P2,
-    flights_as_P2,
-    hours_as_P2
+	COALESCE(DATE_FORMAT(last_flight_as_PIC,"%Y-%m-%d"),'') as 'last flight as P1/PIC',
+    COALESCE(flights_as_PIC,'') as '# flight as P1/PIC',
+    COALESCE(hours_as_PIC,'') as '# hours as P1/PIC',
+    COALESCE(DATE_FORMAT(last_flight_as_P2,"%Y-%m-%d"),'') as 'last flight as P2',
+    COALESCE(flights_as_P2,'') as '# flights as P2',
+    COALESCE(hours_as_P2,'') as '# hours as P2'
 from
 (
 SELECT *
