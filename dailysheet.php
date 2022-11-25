@@ -289,11 +289,6 @@ function ShowCheckErrors(xml)
   var checks=xml.getElementsByTagName("checks")[0].childNodes;
   var divnode = document.getElementById("areachecks");
 
-  //remove the bookins area
-  var divbookings = document.getElementById("bookings");
-  if (null != divbookings)
-    divbookings.parentNode.removeChild(divbookings);
-
   //remove all the child nodes
   var cn=divnode.childNodes;
   while (cn.length > 0)
@@ -338,8 +333,6 @@ function xmlReplyType(xml)
     var node;
     try {node=xml.getElementsByTagName("status")[0].childNodes;}catch(err){node=null;}
     if (null != node) return "status";
-    try {node=xml.getElementsByTagName("bookings")[0].childNodes;}catch(err){node=null;}
-    if (null != node) return "bookings";
     try {node=xml.getElementsByTagName("checks")[0].childNodes;}catch(err){node=null;}
     if (null != node) return "checks";
     try {node=xml.getElementsByTagName("allmembers")[0].childNodes;}catch(err){node=null;}
@@ -364,11 +357,6 @@ xmlhttp.onreadystatechange = function ()
       }
 
 
-      if (replyType=="bookings")
-      {
-         console.log("Reply type: bookings");
-         buildbookingtable(xml2Str(xmlReply),"btable",1);
-      }
       if (replyType=="checks")
       {
          console.log("Reply type: checks");
@@ -501,15 +489,6 @@ function sendXMLtoServer()
   //xmlhttp.setRequestHeader("Content-length", params.length);
   //xmlhttp.setRequestHeader("Connection", "close");
   xmlhttp.send(params);
-}
-
-function getBookings()
-{
-  console.log("StrToday = " + strToday);
-  strToday = strToday+"";
-  var v="bookingsForDate.php?date=" + strToday + "&org=<?php echo $org; ?>";
-  xmlhttp.open("GET", v, true);
-  xmlhttp.send();
 }
 
 function getMembers()
@@ -1089,10 +1068,6 @@ function poll()
     if (inSync == 0)
       sendXMLtoServer();
   }
-  if ((pollcnt % 180) == 5)
-  {
-      getBookings();
-  }
   if ((pollcnt % 180) == 15)
   {
       if (inSync==1)
@@ -1207,7 +1182,6 @@ function StartUp()
     sendXMLtoServer();
   }
 
-  getBookings();
   $('#loading-spinner').hide()
 }
 
@@ -1261,15 +1235,6 @@ function AddNewLine()
       <button id='final' class='ui-button ui-corner-all ui-widget final' onclick='finalise()'>Check and Finish Day</button>
     </div>
     <div id='areachecks'>
-    </div>
-    <div id='bookings' style="display:none">
-      <hr>
-      <p class='p1'>TODAY'S BOOKINGS</p>
-      <div id='bookings2'>
-        <p></p>
-        <table id='btable'>
-        </table>
-      </div>
     </div>
     <p id="err"></p>
     <p id="diag"><?php if($DEBUG>0)echo $diagtext;?></p>
