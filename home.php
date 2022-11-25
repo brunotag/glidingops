@@ -118,9 +118,8 @@ if ($org==4)
 	echo "<p class='u'><a href='agc'>Real Time map</a></p>";
 echo "</td>";
 $col = ($col + 1) % $totcol;if ($col == 0) echo "</tr><tr>";
-
-echo "<td><h2 class='u'><a href='ViewBookings'>BOOKINGS</a></h2>";
-if (($_SESSION['security'] & 2)) echo "<p class='u'><a href='bookings.php'>New</a></p>";
+//TODO: BOOKING - HARDCODED LINK
+echo "<td><h2 class='u'><a href='https://www.wwgc.co.nz/members-pilots#bookings' target='_blank'>BOOKINGS</a></h2>";
 echo "</td>";
 $col = ($col + 1) % $totcol;if ($col == 0) echo "</tr><tr>";
 
@@ -187,8 +186,6 @@ if (($_SESSION['security'] & 120))
      echo "<p class='u'><a href='airspace-list.php'>Airspace</a></p>";
   if (($_SESSION['security'] & 64))
      echo "<p class='u'><a href='airspacecoords-list.php'>Airspace coordiantes</a></p>";
-  if (($_SESSION['security'] & 64))
-     echo "<p class='u'><a href='BookingTypes'>Booking Types</a></p>";
   if (($_SESSION['security'] & 128))
      echo "<p class='u'><a href='BillingOptions'>Charging Options</a></p>";
   if (($_SESSION['security'] & 64))

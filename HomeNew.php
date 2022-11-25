@@ -64,7 +64,6 @@ a:hover {color: #0000FF;}
 <li>Individual flight summaries emailed to pilots at the end of each flying day</li>
 <li>Integrated SPOT and other tracking</li>
 <li>Enables display of flight tracking</li>
-<li>Full member portal incluidng booking system under devlopment</li>
 </ul>
 <p>If your club is interested in options to use the system, please email us at <a href='mailto:wgcoperations@gmail.com?subject=Interest%20in%20gliding%20ops'>wgcoperations@gmail.com</a></p>
 </div>
