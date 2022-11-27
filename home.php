@@ -104,7 +104,10 @@ $col = 0;
 $totcol = 6;
 if (intval($_SESSION['memberid']) > 0)
 {
-   echo "<td><h2 class='u'><a href='MyFlights'>MY FLIGHTS</a></h2></td>";
+   echo "<td><h2 class='u'>MY GOPs</h2>";
+   echo "<p class='u'><a href='MyFlights'>My Flights</a></p>";
+   echo "<p class='u'><a href='edit-my-details.php'>My Details</a></p>";
+   echo "</td>";
    $col = ($col + 1) % $totcol;if ($col == 0) echo "</tr><tr>";
 }
 echo "<td><h2 class='u'><a href='FlyingNow?org=".$org."'>FLYING NOW</a></h2>";
@@ -129,7 +132,7 @@ $col = ($col + 1) % $totcol;if ($col == 0) echo "</tr><tr>";
 echo "<td><h2 class='u'><a href='AllMembers'>MEMBERS</a></h2></td>";
 $col = ($col + 1) % $totcol;if ($col == 0) echo "</tr><tr>";
 
-echo "<td><h2 class='u'><a href='edit-my-details.php?id=". $_SESSION['memberid'] ."'>MY DETAILS</a></h2></td>";
+echo "<td><h2 class='u'></h2></td>";
 $col = ($col + 1) % $totcol;if ($col == 0) echo "</tr><tr>";
 
 if (($_SESSION['security'] & 4))

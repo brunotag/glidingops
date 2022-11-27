@@ -4,9 +4,10 @@
 $org = 0;
 if (isset($_SESSION['org'])) $org = $_SESSION['org'];
 
-$reqid = $_SERVER["REQUEST_METHOD"] == "GET" ? $_GET['id'] : $_POST['id'];
-if (!isset($_SESSION['memberid']) && $_SESSION['memberid'] != $reqid) {
-  header('Location: /');
+$reqid = $_SESSION['memberid'];
+
+if (!isset($reqid)){
+  header("Location: /home");
 }
 
 $DEBUG = 0;
@@ -54,54 +55,49 @@ function InputChecker($data)
   return $data;
 }
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-  if (isset($_GET['id'])) {
-    $trantype = "Update";
-    $con_params = require('./config/database.php');
-    $con_params = $con_params['gliding'];
-    $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-    if (mysqli_connect_errno()) {
-      $errtext = "Failed to connect to Database: " . mysqli_connect_error();
-    } else {
-      $q = "SELECT * FROM members WHERE id = " . $reqid;
-      $r = mysqli_query($con, $q);
-      $row = mysqli_fetch_array($r);
-      if ($_SESSION['org'] > 0 && $row['org'] != $_SESSION['org'])
-        die("Member not found!");
-      $id_f = $row['id'];
-      $firstname_f = htmlspecialchars($row['firstname'], ENT_QUOTES);
-      $surname_f = htmlspecialchars($row['surname'], ENT_QUOTES);
-      $displayname_f = htmlspecialchars($row['displayname'], ENT_QUOTES);
-      $date_of_birth_f = $row['date_of_birth'];
-      $mem_addr1_f = htmlspecialchars($row['mem_addr1'], ENT_QUOTES);
-      $mem_addr2_f = htmlspecialchars($row['mem_addr2'], ENT_QUOTES);
-      $mem_addr3_f = htmlspecialchars($row['mem_addr3'], ENT_QUOTES);
-      $mem_addr4_f = htmlspecialchars($row['mem_addr4'], ENT_QUOTES);
-      $mem_city_f = htmlspecialchars($row['mem_city'], ENT_QUOTES);
-      $mem_country_f = htmlspecialchars($row['mem_country'], ENT_QUOTES);
-      $mem_postcode_f = htmlspecialchars($row['mem_postcode'], ENT_QUOTES);
-      $emerg_addr1_f = htmlspecialchars($row['emerg_addr1'], ENT_QUOTES);
-      $emerg_addr2_f = htmlspecialchars($row['emerg_addr2'], ENT_QUOTES);
-      $emerg_addr3_f = htmlspecialchars($row['emerg_addr3'], ENT_QUOTES);
-      $emerg_addr4_f = htmlspecialchars($row['emerg_addr4'], ENT_QUOTES);
-      $emerg_city_f = htmlspecialchars($row['emerg_city'], ENT_QUOTES);
-      $emerg_country_f = htmlspecialchars($row['emerg_country'], ENT_QUOTES);
-      $emerg_postcode_f = htmlspecialchars($row['emerg_postcode'], ENT_QUOTES);
-      $gnz_number_f = $row['gnz_number'];
-      $qgp_number_f = $row['qgp_number'];
-      $phone_home_f = htmlspecialchars($row['phone_home'], ENT_QUOTES);
-      $phone_mobile_f = htmlspecialchars($row['phone_mobile'], ENT_QUOTES);
-      $phone_work_f = htmlspecialchars($row['phone_work'], ENT_QUOTES);
-      $email_f = htmlspecialchars($row['email'], ENT_QUOTES);
-      $first_aider_f = $row['first_aider'];
+  $trantype = "Update";
+  $con_params = require('./config/database.php');
+  $con_params = $con_params['gliding'];
+  $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+  if (mysqli_connect_errno()) {
+    $errtext = "Failed to connect to Database: " . mysqli_connect_error();
+  } else {
+    $q = "SELECT * FROM members WHERE id = " . $reqid;
+    $r = mysqli_query($con, $q);
+    $row = mysqli_fetch_array($r);
+    if ($_SESSION['org'] > 0 && $row['org'] != $_SESSION['org'])
+      die("Member not found!");
+    $id_f = $row['id'];
+    $firstname_f = htmlspecialchars($row['firstname'], ENT_QUOTES);
+    $surname_f = htmlspecialchars($row['surname'], ENT_QUOTES);
+    $displayname_f = htmlspecialchars($row['displayname'], ENT_QUOTES);
+    $date_of_birth_f = $row['date_of_birth'];
+    $mem_addr1_f = htmlspecialchars($row['mem_addr1'], ENT_QUOTES);
+    $mem_addr2_f = htmlspecialchars($row['mem_addr2'], ENT_QUOTES);
+    $mem_addr3_f = htmlspecialchars($row['mem_addr3'], ENT_QUOTES);
+    $mem_addr4_f = htmlspecialchars($row['mem_addr4'], ENT_QUOTES);
+    $mem_city_f = htmlspecialchars($row['mem_city'], ENT_QUOTES);
+    $mem_country_f = htmlspecialchars($row['mem_country'], ENT_QUOTES);
+    $mem_postcode_f = htmlspecialchars($row['mem_postcode'], ENT_QUOTES);
+    $emerg_addr1_f = htmlspecialchars($row['emerg_addr1'], ENT_QUOTES);
+    $emerg_addr2_f = htmlspecialchars($row['emerg_addr2'], ENT_QUOTES);
+    $emerg_addr3_f = htmlspecialchars($row['emerg_addr3'], ENT_QUOTES);
+    $emerg_addr4_f = htmlspecialchars($row['emerg_addr4'], ENT_QUOTES);
+    $emerg_city_f = htmlspecialchars($row['emerg_city'], ENT_QUOTES);
+    $emerg_country_f = htmlspecialchars($row['emerg_country'], ENT_QUOTES);
+    $emerg_postcode_f = htmlspecialchars($row['emerg_postcode'], ENT_QUOTES);
+    $gnz_number_f = $row['gnz_number'];
+    $qgp_number_f = $row['qgp_number'];
+    $phone_home_f = htmlspecialchars($row['phone_home'], ENT_QUOTES);
+    $phone_mobile_f = htmlspecialchars($row['phone_mobile'], ENT_QUOTES);
+    $phone_work_f = htmlspecialchars($row['phone_work'], ENT_QUOTES);
+    $email_f = htmlspecialchars($row['email'], ENT_QUOTES);
+    $first_aider_f = $row['first_aider'];
 
-      mysqli_close($con);
-    }
+    mysqli_close($con);
   }
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (isset($_POST['id'])) {
-    $reqid = $_POST['id'];
-  }
   $firstname_f = InputChecker($_POST["firstname_i"]);
   if (empty($firstname_f)) {
     $firstname_err = "FIRSTNAME is required";
@@ -229,7 +225,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errtext = "Database entry: " . mysqli_error($con) . "<br>" . $Q;
       } else {
         $_SESSION["message"] = "Your details have been successfully updated.";
-        header("Location: edit-my-details.php?id={$reqid}");
+        header("Location: edit-my-details.php");
         exit();
       }
       mysqli_close($con);
@@ -300,7 +296,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       };
       notify(options);
     </script>
-  <?php 
+  <?php
     $_SESSION['message'] = null;
   } ?>
   <div id='divform'>
