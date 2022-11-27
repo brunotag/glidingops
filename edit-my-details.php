@@ -5,7 +5,7 @@ $org = 0;
 if (isset($_SESSION['org'])) $org = $_SESSION['org'];
 
 $reqid = $_SERVER["REQUEST_METHOD"] == "GET" ? $_GET['id'] : $_POST['id'];
-if ($_SESSION['memberid'] != $reqid) {
+if (!isset($_SESSION['memberid']) && $_SESSION['memberid'] != $reqid) {
   header('Location: /');
 }
 
