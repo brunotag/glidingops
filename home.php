@@ -129,7 +129,7 @@ $col = ($col + 1) % $totcol;if ($col == 0) echo "</tr><tr>";
 echo "<td><h2 class='u'><a href='AllMembers'>MEMBERS</a></h2></td>";
 $col = ($col + 1) % $totcol;if ($col == 0) echo "</tr><tr>";
 
-echo "<td></td>";
+echo "<td><h2 class='u'><a href='edit-my-details.php?id=". $_SESSION['memberid'] ."'>MY DETAILS</a></h2></td>";
 $col = ($col + 1) % $totcol;if ($col == 0) echo "</tr><tr>";
 
 if (($_SESSION['security'] & 4))
