@@ -18,7 +18,8 @@ p.err {color: red;}
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 <script>
-    var api = new devt.apiJSON('glidingops.com', 'api/v1/json', '1234567890123456', true);
+    //TODO: replace hardcoded url
+    var api = new devt.apiJSON('gops.wwgc.co.nz', 'api/v1/json', '1234567890123456', true);
     google.charts.load('current', {'packages':['corechart']});
 
     api.parseReply = function (d) {

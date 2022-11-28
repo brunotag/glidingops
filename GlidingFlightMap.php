@@ -42,8 +42,8 @@ var g_2dSize = 200;
 var g_runway1 = [{lat: -41.108259,lng: 175.492762, alt: 40.0},{lat: -41.109087, lng: 175.493745, alt: 40.0},{lat: -41.097663,lng: 175.511714,alt: 40.0},{lat: -41.097179,lng: 175.511203,alt: 40.0},{lat: -41.108259,lng: 175.492762, alt: 40.0}];
 var g_runway2 = [{lat: -41.096367, lng: 175.488748, alt: 40.0},{lat: -41.095841, lng: 175.489622, alt: 40.0},{lat: -41.105211, lng: 175.501318,alt: 40.0},{lat: -41.105536,lng: 175.500868,alt: 40.0},{lat: -41.096367, lng: 175.488748, alt: 40.0}];
 
-
-devt.api = new devt.apiJSON('glidingops.com','api/v1/json','1234567890123456',true);
+//TODO: replace hardcoded url
+devt.api = new devt.apiJSON('gops.wwgc.co.nz','api/v1/json','1234567890123456',true);
 devt.api.parseReply = function(r) {
     if (r['meta'] ['status'] == 'OK' ) {
         var d = r['data'];

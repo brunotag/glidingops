@@ -17,7 +17,9 @@ $DB = new GlidingDB($con_params);
 $dt = new DateTime();
 
 //Find out who is flying today
-$myGlide = new Gliding('glidingops.com');
+//TODO: replace absolute url
+$myGlide = new Gliding('gops.wwgc.co.nz');
+//TODO: replace hardcoded org (1)
 $flyingToday = $myGlide->getFlyingToday(1);
 
 //Build a list of gliders
@@ -70,6 +72,7 @@ if (count($gliderlist) > 0)
     //Now source data for OGN
     $myOGN = new ogn();
     $rogn =  json_decode($myOGN->getCurrentFlarms(),true);
+    //TODO: replace absolute url
     $myGNZ = new GNZ('www.gliding.net.nz');
 
     $dtNZ = new DateTime();

@@ -222,7 +222,8 @@ function parseUDP($params)
                         $json_data['lon'] = $lon;
                         $json_data['alt'] = $alt;
                         $data_string = json_encode($json_data);
-                        $ch = curl_init('http://glidingops.com/api/v1/json/1234567890123456/createtrack');
+                        //TODO: replace hardcoded url
+                        $ch = curl_init('http://gops.wwgc.co.nz/api/v1/json/1234567890123456/createtrack');
                         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
                         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
                         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -431,7 +432,8 @@ function parseLoc($params)
                             $json_data['lon'] = $lon;
                             $json_data['alt'] = $alt;
                             $data_string = json_encode($json_data);
-                            $ch = curl_init('http://glidingops.com/api/v1/json/1234567890123456/createtrack');
+                            //TODO: replace hardcoded url
+                            $ch = curl_init('http://gops.wwgc.co.nz/api/v1/json/1234567890123456/createtrack');
                             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
                             curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
                             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -490,7 +492,8 @@ function parseLoc($params)
                 $json_data['lon'] = $lon;
                 $json_data['alt'] = $alt;
                 $data_string = json_encode($json_data);
-                $ch = curl_init('http://glidingops.com/api/v1/json/1234567890123456/createtrack');
+                //TODO: replace hardcoded url
+                $ch = curl_init('http://gops.wwgc.co.nz/api/v1/json/1234567890123456/createtrack');
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

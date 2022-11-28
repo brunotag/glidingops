@@ -74,7 +74,8 @@ $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params[
      $q="INSERT INTO users(name,org,usercode,password,securitylevel,force_pw_reset,member) VALUE ('" .$dispname. "','" .$org. "','" .$email. "','" .$pw2. "',1,1," . $memid. ")";
     }
     $r = mysqli_query($con,$q);
-    $headers = 'From: operations@glidingops.com' . "\r\n" .
+    //TODO:replace hardcoded urls
+    $headers = 'From: operations@gops.wwgc.co.nz' . "\r\n" .
      'Reply-To: wgcoperations@gmail.com' . "\r\n" .
      'X-Mailer: PHP/' . phpversion();
     $message = 
@@ -85,7 +86,7 @@ $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params[
       "\n".
       "You will be asked to change the temporary password on your first login.".
       "\n".
-      "http://www.glidingops.com/Login.php";
+      "http://gops.wwgc.co.nz/Login.php";
     mail($email, "Welcome - Gliding Ops", $message, $headers);
     header('Location: Login.php?registered=1');
    }
