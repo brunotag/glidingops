@@ -287,12 +287,13 @@ function isFirstPilotFlightDay($db,$org,$date,$seq,$memberid)
 
 function SendMail($to,$subject,$message)
 {
+  //TODO: replace hardcoded domains
   $headers =
-    'From: Gliding Operations <operations@glidingops.com>' . "\r\n" .
+    'From: Gliding Operations <operations@gops.wwgc.co.nz>' . "\r\n" .
     'Reply-To: wgcoperations@gmail.com' . "\r\n" .
-    'Return-PATH: operations@glidingops.com' . "\r\n" .
+    'Return-PATH: operations@gops.wwgc.co.nz' . "\r\n" .
     'X-Mailer: PHP/' . phpversion();
-  return mail($to, $subject, $message, $headers, '-r operations@glidingops.com');
+  return mail($to, $subject, $message, $headers, '-r operations@gops.wwgc.co.nz');
 }
 
 function getMemmbersXmlRows($db, $org, $timesheedDate)

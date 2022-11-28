@@ -51,7 +51,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             <p>Error: <?=$error?></p>
         <?php }else if(isset($secret_code)) {?>
             <p>Secret Code: <?=$secret_code?></p>
-            <p>Daily Ops Url: www.glidingops.com/DailySheet.php?org=<?=$org?>&key=<?=$secret_code?></p>
+            <?php //TODO: replace hardcoded url ?>
+            <p>Daily Ops Url: gops.wwgc.co.nz/DailySheet.php?org=<?=$org?>&key=<?=$secret_code?></p>
         <?php }?>
     </div>
 </body>

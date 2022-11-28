@@ -119,13 +119,14 @@ if (isset($options['m']))
     $msg = "<html><head><style>h1 {font-size: 12pt;} .r {text-align: right;} .l {text-align: left;}</style></head><body>{$v}</body></html>";
     
     
-    
-    $headers = 'From: Gliding Operations <operations@glidingops.com>' . "\r\n" .
+    //TODO: replace hardcoded domain
+    $headers = 'From: Gliding Operations <operations@gops.wwgc.co.nz>' . "\r\n" .
                'Reply-To: wgcoperations@gmail.com' . "\r\n" .
                'Content-type: text/html; charset=iso-8859-1' . "\r\n" .
                 'X-Mailer: PHP/' . phpversion();
 
-    mail($options['m'],"Daily Flight Times from Tracks",$msg,$headers,'-r operations@glidingops.com');
+    //TODO: replace hardcoded domain
+    mail($options['m'],"Daily Flight Times from Tracks",$msg,$headers,'-r operations@gops.wwgc.co.nz');
     exit();
 }
 

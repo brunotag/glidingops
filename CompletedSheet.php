@@ -187,12 +187,14 @@ $message .= "<th>LAUNCH TYPE</th><th>TYPE</th></tr>";
         }
         if ($done==1)
         {
+            //TODO: replace hardcoded domains
            $message .= "<tr><td colspan='7' class='td1'></td></tr>
-<tr><td colspan='7' class='td2'>To check out more go to <a href='glidingops.com'>glidingops.com</a></td></tr>
+<tr><td colspan='7' class='td2'>To check out more go to <a href='gops.wwgc.co.nz'>gops.wwgc.co.nz</a></td></tr>
 </table>
 </body>
 </html>";
-	   $headers = 'From: operations@glidingops.com' . "\r\n" .
+        //TODO: replace hardcoded domains
+	   $headers = 'From: operations@gops.wwgc.co.nz' . "\r\n" .
                  'Reply-To: wgcoperations@gmail.com' . "\r\n" .
                  'Content-type: text/html; charset=iso-8859-1' . "\r\n" .
                   'X-Mailer: PHP/' . phpversion();

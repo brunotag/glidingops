@@ -88,8 +88,9 @@
   ) {
   ?>
     <script>
+      //TODO: replace hardcoded domain
       var options = {
-        message: "<br/> Check your mail box! <br/> </br> You should have received an email from operations@glidingops.com",
+        message: "<br/> Check your mail box! <br/> </br> You should have received an email from operations@gops.wwgc.co.nz",
         color: "success",
         timeout: 10000,
       };
