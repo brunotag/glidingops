@@ -9,7 +9,7 @@ class GNZ
     public function __construct( $controller)
     {
             $this->controller = $controller;
-            $this->pest  = new Pest( "http://" . $this->controller . "/api/v1/");
+            $this->pest  = new Pest( "https://" . $this->controller . "/api/v1/");
     }
    
    public function getGliderData($glider)
