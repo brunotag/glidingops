@@ -1,7 +1,7 @@
 <?php session_start(); ?>
 <?php
 header('Content-Type: application/json');
-include 'timehelpers.php';
+include './helpers/timehelpers.php';
 include 'helpers.php';
 
 require './includes/classGlidingDB.php';

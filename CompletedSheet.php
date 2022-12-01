@@ -26,7 +26,7 @@ function printit(){window.print();}
 <body>
 <?php
 include 'helpers.php';
-include 'timehelpers.php';
+include './helpers/timehelpers.php';
 $DEBUG=0;
 $org=0;
 $diagtext="";

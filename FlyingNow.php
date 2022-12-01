@@ -42,7 +42,7 @@ function printit(){window.print();}
 <?php $inc = "./orgs/" . $org . "/heading1.txt"; include $inc; ?>
 <?php
 include 'helpers.php';
-include 'timehelpers.php';
+include './helpers/timehelpers.php';
 $DEBUG=0;
 $diagtext="";
 $con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 

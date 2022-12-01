@@ -27,7 +27,7 @@ if(isset($_SESSION['security'])){
 <?php $inc = "./orgs/" . $org . "/heading2.txt"; include $inc; ?>
 <?php $inc = "./orgs/" . $org . "/menu1.txt"; include $inc; ?>
 <?php
-include 'timehelpers.php';
+include './helpers/timehelpers.php';
 function dtfmt($dt)
 {
 	if (substr($dt,0,4) != '0000')
