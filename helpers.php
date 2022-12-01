@@ -1,6 +1,6 @@
 <?php
 require_once 'load_model.php';
-
+//TODO: reliably move this class into /includes
 function getOrgAircraftPrefix($db,$org)
 {
    $ret='';
@@ -285,15 +285,16 @@ function isFirstPilotFlightDay($db,$org,$date,$seq,$memberid)
     return true;
 }
 
+//TODO: make use of this SendMail method
 function SendMail($to,$subject,$message)
 {
   //TODO: replace hardcoded domains
   $headers =
-    'From: Gliding Operations <operations@gops.wwgc.co.nz>' . "\r\n" .
+    'From: Gliding Operations <gops.wwgc.co.nz@gmail.com>' . "\r\n" .
     'Reply-To: wgcoperations@gmail.com' . "\r\n" .
-    'Return-PATH: operations@gops.wwgc.co.nz' . "\r\n" .
+    'Return-PATH: gops.wwgc.co.nz@gmail.com' . "\r\n" .
     'X-Mailer: PHP/' . phpversion();
-  return mail($to, $subject, $message, $headers, '-r operations@gops.wwgc.co.nz');
+  return mail($to, $subject, $message, $headers, '-r gops.wwgc.co.nz@gmail.com');
 }
 
 function getMemmbersXmlRows($db, $org, $timesheedDate)
