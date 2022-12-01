@@ -1,7 +1,7 @@
 <?php session_start(); ?>
 <?php
 include 'helpers.php';
-include 'timehelpers.php';
+include './helpers/timehelpers.php';
 $org=0;
 $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
 $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);

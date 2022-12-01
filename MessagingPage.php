@@ -196,7 +196,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     //Do we send to twitter
     if(in_array("twitter",$_POST["member"]))
     {
-	require_once './twitter.class.php';
+	require_once './includes/twitter.class.php';
 
 	// ENTER HERE YOUR CREDENTIALS (see readme.txt)
 	//$consumerKey="KUeT6uiFJibrAAOFHly5fJJqH";

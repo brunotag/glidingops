@@ -1,6 +1,6 @@
 <?php
 include 'geohelpers.php';
-include 'timehelpers.php';
+include './helpers/timehelpers.php';
 $org = 1;
 
 function findFlight($db,$glider,$time)

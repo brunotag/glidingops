@@ -1,5 +1,5 @@
 <?php
-include 'timehelpers.php';
+include './helpers/timehelpers.php';
 
 require dirname(__FILE__) . '/includes/classGlidingDB.php';
 require dirname(__FILE__) . '/includes/classTracksDB.php';
