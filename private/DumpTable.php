@@ -2,6 +2,7 @@
 <head></head>
 <body>
 <?php
+//TODO: what does this do? Delete.
 function tableDumpChange($db,$tablename,$insertafterfield,$valInsert)
 {
  $recdone = false;
