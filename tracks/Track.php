@@ -1,5 +1,7 @@
 <?php session_start();?>
 <?php
+//TODO: this page seems to time out. Find out why.
+
 //Database
 require './includes/classtrackDB.php';
 $con_params = require('./config/database.php'); $con_params = $con_params['48d5f377']; 
