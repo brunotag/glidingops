@@ -4,9 +4,9 @@
     All flarm data should be available from glidernet.org
     This task also checks Gliding New Zealand for any additional flarm data.
 */
-require 'GlidingClass.php';
-require 'ognClass.php';
-require 'GlidingGNZClass.php';
+require '/includes/GlidingClass.php';
+require '/includes/ognClass.php';
+require '/includes/GlidingGNZClass.php';
 require dirname(__FILE__) . '/includes/classGlidingDB.php';
 
 try {
