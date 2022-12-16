@@ -36,43 +36,6 @@ class FlightsController extends Controller
         $dateStart2 = substr($strDateFrom,0,4) . substr($strDateFrom,5,2) . substr($strDateFrom,8,2);
         $dateEnd2 = substr($strDateTo,0,4) . substr($strDateTo,5,2) . substr($strDateTo,8,2);
 
-        // $flights = Flight::with(['picMember', 'p2Member', 'towPilotMember', 'towPlane', 'launchType'])
-        //                 ->where('org', $_SESSION['org'])
-        //                 ->where('localdate', '>=', $dateStart2)
-        //                 ->where('localdate', '<=', $dateEnd2)
-        //                 ->orderBy('localdate')
-        //                 ->orderBy('seq');
-
-        // $q="SELECT
-        //     flights.id ,
-        //     flights.localdate,
-        //     flights.seq,
-        //     flights.glider,
-        //     flights.height,
-        //     flights.comments,
-        //     flights.launchtype,
-        //     flights.type ,
-        //     flights.location,
-        //     (flights.start/1000),
-        //     (flights.land/1000),
-        //     (flights.towland/1000) ,
-        //     (flights.land-flights.start),
-        //     (flights.towland-flights.start)
-        //     e.rego_short,
-        //     a.displayname ,
-        //     b.displayname ,
-        //     c.displayname ,
-        //     d.name ,
-        //     f.name,
-        //     FROM flights
-        //     LEFT JOIN members a ON a.id = flights.towpilot
-        //     LEFT JOIN members b ON b.id = flights.pic
-        //     LEFT JOIN members c ON c.id = flights.p2
-        //     LEFT JOIN billingoptions d ON d.id = flights.billing_option
-        //     LEFT JOIN aircraft e ON e.id = flights.towplane
-        //     LEFT JOIN launchtypes f ON f.id = flights.launchtype
-        //     WHERE flights.org = ".$_SESSION['org']." and localdate >= " . $dateStart2 . " and localdate <= " . $dateEnd2 . " order by localdate,seq";
-
         $flights = DB::table('flights')
             ->select(
                 'flights.id',
@@ -107,7 +70,8 @@ class FlightsController extends Controller
             ->where('flights.localdate', '>=', $dateStart2)
             ->where('flights.localdate', '<=', $dateEnd2)
             ->orderBy('flights.localdate')
-            ->orderBy('flights.seq');
+            ->orderBy('flights.seq')
+            ;
 
         $filterByMember = null;
         if ($request->has('filterByMemberId')) {
@@ -121,11 +85,13 @@ class FlightsController extends Controller
             });
         }
 
-        $allFlights = $flights->get();
+        $flights = $flights->paginate(100);
+
+        $flights->appends($_GET)->links();
 
         return response()->view('allFlightsReport', [
             'filterByMember' => $filterByMember,
-            'flights' => $allFlights,
+            'flights' => $flights,
             'strDateFrom' => $strDateFrom,
             'strDateTo' => $strDateTo,
             'towChargeType' => $user->organisation->getTowChargeType(),

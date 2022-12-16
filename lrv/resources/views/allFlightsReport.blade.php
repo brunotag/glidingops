@@ -28,7 +28,7 @@
 @section('content')
   <!-- Header -->
   <div id='divhdr'>
-    {!! Form::open(['route' => 'flights.allFlightsReport', 'method'=> 'post', 'id' => 'inform']) !!}
+    {!! Form::open(['route' => 'flights.allFlightsReport', 'method'=> 'GET', 'id' => 'inform']) !!}
       <h2>All Flights Report</h2>
       <table>
         <tr>
@@ -80,7 +80,6 @@
     </tr>
 
     @php
-      $flightsCount = 0;
       $towTotalTime = 0;
       $gliderTotalTime = 0;
     @endphp
@@ -89,7 +88,6 @@
     @foreach($flights as $flight)
 
     @php
-      $flightsCount++;
       $towTotalTime += App\Helpers\FlightHelper::towDuration($flight);
       $gliderTotalTime += App\Helpers\FlightHelper::flightDuration($flight);
     @endphp
@@ -187,9 +185,10 @@
     </tr>
     <tr>
         <td>Count</td>
-        <td class='right'>{{$flights->count()}}</td>
+        <td class='right'>{{$flights->total()}}</td>
     </tr>
   </table>
+  <p>{{$flights->links()}}</p>
   <button onclick='printit()' id='print-button'>Print Report</button>
 
 @endsection
