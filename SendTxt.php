@@ -47,74 +47,77 @@ SQL;
                 }
                 array_push($messages_and_email_addresses[$row["msg"]], $email_to);
             }
+            $Q = "UPDATE texts SET txt_status=3 WHERE txt_id = " . $row['txt_id'];
+            $r2 = mysqli_query($con, $Q);
             //SEND Text
-            if ($row['txt_to']) {
-                $strTo = trim($row['txt_to']);
-                $strTo = trim($strTo, "+");
-                $strTo = str_replace(" ", "", $strTo);
+            // TODO: review all this logic
+            // if ($row['txt_to']) {
+            //     $strTo = trim($row['txt_to']);
+            //     $strTo = trim($strTo, "+");
+            //     $strTo = str_replace(" ", "", $strTo);
 
-                $smskey = getenv("SMS_KEY");
-                $gateway_host = getenv("SMS_HOST");
-                if (
-                    strlen($strTo) > 0
-                    && ($smskey && strlen($smskey) > 0)
-                    && ($gateway_host && strlen($gateway_host) > 0)
-                ) { //TODO: emails don't log as error nor as successful...
-                    $strTo = urlencode($strTo);
-                    $postparam = array();
-                    $postparam['smskey'] = $smskey;
-                    $postparam['phone'] = $strTo;
-                    $postparam['msg'] = $row[2];
-                    $postparam['county_code'] = "64";
-                    $callback = '';
-                    if (empty($_SERVER['HTTPS']))
-                        $callback = "http://";
-                    else
-                        $callback = "https://";
+            //     $smskey = getenv("SMS_KEY");
+            //     $gateway_host = getenv("SMS_HOST");
+            //     if (
+            //         strlen($strTo) > 0
+            //         && ($smskey && strlen($smskey) > 0)
+            //         && ($gateway_host && strlen($gateway_host) > 0)
+            //     ) { //TODO: emails don't log as error nor as successful...
+            //         $strTo = urlencode($strTo);
+            //         $postparam = array();
+            //         $postparam['smskey'] = $smskey;
+            //         $postparam['phone'] = $strTo;
+            //         $postparam['msg'] = $row[2];
+            //         $postparam['county_code'] = "64";
+            //         $callback = '';
+            //         if (empty($_SERVER['HTTPS']))
+            //             $callback = "http://";
+            //         else
+            //             $callback = "https://";
 
-                    $callback .= $_SERVER['HTTP_HOST'];
-                    $callback .= "/TextStatus.php";
-                    $postparam['callback_url'] = $callback;
+            //         $callback .= $_SERVER['HTTP_HOST'];
+            //         $callback .= "/TextStatus.php";
+            //         $postparam['callback_url'] = $callback;
 
-                    $str = json_encode($postparam);
-                    $url = $gateway_host;
+            //         $str = json_encode($postparam);
+            //         $url = $gateway_host;
 
-                    $ch = curl_init($url);
-                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
-                    $result = curl_exec($ch);
-                    if (!$result) {
-                        error_log("Curl error in SendTxt.php " . curl_error($ch));
-                    }
+            //         $ch = curl_init($url);
+            //         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            //         curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
+            //         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            //         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            //         curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
+            //         $result = curl_exec($ch);
+            //         if (!$result) {
+            //             error_log("Curl error in SendTxt.php " . curl_error($ch));
+            //         }
 
-                    $result = json_decode($result, true);
+            //         $result = json_decode($result, true);
 
-                    $smsid = 0;
-                    $status = "ERROR";
-                    if (isset($result['meta']) && $result['meta']['status'] = "OK") {
-                        $Q = "UPDATE texts SET txt_status=1 txt_timestamp_sent = now() WHERE txt_id = " . $row['txt_id'];
-                        $r2 = mysqli_query($con, $Q);
+            //         $smsid = 0;
+            //         $status = "ERROR";
+            //         if (isset($result['meta']) && $result['meta']['status'] = "OK") {
+            //             $Q = "UPDATE texts SET txt_status=1 txt_timestamp_sent = now() WHERE txt_id = " . $row['txt_id'];
+            //             $r2 = mysqli_query($con, $Q);
 
-                        $data = $result['data'];
-                        $smsid = intval($data['textid']);
-                        //if (isset($data['status']) && $data['status'])
-                        //    $status = "SENT";
-                        $Q = "UPDATE texts SET txt_unique=" . $smsid . " WHERE txt_id = " . $row['txt_id'];
-                        $r2 = mysqli_query($con, $Q);
-                    } else {
-                        //Mark as error
-                        $Q = "UPDATE texts SET txt_status=2 WHERE txt_id = " . $row['txt_id'];
-                        $r2 = mysqli_query($con, $Q);
-                    }
-                } else {
-                    //Mark as error
-                    $Q = "UPDATE texts SET txt_status=2 WHERE txt_id = " . $row['txt_id'];
-                    $r2 = mysqli_query($con, $Q);
-                }
-            }
+            //             $data = $result['data'];
+            //             $smsid = intval($data['textid']);
+            //             //if (isset($data['status']) && $data['status'])
+            //             //    $status = "SENT";
+            //             $Q = "UPDATE texts SET txt_unique=" . $smsid . " WHERE txt_id = " . $row['txt_id'];
+            //             $r2 = mysqli_query($con, $Q);
+            //         } else {
+            //             //Mark as error
+            //             $Q = "UPDATE texts SET txt_status=2 WHERE txt_id = " . $row['txt_id'];
+            //             $r2 = mysqli_query($con, $Q);
+            //         }
+            //     } else {
+            //         //Mark as error
+            //         $Q = "UPDATE texts SET txt_status=2 WHERE txt_id = " . $row['txt_id'];
+            //         $r2 = mysqli_query($con, $Q);
+            //     }
+            // }
         } else {
             //Mark as error
             $Q = "UPDATE texts SET txt_status=2 WHERE txt_id = " . $row['txt_id'];
