@@ -30,6 +30,7 @@ if (mysqli_connect_errno()) {
     WHERE txt_status = 0;
 SQL;
     $r = mysqli_query($con, $sql);
+    $email_addresses = [];
     while ($row = mysqli_fetch_array($r)) {
 
         if ($row["msg"] && strlen($row["msg"]) > 0) {
@@ -41,7 +42,7 @@ SQL;
             }
             //SEND EMAIL
             if (strlen($email_to) > 0) {
-                SendMail($email_to, "WWGC GOPS Message", $row["msg"]);
+                array_push($email_addresses, $email_to);
             }
             //SEND Text
             if ($row['txt_to']) {
@@ -115,6 +116,8 @@ SQL;
             $r2 = mysqli_query($con, $Q);
         }
     }
+
+    SendMail(implode(', ', $email_addresses), "WWGC GOPS Message", $row["msg"]);
 
     mysqli_close($con);
 }
