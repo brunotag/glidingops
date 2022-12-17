@@ -30,7 +30,7 @@ if (mysqli_connect_errno()) {
     WHERE txt_status = 0;
 SQL;
     $r = mysqli_query($con, $sql);
-    $email_addresses = [];
+    $messages_and_email_addresses = [];
     while ($row = mysqli_fetch_array($r)) {
 
         if ($row["msg"] && strlen($row["msg"]) > 0) {
@@ -42,7 +42,10 @@ SQL;
             }
             //SEND EMAIL
             if (strlen($email_to) > 0) {
-                array_push($email_addresses, $email_to);
+                if (!$messages_and_email_addresses[$row["msg"]]){
+                    $messages_and_email_addresses[$row["msg"]] = [];
+                }
+                array_push($messages_and_email_addresses[$row["msg"]], $email_to);
             }
             //SEND Text
             if ($row['txt_to']) {
@@ -117,7 +120,12 @@ SQL;
         }
     }
 
-    SendMail(implode(', ', $email_addresses), "WWGC GOPS Message", $row["msg"]);
+    //TODO: localisation?
+    $date = new DateTime("now", new DateTimeZone('Pacific/Auckland') );
+    foreach($messages_and_email_addresses as $msg => $email_addresses)
+    {
+        SendMail(implode(', ', $email_addresses), "WWGC Msg | ".$date->format('D d M h:i A'), $msg);
+    }
 
     mysqli_close($con);
 }
