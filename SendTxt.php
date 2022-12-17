@@ -42,7 +42,7 @@ SQL;
             }
             //SEND EMAIL
             if (strlen($email_to) > 0) {
-                if (!$messages_and_email_addresses[$row["msg"]]){
+                if (!$messages_and_email_addresses[$row["msg"]]) {
                     $messages_and_email_addresses[$row["msg"]] = [];
                 }
                 array_push($messages_and_email_addresses[$row["msg"]], $email_to);
@@ -55,10 +55,11 @@ SQL;
 
                 $smskey = getenv("SMS_KEY");
                 $gateway_host = getenv("SMS_HOST");
-                if (strlen($strTo) > 0
+                if (
+                    strlen($strTo) > 0
                     && ($smskey && strlen($smskey) > 0)
                     && ($gateway_host && strlen($gateway_host) > 0)
-                ) {//TODO: emails don't log as error nor as successful...
+                ) { //TODO: emails don't log as error nor as successful...
                     $strTo = urlencode($strTo);
                     $postparam = array();
                     $postparam['smskey'] = $smskey;
@@ -91,21 +92,22 @@ SQL;
 
                     $result = json_decode($result, true);
 
-
                     $smsid = 0;
                     $status = "ERROR";
-                    if (isset($result['meta'])) {
-                        if ($result['meta']['status'] = "OK") {
-                            $Q = "UPDATE texts SET txt_status=1 txt_timestamp_sent = now() WHERE txt_id = " . $row['txt_id'];
-                            $r2 = mysqli_query($con, $Q);
+                    if (isset($result['meta']) && $result['meta']['status'] = "OK") {
+                        $Q = "UPDATE texts SET txt_status=1 txt_timestamp_sent = now() WHERE txt_id = " . $row['txt_id'];
+                        $r2 = mysqli_query($con, $Q);
 
-                            $data = $result['data'];
-                            $smsid = intval($data['textid']);
-                            //if (isset($data['status']) && $data['status'])
-                            //    $status = "SENT";
-                            $Q = "UPDATE texts SET txt_unique=" . $smsid . " WHERE txt_id = " . $row['txt_id'];
-                            $r2 = mysqli_query($con, $Q);
-                        }
+                        $data = $result['data'];
+                        $smsid = intval($data['textid']);
+                        //if (isset($data['status']) && $data['status'])
+                        //    $status = "SENT";
+                        $Q = "UPDATE texts SET txt_unique=" . $smsid . " WHERE txt_id = " . $row['txt_id'];
+                        $r2 = mysqli_query($con, $Q);
+                    } else {
+                        //Mark as error
+                        $Q = "UPDATE texts SET txt_status=2 WHERE txt_id = " . $row['txt_id'];
+                        $r2 = mysqli_query($con, $Q);
                     }
                 } else {
                     //Mark as error
@@ -121,10 +123,9 @@ SQL;
     }
 
     //TODO: localisation?
-    $date = new DateTime("now", new DateTimeZone('Pacific/Auckland') );
-    foreach($messages_and_email_addresses as $msg => $email_addresses)
-    {
-        SendMail(implode(', ', $email_addresses), "WWGC Msg | ".$date->format('D d M h:i A'), $msg);
+    $date = new DateTime("now", new DateTimeZone('Pacific/Auckland'));
+    foreach ($messages_and_email_addresses as $msg => $email_addresses) {
+        SendMail(implode(', ', $email_addresses), "WWGC Msg | " . $date->format('D d M h:i A'), $msg);
     }
 
     mysqli_close($con);
