@@ -31,6 +31,7 @@ if (mysqli_connect_errno()) {
 SQL;
     $r = mysqli_query($con, $sql);
     $messages_and_email_addresses = [];
+    $ids_to_update = [];
     while ($row = mysqli_fetch_array($r)) {
 
         if ($row["msg"] && strlen($row["msg"]) > 0) {
@@ -47,8 +48,7 @@ SQL;
                 }
                 array_push($messages_and_email_addresses[$row["msg"]], $email_to);
             }
-            $Q = "UPDATE texts SET txt_status=3 WHERE txt_id = " . $row['txt_id'];
-            $r2 = mysqli_query($con, $Q);
+            array_push($ids_to_update, $row['txt_id']);
             //SEND Text
             // TODO: review all this logic
             // if ($row['txt_to']) {
@@ -130,6 +130,9 @@ SQL;
     foreach ($messages_and_email_addresses as $msg => $email_addresses) {
         SendMail(implode(', ', $email_addresses), "WWGC Msg | " . $date->format('D d M h:i A'), $msg);
     }
+    
+    $Q = "UPDATE texts SET txt_status=3 WHERE txt_id IN (" . implode(', ',$ids_to_update) .")";
+    $r2 = mysqli_query($con, $Q);
 
     mysqli_close($con);
 }
