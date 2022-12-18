@@ -1,7 +1,6 @@
 <?php
 include './helpers/session_helpers.php';
 include 'helpers.php';
-
 session_start();
 require_security_level(4);
 
@@ -231,7 +230,6 @@ $consumerKey = $row[1];
     } else {
       //Loop here checking what members have been checked
       {
-
         $bHaveMember = 0;
         //Loop here for all members
         $sql = "SELECT * FROM members WHERE org=" . $_SESSION['org'];
@@ -276,38 +274,35 @@ $consumerKey = $row[1];
           }
         }
       }
-    }
+      //Do we send to twitter
+      if (in_array("twitter", $_POST["member"])) {
+        require_once './includes/twitter.class.php';
 
-    //Do we send to twitter
-    if (in_array("twitter", $_POST["member"])) {
-      require_once './includes/twitter.class.php';
+        // ENTER HERE YOUR CREDENTIALS (see readme.txt)
+        //$consumerKey="KUeT6uiFJibrAAOFHly5fJJqH";
+        $consumerSecret = "ecH6zt0IAbuKCayUUV35BFwlsw6MlHodiPpZ22HWz1kvhncUIQ";
+        $accessToken = "2521364305-uQbdUP4p9xma4ec6gEaPkqHB6PjlPq1LwWLlwjb";
+        $accessTokenSecret = "bTxQVJ8MJLfDyvGKf64l8XN2MgxMd44RsK6KY2djzW1UZ";
 
-      // ENTER HERE YOUR CREDENTIALS (see readme.txt)
-      //$consumerKey="KUeT6uiFJibrAAOFHly5fJJqH";
-      $consumerSecret = "ecH6zt0IAbuKCayUUV35BFwlsw6MlHodiPpZ22HWz1kvhncUIQ";
-      $accessToken = "2521364305-uQbdUP4p9xma4ec6gEaPkqHB6PjlPq1LwWLlwjb";
-      $accessTokenSecret = "bTxQVJ8MJLfDyvGKf64l8XN2MgxMd44RsK6KY2djzW1UZ";
+        try {
+          $twitter = new Twitter($consumerKey, $consumerSecret, $accessToken, $accessTokenSecret);
+        } catch (TwitterException $e) {
+          echo 'Error: ' . $e->getMessage();
+        }
+        if ($lastmsgid == 0)
+          $lastmsgid = CreateMsgRecord($msg_f);
 
-      try {
-        $twitter = new Twitter($consumerKey, $consumerSecret, $accessToken, $accessTokenSecret);
-      } catch (TwitterException $e) {
-        echo 'Error: ' . $e->getMessage();
+        try {
+          $tweetmsg = htmlspecialchars_decode($msg_f);
+          if (strlen($tweetmsg) > 140)
+            $tweetmsg = substr($tweetmsg, 0, 140);
+          $tweet = $twitter->send($tweetmsg); // you can add $imagePath as second argument
+
+        } catch (TwitterException $e) {
+          $errtxt =  "Twitter Error: " . $e->getMessage();
+        }
       }
-      if ($lastmsgid == 0)
-        $lastmsgid = CreateMsgRecord($msg_f);
-
-      try {
-        $tweetmsg = htmlspecialchars_decode($msg_f);
-        if (strlen($tweetmsg) > 140)
-          $tweetmsg = substr($tweetmsg, 0, 140);
-        $tweet = $twitter->send($tweetmsg); // you can add $imagePath as second argument
-
-      } catch (TwitterException $e) {
-        $errtxt =  "Twitter Error: " . $e->getMessage();
-      }
     }
-
-
     if ($bHaveMember == 0) {
       if (!in_array("twitter", $_POST["member"])) {
         if (empty($errtxt))
