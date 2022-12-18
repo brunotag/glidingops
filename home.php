@@ -183,10 +183,6 @@ if (($_SESSION['security'] & 120))
      echo "<p class='u'><a href='AllAircraft'>Aircraft</a></p>";
   if (($_SESSION['security'] & 64))
      echo "<p class='u'><a href='AircraftTypes'>Aircraft Types</a></p>";
-  if (($_SESSION['security'] & 64))
-     echo "<p class='u'><a href='airspace-list.php'>Airspace</a></p>";
-  if (($_SESSION['security'] & 64))
-     echo "<p class='u'><a href='airspacecoords-list.php'>Airspace coordiantes</a></p>";
   if (($_SESSION['security'] & 128))
      echo "<p class='u'><a href='BillingOptions'>Charging Options</a></p>";
   if (($_SESSION['security'] & 64))
