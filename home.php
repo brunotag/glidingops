@@ -177,8 +177,6 @@ if ($_SESSION['security'] >= 1)
 if (($_SESSION['security'] & 120))
 {
   echo "<td><h2 class='u'>DATA MAINTENANCE</h2>";
-  if (($_SESSION['security'] & 64))
-     echo "<p class='u'><a href='address_type-list.php'>Address Types</a></p>";
   if (($_SESSION['security'] & 104))
      echo "<p class='u'><a href='AllAircraft'>Aircraft</a></p>";
   if (($_SESSION['security'] & 64))
