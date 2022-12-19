@@ -33,8 +33,14 @@ table {border-collapse: collapse;}
 <form method='POST' action='changepw.php'>
 <table>
 <tr><td>Username:</td><td><?php echo $_SESSION['who']; ?></td><td></td></tr>
-<tr><td>Old Password:</td><td><input type='password' name='pcodeold' autofocus></td><td></td></tr>
-<tr><td>New Password:</td><td><input type='password' name='pcodenew1'></td><td></td></tr>
+<?PHP 
+    if(!isset($_SESSION['force_pw_reset']) || $_SESSION['force_pw_reset'] != 1) {
+?>
+    <tr><td>Enter Current Password:</td><td><input type='password' name='pcodeold' autofocus></td><td></td></tr>
+<?PHP 
+    }
+?>
+<tr><td>Pick a New Password:</td><td><input type='password' name='pcodenew1'></td><td></td></tr>
 <tr><td>Re-enter New Password:</td><td><input type='password' name='pcodenew2'></td><td></td></tr>
 <tr><td></td><td class='right'><input type="submit" name"Submit" value="Change"></td><td></td></tr>
 </table>
