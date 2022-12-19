@@ -75,7 +75,7 @@ $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params[
     }
     $r = mysqli_query($con,$q);
     //TODO:replace hardcoded urls
-    $headers = 'From: operations@gops.wwgc.co.nz' . "\r\n" .
+    $headers = 'From: gops.wwgc.co.nz@gmail.com' . "\r\n" .
      'Reply-To: wgcoperations@gmail.com' . "\r\n" .
      'X-Mailer: PHP/' . phpversion();
     $message = 

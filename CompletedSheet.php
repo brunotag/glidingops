@@ -194,7 +194,7 @@ $message .= "<th>LAUNCH TYPE</th><th>TYPE</th></tr>";
 </body>
 </html>";
         //TODO: replace hardcoded domains
-	   $headers = 'From: operations@gops.wwgc.co.nz' . "\r\n" .
+	   $headers = 'From: gops.wwgc.co.nz@gmail.com' . "\r\n" .
                  'Reply-To: wgcoperations@gmail.com' . "\r\n" .
                  'Content-type: text/html; charset=iso-8859-1' . "\r\n" .
                   'X-Mailer: PHP/' . phpversion();
