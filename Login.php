@@ -90,7 +90,7 @@
     <script>
       //TODO: replace hardcoded domain
       var options = {
-        message: "<br/> Check your mail box! <br/> </br> You should have received an email from operations@gops.wwgc.co.nz",
+        message: "<br/> Check your mail box! <br/> </br> You should have received an email from gops.wwgc.co.nz@gmail.com",
         color: "success",
         timeout: 10000,
       };

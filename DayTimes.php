@@ -120,13 +120,13 @@ if (isset($options['m']))
     
     
     //TODO: replace hardcoded domain
-    $headers = 'From: Gliding Operations <operations@gops.wwgc.co.nz>' . "\r\n" .
+    $headers = 'From: Gliding Operations <gops.wwgc.co.nz@gmail.com>' . "\r\n" .
                'Reply-To: wgcoperations@gmail.com' . "\r\n" .
                'Content-type: text/html; charset=iso-8859-1' . "\r\n" .
                 'X-Mailer: PHP/' . phpversion();
 
     //TODO: replace hardcoded domain
-    mail($options['m'],"Daily Flight Times from Tracks",$msg,$headers,'-r operations@gops.wwgc.co.nz');
+    mail($options['m'],"Daily Flight Times from Tracks",$msg,$headers,'-r gops.wwgc.co.nz@gmail.com');
     exit();
 }
 
