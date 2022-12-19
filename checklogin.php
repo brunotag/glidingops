@@ -54,6 +54,7 @@ if ($row['password'] == $mypassword)
   {
     if ($row['force_pw_reset'] > 0)
     {
+      $_SESSION['force_pw_reset'] = 1;
       header('Location: PasswordChange');
     }
     else
