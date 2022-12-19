@@ -16,20 +16,25 @@ php artisan migrate
 php artisan db:seed
 
 sudo apt-get install php7.3-xdebug -y
+sudo a2enmod proxy_fcgi setenvif
+sudo a2enconf php7.3-fpm
 
-phpini=/etc/php/7.3/fpm/conf.d/20-xdebug.ini #$(php -i | grep "Loaded Configuration File" | sed 's#.* ##')
-sudo sed -i -e '$axdebug.remote_enable = true' $phpini
-sudo sed -i -e '$axdebug.remote_autostart = true' $phpini
+sudo sed '/^zend_extension=/{h;s/=.*/=xdebug.so/};${x;/^$/{s//zend_extension=xdebug.so/;H};x}' -i /etc/php/7.3/fpm/php.ini
+
+xdebug_ini=/etc/php/7.3/mods-available/xdebug.ini #$(php -i | grep "Loaded Configuration File" | sed 's#.* ##')
+
+sudo sed '/^zend_extension=/{h;s/=.*/=xdebug.so/};${x;/^$/{s//zend_extension=xdebug.so/;H};x}' -i $xdebug_ini
+sudo sed '/^xdebug.max_nesting_level=/{h;s/=.*/=512/};${x;/^$/{s//xdebug.max_nesting_level=512/;H};x}' -i  $xdebug_ini
+sudo sed '/^xdebug.start_with_request=/{h;s/=.*/=yes/};${x;/^$/{s//xdebug.start_with_request=yes/;H};x}' -i  $xdebug_ini
 
 sudo apt-get install net-tools -y
 ipaddr=$(route -nee | awk '{ print $2 }' | sed -n 3p)
-sudo sed -i -e "\$axdebug.remote_host = $ipaddr" $phpini
+sudo sed "/^xdebug.client_host=/{h;s/=.*/=$ipaddr/};\${x;/^\$/{s//xdebug.client_host=$ipaddr/;H};x}" -i  $xdebug_ini
 
-sudo sed -i -e '$axdebug.remote_port = 9003' $phpini
-sudo sed -i -e '$axdebug.remote_log = /var/log/xdebug.log' $phpini
-sudo sed -i -e '$axdebug.max_nesting_level = 1000' $phpini
-sudo sed -i -e '$axdebug.mode=debug,develop' $phpini
-sudo sed -i -e '$axdebug.idekey=vagrant' $phpini
+sudo sed '/^xdebug.client_port=/{h;s/=.*/=9003/};${x;/^$/{s//xdebug.client_port=9003/;H};x}' -i  $xdebug_ini
+sudo sed '/^xdebug.log=/{h;s/=.*/=\/var\/log\/xdebug.log/};${x;/^$/{s//xdebug.log=\/var\/log\/xdebug.log/;H};x}' -i  $xdebug_ini
+sudo sed '/^xdebug.mode=/{h;s/=.*/=debug/};${x;/^$/{s//xdebug.mode=debug/;H};x}' -i  $xdebug_ini
+sudo sed '/^xdebug.idekey=/{h;s/=.*/=vagrant/};${x;/^$/{s//xdebug.idekey=vagrant/;H};x}' -i  $xdebug_ini
 
 sudo service php7.3-fpm restart
 sudo systemctl restart apache2
