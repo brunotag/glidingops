@@ -317,8 +317,6 @@ if (isset($_SESSION['security'])) {
                   if (($_SESSION['security'] & 64))
                      echo "<p class='u'><a href='maintenance/duplicates_index.php'>Manage duplicate memberships</a></p>";
                   if (($_SESSION['security'] & 64))
-                     echo "<p class='u'><a href='app/vectors'>Manage vector definitions</a></p>";
-                  if (($_SESSION['security'] & 64))
                      echo "<p class='u'><a href='manage-secret-code.php'>Manage secret code</a></p>";
 
                   echo "</td>";

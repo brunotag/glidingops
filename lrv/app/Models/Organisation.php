@@ -39,11 +39,6 @@ class Organisation extends Model
         return $this->hasMany('App\Models\MembershipClass', 'org');
     }
 
-    public function vectors()
-    {
-        return $this->hasMany(Vector::class);
-    }
-
     /**
      * If timezone is missing we default to UTC
      */
