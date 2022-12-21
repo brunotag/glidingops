@@ -4,32 +4,31 @@
 
 //Database
 require './includes/classtrackDB.php';
-$con_params = require('./config/database.php'); $con_params = $con_params['48d5f377']; 
+$con_params = include './config/database.php'; $con_params = $con_params['48d5f377']; 
 $DB = new trackDB($con_params);
 $vehicle = null;
 $vid = 0;
 $tripid = 0;
 $showmap = false;
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET')
-{
-    if (isset($_GET['v']) )
-    {
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    if (isset($_GET['v']) ) {
         $vid = $_GET['v'];
-        if ($vid > 0)
+        if ($vid > 0) {
             $vehicle = $DB->getVehilce($vid);
-        if (isset($_GET['trip']) && null != $vehicle)
-        {
+        }
+        if (isset($_GET['trip']) && null != $vehicle) {
             $tripid = $_GET['trip'];
             $showmap = true;
         }
     }
 }
-if ($_SERVER['REQUEST_METHOD'] == 'POST')
-{
-    if (isset($_POST['vehicle'])) $vid = $_POST['vehicle'];
-    if ($vid > 0)
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['vehicle'])) { $vid = $_POST['vehicle'];
+    }
+    if ($vid > 0) {
         $vehicle = $DB->getVehilce($vid);
+    }
 }
 ?>
 <!DOCTYPE HTML>
@@ -49,28 +48,27 @@ var markers = [];
     $lastd = null;
     $bend = false;
     echo "var paths = [";
-    if ($vehicle && $showmap)
+if ($vehicle && $showmap) {
+    $r = $DB->allTracksForVehicleTrip($vid, $tripid);
+    while ($t = $r->fetch_array())
     {
-        $r = $DB->allTracksForVehicleTrip($vid,$tripid);
-        while ($t = $r->fetch_array())
-        {
-            if ($d1 && !$bend)
-                echo ",";
-            $d = new DateTime($t['track_timestamp']);
-            $d->setTimezone(new DateTimeZone('Pacific/Auckland')); 
-            if ($lastd)
-            {
-                if ( ($d->getTimestamp() - $lastd->getTimestamp() ) > 1200)
-                    $bend = true;
-            }
-            if (!$bend)
-            {
-                echo "{lat:" . $t['track_lat'] . ", lng: " . $t['track_lon'] . ", t: \"" .$d->format('H:i:s d/m/Y'). "\", a:".$t['track_alt']."}";
-                $d1 = true;
-            }
-            $lastd = $d;
+        if ($d1 && !$bend) {
+            echo ",";
         }
+        $d = new DateTime($t['track_timestamp']);
+        $d->setTimezone(new DateTimeZone('Pacific/Auckland')); 
+        if ($lastd) {
+            if (($d->getTimestamp() - $lastd->getTimestamp() ) > 1200) {
+                $bend = true;
+            }
+        }
+        if (!$bend) {
+            echo "{lat:" . $t['track_lat'] . ", lng: " . $t['track_lon'] . ", t: \"" .$d->format('H:i:s d/m/Y'). "\", a:".$t['track_alt']."}";
+            $d1 = true;
+        }
+        $lastd = $d;
     }
+}
     echo "];";
 ?>
 function selectVehilce()
@@ -149,10 +147,10 @@ body {font-family: Arial, Helvetica, sans-serif;font-size: 9pt;}
                         <option></option>
                         <?php
                             $r = $DB->allVehilces('order by vehicle_name');
-                            while ($veh = $r->fetch_array())
-                            {
-                                echo "<option value='".$veh['idvehicle']."'>".$veh['vehicle_name']."</option>";
-                            }
+                        while ($veh = $r->fetch_array())
+                        {
+                            echo "<option value='".$veh['idvehicle']."'>".$veh['vehicle_name']."</option>";
+                        }
                         ?>
                     </select><br/>
                     <input id='showmarkers' type='checkbox' name='showmarkers' onchange='showmks(this)'/><span>SHOW MARKERS</span>
@@ -160,8 +158,7 @@ body {font-family: Arial, Helvetica, sans-serif;font-size: 9pt;}
             </div>
             <div id='details'>
                 <?php
-                if ($vehicle)
-                {
+                if ($vehicle) {
                     
                     //Find last position
                     $track = $DB->lastTrackForVehicle($vehicle['idvehicle']);
@@ -170,38 +167,36 @@ body {font-family: Arial, Helvetica, sans-serif;font-size: 9pt;}
                     echo "<tr><td>NAME:</td><td>".$vehicle['vehicle_name']."</td></tr>";
                     echo "<tr><td>PARTICLE ID:</td><td>".$vehicle['vehicle_particle_id']."</td></tr>";
                     $version = '';
-                    if (!is_null($vehicle['vehicle_particle_version']))
+                    if (!is_null($vehicle['vehicle_particle_version'])) {
                         $version = floatVal($vehicle['vehicle_particle_version']);
+                    }
                     echo "<tr><td>PARTICLE VERSION:</td><td>{$version}</td></tr>";
                     $strLastHello = '';
                     $strBatt = '';
                     $strLastSeen = '';
-                    if ($vehicle['vehicle_last_seen'])
-                    {
+                    if ($vehicle['vehicle_last_seen']) {
                         $d2 = new DateTime($vehicle['vehicle_last_seen']);
                         $d2->setTimezone(new DateTimeZone('Pacific/Auckland')); 
                         $strLastSeen = $d2->format('D jS M Y H:i');
                     }
-                    if ($vehicle['vehicle_last_hello'])
-                    {
+                    if ($vehicle['vehicle_last_hello']) {
                         $d = new DateTime($vehicle['vehicle_last_hello']);
                         $d->setTimezone(new DateTimeZone('Pacific/Auckland'));
                         $strLastHello = $d->format('D jS M Y H:i');
                     }
-                    if ($vehicle['vehicle_battery_timestamp'])
-                    {
+                    if ($vehicle['vehicle_battery_timestamp']) {
                         $dBatt = new DateTime($vehicle['vehicle_battery_timestamp']);
                         $dBatt->setTimezone(new DateTimeZone('Pacific/Auckland'));
                         $strBatt = $dBatt->format('D jS M Y H:i');
-                        echo "<tr><td>BATTERY:</td><td>".sprintf("%3.1f%%",$vehicle['vehicle_battery_level'])." at {$strBatt}</td></tr>";
+                        echo "<tr><td>BATTERY:</td><td>".sprintf("%3.1f%%", $vehicle['vehicle_battery_level'])." at {$strBatt}</td></tr>";
                     }
-                    else
+                    else {
                         echo "<tr><td>BATTERY:</td><td></td></tr>";
+                    }
                     echo "<tr><td>LAST HELLO:</td><td>{$strLastHello}</td></tr>";
                     echo "<tr><td>LAST SEEN:</td><td>{$strLastSeen}</td></tr>";
                     echo "<tr><td>LAST STATUS:</td><td>".$vehicle['vehicle_last_status']."</td></tr>";
-                    if ($track)
-                    {
+                    if ($track) {
                         $d1 = new DateTime($track['track_timestamp']);
                         $d1->setTimezone(new DateTimeZone('Pacific/Auckland')); 
                         echo "<tr><td>LAST KNOWN POSITION:</td><td>".$d1->format('D jS M Y H:i')."</td><td>".$track['track_lat'].",".$track['track_lon']."</td></tr>";
@@ -211,8 +206,7 @@ body {font-family: Arial, Helvetica, sans-serif;font-size: 9pt;}
                     
                     //Select trips
                     echo "<table>";
-                    if ($vehicle)
-                    {
+                    if ($vehicle) {
                         $starttrip = false;
                         $d = null;
                         $cnt = 0;
@@ -222,22 +216,22 @@ body {font-family: Arial, Helvetica, sans-serif;font-size: 9pt;}
                             $tripid = 0;
                             //We need to find previous
                             $tprev = $DB->prevTrackForVehilce($t);
-                            if ($tprev)
-                            {
+                            if ($tprev) {
                                 $dt1 = new DateTime($tprev['track_timestamp']);
                                 $dt2 = new DateTime($t['track_timestamp']);
-                                if (($dt2->getTimestamp() - $dt1->getTimestamp()) < (20 * 60))
+                                if (($dt2->getTimestamp() - $dt1->getTimestamp()) < (20 * 60)) {
                                     $tripid = $tprev['track_trip'];
+                                }
                             }
                             
-                            if ($tripid == 0)
-                            {
-                                $trip = $DB->createTrip($vehicle['idvehicle'],$t['track_timestamp']);
+                            if ($tripid == 0) {
+                                $trip = $DB->createTrip($vehicle['idvehicle'], $t['track_timestamp']);
                                 $tripid = $trip['idtrip'];
                             }
                             
-                            if ($tripid != 0)
-                                $DB->updateTrackTrip($t,$tripid);
+                            if ($tripid != 0) {
+                                $DB->updateTrackTrip($t, $tripid);
+                            }
                             
                         }
                         

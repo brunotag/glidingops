@@ -2,28 +2,31 @@
 
 namespace App\Helpers;
 
-class DateTimeFormat {
-  public static function formatDateStr($strdate) {
-    return substr($strdate,6,2) . "/" . substr($strdate,4,2) . "/" . substr($strdate,0,4);
-  }
-
-  public static function timeLocalFormat($d, $strTimeZone, $strFormat){
-    if ($strTimeZone==NULL || empty($strTimeZone)) {
-      $strTimeZone = 'UTC';
+class DateTimeFormat
+{
+    public static function formatDateStr($strdate)
+    {
+        return substr($strdate, 6, 2) . "/" . substr($strdate, 4, 2) . "/" . substr($strdate, 0, 4);
     }
 
-    $date = new \DateTime();
-    $date = $d;
-    $date->setTimezone(new \DateTimeZone($strTimeZone));
+    public static function timeLocalFormat($d, $strTimeZone, $strFormat)
+    {
+        if ($strTimeZone==null || empty($strTimeZone)) {
+            $strTimeZone = 'UTC';
+        }
 
-    return $date->format($strFormat);
-  }
+        $date = new \DateTime();
+        $date = $d;
+        $date->setTimezone(new \DateTimeZone($strTimeZone));
 
-  public static function duration($durationSeconds)
-  {
-    $hours = intval($durationSeconds / 3600);
-    $mins = intval(($durationSeconds % 3600) / 60);
-    $timeval = sprintf("%02d:%02d",$hours,$mins);
-    return $timeval;
-  }
+        return $date->format($strFormat);
+    }
+
+    public static function duration($durationSeconds)
+    {
+        $hours = intval($durationSeconds / 3600);
+        $mins = intval(($durationSeconds % 3600) / 60);
+        $timeval = sprintf("%02d:%02d", $hours, $mins);
+        return $timeval;
+    }
 }

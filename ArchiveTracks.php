@@ -1,7 +1,7 @@
 <?php
 require dirname(__FILE__) . '/includes/classGlidingDB.php';
 require dirname(__FILE__) . '/includes/classTracksDB.php';
-$con_params = require( dirname(__FILE__) .'/config/database.php'); 
+$con_params = include dirname(__FILE__) .'/config/database.php'; 
 $DB = new GlidingDB($con_params['gliding']);
 $DBArchive = new TracksDB($con_params['tracks']);
 
@@ -18,7 +18,7 @@ while ($t = $r->fetch_array())
     unset($t['create_time']);
     unset($t['trip_id']);
     unset($t['point_id']);
-    $DBArchive->create_from_array('tracksarchive',$t); 
+    $DBArchive->create_from_array('tracksarchive', $t); 
     
 }
 $DB->deleteTracksOlderThan($dtPrev->format('Y-m-d'));

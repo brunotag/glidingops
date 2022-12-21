@@ -94,14 +94,14 @@ class Flight extends Model
         $comments = $this->comments;
         if ($this->flightType == FlightType::checkFlightType()) {
             if (strlen($comments) > 0 ) {
-              $comments .= " ";
+                $comments .= " ";
             }
             $comments .= "Tow plane check flight";
         }
 
         if ($this->flightType == FlightType::retrieveFlightType()) {
             if (strlen($comments) > 0 ) {
-              $comments .= " ";
+                $comments .= " ";
             }
             $comments .= "Retrieve Flight";
         }
@@ -115,7 +115,7 @@ class Flight extends Model
         $strEnd   = $this->getLandDate()->format('Y-m-d H:i:s');
 
         $tracks = Track::where('glider', $this->glider)
-                    ->where('point_time', '>' , $strStart)
+                    ->where('point_time', '>', $strStart)
                     ->where('point_time', '<', $strEnd);
 
         if(!$tracks->get()->isEmpty()) {
@@ -123,7 +123,7 @@ class Flight extends Model
         }
 
         $tracks = ArchivedTrack::where('glider', $this->glider)
-                    ->where('point_time', '>' , $strStart)
+                    ->where('point_time', '>', $strStart)
                     ->where('point_time', '<', $strEnd);
 
         if(!$tracks->get()->isEmpty()) {
@@ -133,9 +133,10 @@ class Flight extends Model
         return false;
     }
 
-    private function durationRoundedToMinutes($durationInMillies) {
-      $durationInSeconds = intval($durationInMillies / 1000);
-      $durationRoundedToMinutes  = ($durationInSeconds - $durationInSeconds%60);
-      return $durationRoundedToMinutes;
+    private function durationRoundedToMinutes($durationInMillies)
+    {
+        $durationInSeconds = intval($durationInMillies / 1000);
+        $durationRoundedToMinutes  = ($durationInSeconds - $durationInSeconds%60);
+        return $durationRoundedToMinutes;
     }
 }

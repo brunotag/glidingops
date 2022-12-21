@@ -13,9 +13,11 @@ class AddVectorToFlight extends Migration
      */
     public function up()
     {
-        Schema::table('flights', function($table) {
-            $table->string('vector');
-        });
+        Schema::table(
+            'flights', function ($table) {
+                $table->string('vector');
+            }
+        );
     }
 
     /**
@@ -25,8 +27,10 @@ class AddVectorToFlight extends Migration
      */
     public function down()
     {
-        Schema::table('flights', function($table) {
-            $table->dropColumn('vector');
-        });
+        Schema::table(
+            'flights', function ($table) {
+                $table->dropColumn('vector');
+            }
+        );
     }
 }

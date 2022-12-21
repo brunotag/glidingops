@@ -1,15 +1,16 @@
 <?php session_start(); ?>
 <?php $org = 0;
-if (isset($_SESSION['org'])) $org = $_SESSION['org']; ?>
+if (isset($_SESSION['org'])) { $org = $_SESSION['org'];
+} ?>
 <?php
-include './helpers/timehelpers.php';
+require './helpers/timehelpers.php';
 if (isset($_SESSION['security'])) {
-   if (!($_SESSION['security'] & 1)) {
-      die("Secruity level too low for this page");
-   }
+    if (!($_SESSION['security'] & 1)) {
+        die("Secruity level too low for this page");
+    }
 } else {
-   header('Location: Login.php');
-   die("Please logon");
+    header('Location: Login.php');
+    die("Please logon");
 }
 ?>
 <!DOCTYPE HTML>
@@ -20,7 +21,7 @@ if (isset($_SESSION['security'])) {
 <head>
    <style>
       <?php $inc = "./orgs/" . $org . "/heading2.css";
-      include $inc; ?>
+        require $inc; ?>
    </style>
    <style type="text/css">
       body {
@@ -157,42 +158,42 @@ if (isset($_SESSION['security'])) {
 </head>
 
 <body>
-   <?php include __DIR__ . '/helpers/dev_mode_banner.php' ?>
+   <?php require __DIR__ . '/helpers/dev_mode_banner.php' ?>
    <?php $inc = "./orgs/" . $org . "/heading2.txt";
-   include $inc; ?>
+    require $inc; ?>
    <div id='container'>
       <div id='messagearea'>
          <div id='messagearea2'>
             <p class='p2'>CLUB MESSAGES:</p>
             <?php
-            $con_params = require('./config/database.php');
+            $con_params = include './config/database.php';
             $con_params = $con_params['gliding'];
             $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
             if (!mysqli_connect_errno()) {
-               $rownum = 0;
-               $dateTime = new DateTime('now');
-               $dateStr = $dateTime->format('Y-m-d');
-               $strTZ = orgTimezone($con, $org);
+                $rownum = 0;
+                $dateTime = new DateTime('now');
+                $dateStr = $dateTime->format('Y-m-d');
+                $strTZ = orgTimezone($con, $org);
 
-               $q = "SELECT create_time, msg from messages where org =" . $org . " order by create_time DESC";
-               $r = mysqli_query($con, $q);
-               if ($row = mysqli_fetch_array($r)) {
-                  echo "<p class=\"p4\"><span class=\"s1\">" . timeLocalSQL($row[0], $strTZ, 'D j M Y H:i') . "</span> " . $row[1] . "</p>";
-               } else {
-                  echo "<p class='p4'>No messages</p>";
-               }
-               if (isset($_SESSION['memberid'])) {
-                  $q = "SELECT localdate, a.name from duty LEFT JOIN dutytypes a ON a.id = duty.type where duty.org = " . $org . " and member = " . $_SESSION['memberid'] . " and localdate >= '" . $dateStr . "' order by localdate asc";
-                  $r = mysqli_query($con, $q);
-                  while ($row = mysqli_fetch_array($r)) {
-                     if ($rownum == 0) {
-                        echo "<p class='p3'>YOUR NEXT ROSTERED DUTIES:</p>";
-                     }
-                     $rownum = $rownum + 1;
-                     $dtstr = $row[0];
-                     echo "<p class='p4'>" . substr($dtstr, 8, 2) . "/" . substr($dtstr, 5, 2) . "/" . substr($dtstr, 0, 4) . " " . $row[1] . "</p>";
-                  }
-               }
+                $q = "SELECT create_time, msg from messages where org =" . $org . " order by create_time DESC";
+                $r = mysqli_query($con, $q);
+                if ($row = mysqli_fetch_array($r)) {
+                    echo "<p class=\"p4\"><span class=\"s1\">" . timeLocalSQL($row[0], $strTZ, 'D j M Y H:i') . "</span> " . $row[1] . "</p>";
+                } else {
+                    echo "<p class='p4'>No messages</p>";
+                }
+                if (isset($_SESSION['memberid'])) {
+                    $q = "SELECT localdate, a.name from duty LEFT JOIN dutytypes a ON a.id = duty.type where duty.org = " . $org . " and member = " . $_SESSION['memberid'] . " and localdate >= '" . $dateStr . "' order by localdate asc";
+                    $r = mysqli_query($con, $q);
+                    while ($row = mysqli_fetch_array($r)) {
+                        if ($rownum == 0) {
+                            echo "<p class='p3'>YOUR NEXT ROSTERED DUTIES:</p>";
+                        }
+                        $rownum = $rownum + 1;
+                        $dtstr = $row[0];
+                        echo "<p class='p4'>" . substr($dtstr, 8, 2) . "/" . substr($dtstr, 5, 2) . "/" . substr($dtstr, 0, 4) . " " . $row[1] . "</p>";
+                    }
+                }
             }
             ?>
          </div>
@@ -201,163 +202,204 @@ if (isset($_SESSION['security'])) {
          <div id="menu2">
             <table class='tbl1'>
                <?php
-               echo "<tr>";
-               $col = 0;
-               $totcol = 6;
-               if (intval($_SESSION['memberid']) > 0) {
-                  echo "<td><h2 class='u'>MY GOPs</h2>";
-                  echo "<p class='u'><a href='MyFlights'>My Flights</a></p>";
-                  echo "<p class='u'><a href='edit-my-details.php'>My Details</a></p>";
-                  echo "</td>";
-                  $col = ($col + 1) % $totcol;
-                  if ($col == 0) echo "</tr><tr>";
-               }
-               echo "<td><h2 class='u'><a href='FlyingNow?org=" . $org . "'>FLYING NOW</a></h2>";
-               if ($org == 1)
-                  echo "<p class='u'><a href='wgc'>Real Time map</a></p>";
-               if ($org == 2)
-                  echo "<p class='u'><a href='ssb'>Real Time map</a></p>";
-               if ($org == 3)
-                  echo "<p class='u'><a href='cgc'>Real Time map</a></p>";
-               if ($org == 4)
-                  echo "<p class='u'><a href='agc'>Real Time map</a></p>";
-               echo "</td>";
-               $col = ($col + 1) % $totcol;
-               if ($col == 0) echo "</tr><tr>";
-               //TODO: BOOKING - HARDCODED LINK
-               echo "<td><h2 class='u'><a href='https://www.wwgc.co.nz/members-pilots#bookings' target='_blank'>BOOKINGS</a></h2>";
-               echo "</td>";
-               $col = ($col + 1) % $totcol;
-               if ($col == 0) echo "</tr><tr>";
+                echo "<tr>";
+                $col = 0;
+                $totcol = 6;
+                if (intval($_SESSION['memberid']) > 0) {
+                    echo "<td><h2 class='u'>MY GOPs</h2>";
+                    echo "<p class='u'><a href='MyFlights'>My Flights</a></p>";
+                    echo "<p class='u'><a href='edit-my-details.php'>My Details</a></p>";
+                    echo "</td>";
+                    $col = ($col + 1) % $totcol;
+                    if ($col == 0) { echo "</tr><tr>";
+                    }
+                }
+                echo "<td><h2 class='u'><a href='FlyingNow?org=" . $org . "'>FLYING NOW</a></h2>";
+                if ($org == 1) {
+                    echo "<p class='u'><a href='wgc'>Real Time map</a></p>";
+                }
+                if ($org == 2) {
+                    echo "<p class='u'><a href='ssb'>Real Time map</a></p>";
+                }
+                if ($org == 3) {
+                    echo "<p class='u'><a href='cgc'>Real Time map</a></p>";
+                }
+                if ($org == 4) {
+                    echo "<p class='u'><a href='agc'>Real Time map</a></p>";
+                }
+                echo "</td>";
+                $col = ($col + 1) % $totcol;
+                if ($col == 0) { echo "</tr><tr>";
+                }
+                //TODO: BOOKING - HARDCODED LINK
+                echo "<td><h2 class='u'><a href='https://www.wwgc.co.nz/members-pilots#bookings' target='_blank'>BOOKINGS</a></h2>";
+                echo "</td>";
+                $col = ($col + 1) % $totcol;
+                if ($col == 0) { echo "</tr><tr>";
+                }
 
-               echo "<td><h2 class='u'><a href='Rosters'>ROSTERS</a></h2></td>";
-               $col = ($col + 1) % $totcol;
-               if ($col == 0) echo "</tr><tr>";
+                echo "<td><h2 class='u'><a href='Rosters'>ROSTERS</a></h2></td>";
+                $col = ($col + 1) % $totcol;
+                if ($col == 0) { echo "</tr><tr>";
+                }
 
-               echo "<td><h2 class='u'><a href='AllMembers'>MEMBERS</a></h2></td>";
-               $col = ($col + 1) % $totcol;
-               if ($col == 0) echo "</tr><tr>";
+                echo "<td><h2 class='u'><a href='AllMembers'>MEMBERS</a></h2></td>";
+                $col = ($col + 1) % $totcol;
+                if ($col == 0) { echo "</tr><tr>";
+                }
 
-               echo "<td><h2 class='u'></h2></td>";
-               $col = ($col + 1) % $totcol;
-               if ($col == 0) echo "</tr><tr>";
+                echo "<td><h2 class='u'></h2></td>";
+                $col = ($col + 1) % $totcol;
+                if ($col == 0) { echo "</tr><tr>";
+                }
 
-               if (($_SESSION['security'] & 4)) {
-                  echo "<td><h2 class='u'>MESSAGING</h2>";
-                  echo "<p class='u'><a href='MessagingPage'>Broadcast A Message</a></p>";
-                  echo "<p class='u'><a href='maintenance/testemail.php'>Send Single Email</a></p>";
-                  echo "</td>";
-                  $col = ($col + 1) % $totcol;
-                  if ($col == 0) echo "</tr><tr>";
-               }
+                if (($_SESSION['security'] & 4)) {
+                    echo "<td><h2 class='u'>MESSAGING</h2>";
+                    echo "<p class='u'><a href='MessagingPage'>Broadcast A Message</a></p>";
+                    echo "<p class='u'><a href='maintenance/testemail.php'>Send Single Email</a></p>";
+                    echo "</td>";
+                    $col = ($col + 1) % $totcol;
+                    if ($col == 0) { echo "</tr><tr>";
+                    }
+                }
 
-               if ($_SESSION['security'] >= 1) {
-                  echo "<td><h2 class='u'>DAILY OPS</h2>";
-                  if ($_SESSION['security'] >= 4)
-                     echo "<p class='u'><a href='DailySheet?org=" . $org . "'>New Daily Timesheet</a></p>";
-                  echo "<p class='u'><a href='DailyLogSheet.php?org=" . $org . "'>View Daily Timesheet</a></p>";
+                if ($_SESSION['security'] >= 1) {
+                    echo "<td><h2 class='u'>DAILY OPS</h2>";
+                    if ($_SESSION['security'] >= 4) {
+                        echo "<p class='u'><a href='DailySheet?org=" . $org . "'>New Daily Timesheet</a></p>";
+                    }
+                    echo "<p class='u'><a href='DailyLogSheet.php?org=" . $org . "'>View Daily Timesheet</a></p>";
 
-                  echo "</td>";
-                  $col = ($col + 1) % $totcol;
-                  if ($col == 0) echo "</tr><tr>";
-               }
+                    echo "</td>";
+                    $col = ($col + 1) % $totcol;
+                    if ($col == 0) { echo "</tr><tr>";
+                    }
+                }
 
-               if ($_SESSION['security'] >= 1) {
-                  echo "<td><h2 class='u'>REPORTS</h2>";
-                  if (($_SESSION['security'] & 8))
-                     echo "<p class='u'><a href='Treasurer.php'>Treasurer Report</a></p>";
-                  if (($_SESSION['security'] & 1))
-                     echo "<p class='u'><a href='/app/allFlightsReport'>All Flights Report</a></p>";
-                  if (($_SESSION['security'] & 24))
-                     echo "<p class='u'><a href='/app/reports/membersRolesStatsReport'>Members roles Report</a></p>";
-                  if (($_SESSION['security'] & 24))
-                     echo "<p class='u'><a href='MedicalBfr.php'>Medical/BFR Report</a></p>";
-                  if (($_SESSION['security'] & 24))
-                     echo "<p class='u'><a href='Towy.php'>Tow Pilots Report</a></p>";
-                  if (($_SESSION['security'] & 32))
-                     echo "<p class='u'><a href='Engineer.php'>Engineer Report</a></p>";
-                  if (($_SESSION['security'] & 32))
-                     echo "<p class='u'><a href='last-flights-list.php?col=1&descsort=1'>Currency Report</a></p>";
+                if ($_SESSION['security'] >= 1) {
+                    echo "<td><h2 class='u'>REPORTS</h2>";
+                    if (($_SESSION['security'] & 8)) {
+                        echo "<p class='u'><a href='Treasurer.php'>Treasurer Report</a></p>";
+                    }
+                    if (($_SESSION['security'] & 1)) {
+                        echo "<p class='u'><a href='/app/allFlightsReport'>All Flights Report</a></p>";
+                    }
+                    if (($_SESSION['security'] & 24)) {
+                        echo "<p class='u'><a href='/app/reports/membersRolesStatsReport'>Members roles Report</a></p>";
+                    }
+                    if (($_SESSION['security'] & 24)) {
+                        echo "<p class='u'><a href='MedicalBfr.php'>Medical/BFR Report</a></p>";
+                    }
+                    if (($_SESSION['security'] & 24)) {
+                        echo "<p class='u'><a href='Towy.php'>Tow Pilots Report</a></p>";
+                    }
+                    if (($_SESSION['security'] & 32)) {
+                        echo "<p class='u'><a href='Engineer.php'>Engineer Report</a></p>";
+                    }
+                    if (($_SESSION['security'] & 32)) {
+                        echo "<p class='u'><a href='last-flights-list.php?col=1&descsort=1'>Currency Report</a></p>";
+                    }
 
-                  echo "</td>";
-                  $col = ($col + 1) % $totcol;
-                  if ($col == 0) echo "</tr><tr>";
-               }
+                    echo "</td>";
+                    $col = ($col + 1) % $totcol;
+                    if ($col == 0) { echo "</tr><tr>";
+                    }
+                }
 
-               if (($_SESSION['security'] & 120)) {
-                  echo "<td><h2 class='u'>DATA MAINTENANCE</h2>";
-                  if (($_SESSION['security'] & 104))
-                     echo "<p class='u'><a href='AllAircraft'>Aircraft</a></p>";
-                  if (($_SESSION['security'] & 64))
-                     echo "<p class='u'><a href='AircraftTypes'>Aircraft Types</a></p>";
-                  if (($_SESSION['security'] & 128))
-                     echo "<p class='u'><a href='BillingOptions'>Charging Options</a></p>";
-                  if (($_SESSION['security'] & 64))
-                     echo "<p class='u'><a href='DutyTypes'>Duty Types</a></p>";
-                  if (($_SESSION['security'] & 64))
-                     echo "<p class='u'><a href='flights-list.php'>Flights Raw</a></p>";
-                  if (($_SESSION['security'] & 72))
-                     echo "<p class='u'><a href='IncentiveSchemes'>Incentive Schemes</a></p>";
-                  if (($_SESSION['security'] & 64))
-                     echo "<p class='u'><a href='membership_class-list.php'>Membership Classes</a></p>";
-                  if (($_SESSION['security'] & 64))
-                     echo "<p class='u'><a href='membership_status-list.php'>Membership Statuses</a></p>";
-                  if (($_SESSION['security'] & 72))
-                     echo "<p class='u'><a href='OtherCharges'>Other Charges</a></p>";
-                  if (($_SESSION['security'] & 64))
-                     echo "<p class='u'><a href='Roles'>Roles</a></p>";
-                  if (($_SESSION['security'] & 64))
-                     echo "<p class='u'><a href='AssignRoles'>Role Assigment</a></p>";
-                  if (($_SESSION['security'] & 64))
-                     echo "<p class='u'><a href='spots-list.php'>Spots</a></p>";
-                  if (($_SESSION['security'] & 72))
-                     echo "<p class='u'><a href='SubsToSchemes'>Subs to Incentives</a></p>";
-                  if (($_SESSION['security'] & 72))
-                     echo "<p class='u'><a href='TowCharges'>Tow Charging</a></p>";
-                  if (($_SESSION['security'] & 64))
-                     echo "<p class='u'><a href='maintenance/duplicates_index.php'>Manage duplicate memberships</a></p>";
-                  if (($_SESSION['security'] & 64))
-                     echo "<p class='u'><a href='manage-secret-code.php'>Manage secret code</a></p>";
+                if (($_SESSION['security'] & 120)) {
+                    echo "<td><h2 class='u'>DATA MAINTENANCE</h2>";
+                    if (($_SESSION['security'] & 104)) {
+                        echo "<p class='u'><a href='AllAircraft'>Aircraft</a></p>";
+                    }
+                    if (($_SESSION['security'] & 64)) {
+                        echo "<p class='u'><a href='AircraftTypes'>Aircraft Types</a></p>";
+                    }
+                    if (($_SESSION['security'] & 128)) {
+                        echo "<p class='u'><a href='BillingOptions'>Charging Options</a></p>";
+                    }
+                    if (($_SESSION['security'] & 64)) {
+                        echo "<p class='u'><a href='DutyTypes'>Duty Types</a></p>";
+                    }
+                    if (($_SESSION['security'] & 64)) {
+                        echo "<p class='u'><a href='flights-list.php'>Flights Raw</a></p>";
+                    }
+                    if (($_SESSION['security'] & 72)) {
+                        echo "<p class='u'><a href='IncentiveSchemes'>Incentive Schemes</a></p>";
+                    }
+                    if (($_SESSION['security'] & 64)) {
+                        echo "<p class='u'><a href='membership_class-list.php'>Membership Classes</a></p>";
+                    }
+                    if (($_SESSION['security'] & 64)) {
+                        echo "<p class='u'><a href='membership_status-list.php'>Membership Statuses</a></p>";
+                    }
+                    if (($_SESSION['security'] & 72)) {
+                        echo "<p class='u'><a href='OtherCharges'>Other Charges</a></p>";
+                    }
+                    if (($_SESSION['security'] & 64)) {
+                        echo "<p class='u'><a href='Roles'>Roles</a></p>";
+                    }
+                    if (($_SESSION['security'] & 64)) {
+                        echo "<p class='u'><a href='AssignRoles'>Role Assigment</a></p>";
+                    }
+                    if (($_SESSION['security'] & 64)) {
+                        echo "<p class='u'><a href='spots-list.php'>Spots</a></p>";
+                    }
+                    if (($_SESSION['security'] & 72)) {
+                        echo "<p class='u'><a href='SubsToSchemes'>Subs to Incentives</a></p>";
+                    }
+                    if (($_SESSION['security'] & 72)) {
+                        echo "<p class='u'><a href='TowCharges'>Tow Charging</a></p>";
+                    }
+                    if (($_SESSION['security'] & 64)) {
+                        echo "<p class='u'><a href='maintenance/duplicates_index.php'>Manage duplicate memberships</a></p>";
+                    }
+                    if (($_SESSION['security'] & 64)) {
+                        echo "<p class='u'><a href='manage-secret-code.php'>Manage secret code</a></p>";
+                    }
 
-                  echo "</td>";
-                  $col = ($col + 1) % $totcol;
-                  if ($col == 0) echo "</tr><tr>";
-               }
+                    echo "</td>";
+                    $col = ($col + 1) % $totcol;
+                    if ($col == 0) { echo "</tr><tr>";
+                    }
+                }
 
-               if (($_SESSION['security'] & 64)) {
-                  echo "<td><h2 class='u'>USERS</h2>";
-                  echo "<p class='u'><a href='users.php'>Create User</a></p>";
-                  echo "<p class='u'><a href='users-list.php'>View users</a></p>";
+                if (($_SESSION['security'] & 64)) {
+                    echo "<td><h2 class='u'>USERS</h2>";
+                    echo "<p class='u'><a href='users.php'>Create User</a></p>";
+                    echo "<p class='u'><a href='users-list.php'>View users</a></p>";
 
-                  echo "</td>";
-                  $col = ($col + 1) % $totcol;
-                  if ($col == 0) echo "</tr><tr>";
-               }
+                    echo "</td>";
+                    $col = ($col + 1) % $totcol;
+                    if ($col == 0) { echo "</tr><tr>";
+                    }
+                }
 
-               if (($_SESSION['security'] & 64)) {
-                  echo "<td><h2 class='u'>DIAGNOSTICS & RECOVERY</h2>";
-                  echo "<p class='u'><a href='Recovery.php'>Get Local Browser Cache</a></p>";
+                if (($_SESSION['security'] & 64)) {
+                    echo "<td><h2 class='u'>DIAGNOSTICS & RECOVERY</h2>";
+                    echo "<p class='u'><a href='Recovery.php'>Get Local Browser Cache</a></p>";
 
-                  echo "</td>";
-                  $col = ($col + 1) % $totcol;
-                  if ($col == 0) echo "</tr><tr>";
-               }
+                    echo "</td>";
+                    $col = ($col + 1) % $totcol;
+                    if ($col == 0) { echo "</tr><tr>";
+                    }
+                }
 
-               if (($_SESSION['security'] & 128)) {
-                  echo "<td><h2 class='u'>SUPER ADMIN</h2>";
-                  echo "<p class='u'><a href='Organisations'>Organisations</a></p>";
-                  echo "</td>";
-                  $col = ($col + 1) % $totcol;
-                  if ($col == 0) echo "</tr><tr>";
-               }
+                if (($_SESSION['security'] & 128)) {
+                    echo "<td><h2 class='u'>SUPER ADMIN</h2>";
+                    echo "<p class='u'><a href='Organisations'>Organisations</a></p>";
+                    echo "</td>";
+                    $col = ($col + 1) % $totcol;
+                    if ($col == 0) { echo "</tr><tr>";
+                    }
+                }
 
-               echo "</tr>";
-               ?>
+                echo "</tr>";
+                ?>
             </table>
             <?php
             if ($org == 1) {
-               echo "<h1>KEEP UP TO DATE ON TWITTER</h1>";
-               echo "<a href='https://twitter.com/glidingwlgtn' class='twitter-follow-button' data-show-count='false' data-lang='en'>Follow @glidingwlgtn</a>";
+                echo "<h1>KEEP UP TO DATE ON TWITTER</h1>";
+                echo "<a href='https://twitter.com/glidingwlgtn' class='twitter-follow-button' data-show-count='false' data-lang='en'>Follow @glidingwlgtn</a>";
             }
             ?>
          </div>

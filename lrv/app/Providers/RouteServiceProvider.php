@@ -52,16 +52,20 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::group([
+        Route::group(
+            [
             'middleware' => ['auth', 'web'],
             'namespace' => $this->namespace,
             'prefix' => 'app',
-        ], function ($router) {
-            require base_path('routes/web.php');
-        });
-        Route::get('/app/notAllowed', function() {
-            return view('errors/403');
-        });
+            ], function ($router) {
+                include base_path('routes/web.php');
+            }
+        );
+        Route::get(
+            '/app/notAllowed', function () {
+                return view('errors/403');
+            }
+        );
     }
 
     /**
@@ -73,12 +77,14 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapApiRoutes()
     {
-        Route::group([
+        Route::group(
+            [
             'middleware' => ['auth', 'api'],
             'namespace' => $this->apiNamespace,
             'prefix' => 'api',
-        ], function ($router) {
-            require base_path('routes/api.php');
-        });
+            ], function ($router) {
+                include base_path('routes/api.php');
+            }
+        );
     }
 }

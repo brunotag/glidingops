@@ -1,6 +1,6 @@
 <?php 
-  include '../helpers/session_helpers.php';
-  include '../helpers/audit_helpers.php';
+  require '../helpers/session_helpers.php';
+  require '../helpers/audit_helpers.php';
   session_start();
   require_security_level(64);
   $current_org = current_org();
@@ -15,94 +15,98 @@
   </head>
 
 <?php
-  function purge() {
+function purge()
+{
     global $current_org;
 
-    $con_params = require('../config/database.php'); $con_params = $con_params['gliding'];
+    $con_params = include '../config/database.php'; $con_params = $con_params['gliding'];
     mysqli_report(MYSQLI_REPORT_ALL); 
-    $con=mysqli_connect($con_params['hostname'],$con_params['username'],
-                        $con_params['password'],$con_params['dbname']);
+    $con=mysqli_connect(
+        $con_params['hostname'], $con_params['username'],
+        $con_params['password'], $con_params['dbname']
+    );
 
     
     if(is_null($_POST['ids'])) {
-      return "Member ids are mandatory!";
+        return "Member ids are mandatory!";
     }
 
     if(is_null($_POST['genuine_id'])) {
-      return "One member has to selected as the genuine one!";
+        return "One member has to selected as the genuine one!";
     }
 
     $ids = explode(',', $_POST['ids']);
     $genuine_id = $_POST['genuine_id'];
 
     try {
-      $result = $con->query("SELECT count(*) AS org_count FROM members WHERE id IN ({$_POST['ids']}) AND org != {$current_org}");
-      $row = $result->fetch_assoc();
-      if(0 != $row['org_count']) die('You can only manage members in your own organisation.');
-
-      $con->begin_transaction();
-
-      foreach ($ids as $id) {
-        if($id == $genuine_id) {
-          continue;
+        $result = $con->query("SELECT count(*) AS org_count FROM members WHERE id IN ({$_POST['ids']}) AND org != {$current_org}");
+        $row = $result->fetch_assoc();
+        if(0 != $row['org_count']) { die('You can only manage members in your own organisation.');
         }
 
-        $con->query("UPDATE flights SET billing_member2 = {$genuine_id} WHERE billing_member2 = {$id}");
-        $con->query("UPDATE flights SET billing_member1 = {$genuine_id} WHERE billing_member1 = {$id}");
-        $con->query("UPDATE flights SET pic = {$genuine_id} WHERE pic={$id}");
-        $con->query("UPDATE flights SET p2 = {$genuine_id} WHERE p2={$id}");
-        $con->query("UPDATE flights SET towpilot = {$genuine_id} WHERE towpilot={$id}");
+        $con->begin_transaction();
 
-        //If the new genuine_id already has at least one of the same roles that id has, then we must delete the roles of the old id.
-        //Otherwise, if we just update, the constraint unique(role_id, member_id) would clash.
-        $con->query(
-          "DELETE FROM role_member "
-          . "WHERE member_id = {$id} "
-          . "AND role_id IN ( "
-            . "SELECT role_id FROM( "
-            . "SELECT role_id FROM role_member "
-            . "WHERE member_id = {$genuine_id} "
-          . ") as new_roles "
-		    . ")"
-        );
+        foreach ($ids as $id) {
+            if($id == $genuine_id) {
+                continue;
+            }
+
+            $con->query("UPDATE flights SET billing_member2 = {$genuine_id} WHERE billing_member2 = {$id}");
+            $con->query("UPDATE flights SET billing_member1 = {$genuine_id} WHERE billing_member1 = {$id}");
+            $con->query("UPDATE flights SET pic = {$genuine_id} WHERE pic={$id}");
+            $con->query("UPDATE flights SET p2 = {$genuine_id} WHERE p2={$id}");
+            $con->query("UPDATE flights SET towpilot = {$genuine_id} WHERE towpilot={$id}");
+
+            //If the new genuine_id already has at least one of the same roles that id has, then we must delete the roles of the old id.
+            //Otherwise, if we just update, the constraint unique(role_id, member_id) would clash.
+            $con->query(
+                "DELETE FROM role_member "
+                . "WHERE member_id = {$id} "
+                . "AND role_id IN ( "
+                . "SELECT role_id FROM( "
+                . "SELECT role_id FROM role_member "
+                . "WHERE member_id = {$genuine_id} "
+                . ") as new_roles "
+                . ")"
+            );
         
-        $con->query("UPDATE role_member SET member_id = {$genuine_id} WHERE member_id={$id}");
-        $con->query("UPDATE texts SET txt_member_id = {$genuine_id} WHERE txt_member_id={$id}");
+            $con->query("UPDATE role_member SET member_id = {$genuine_id} WHERE member_id={$id}");
+            $con->query("UPDATE texts SET txt_member_id = {$genuine_id} WHERE txt_member_id={$id}");
 
-        $con->query("UPDATE audit SET memberid = {$genuine_id} WHERE memberid={$id}");
+            $con->query("UPDATE audit SET memberid = {$genuine_id} WHERE memberid={$id}");
 
-        $con->query("UPDATE bookings SET member = {$genuine_id} WHERE member={$id}");
-        $con->query("UPDATE bookings SET instructor = {$genuine_id} WHERE instructor={$id}");
+            $con->query("UPDATE bookings SET member = {$genuine_id} WHERE member={$id}");
+            $con->query("UPDATE bookings SET instructor = {$genuine_id} WHERE instructor={$id}");
 
-        $con->query("UPDATE duty SET member = {$genuine_id} WHERE member={$id}");
+            $con->query("UPDATE duty SET member = {$genuine_id} WHERE member={$id}");
 
-        $con->query("UPDATE group_member SET gm_member_id = {$genuine_id} WHERE gm_member_id={$id}");
+            $con->query("UPDATE group_member SET gm_member_id = {$genuine_id} WHERE gm_member_id={$id}");
 
-        $con->query("UPDATE scheme_subs SET member = {$genuine_id} WHERE member={$id}");
+            $con->query("UPDATE scheme_subs SET member = {$genuine_id} WHERE member={$id}");
 
-        $con->query("UPDATE users SET member = {$genuine_id} WHERE member={$id}");
+            $con->query("UPDATE users SET member = {$genuine_id} WHERE member={$id}");
 
-        $con->query("DELETE FROM members WHERE id = {$id}");
-        audit_log($con, "Merged member with id {$id} into member with id {$genuine_id}");
-      }
+            $con->query("DELETE FROM members WHERE id = {$id}");
+            audit_log($con, "Merged member with id {$id} into member with id {$genuine_id}");
+        }
 
-      $con->commit();
+        $con->commit();
     } catch(mysqli_sql_exception $e) {
-      $con->rollback();
-      return "Error: {$e->getMessage()}; Code: {$e->getCode()}";
+        $con->rollback();
+        return "Error: {$e->getMessage()}; Code: {$e->getCode()}";
     } finally {
-      mysqli_close($con);
+        mysqli_close($con);
     }
 
-    return NULL;
-  }
+    return null;
+}
 
   $error = purge();
 ?>
 
   <body>
     <div style="width: 100%">
-    <?php if (!is_null(($error))): ?>
+    <?php if (!is_null(($error))) : ?>
       <p><?php echo $error ?></p>
     <?php else: ?>
       <p>Success</p>
@@ -148,5 +152,5 @@ WHERE
 | ✓ texts_ibfk_2        | texts        | txt_member_id   | members               | id                     |
 | ✓ users_ibfk_2        | users        | member          | members               | id                     |
 +---------------------+--------------+-----------------+-----------------------+------------------------+
-**/
+ **/
 ?>

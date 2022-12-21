@@ -33,8 +33,8 @@ class FlightsController extends Controller
         $strDateFrom  = $request->input("fromdate", $dateStr);
         $strDateTo    = $request->input("todate", $dateStr);
 
-        $dateStart2 = substr($strDateFrom,0,4) . substr($strDateFrom,5,2) . substr($strDateFrom,8,2);
-        $dateEnd2 = substr($strDateTo,0,4) . substr($strDateTo,5,2) . substr($strDateTo,8,2);
+        $dateStart2 = substr($strDateFrom, 0, 4) . substr($strDateFrom, 5, 2) . substr($strDateFrom, 8, 2);
+        $dateEnd2 = substr($strDateTo, 0, 4) . substr($strDateTo, 5, 2) . substr($strDateTo, 8, 2);
 
         $flights = DB::table('flights')
             ->select(
@@ -59,7 +59,8 @@ class FlightsController extends Controller
                 'pics.displayname AS pic_displayname',
                 'p2s.displayname AS p2_displayname',
                 'launchtypes.name AS launchtype_name',
-                'billingoptions.name AS billingoption_name')
+                'billingoptions.name AS billingoption_name'
+            )
             ->leftJoin('members AS towpilots', 'towpilots.id', '=', 'flights.towpilot')
             ->leftJoin('members AS pics', 'pics.id', '=', 'flights.pic')
             ->leftJoin('members AS p2s', 'p2s.id', '=', 'flights.p2')
@@ -70,8 +71,7 @@ class FlightsController extends Controller
             ->where('flights.localdate', '>=', $dateStart2)
             ->where('flights.localdate', '<=', $dateEnd2)
             ->orderBy('flights.localdate')
-            ->orderBy('flights.seq')
-            ;
+            ->orderBy('flights.seq');
 
         $filterByMember = null;
         if ($request->has('filterByMemberId')) {
@@ -79,23 +79,27 @@ class FlightsController extends Controller
             $filterByMember = Member::where('id', $memberId)->first();
         }
         if($filterByMember) {
-            $flights = $flights->where(function($query) use($memberId){
-                $query->where('flights.pic', $memberId)
-                      ->orWhere('flights.p2', $memberId);
-            });
+            $flights = $flights->where(
+                function ($query) use ($memberId) {
+                    $query->where('flights.pic', $memberId)
+                        ->orWhere('flights.p2', $memberId);
+                }
+            );
         }
 
         $flights = $flights->paginate(100);
 
         $flights->appends($_GET)->links();
 
-        return response()->view('allFlightsReport', [
+        return response()->view(
+            'allFlightsReport', [
             'filterByMember' => $filterByMember,
             'flights' => $flights,
             'strDateFrom' => $strDateFrom,
             'strDateTo' => $strDateTo,
             'towChargeType' => $user->organisation->getTowChargeType(),
             'timezone' => $user->organisation->timezone
-        ]);
+            ]
+        );
     }
 }

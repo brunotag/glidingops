@@ -13,10 +13,12 @@ class AddNoCommentBillingOption extends Migration
      */
     public function up()
     {
-        Schema::table('billingoptions', function($table) {
-			$table->integer('requires_comment')->nullable(true)->default(0);
-			$table->integer('other_club')->nullable(true)->default(0);
-        });
+        Schema::table(
+            'billingoptions', function ($table) {
+                $table->integer('requires_comment')->nullable(true)->default(0);
+                $table->integer('other_club')->nullable(true)->default(0);
+            }
+        );
     }
 
     /**
@@ -26,9 +28,11 @@ class AddNoCommentBillingOption extends Migration
      */
     public function down()
     {
-        Schema::table('billingoptions', function($table) {
-            $table->dropColumn('requires_comment');
-			$table->dropColumn('other_club');
-        });
+        Schema::table(
+            'billingoptions', function ($table) {
+                $table->dropColumn('requires_comment');
+                $table->dropColumn('other_club');
+            }
+        );
     }
 }

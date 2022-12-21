@@ -81,12 +81,11 @@
   <link rel="stylesheet" href="./css/notify.css" />
   <script src="./js/notify.js"></script>
   <?php
-  if (
-    (isset($_GET['registered']))
-    ||
-    (isset($_GET['recovered']))
+  if ((isset($_GET['registered']))
+      
+      || (isset($_GET['recovered']))
   ) {
-  ?>
+        ?>
     <script>
       //TODO: replace hardcoded domain
       var options = {
@@ -96,9 +95,9 @@
       };
       notify(options);
     </script>
-  <?php
+      <?php
   }
-  ?>
+    ?>
   <div id='heading'>
     <div id='heading-logo'><img src='HomeLogo.jpg'></div>
     <div id='heading-right'><img src='minilogo.jpg'></div>

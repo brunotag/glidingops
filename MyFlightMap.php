@@ -1,16 +1,16 @@
 <?php
-include './helpers/timehelpers.php';
-include 'geohelpers.php';
-include 'helpers.php';
+require './helpers/timehelpers.php';
+require 'geohelpers.php';
+require 'helpers.php';
 
 require dirname(__FILE__) . '/includes/classGlidingDB.php';
 require dirname(__FILE__) . '/includes/classTracksDB.php';
-$con_params = require( dirname(__FILE__) .'/config/database.php'); 
+$con_params = include dirname(__FILE__) .'/config/database.php'; 
 $DB = new GlidingDB($con_params['gliding']);
 $DBArchive = new TracksDB($con_params['tracks']);
 
-$global_settings = require(dirname(__FILE__) . '/config/site.php'); 
-$global_settings = $global_settings['globalSettings']; 	
+$global_settings = include dirname(__FILE__) . '/config/site.php'; 
+$global_settings = $global_settings['globalSettings'];     
 ?>
 <!DOCTYPE html>
 <html>
@@ -40,21 +40,18 @@ $diag="";
 $org=1;
 
 
-if (isset($_GET['flightid']))
-{
+if (isset($_GET['flightid'])) {
     $flightid=$_GET['flightid'];
 }
 
 $flight = $DB->getFlightWithNames($flightid);
-if (!$flight)
-{
+if (!$flight) {
     echo "Invalid flight id";
     exit();
 }
 
 $organisation = $DB->getOrganisation($DB->getFlightOrg($flightid));
-if (!$organisation)
-{
+if (!$organisation) {
     echo "Internal error, invalid organisation";
     exit();
 }
@@ -91,11 +88,12 @@ $trDateStart = new DateTime($from);
 $trDateLand = new DateTime($to);
 
 $r = null;
-if ($DB->numTracksForFlight($trDateStart,$trDateLand,$glider) > 0)
-    $r = $DB->getTracksForFlight($trDateStart,$trDateLand,$glider);
-else
-if ($DBArchive->numTracksForFlight($trDateStart,$trDateLand,$glider) > 0)
-    $r = $DBArchive->getTracksForFlight($trDateStart,$trDateLand,$glider);
+if ($DB->numTracksForFlight($trDateStart, $trDateLand, $glider) > 0) {
+    $r = $DB->getTracksForFlight($trDateStart, $trDateLand, $glider);
+} else
+if ($DBArchive->numTracksForFlight($trDateStart, $trDateLand, $glider) > 0) {
+    $r = $DBArchive->getTracksForFlight($trDateStart, $trDateLand, $glider);
+}
 
 $alts=array();
 $pttimes=array();
@@ -104,51 +102,50 @@ $idx=0;
 echo "var flightCoordinates = [";
 while ($track = $r->fetch_array())
 {
- $altft = 3.281 * $track['altitude'];
- if ($maxalt < $altft)
-    $maxalt = $altft;
- if ($bDone>0)
- {
-      $dist = DistKM($track['lattitude'],$track['longitude'],$lastlat,$lastlon);
-      $totdist = $totdist + $dist;
-      $ts = timestampSQL($track['point_time']);
-      $speeddist = $speeddist + $dist;
-      if (($ts - $lastts) > 5)
-      {
-      	$speed = ($speeddist*1000) / ($ts - $lastts);
-      	$lastts = $ts;
-        $speeddist = 0.0;
-      	if ($maxspeed < $speed)
-      	{
-	   $maxspeed = $speed;
-           $maxspeedtm = $track['point_time'];
-      	}
-      }
-      echo ",";
- }
- else
- {
-     $totdist = $totdist + DistKM($track['lattitude'],$track['longitude'],$orgLat,$orgLon);	   
- }
- echo "new google.maps.LatLng(".$track['lattitude'].", ".$track['longitude'].")";
- $alts[$idx]=$track['altitude'];
- $pttimes[$idx]=timeLocalSQL($track['point_time'],$strTimeZone,"H:i:s");
- $idx++;
- $lastlat = $track['lattitude'];
- $lastlon = $track['longitude'];
- $bDone=1;
+    $altft = 3.281 * $track['altitude'];
+    if ($maxalt < $altft) {
+        $maxalt = $altft;
+    }
+    if ($bDone>0) {
+         $dist = DistKM($track['lattitude'], $track['longitude'], $lastlat, $lastlon);
+         $totdist = $totdist + $dist;
+         $ts = timestampSQL($track['point_time']);
+         $speeddist = $speeddist + $dist;
+        if (($ts - $lastts) > 5) {
+            $speed = ($speeddist*1000) / ($ts - $lastts);
+            $lastts = $ts;
+            $speeddist = 0.0;
+            if ($maxspeed < $speed) {
+                $maxspeed = $speed;
+                $maxspeedtm = $track['point_time'];
+            }
+        }
+        echo ",";
+    }
+    else
+    {
+        $totdist = $totdist + DistKM($track['lattitude'], $track['longitude'], $orgLat, $orgLon);       
+    }
+    echo "new google.maps.LatLng(".$track['lattitude'].", ".$track['longitude'].")";
+    $alts[$idx]=$track['altitude'];
+    $pttimes[$idx]=timeLocalSQL($track['point_time'], $strTimeZone, "H:i:s");
+    $idx++;
+    $lastlat = $track['lattitude'];
+    $lastlon = $track['longitude'];
+    $bDone=1;
 }
-$totdist = $totdist + DistKM($lastlat,$lastlon,$orgLat,$orgLon);	  
+$totdist = $totdist + DistKM($lastlat, $lastlon, $orgLat, $orgLon);      
 echo "];";
 
 $bDone = 0;
 echo "var altitudes = [";
 for ($idx=0;$idx<count($alts);$idx++)
 {
- if ($bDone>0)
- 	echo ",";
- echo $alts[$idx];
- $bDone=1;
+    if ($bDone>0) {
+        echo ",";
+    }
+    echo $alts[$idx];
+    $bDone=1;
  
 }
 echo "];";
@@ -157,10 +154,11 @@ $bDone = 0;
 echo "var pttimes = [";
 for ($idx=0;$idx<count($alts);$idx++)
 {
- if ($bDone>0)
- 	echo ",";
- echo "'" . $pttimes[$idx] . "'";
- $bDone=1;
+    if ($bDone>0) {
+        echo ",";
+    }
+    echo "'" . $pttimes[$idx] . "'";
+    $bDone=1;
  
 }
 echo "];";
@@ -214,15 +212,15 @@ function Start()
         };
         map = new google.maps.Map(document.getElementById('map-canvas'),
             mapOptions);
- 	var flightPath = new google.maps.Polyline({
-    		path: flightCoordinates,
-    		geodesic: true,
-    		strokeColor: '#FF0000',
-    		strokeOpacity: 1.0,
-    		strokeWeight: 2
-  		});
+     var flightPath = new google.maps.Polyline({
+            path: flightCoordinates,
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+          });
 
-  	flightPath.setMap(map);
+      flightPath.setMap(map);
 
 }
 google.maps.event.addDomListener(window, 'load', Start);
@@ -242,20 +240,21 @@ google.maps.event.addDomListener(window, 'load', Start);
 <h1>My Flight Track</h1>
 <table>
 <tr><td>GLIDER</td><td><?php echo $glider;?></td></tr>
-<tr><td>START</td><td><?php echo timeLocalSQL($from,$strTimeZone,"D, j M Y H:i:s");?></td></tr>
-<tr><td>END</td><td><?php echo timeLocalSQL($to,$strTimeZone,"D, j M Y H:i:s");?></td></tr>
+<tr><td>START</td><td><?php echo timeLocalSQL($from, $strTimeZone, "D, j M Y H:i:s");?></td></tr>
+<tr><td>END</td><td><?php echo timeLocalSQL($to, $strTimeZone, "D, j M Y H:i:s");?></td></tr>
 <?php 
-if ($flightid > 0)
-{
- if (strlen($pic) > 0)
-     echo "<tr><td>PILOT IN COMMAND</td><td>" . $pic . "</td></tr>";
- if (strlen($p2) > 0)
-     echo "<tr><td>PILOT 2</td><td>" . $p2 . "</td></tr>";
+if ($flightid > 0) {
+    if (strlen($pic) > 0) {
+        echo "<tr><td>PILOT IN COMMAND</td><td>" . $pic . "</td></tr>";
+    }
+    if (strlen($p2) > 0) {
+        echo "<tr><td>PILOT 2</td><td>" . $p2 . "</td></tr>";
+    }
 }
 ?>
-<tr><td>TOTAL DISTANCE</td><td><?php echo sprintf("%4.0f",$totdist);?> km</td></tr>
-<tr><td>MAX HEIGHT</td><td><?php echo sprintf("%5.0f",$maxalt);?> ft</td></tr>
-<tr><td>MAX GROUND SPEED</td><td><?php echo sprintf("%3.0f",$maxspeed*3.6);?> km/hr</td></tr>
+<tr><td>TOTAL DISTANCE</td><td><?php echo sprintf("%4.0f", $totdist);?> km</td></tr>
+<tr><td>MAX HEIGHT</td><td><?php echo sprintf("%5.0f", $maxalt);?> ft</td></tr>
+<tr><td>MAX GROUND SPEED</td><td><?php echo sprintf("%3.0f", $maxspeed*3.6);?> km/hr</td></tr>
 </table>
 <button id="BtMk" onclick="MarkerOpt(this)" value='0'>Show Markers</button>
 </div>

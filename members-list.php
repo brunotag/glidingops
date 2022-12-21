@@ -1,12 +1,14 @@
 <?php session_start(); ?>
 <?php
 $org=0;
-if(isset($_SESSION['org'])) $org=$_SESSION['org'];
-if(isset($_SESSION['security'])){
- if (!($_SESSION['security'] & 1)) {die("Secruity level too low for this page");}
+if(isset($_SESSION['org'])) { $org=$_SESSION['org'];
+}
+if(isset($_SESSION['security'])) {
+    if (!($_SESSION['security'] & 1)) {die("Secruity level too low for this page");
+    }
 }else{
- header('Location: Login.php');
- die("Please logon");
+    header('Location: Login.php');
+    die("Please logon");
 }
 ?>
 <!DOCTYPE HTML>
@@ -18,11 +20,11 @@ if(isset($_SESSION['security'])){
 
 <!-- JS Libraries -->
 <?php
-include 'jsLibraies.php';
+require 'jsLibraies.php';
 ?>
 
 <style>
-<?php $inc = "./orgs/" . $org . "/heading2.css"; include $inc; ?>
+<?php $inc = "./orgs/" . $org . "/heading2.css"; require $inc; ?>
 .main-box {
    height: 100%;
    display: flex;
@@ -65,7 +67,7 @@ include 'jsLibraies.php';
 
 </style>
 <style>
-<?php $inc = "./orgs/" . $org . "/menu1.css"; include $inc; ?></style>
+<?php $inc = "./orgs/" . $org . "/menu1.css"; require $inc; ?></style>
 <link rel="stylesheet" type="text/css" href="styletable1.css">
 
 <script>
@@ -100,16 +102,17 @@ $(document).ready(function () {
 </script>
 
 <body style="height: 100%" class="main-box">
-<?php $inc = "./orgs/" . $org . "/heading2.txt"; include $inc; ?>
-<?php $inc = "./orgs/" . $org . "/menu1.txt"; include $inc; ?>
+<?php $inc = "./orgs/" . $org . "/heading2.txt"; require $inc; ?>
+<?php $inc = "./orgs/" . $org . "/menu1.txt"; require $inc; ?>
 <?php
-include './helpers/timehelpers.php';
+require './helpers/timehelpers.php';
 function dtfmt($dt)
 {
-	if (substr($dt,0,4) != '0000')
-		return substr($dt,8,2).'/'.substr($dt,5,2).'/'.substr($dt,0,4);
-	else
-		return '';
+    if (substr($dt, 0, 4) != '0000') {
+        return substr($dt, 8, 2).'/'.substr($dt, 5, 2).'/'.substr($dt, 0, 4);
+    } else {
+        return '';
+    }
 }
 $DEBUG=0;
 $diagtext="";
@@ -117,17 +120,14 @@ $pageid=12;
 $pkcol=4;
 $pagesortdata = $_SESSION['pagesortdata'];
 $colsort = $pagesortdata[$pageid];
-if ($_SERVER["REQUEST_METHOD"] == "GET")
-{
- if(isset($_GET['col']))
- {
-  if($_GET['col'] != "" && $_GET['col'] != null)
-  {
-   $colsort = $_GET['col'];
-   $pagesortdata[$pageid] = $colsort;
-   $_SESSION['pagesortdata'] = $pagesortdata;
-  }
- }
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    if(isset($_GET['col'])) {
+        if($_GET['col'] != "" && $_GET['col'] != null) {
+            $colsort = $_GET['col'];
+            $pagesortdata[$pageid] = $colsort;
+            $_SESSION['pagesortdata'] = $pagesortdata;
+        }
+    }
 }
 
 $organisation  = App\Models\Organisation::find($org);
@@ -139,61 +139,70 @@ $allStatuses   = App\Models\MembershipStatus::all();
 $filterDisabled = isset($_GET['filter-disabled']) ? true : false;
 $filterRoles = isset($_GET['roles']) ? $_GET['roles'] : null;
 $filterRolesNone = isset($_GET['roles-none']) ? $_GET['roles-none'] : null;
-$filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $organisation->membershipClasses()->where('class', '<>', App\Models\MembershipClass::CLASS_SHORT_TERM)->get()->map(function ($class) {
-      return $class->id;
-   })->all(); // all but short term
+$filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $organisation->membershipClasses()->where('class', '<>', App\Models\MembershipClass::CLASS_SHORT_TERM)->get()->map(
+    function ($class) {
+        return $class->id;
+    }
+)->all(); // all but short term
 $filterStatuses = isset($_GET['statuses']) ? $_GET['statuses'] : [App\Models\MembershipStatus::activeStatus()->id];
 
 if($filterRolesNone) {
-   $filterRoles = null;
+    $filterRoles = null;
 }
 
-if ($colsort == 0)
- 	$colsort = $pkcol;
+if ($colsort == 0) {
+     $colsort = $pkcol;
+}
 ?>
 <div class="filters">
-<form id="filter-form" method="get" action="<?=htmlspecialchars($_SERVER["PHP_SELF"])?>" class="filterForm">
-   <input type="hidden" name="col" id="col" value="<?=$colsort?>" />
+<form id="filter-form" method="get" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"])?>" class="filterForm">
+   <input type="hidden" name="col" id="col" value="<?php echo $colsort?>" />
    <div class="filterSection">
       <div>
-         <input type="checkbox" id='roles-none' name='roles-none' <?=($filterRolesNone) ? 'checked' : ''?>/>
+         <input type="checkbox" id='roles-none' name='roles-none' <?php echo ($filterRolesNone) ? 'checked' : ''?>/>
          <label for="roles-none">Members with no roles</label>
       </div>
-      <select multiple name="roles[]" id="select-roles" class="selectpicker" <?=($filterRolesNone) ? 'disabled' : ''?>>
+      <select multiple name="roles[]" id="select-roles" class="selectpicker" <?php echo ($filterRolesNone) ? 'disabled' : ''?>>
          <?php
-         $allRoles->each(function($role) use ($filterRoles) {
-            $selected = ($filterRoles) ? in_array($role->id, $filterRoles) : false;
-         ?>
-         <option value="<?=$role->id?>" <?=($selected) ? 'selected' : ''?>><?=$role->name?></option>
-         <?php
-         });
-         ?>
+            $allRoles->each(
+                function ($role) use ($filterRoles) {
+                    $selected = ($filterRoles) ? in_array($role->id, $filterRoles) : false;
+                    ?>
+         <option value="<?php echo $role->id?>" <?php echo ($selected) ? 'selected' : ''?>><?php echo $role->name?></option>
+                    <?php
+                }
+            );
+            ?>
       </select>
    </div>
    <div class="filterSection">
       <label for="selectClasses">Classes</label>
       <select multiple name="classes[]" id="selectClasses" class="selectpicker">
          <?php
-         $allClasses->each(function($class) use ($filterClasses) {
-            $selected = ($filterClasses) ? in_array($class->id, $filterClasses) : false;
-         ?>
-         <option value="<?=$class->id?>" <?=($selected) ? 'selected' : ''?>><?=$class->class?></option>
-         <?php
-         });
-         ?>
+            $allClasses->each(
+                function ($class) use ($filterClasses) {
+                    $selected = ($filterClasses) ? in_array($class->id, $filterClasses) : false;
+                    ?>
+         <option value="<?php echo $class->id?>" <?php echo ($selected) ? 'selected' : ''?>><?php echo $class->class?></option>
+                    <?php
+                }
+            );
+            ?>
       </select>
    </div>
    <div class="filterSection">
       <label for="selectStatuses">Statuses</label>
       <select multiple name="statuses[]" id="selectStatuses" class="selectpicker">
          <?php
-         $allStatuses->each(function($status) use ($filterStatuses) {
-            $selected = ($filterStatuses) ? in_array($status->id, $filterStatuses) : false;
-         ?>
-         <option value="<?=$status->id?>" <?=($selected) ? 'selected' : ''?>><?=$status->status_name?></option>
-         <?php
-         });
-         ?>
+            $allStatuses->each(
+                function ($status) use ($filterStatuses) {
+                    $selected = ($filterStatuses) ? in_array($status->id, $filterStatuses) : false;
+                    ?>
+         <option value="<?php echo $status->id?>" <?php echo ($selected) ? 'selected' : ''?>><?php echo $status->status_name?></option>
+                    <?php
+                }
+            );
+            ?>
       </select>
    </div>
    <div class="filterSection submit">
@@ -209,35 +218,34 @@ if ($colsort == 0)
 <table class="sticky-header">
    <thead>
    <tr>
-      <th data-sort-id='1' <?=($colsort == 1) ? "class='colsel'" : ''?> style='cursor:pointer'>ID</th>
-      <th data-sort-id='2' <?=($colsort == 2) ? "class='colsel'" : ''?> style='cursor:pointer'>MEM NUM</th>
-      <th data-sort-id='3' <?=($colsort == 3) ? "class='colsel'" : ''?> style='cursor:pointer'>FIRSTNAME</th>
-      <th data-sort-id='4' <?=($colsort == 4) ? "class='colsel'" : ''?> style='cursor:pointer'>SURNAME</th>
-      <th data-sort-id='5' <?=($colsort == 5) ? "class='colsel'" : ''?> style='cursor:pointer'>DISPLAY NAME</th>
+      <th data-sort-id='1' <?php echo ($colsort == 1) ? "class='colsel'" : ''?> style='cursor:pointer'>ID</th>
+      <th data-sort-id='2' <?php echo ($colsort == 2) ? "class='colsel'" : ''?> style='cursor:pointer'>MEM NUM</th>
+      <th data-sort-id='3' <?php echo ($colsort == 3) ? "class='colsel'" : ''?> style='cursor:pointer'>FIRSTNAME</th>
+      <th data-sort-id='4' <?php echo ($colsort == 4) ? "class='colsel'" : ''?> style='cursor:pointer'>SURNAME</th>
+      <th data-sort-id='5' <?php echo ($colsort == 5) ? "class='colsel'" : ''?> style='cursor:pointer'>DISPLAY NAME</th>
       <th>ROLES</th>
-      <th data-sort-id='23' <?=($colsort == 23) ? "class='colsel'" : ''?> style='cursor:pointer'>CLASS</th>
-      <th data-sort-id='24' <?=($colsort == 24) ? "class='colsel'" : ''?> style='cursor:pointer'>STATUS</th>
-      <th data-sort-id='25' <?=($colsort == 25) ? "class='colsel'" : ''?> style='cursor:pointer'>HOME PHONE1</th>
-      <th data-sort-id='26' <?=($colsort == 26) ? "class='colsel'" : ''?> style='cursor:pointer'>MOBILE PHONE</th>
-      <th data-sort-id='28' <?=($colsort == 28) ? "class='colsel'" : ''?> style='cursor:pointer'>EMAIL</th>
-      <th data-sort-id='30' <?=($colsort == 30) ? "class='colsel'" : ''?> style='cursor:pointer'>TEXT</th>
-      <th data-sort-id='31' <?=($colsort == 31) ? "class='colsel'" : ''?> style='cursor:pointer'>EMIAL</th>
+      <th data-sort-id='23' <?php echo ($colsort == 23) ? "class='colsel'" : ''?> style='cursor:pointer'>CLASS</th>
+      <th data-sort-id='24' <?php echo ($colsort == 24) ? "class='colsel'" : ''?> style='cursor:pointer'>STATUS</th>
+      <th data-sort-id='25' <?php echo ($colsort == 25) ? "class='colsel'" : ''?> style='cursor:pointer'>HOME PHONE1</th>
+      <th data-sort-id='26' <?php echo ($colsort == 26) ? "class='colsel'" : ''?> style='cursor:pointer'>MOBILE PHONE</th>
+      <th data-sort-id='28' <?php echo ($colsort == 28) ? "class='colsel'" : ''?> style='cursor:pointer'>EMAIL</th>
+      <th data-sort-id='30' <?php echo ($colsort == 30) ? "class='colsel'" : ''?> style='cursor:pointer'>TEXT</th>
+      <th data-sort-id='31' <?php echo ($colsort == 31) ? "class='colsel'" : ''?> style='cursor:pointer'>EMIAL</th>
       <th>PHOTO</th>
    </tr>
    </thead>
 <tbody>
 <?php
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-if (mysqli_connect_errno())
-{
- echo "<p>Unable to connect to database</p>";
+$con_params = include './config/database.php'; $con_params = $con_params['gliding'];
+$con=mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+if (mysqli_connect_errno()) {
+    echo "<p>Unable to connect to database</p>";
 }
 
 $whereRoles = "";
 if(!$filterDisabled && $filterRoles) {
-   $sqlValues = join(',', $filterRoles);
-   $whereRoles .= " WHERE roles.id IN ({$sqlValues}) ";
+    $sqlValues = join(',', $filterRoles);
+    $whereRoles .= " WHERE roles.id IN ({$sqlValues}) ";
 }
 $rolesSql=<<<SQL
    SELECT role_member.member_id AS member_id, GROUP_CONCAT(roles.name) AS role_names
@@ -256,98 +264,114 @@ LEFT JOIN membership_status c ON c.id = members.status
 {$rolesJoin} roles ON roles.member_id = members.id
 SQL;
 
-if ($_SESSION['org'] > 0){$sql .= " WHERE members.org=".$_SESSION['org'];}
+if ($_SESSION['org'] > 0) {$sql .= " WHERE members.org=".$_SESSION['org'];
+}
 if(!$filterDisabled && $filterClasses) {
-   $sqlValues = join(',', $filterClasses);
-   $sql .= " and b.id IN ({$sqlValues}) ";
+    $sqlValues = join(',', $filterClasses);
+    $sql .= " and b.id IN ({$sqlValues}) ";
 }
 if(!$filterDisabled && $filterRolesNone) {
-   $sql .= " AND roles.member_id IS NULL ";
+    $sql .= " AND roles.member_id IS NULL ";
 }
 if(!$filterDisabled && $filterStatuses) {
-   $sqlValues = join(',', $filterStatuses);
-   $sql .= " AND c.id IN ({$sqlValues}) ";
+    $sqlValues = join(',', $filterStatuses);
+    $sql .= " AND c.id IN ({$sqlValues}) ";
 }
 
 $sql.=" ORDER BY ";
 switch ($colsort) {
- case 0:
-   $sql .= "surname";
-break;
- case 1:
-   $sql .= "id";
-   break;
- case 2:
-   $sql .= "member_id";
-   break;
- case 3:
-   $sql .= "firstname";
-   break;
- case 4:
-   $sql .= "surname";
-   break;
- case 5:
-   $sql .= "displayname";
-   break;
- case 23:
-   $sql .= "b.class";
-   break;
- case 24:
-   $sql .= "c.status_name";
-   break;
- case 25:
-   $sql .= "phone_home";
-   break;
- case 26:
-   $sql .= "phone_mobile";
-   break;
- case 28:
-   $sql .= "email";
-   break;
- case 30:
-   $sql .= "enable_text";
-   break;
- case 31:
-   $sql .= "enable_email";
-   break;
+case 0:
+    $sql .= "surname";
+    break;
+case 1:
+    $sql .= "id";
+    break;
+case 2:
+    $sql .= "member_id";
+    break;
+case 3:
+    $sql .= "firstname";
+    break;
+case 4:
+    $sql .= "surname";
+    break;
+case 5:
+    $sql .= "displayname";
+    break;
+case 23:
+    $sql .= "b.class";
+    break;
+case 24:
+    $sql .= "c.status_name";
+    break;
+case 25:
+    $sql .= "phone_home";
+    break;
+case 26:
+    $sql .= "phone_mobile";
+    break;
+case 28:
+    $sql .= "email";
+    break;
+case 30:
+    $sql .= "enable_text";
+    break;
+case 31:
+    $sql .= "enable_email";
+    break;
 }
 $sql .= " ASC";
 echo($diagtext);
-$r = mysqli_query($con,$sql);
+$r = mysqli_query($con, $sql);
 $rownum = 0;
 while ($row = mysqli_fetch_array($r) )
 {
- $rownum = $rownum + 1;
-  echo "<tr class='";if (($rownum % 2) == 0)echo "even";else echo "odd";  echo "'>";if (true){echo "<td class='right'>";echo "<a href='Member?id=";echo $row[0];echo "'>";echo $row[0];echo "</a>";echo "</td>";}
-if (true){echo "<td class='right'>";echo $row[1];echo "</td>";}
-if (true){echo "<td>";echo $row[2];echo "</td>";}
-if (true){echo "<td>";echo $row[3];echo "</td>";}
-if (true){echo "<td>";echo $row[4];echo "</td>";}
-?>
+    $rownum = $rownum + 1;
+    echo "<tr class='";if (($rownum % 2) == 0) { echo "even";
+    } else { echo "odd";
+    }  echo "'>";if (true) {echo "<td class='right'>";echo "<a href='Member?id=";echo $row[0];echo "'>";echo $row[0];echo "</a>";echo "</td>";
+    }
+    if (true) {echo "<td class='right'>";echo $row[1];echo "</td>";
+    }
+    if (true) {echo "<td>";echo $row[2];echo "</td>";
+    }
+    if (true) {echo "<td>";echo $row[3];echo "</td>";
+    }
+    if (true) {echo "<td>";echo $row[4];echo "</td>";
+    }
+    ?>
    <td>
       <ul class='role-items'>
       <?php
-      if($row[33]) {
-         $roles = explode(",", $row[33]);
-         foreach ($roles as $role) {
-      ?>
-         <li><?=$role?></li>
-      <?php
-         };
-      };
-      ?>
+        if($row[33]) {
+            $roles = explode(",", $row[33]);
+            foreach ($roles as $role) {
+                ?>
+         <li><?php echo $role?></li>
+                <?php
+            };
+        };
+        ?>
       </ul>
    </td>
-<?php
-if (true){echo "<td>";echo $row[22];echo "</td>";}
-if (true){echo "<td>";echo $row[23];echo "</td>";}
-if (true){echo "<td>";echo $row[24];echo "</td>";}
-if (true){echo "<td>";echo $row[25];echo "</td>";}
-if (true){echo "<td>";echo $row[27];echo "</td>";}
-if (true){echo "<td class='right'>";echo $row[29];echo "</td>";}
-if (true){echo "<td class='right'>";echo $row[30];echo "</td>";}
-if (true){echo "<td class='right'><a href='img/members/";echo str_replace("'","_",$row[4]);echo ".jpg' target='_blank'><img width='50' src='./img/members/";echo str_replace("'","_",$row[4]);echo ".jpg' alt=''/></a> </td>";}
-  echo "</tr>";
+    <?php
+    if (true) {echo "<td>";echo $row[22];echo "</td>";
+    }
+    if (true) {echo "<td>";echo $row[23];echo "</td>";
+    }
+    if (true) {echo "<td>";echo $row[24];echo "</td>";
+    }
+    if (true) {echo "<td>";echo $row[25];echo "</td>";
+    }
+    if (true) {echo "<td>";echo $row[27];echo "</td>";
+    }
+    if (true) {echo "<td class='right'>";echo $row[29];echo "</td>";
+    }
+    if (true) {echo "<td class='right'>";echo $row[30];echo "</td>";
+    }
+    if (true) {echo "<td class='right'><a href='img/members/";echo str_replace("'", "_", $row[4]);echo ".jpg' target='_blank'><img width='50' src='./img/members/";echo str_replace("'", "_", $row[4]);echo ".jpg' alt=''/></a> </td>";
+    }
+    echo "</tr>";
 }
 ?>
 </tbody>
@@ -356,6 +380,7 @@ if (true){echo "<td class='right'><a href='img/members/";echo str_replace("'","_
 <form id="form1" action='Member' method='GET' style="margin-top: 12px">
    <input type='submit' value = 'Create New' class="btn btn-primary">
 </form>
-<?php if($DEBUG>0) echo "<p>".$diagtext."</p>";?>
+<?php if($DEBUG>0) { echo "<p>".$diagtext."</p>";
+}?>
 </body>
 </html>
