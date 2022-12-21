@@ -50,6 +50,9 @@
         ],
         "phpcs" : [
             "phpcs -p ../ --ignore=*/vendor/* --extensions=php"
+        ],
+        "phpcbf" : [
+            "phpcbf -p ../ --ignore=*/vendor/* --extensions=php"
         ]
     },
     "config": {
