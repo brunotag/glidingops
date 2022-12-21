@@ -47,6 +47,9 @@
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
             "php artisan optimize"
+        ],
+        "phpcs" : [
+            "phpcs -p ../ --ignore=*/vendor/* --extensions=php"
         ]
     },
     "config": {
