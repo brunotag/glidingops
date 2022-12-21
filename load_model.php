@@ -3,8 +3,7 @@
 require 'lrv/vendor/autoload.php';
 use Illuminate\Database\Capsule\Manager as Capsule;
 
-$dotenv = new Dotenv\Dotenv(__DIR__.'/lrv');
-$dotenv->load();
+$dotenv = Dotenv\Dotenv::create(__DIR__.'/lrv')->load();
 
 $capsule = new Capsule;
 $capsule->addConnection(
