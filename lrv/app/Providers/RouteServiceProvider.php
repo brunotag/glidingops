@@ -61,11 +61,6 @@ class RouteServiceProvider extends ServiceProvider
                 include base_path('routes/web.php');
             }
         );
-        Route::get(
-            '/app/notAllowed', function () {
-                return view('errors/403');
-            }
-        );
     }
 
     /**

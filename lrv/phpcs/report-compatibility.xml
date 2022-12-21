@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpcs version="3.7.1">
+<file name="/home/vagrant/code/lrv/app/Helpers/DateTimeFormat.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Helpers/FlightHelper.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Http/Controllers/Api/AircraftsController.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Http/Controllers/Api/FlightsController.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Http/Controllers/Api/LaunchTypesController.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Http/Controllers/Api/MembersController.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Http/Controllers/Auth/RegisterController.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Http/Controllers/FlightsController.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Models/Flight.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Models/LaunchType.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Models/Member.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Models/Types/TowChargeType.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Models/User.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Providers/AuthServiceProvider.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Providers/BroadcastServiceProvider.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Providers/RouteServiceProvider.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Services/Auth/GopsGuard.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/app/Services/Reports/MembersRolesStats.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/database/factories/ModelFactory.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/database/migrations/2018_05_08_083530_create_vectors_table.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/database/migrations/2018_05_12_093212_add_vector_to_flight.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/database/migrations/2019_03_06_064253_add_tracking_source_to_tracks.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/database/migrations/2019_09_25_110602_add_no_comment_billing_option.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/database/migrations/2021_08_11_110005_create_org_secret_code.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/database/migrations/2022_12_18_081704_delete_airspacecoords_airspace_tables.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/database/migrations/2022_12_18_091119_delete_address_addresstype_testy_tables.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/database/seeds/OrganisationsTableSeeder.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/resources/views/allFlightsReport.blade.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.NoCodeFound" severity="5" fixable="0">No PHP code was found in this file and short open tags are not allowed by this install of PHP. This file may be using short open tags but PHP does not allow them.</warning>
+</file>
+<file name="/home/vagrant/code/lrv/resources/views/errors/403.blade.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.NoCodeFound" severity="5" fixable="0">No PHP code was found in this file and short open tags are not allowed by this install of PHP. This file may be using short open tags but PHP does not allow them.</warning>
+</file>
+<file name="/home/vagrant/code/lrv/resources/views/errors/503.blade.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.NoCodeFound" severity="5" fixable="0">No PHP code was found in this file and short open tags are not allowed by this install of PHP. This file may be using short open tags but PHP does not allow them.</warning>
+</file>
+<file name="/home/vagrant/code/lrv/resources/views/layouts/app.blade.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.NoCodeFound" severity="5" fixable="0">No PHP code was found in this file and short open tags are not allowed by this install of PHP. This file may be using short open tags but PHP does not allow them.</warning>
+</file>
+<file name="/home/vagrant/code/lrv/resources/views/reports/membersRolesStatsReport.blade.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.NoCodeFound" severity="5" fixable="0">No PHP code was found in this file and short open tags are not allowed by this install of PHP. This file may be using short open tags but PHP does not allow them.</warning>
+</file>
+<file name="/home/vagrant/code/lrv/resources/views/welcome.blade.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.NoCodeFound" severity="5" fixable="0">No PHP code was found in this file and short open tags are not allowed by this install of PHP. This file may be using short open tags but PHP does not allow them.</warning>
+</file>
+<file name="/home/vagrant/code/lrv/routes/api.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+<file name="/home/vagrant/code/lrv/routes/console.php" errors="0" warnings="2" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+    <warning line="18" column="9" source="PHPCompatibility.FunctionDeclarations.NewClosure.ThisFoundOutsideClass" severity="5" fixable="0">Closures / anonymous functions only have access to $this if used within a class or when bound to an object using bindTo(). Please verify.</warning>
+</file>
+<file name="/home/vagrant/code/lrv/storage/framework/views/0c4dd06752d876aa8399928594afe6c5bee46491.php" errors="0" warnings="1" fixable="0">
+    <warning line="1" column="1" source="Internal.LineEndings.Mixed" severity="5" fixable="0">File has mixed line endings; this may cause incorrect results</warning>
+</file>
+</phpcs>
+
