@@ -10,7 +10,8 @@ require_once '../lrv/vendor/autoload.php';
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
-$queryType = new ObjectType([
+$queryType = new ObjectType(
+    [
     'name' => 'Query',
     'fields' => [
         'echo' => [
@@ -23,14 +24,17 @@ $queryType = new ObjectType([
             }
         ],
     ],
-]);
+    ]
+);
 
 use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
 
-$schema = new Schema([
+$schema = new Schema(
+    [
     'query' => $queryType
-]);
+    ]
+);
 
 $rawInput = file_get_contents('php://input');
 $input = json_decode($rawInput, true);

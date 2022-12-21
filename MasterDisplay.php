@@ -1,10 +1,11 @@
 <?php
 $org = 0;
-if (isset($_GET['org']))
-  $org = $_GET['org'];
-else
-  die("Organisation number not set");
-$global_settings = require(dirname(__FILE__) . '/config/site.php');
+if (isset($_GET['org'])) {
+    $org = $_GET['org'];
+} else {
+    die("Organisation number not set");
+}
+$global_settings = include dirname(__FILE__) . '/config/site.php';
 $global_settings = $global_settings['globalSettings'];
 ?>
 <!DOCTYPE html>
@@ -13,7 +14,7 @@ $global_settings = $global_settings['globalSettings'];
   <meta http-equiv="refresh" content="3600">
   <style>
     <?php $inc = "./orgs/" . $org . "/heading1.css";
-    include $inc; ?>
+    require $inc; ?>
   </style>
   <style>
     body {
@@ -315,7 +316,7 @@ $global_settings = $global_settings['globalSettings'];
   <script>
     <?PHP
     $clockNow = new DateTime('now');
-    $con_params = require('./config/database.php');
+    $con_params = include './config/database.php';
     $con_params = $con_params['gliding'];
     $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
     $q = "SELECT def_launch_lat,def_launch_lon,map_centre_lat,map_centre_lon from organisations where id = " . $org;

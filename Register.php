@@ -18,83 +18,78 @@ p.p2 {font-size:12px;}
 
 <?php
 $errtext="";
-function generateRandomString($length = 6) {
-$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-$randomString = '';
-for ($i = 0; $i < $length; $i++) {
-    $randomString .= $characters[rand(0, strlen($characters) - 1)];
-}
-return $randomString;
-}
-if ($_SERVER["REQUEST_METHOD"] == "POST")
+function generateRandomString($length = 6)
 {
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
- $HaveUserRec=0;
- $alreadyreg=0;
- if (mysqli_connect_errno())
- {
-  $errtext= "Failed to connect to Database: " . mysqli_connect_error();
- }
- else
- {
-  $email = $_POST['email'];
-  $email = trim($email);
-  $email = strtolower($email);
-  $q="SELECT id, displayname , org from members where email = '" . $email . "'";
-  $r = mysqli_query($con,$q);
-  if (mysqli_num_rows($r) == 1)
-  {
-   $row = mysqli_fetch_array($r);
-   $memid = $row[0];
-   $dispname = $row[1];
-   $org = $row[2];
-   $q="SELECT id, force_pw_reset from users where member = " .$memid;
-   $r = mysqli_query($con,$q);
-   if (mysqli_num_rows($r) > 0)
-   {
-    $row = mysqli_fetch_array($r);
-    $HaveUserRec=$row[0];
-    if ($row[1] == 0)
-    {
-     $alreadyreg=1;
-      $errtext= 'You have already registered; click <a href=\'Login.php\'>here</a> to login';
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, strlen($characters) - 1)];
     }
-   }
-   if ($alreadyreg==0)
-   {
-    $pw = generateRandomString();
-    $pw2 = md5($pw);
-    if ($HaveUserRec>0)
-    {
-     $q="UPDATE users SET password = '".$pw2."' where id = ".$HaveUserRec;
+    return $randomString;
+}
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $con_params = include './config/database.php'; $con_params = $con_params['gliding']; 
+    $con=mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+    $HaveUserRec=0;
+    $alreadyreg=0;
+    if (mysqli_connect_errno()) {
+        $errtext= "Failed to connect to Database: " . mysqli_connect_error();
     }
     else
     {
-     $q="INSERT INTO users(name,org,usercode,password,securitylevel,force_pw_reset,member) VALUE ('" .$dispname. "','" .$org. "','" .$email. "','" .$pw2. "',1,1," . $memid. ")";
+        $email = $_POST['email'];
+        $email = trim($email);
+        $email = strtolower($email);
+        $q="SELECT id, displayname , org from members where email = '" . $email . "'";
+        $r = mysqli_query($con, $q);
+        if (mysqli_num_rows($r) == 1) {
+            $row = mysqli_fetch_array($r);
+            $memid = $row[0];
+            $dispname = $row[1];
+            $org = $row[2];
+            $q="SELECT id, force_pw_reset from users where member = " .$memid;
+            $r = mysqli_query($con, $q);
+            if (mysqli_num_rows($r) > 0) {
+                $row = mysqli_fetch_array($r);
+                $HaveUserRec=$row[0];
+                if ($row[1] == 0) {
+                    $alreadyreg=1;
+                    $errtext= 'You have already registered; click <a href=\'Login.php\'>here</a> to login';
+                }
+            }
+            if ($alreadyreg==0) {
+                $pw = generateRandomString();
+                $pw2 = md5($pw);
+                if ($HaveUserRec>0) {
+                    $q="UPDATE users SET password = '".$pw2."' where id = ".$HaveUserRec;
+                }
+                else
+                {
+                    $q="INSERT INTO users(name,org,usercode,password,securitylevel,force_pw_reset,member) VALUE ('" .$dispname. "','" .$org. "','" .$email. "','" .$pw2. "',1,1," . $memid. ")";
+                }
+                $r = mysqli_query($con, $q);
+                //TODO:replace hardcoded urls
+                $headers = 'From: gops.wwgc.co.nz@gmail.com' . "\r\n" .
+                'Reply-To: wgcoperations@gmail.com' . "\r\n" .
+                'X-Mailer: PHP/' . phpversion();
+                $message = 
+                "Here are your login details for Gliding Ops.\n".
+                "\n".
+                "Username: ".$email."\n".
+                "Temporary Password: ".$pw."\n".
+                "\n".
+                "You will be asked to change the temporary password on your first login.".
+                "\n".
+                "http://gops.wwgc.co.nz/Login.php";
+                mail($email, "Welcome - Gliding Ops", $message, $headers);
+                header('Location: Login.php?registered=1');
+            }
+        }
+        else {
+            $errtext = "Sorry, that email address is not recorded as a member";
+        }
+        mysqli_close($con);
     }
-    $r = mysqli_query($con,$q);
-    //TODO:replace hardcoded urls
-    $headers = 'From: gops.wwgc.co.nz@gmail.com' . "\r\n" .
-     'Reply-To: wgcoperations@gmail.com' . "\r\n" .
-     'X-Mailer: PHP/' . phpversion();
-    $message = 
-      "Here are your login details for Gliding Ops.\n".
-      "\n".
-      "Username: ".$email."\n".
-      "Temporary Password: ".$pw."\n".
-      "\n".
-      "You will be asked to change the temporary password on your first login.".
-      "\n".
-      "http://gops.wwgc.co.nz/Login.php";
-    mail($email, "Welcome - Gliding Ops", $message, $headers);
-    header('Location: Login.php?registered=1');
-   }
-  }
-  else
-   $errtext = "Sorry, that email address is not recorded as a member";
- mysqli_close($con);
- }
 }
 ?>
 <div id='container'>

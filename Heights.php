@@ -1,7 +1,8 @@
 <?php
 $when = "today";
-if (isset($_GET['d']))
+if (isset($_GET['d'])) {
     $when = $_GET['d'];
+}
 ?>
 <!DOCTYPE HTML>
 <html>

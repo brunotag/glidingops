@@ -1,30 +1,27 @@
 <?php
 require dirname(__FILE__) . '/includes/classGlidingDB.php';
-$con_params = require( dirname(__FILE__) .'/config/database.php');
+$con_params = include dirname(__FILE__) .'/config/database.php';
 $DB = new GlidingDB($con_params['gliding']);
 
 $org = 1;
 $options = getopt("m:o:");
 
-if (isset($options['o']))
-{
+if (isset($options['o'])) {
     $org = $options['o'];
 }
 
 $dateTimeZone = new DateTimeZone($DB->getOrgTimezone(1));
 $tz = $DB->getOrgTimezone(1);
-$r = $DB->allTracksForOrgToday($org,' order by glider, point_time');
+$r = $DB->allTracksForOrgToday($org, ' order by glider, point_time');
 $glider = '';
 $flights = array();
 $flight = null;
 $bstarted = false;
 while ($track = $r->fetch_array())
 {
-    if ($glider != $track['glider'])
-    {
-        if (strlen($glider) > 0 && $flight)
-        {
-            array_push($flights,$flight);
+    if ($glider != $track['glider']) {
+        if (strlen($glider) > 0 && $flight) {
+            array_push($flights, $flight);
             $flight = null;
         }
         $bstarted = false;
@@ -32,26 +29,23 @@ while ($track = $r->fetch_array())
     }
 
 
-    if (!$bstarted && $track['altitude'] > 150)
-    {
+    if (!$bstarted && $track['altitude'] > 150) {
         $bstarted = true;
         $flight = array();
         $flight['glider'] = $track['glider'];
         $flight['start'] = $track['point_time'];
     }
 
-    if ($bstarted && $track['altitude'] < 150)
-    {
+    if ($bstarted && $track['altitude'] < 150) {
         $flight['end'] = $track['point_time'];
-        array_push($flights,$flight);
+        array_push($flights, $flight);
         $flight = null;
         $bstarted = false;
     }
 }
 
-if ($bstarted && is_array($flight))
-{
-    array_push($flights,$flight);
+if ($bstarted && is_array($flight)) {
+    array_push($flights, $flight);
 }
 
 function buildHTML($flights)
@@ -63,8 +57,7 @@ function buildHTML($flights)
     
     $strRet = '';
     $strRet .= "<h1>LAUNCH AND LANDING BASED ON TRACKING FOR {$dtNow->format('D jS M Y')}</h1>";
-    if (count($flights) != 0)
-    {
+    if (count($flights) != 0) {
         $strRet .=  "<p>ORDERED BY GLIDER THEN TIME</p>";
         $strRet .=  "<table>";
         $strRet .=  "<tr><th class='l'>GLIDER</th><th class='r'>LAUNCH</th><th class='r'>LAND</th></tr>";
@@ -74,8 +67,7 @@ function buildHTML($flights)
             $dtStart->setTimezone($dateTimeZone);
             $strStart = $dtStart->format('H:i');
             $strEnd = '';
-            if (isset($flight['end']))
-            {
+            if (isset($flight['end'])) {
                 $dtEnd = new DateTime($flight['end']);
                 $dtEnd->setTimezone($dateTimeZone);
                 $strEnd = $dtEnd->format('H:i');
@@ -97,13 +89,12 @@ function buildNonFinalised()
     global $DB;
     $txt = "";
     $r = $DB->query('select localdate from flights where finalised is null and org = 1 group by localdate');
-    if ($r->num_rows > 0)
-    {
+    if ($r->num_rows > 0) {
         $txt = "<p>FOLLOWING ARE GOPS DATES WHERE THE DAY WAS NOT FINALISED.</p>";
         $txt .= "<table>";
         while ($flight = $r->fetch_array(MYSQLI_ASSOC))
         {
-            $dt = substr($flight['localdate'],6,2) . "/" . substr($flight['localdate'],4,2) ."/" . substr($flight['localdate'],0,4);
+            $dt = substr($flight['localdate'], 6, 2) . "/" . substr($flight['localdate'], 4, 2) ."/" . substr($flight['localdate'], 0, 4);
             $txt .= "<tr><td>{$dt}</td></tr>";
         }
         $txt .= "</table>";
@@ -111,8 +102,7 @@ function buildNonFinalised()
     return $txt;
 }
 
-if (isset($options['m']))
-{
+if (isset($options['m'])) {
     $v = buildHTML($flights);
     $v .= buildNonFinalised();
 
@@ -126,7 +116,7 @@ if (isset($options['m']))
                 'X-Mailer: PHP/' . phpversion();
 
     //TODO: replace hardcoded domain
-    mail($options['m'],"Daily Flight Times from Tracks",$msg,$headers,'-r gops.wwgc.co.nz@gmail.com');
+    mail($options['m'], "Daily Flight Times from Tracks", $msg, $headers, '-r gops.wwgc.co.nz@gmail.com');
     exit();
 }
 

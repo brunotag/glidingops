@@ -11,7 +11,7 @@ require dirname(__FILE__) . '/includes/classGlidingDB.php';
 
 try {
 
-    $con_params = require(dirname(__FILE__) . '/config/database.php');
+    $con_params = include dirname(__FILE__) . '/config/database.php';
     $con_params = $con_params['gliding'];
     $DB = new GlidingDB($con_params);
 
@@ -73,8 +73,9 @@ try {
 
         foreach ($gliderlist as $gld) {
             $ICAO = '';
-            if (array_key_exists($gld, $flarmCode))
+            if (array_key_exists($gld, $flarmCode)) {
                 $ICAO = $flarmCode[$gld];
+            }
             if (strlen($ICAO) > 0) {
                 echo "Have flarm code for " . $gld . " of " . $ICAO . " \n";
                 if (array_key_exists($ICAO, $rogn)) {
@@ -84,10 +85,11 @@ try {
                     It is possibe, if we assume that its todays date, that it is in fact captured yeterday UTC.
                     So if the timestanp is more than say 10 minutes ahead of now, we can assume it was the day before.
                     The 10 minute window allows for clock sync issues.
-                */
+                    */
                     $dtgps = new DateTime($dt->format('Y-m-d') . " " . $p['time']);
-                    if ($dtgps->getTimestamp() > ($dt->getTimestamp() + 3600 * 12))
+                    if ($dtgps->getTimestamp() > ($dt->getTimestamp() + 3600 * 12)) {
                         $dtgps->setTimestamp($dtgps->getTimestamp() - 86400);
+                    }
                     $strTime =  $dtgps->format('Y-m-d H:i:s');
                     $DB->createTrack(1, $gld, $strTime, 0, $p['lat'], $p['lon'], $p['alt'], 'FlarmOGN');
                 }

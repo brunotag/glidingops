@@ -6,7 +6,7 @@
 */
   return [
     'globalSettings' => [
-        'mapKey' => getenv ('MAP_API_KEY')
+        'mapKey' => getenv('MAP_API_KEY')
     ]
   ];
-?>
+    ?>

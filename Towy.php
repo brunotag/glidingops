@@ -38,22 +38,20 @@ table {border-collapse: collapse;}
 function printit(){window.print();}
 </script>
 <?php
-include 'helpers.php';
+require 'helpers.php';
 ?>
 </head>
 <body>
 <?php
-if(isset($_SESSION['security']))
-{
- if (!($_SESSION['security'] & 32))
- {
-  die("Secruity level too low for this page");
- }
+if(isset($_SESSION['security'])) {
+    if (!($_SESSION['security'] & 32)) {
+        die("Secruity level too low for this page");
+    }
 }
 else
 {
- header('Location: Login.php');
- die("Please logon");
+    header('Location: Login.php');
+    die("Please logon");
 }
 ?>
 <div id='head'>
@@ -65,25 +63,23 @@ else
 <?php
 $DEBUG=1;
 $diagtext="";
-	
+    
   
-  $con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-  if (mysqli_connect_errno())
-  {
-   echo "<p>Unable to connect to database</p>";
-   exit();
-  }
+  $con_params = include './config/database.php'; $con_params = $con_params['gliding']; 
+$con=mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+if (mysqli_connect_errno()) {
+    echo "<p>Unable to connect to database</p>";
+    exit();
+}
   
-  $role1 = getRoleId($con,'Tow Pilot');
+  $role1 = getRoleId($con, 'Tow Pilot');
  
   
   $q = "SELECT localdate from flights where flights.org = ".$_SESSION['org']. " order by localdate ASC";
-  $r = mysqli_query($con,$q);
-  if ($row = mysqli_fetch_array($r) )
-  {
-    echo "<h2>TOW PILOTS REPORT FOR FLIGHTS FROM " . substr($row[0],6,2) . "/" . substr($row[0],4,2)  . "/" . substr($row[0],0,4) . "</h2>";
-  }
+  $r = mysqli_query($con, $q);
+if ($row = mysqli_fetch_array($r) ) {
+    echo "<h2>TOW PILOTS REPORT FOR FLIGHTS FROM " . substr($row[0], 6, 2) . "/" . substr($row[0], 4, 2)  . "/" . substr($row[0], 0, 4) . "</h2>";
+}
 
 
   
@@ -93,9 +89,9 @@ $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params[
   $lastYear = $thisYear-1;
   
   $q = "SELECT role_member.member_id, a.displayname, a.surname , a.firstname from role_member LEFT JOIN members a ON a.id = role_member.member_id where role_member.org = " .$_SESSION['org']. " and role_id = " . $role1 . " order by a.surname , a.firstname ";
-  $r = mysqli_query($con,$q);
-  while ($row = mysqli_fetch_array($r) )
-  {
+  $r = mysqli_query($con, $q);
+while ($row = mysqli_fetch_array($r) )
+{
     echo "<tr><th class='thname'>" . $row[1] . "</th></tr>";
     $days = 0;
     $first=0;
@@ -104,41 +100,37 @@ $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params[
     $dateFlight = new DateTime();
     $strLastDate="";
     $q1= "SELECT localdate, (flights.land-flights.start) from flights where flights.towpilot = " . $row[0] . " order by localdate DESC";
-    $r1 = mysqli_query($con,$q1);
+    $r1 = mysqli_query($con, $q1);
     while ($row1 = mysqli_fetch_array($r1) )
     {
-       $strFDate=$row1[0];
-       $dateFlight->setDate(substr($strFDate,0,4),substr($strFDate,4,2),substr($strFDate,6,2));
-       if ($first == 0)
-       {
-           $strLastDate = substr($strFDate,6,2) . "/" . substr($strFDate,4,2) . "/" . substr($strFDate,0,4);
-           $days = ($dateNow->getTimestamp() - $dateFlight->getTimestamp()) / (3600 * 24);
-           $first=1;
-       }
-       if (intval($dateFlight->format('Y')) == $thisYear)
-       {
-          $cntThisYr = $cntThisYr + 1;
-       }
+        $strFDate=$row1[0];
+        $dateFlight->setDate(substr($strFDate, 0, 4), substr($strFDate, 4, 2), substr($strFDate, 6, 2));
+        if ($first == 0) {
+            $strLastDate = substr($strFDate, 6, 2) . "/" . substr($strFDate, 4, 2) . "/" . substr($strFDate, 0, 4);
+            $days = ($dateNow->getTimestamp() - $dateFlight->getTimestamp()) / (3600 * 24);
+            $first=1;
+        }
+        if (intval($dateFlight->format('Y')) == $thisYear) {
+            $cntThisYr = $cntThisYr + 1;
+        }
        
-       if (intval($dateFlight->format('Y')) == $lastYear)
-       {
-          $cntLastYr = $cntLastYr + 1;
-       }
+        if (intval($dateFlight->format('Y')) == $lastYear) {
+            $cntLastYr = $cntLastYr + 1;
+        }
       
       
     }
-    if (($cntThisYr +  $cntLastYr) > 0)
-    {
+    if (($cntThisYr +  $cntLastYr) > 0) {
        
-       echo "<tr><td>Last Tow</td><td>" .$strLastDate. "</td><td> ". $days . " days ago </td></tr>";
-       echo "<tr><td>Flights</td><td>Number</td></tr>";
-       echo "<tr><td>" . $thisYear . "</td><td>" .$cntThisYr . "</td></tr>";
-       echo "<tr><td>" . $lastYear . "</td><td>" .$cntLastYr . "</td></tr>";
+        echo "<tr><td>Last Tow</td><td>" .$strLastDate. "</td><td> ". $days . " days ago </td></tr>";
+        echo "<tr><td>Flights</td><td>Number</td></tr>";
+        echo "<tr><td>" . $thisYear . "</td><td>" .$cntThisYr . "</td></tr>";
+        echo "<tr><td>" . $lastYear . "</td><td>" .$cntLastYr . "</td></tr>";
 
     }
     else
     {
-       echo "<tr><td>No Flights</td></tr>";
+        echo "<tr><td>No Flights</td></tr>";
     }  
 }
 
@@ -151,6 +143,7 @@ $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params[
 
 ?>
 
-<?php if($DEBUG>0) echo "<p>".$diagtext."</p>";?>
+<?php if($DEBUG>0) { echo "<p>".$diagtext."</p>";
+}?>
 </body>
 </html>

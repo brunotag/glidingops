@@ -10,23 +10,24 @@ class Gliding
     public function __construct($controller,$key=null)
     {
         $this->controller = $controller;
-        if (null != $key)
+        if (null != $key) {
             $this->key = $key;
-        else
+        } else {
             $this->key = "1234567890123456";
-        $this->pest  = new Pest( "https://" . $this->controller . "/api/v1/json/" . $this->key . "/");
+        }
+        $this->pest  = new Pest("https://" . $this->controller . "/api/v1/json/" . $this->key . "/");
     }
    
-   public function getFlyingToday($club)
-   {
-      $result  = json_decode( $this->pest->get('flyingnow/' . $club), true );
-      return $result;
-   }
+    public function getFlyingToday($club)
+    {
+        $result  = json_decode($this->pest->get('flyingnow/' . $club), true);
+        return $result;
+    }
    
-   public function getFlarmCode($glider)
-   {
-      $result  = json_decode( $this->pest->get('flarmcode/' . $glider), true );
-      return $result;
-   }
+    public function getFlarmCode($glider)
+    {
+        $result  = json_decode($this->pest->get('flarmcode/' . $glider), true);
+        return $result;
+    }
    
 }
