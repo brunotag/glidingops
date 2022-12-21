@@ -49,7 +49,10 @@
             "php artisan optimize"
         ],
         "phpcs" : [
-            "phpcs -p ../ --ignore=*/vendor/* --extensions=php"
+            "mkdir -p ./phpcs/reports",
+            "phpcs -p ../ --ignore=*/vendor/* --extensions=php --report=xml --report-file=./phpcs/report.xml || true",
+            "xsltproc ./phpcs/phpcshtml.xsl ./phpcs/report.xml > ./phpcs/reports/report-$(date +\"%FT%H%M\").html",
+            "rm ./phpcs/report.xml"
         ],
         "phpcbf" : [
             "phpcbf -p ../ --ignore=*/vendor/* --extensions=php"
