@@ -38,3 +38,5 @@ sudo sed '/^xdebug.idekey=/{h;s/=.*/=vagrant/};${x;/^$/{s//xdebug.idekey=vagrant
 
 sudo service php7.3-fpm restart
 sudo systemctl restart apache2
+
+sudo apt-get install -y xsltproc
