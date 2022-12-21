@@ -7,7 +7,7 @@
 # If you have user-specific configurations you would like
 # to apply, you may also create user-customizations.sh,
 # which will be run after this script.
-php73
+php74
 
 cd code/lrv
 composer install -n
@@ -15,13 +15,13 @@ composer install -n
 php artisan migrate
 php artisan db:seed
 
-sudo apt-get install php7.3-xdebug -y
+sudo apt-get install php7.4-xdebug -y
 sudo a2enmod proxy_fcgi setenvif
-sudo a2enconf php7.3-fpm
+sudo a2enconf php7.4-fpm
 
-sudo sed '/^zend_extension=/{h;s/=.*/=xdebug.so/};${x;/^$/{s//zend_extension=xdebug.so/;H};x}' -i /etc/php/7.3/fpm/php.ini
+sudo sed '/^zend_extension=/{h;s/=.*/=xdebug.so/};${x;/^$/{s//zend_extension=xdebug.so/;H};x}' -i /etc/php/7.4/fpm/php.ini
 
-xdebug_ini=/etc/php/7.3/mods-available/xdebug.ini #$(php -i | grep "Loaded Configuration File" | sed 's#.* ##')
+xdebug_ini=/etc/php/7.4/mods-available/xdebug.ini #$(php -i | grep "Loaded Configuration File" | sed 's#.* ##')
 
 sudo sed '/^zend_extension=/{h;s/=.*/=xdebug.so/};${x;/^$/{s//zend_extension=xdebug.so/;H};x}' -i $xdebug_ini
 sudo sed '/^xdebug.max_nesting_level=/{h;s/=.*/=512/};${x;/^$/{s//xdebug.max_nesting_level=512/;H};x}' -i  $xdebug_ini
@@ -36,7 +36,7 @@ sudo sed '/^xdebug.log=/{h;s/=.*/=\/var\/log\/xdebug.log/};${x;/^$/{s//xdebug.lo
 sudo sed '/^xdebug.mode=/{h;s/=.*/=debug/};${x;/^$/{s//xdebug.mode=debug/;H};x}' -i  $xdebug_ini
 sudo sed '/^xdebug.idekey=/{h;s/=.*/=vagrant/};${x;/^$/{s//xdebug.idekey=vagrant/;H};x}' -i  $xdebug_ini
 
-sudo service php7.3-fpm restart
+sudo service php7.4-fpm restart
 sudo systemctl restart apache2
 
 sudo apt-get install -y xsltproc
