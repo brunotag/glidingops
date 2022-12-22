@@ -6,52 +6,46 @@ use App\Models\FlightType;
 use App\Models\Track;
 use App\Models\ArchivedTrack;
 
-class FlightHelper
-{
-    public static function towDuration($flight)
-    {
-        return static::durationRoundedToMinutes($flight->towDuration);
-    }
+class FlightHelper {
+  public static function towDuration($flight) {
+    return static::durationRoundedToMinutes($flight->towDuration);
+  }
 
-    public static function flightDuration($flight)
-    {
-        return static::durationRoundedToMinutes($flight->flightDuration);
-    }
+  public static function flightDuration($flight) {
+    return static::durationRoundedToMinutes($flight->flightDuration);
+  }
 
-    public static function startDate($flight)
-    {
-        $date = new \DateTime();
-        $date->setTimestamp(intval(floor($flight->start / 1000)));
-        return $date;
-    }
+  public static function startDate($flight) {
+    $date = new \DateTime();
+    $date->setTimestamp(intval(floor($flight->start / 1000)));
+    return $date;
+  }
 
-    public static function towLandDate($flight)
-    {
-        $date = new \DateTime();
-        $date->setTimestamp(intval(floor($flight->towland / 1000)));
-        return $date;
-    }
+  public static function towLandDate($flight) {
+    $date = new \DateTime();
+    $date->setTimestamp(intval(floor($flight->towland / 1000)));
+    return $date;
+  }
 
-    public static function landDate($flight)
-    {
-        $date = new \DateTime();
-        $date->setTimestamp(intval(floor($flight->land / 1000)));
-        return $date;
-    }
+  public static function landDate($flight) {
+    $date = new \DateTime();
+    $date->setTimestamp(intval(floor($flight->land / 1000)));
+    return $date;
+  }
 
-    public static function fullComments($flight)
+  public static function fullComments($flight)
     {
         $comments = $flight->comments;
         if ($flight->type == FlightType::checkFlightType()->id) {
             if (strlen($comments) > 0 ) {
-                $comments .= " ";
+              $comments .= " ";
             }
             $comments .= "Tow plane check flight";
         }
 
         if ($flight->type == FlightType::retrieveFlightType()->id) {
             if (strlen($comments) > 0 ) {
-                $comments .= " ";
+              $comments .= " ";
             }
             $comments .= "Retrieve Flight";
         }
@@ -65,7 +59,7 @@ class FlightHelper
         $landDate = FlightHelper::landDate($flight)->format('Y-m-d H:i:s');
 
         $tracks = Track::where('glider', $flight->glider)
-                    ->where('point_time', '>', $startDate)
+                    ->where('point_time', '>' , $startDate)
                     ->where('point_time', '<', $landDate);
 
         if(!$tracks->get()->isEmpty()) {
@@ -73,7 +67,7 @@ class FlightHelper
         }
 
         $tracks = ArchivedTrack::where('glider', $flight->glider)
-                    ->where('point_time', '>', $startDate)
+                    ->where('point_time', '>' , $startDate)
                     ->where('point_time', '<', $landDate);
 
         if(!$tracks->get()->isEmpty()) {
@@ -83,18 +77,16 @@ class FlightHelper
         return false;
     }
 
-    public static function trackURI($flight)
-    {
-        $startDate = FlightHelper::startDate($flight)->format('Y-m-d H:i:s');
-        $landDate = FlightHelper::landDate($flight)->format('Y-m-d H:i:s');
+    public static function trackURI($flight) {
+      $startDate = FlightHelper::startDate($flight)->format('Y-m-d H:i:s');
+      $landDate = FlightHelper::landDate($flight)->format('Y-m-d H:i:s');
 
-        return "/MyFlightMap.php?glider={$flight->glider}&from={$startDate}&to={$landDate}&flightid={$flight->id}";
+      return "/MyFlightMap.php?glider={$flight->glider}&from={$startDate}&to={$landDate}&flightid={$flight->id}";
     }
 
-    private static function durationRoundedToMinutes($durationInMillies)
-    {
-        $durationInSeconds = intval($durationInMillies / 1000);
-        $durationRoundedToMinutes  = ($durationInSeconds - $durationInSeconds%60);
-        return $durationRoundedToMinutes;
+    private static function durationRoundedToMinutes($durationInMillies) {
+      $durationInSeconds = intval($durationInMillies / 1000);
+      $durationRoundedToMinutes  = ($durationInSeconds - $durationInSeconds%60);
+      return $durationRoundedToMinutes;
     }
 }

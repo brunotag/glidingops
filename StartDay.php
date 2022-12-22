@@ -1,31 +1,34 @@
 <?php
-require './helpers/timehelpers.php';
-require 'helpers.php';
-require './helpers/session_helpers.php';
+include './helpers/timehelpers.php';
+include 'helpers.php';
+include './helpers/session_helpers.php';
 session_start();
 require_security_level(4);
 
 
 $org=0;
 $strdtnow='';
-$con_params = include './config/database.php'; $con_params = $con_params['gliding'];
-$con=mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    if (isset($_GET['org']) ) {
-        $org=$_GET['org'];
-        if ($org < 1) {
-            die("Error You must supply and organisation number");
-        }
-    }
-    $dateTime = new DateTime("now", new DateTimeZone(orgTimezone($con, $org)));
-    $strdtnow=$dateTime->format('Y-m-d');
+$con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
+$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+if ($_SERVER["REQUEST_METHOD"] == "GET")
+{
+ if (isset($_GET['org']) )
+ {
+   $org=$_GET['org'];
+   if ($org < 1)
+   {
+     die("Error You must supply and organisation number");
+   }
+ }
+ $dateTime = new DateTime("now", new DateTimeZone(orgTimezone($con,$org)));
+ $strdtnow=$dateTime->format('Y-m-d');
 }
 ?>
 <!DOCTYPE HTML>
 <html>
 <head>
 <title>Enter Location</title>
-<style><?php $inc = "./orgs/" . $org . "/heading1.css"; require $inc; ?></style>
+<style><?php $inc = "./orgs/" . $org . "/heading1.css"; include $inc; ?></style>
 <style>
 body {margin: 0px;font-family: Arial, Helvetica, sans-serif;background-color:#f0f0ff;}
 #container {background-color:#f0f0ff;}
@@ -62,54 +65,56 @@ function CheckChange(id)
 <?php
 $errtext='';
 $defaultLocation='';
-if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    if (isset($_GET['location']) ) {
-        $defaultLocation=$_GET['location'];
+if ($_SERVER["REQUEST_METHOD"] == "GET")
+{
+    if (isset($_GET['location']) )
+    {
+      $defaultLocation=$_GET['location'];
     }
     else{
-        $q = "SELECT default_location FROM organisations WHERE id = " . $org;
-        $r = mysqli_query($con, $q);
-        $row_cnt = $r->num_rows;
-        if ($row_cnt > 0) {
-            $row = mysqli_fetch_array($r);
-            $defaultLocation=$row[0];
-        }
-        else
-        {
-            echo "Invalid organistaion number<br>";
-            exit();
-        }
+      $q = "SELECT default_location FROM organisations WHERE id = " . $org;
+      $r = mysqli_query($con,$q);
+      $row_cnt = $r->num_rows;
+      if ($row_cnt > 0)
+      {
+          $row = mysqli_fetch_array($r);
+          $defaultLocation=$row[0];
+      }
+      else
+      {
+          echo "Invalid organistaion number<br>";
+          exit();
+      }
     }
 }
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST")
+{
     $org=$_POST['org'];
-    if ($org <=0) {
-        die("No organistain specified");
-    }
-    $loc = $_POST['location'];
-    if (strlen($loc) > 0) {
+   if ($org <=0)
+      die("No organistain specified");
+   $loc = $_POST['location'];
+   if (strlen($loc) > 0)
+   {
         //Check to see if we have a different date specifed.
         $v = $_POST['specdate'];
-        if ($v == 'on') {
+        if ($v == 'on')
+        {
              $v = "&ds=" . $_POST['date'];
         }
-        else {
+        else
              $v = '';
-        }
         $l= "Location: dailysheet.php?org=" .$org. "&location=" .$loc;
-        if (strlen($v) > 0) {
-            $l .= $v;
-        }
+        if (strlen($v) > 0)
+           $l .= $v;
         header($l);
-    }
-    else {
-        $errtext = "You must enter a location";
-    }
+   }
+   else
+      $errtext = "You must enter a location";
 }
 ?>
 <body>
-<?php require __DIR__.'/helpers/dev_mode_banner.php' ?>
-<?php $inc = "./orgs/" . $org . "/heading1.txt"; require $inc; ?>
+<?php include __DIR__.'/helpers/dev_mode_banner.php' ?>
+<?php $inc = "./orgs/" . $org . "/heading1.txt"; include $inc; ?>
 <div id='container'>
 <div id='entry'>
 <p>Start Days Timesheet: <?php echo $dateTime->format('d-M-Y') ?></p>

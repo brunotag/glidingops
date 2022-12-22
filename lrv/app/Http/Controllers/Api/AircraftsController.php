@@ -19,17 +19,15 @@ class AircraftsController extends ApiController
         $orgInput = $request->input('org');
         $org = Organisation::find($orgInput);
 
-        return response()->json(
-            [
-            'data' => Aircraft::where(['org' => $org->id])->get()
-            ]
-        );
+        return response()->json([
+          'data' => Aircraft::where(['org' => $org->id])->get()
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -40,7 +38,7 @@ class AircraftsController extends ApiController
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -51,8 +49,8 @@ class AircraftsController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int                      $id
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -63,7 +61,7 @@ class AircraftsController extends ApiController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

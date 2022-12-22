@@ -15,7 +15,7 @@ class ImportInitialSchema extends Migration
     {
         // will import tables from the original mysql dump file
         $gliding_schema = realpath(__DIR__.'/../gliding-initial-schema.sql');
-        DB::unprepared(file_get_contents($gliding_schema));
+        DB::unprepared( file_get_contents($gliding_schema) );
 
         // $tracks_schema = realpath(__DIR__.'/../tracks-initial-schema.sql');
         // DB::unprepared( file_get_contents($tracks_schema) );

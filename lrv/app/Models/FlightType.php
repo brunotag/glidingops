@@ -25,14 +25,14 @@ class FlightType extends Model
     private static function getCachedTypes()
     {
         if(static::$types == null) {
-            static::$types = collect([]);
+           static::$types = collect([]);
         }
         return static::$types;
     }
 
     private static function getFlightType($strType)
     {
-        return FlightType::where('name', $strType)->first();
+      return FlightType::where('name', $strType)->first();
     }
 
     public static function glidingFlightType()

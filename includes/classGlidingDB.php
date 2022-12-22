@@ -20,34 +20,32 @@ class GlidingDB extends SQLPlus
     {
         $tz='UTC';
         $o = $this->singlequery("SELECT timezone from organisations where id = ".intval($org));
-        if($o) {
+        if($o)
             $tz=$o['timezone'];
-        }
         return $tz;
     }
 
     public function getOrgAircraftPrefix($org)
     {
         $o = $this->singlequery("SELECT aircraft_prefix from organisations where id = " . intval($org));
-        if ($o) {
+        if ($o)
             return $o['aircraft_prefix'];
-        } else {
+        else
             return null;
-        }
     }
 
     public function getOrgLaunchCoords($org)
     {
         $o = $this->singlequery("SELECT * from organisations where id = ".intval($org));
-        if ($o) {
+        if ($o)
+        {
             $c = array();
             $c['lat'] = floatval($o['def_launch_lat']);
             $c['lon'] = floatval($o['def_launch_lon']);
             return $c;
         }
-        else {
+        else
             return null;
-        }
     }
 
     //*********************************************************************
@@ -57,8 +55,7 @@ class GlidingDB extends SQLPlus
     {
         $ret=-1.0;
         $ft = $this->singlequery("SELECT id from flighttypes where name = '".$strType."'");
-        if ($ft) { $ret = $ft['id'];
-        }
+        if ($ft) $ret = $ft['id'];
         return $ret;
     }
 
@@ -81,8 +78,7 @@ class GlidingDB extends SQLPlus
 
         $q = "SELECT flights.seq,flights.glider, b.displayname,c.displayname, (flights.start/1000) from flights LEFT JOIN members b ON b.id = flights.pic LEFT JOIN members c ON c.id = flights.p2 where flights.org = ".intval($org)." and flights.localdate=" . $dateStr . " and flights.type = ".$flightTypeGlider." and flights.deleted <> 1 and flights.start > 0 and flights.land=0 order by flights.seq ASC";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
@@ -96,8 +92,7 @@ class GlidingDB extends SQLPlus
 
         $q = "SELECT flights.seq,flights.glider, b.displayname,c.displayname, (flights.land-flights.start) from flights LEFT JOIN members b ON b.id = flights.pic LEFT JOIN members c ON c.id = flights.p2 where flights.org = ".intval($org)." and flights.localdate=" . $dateStr . " and flights.type = ".$flightTypeGlider." and flights.deleted <> 1 and flights.start > 0 and flights.land>0 order by flights.seq ASC";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
@@ -109,8 +104,7 @@ class GlidingDB extends SQLPlus
 
         $q = "SELECT * from flights where org = ".intval($org)." and localdate = '{$dateStr}'";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
@@ -130,11 +124,10 @@ class GlidingDB extends SQLPlus
     public function getFlightOrg($fid)
     {
         $f = $this->singlequery("select org from flights where id = " . intval($fid));
-        if ($f) {
+        if ($f)
             return intval($f['org']);
-        } else {
+        else
             return null;
-        }
     }
 
     //*********************************************************************
@@ -178,9 +171,8 @@ class GlidingDB extends SQLPlus
         $ts = $d->getTimestamp();
         $q = "Select * from flights where flights.glider = '".$glider."' and (flights.start/1000) <= ".$ts." and (flights.land/1000) >= " .$ts;
         $r = $this->query($q);
-        if ($r->num_rows > 0) {
+        if ($r->num_rows > 0)
             return true;
-        }
         return false;
     }
 
@@ -223,8 +215,7 @@ class GlidingDB extends SQLPlus
     {
         $q = "SELECT * from tracks where glider = '".$aircraft."' and point_time >= '".$start->format('Y-m-d H:i:s')."' and point_time <= '".$end->format('Y-m-d H:i:s')."' order by point_time";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r->num_rows;
     }
 
@@ -232,42 +223,38 @@ class GlidingDB extends SQLPlus
     {
         $q = "SELECT * from tracks where glider = '".$aircraft."' and point_time >= '".$start->format('Y-m-d H:i:s')."' and point_time <= '".$end->format('Y-m-d H:i:s')."' order by point_time";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
     public function allTracks($order,$from=null,$to=null)
     {
-        if ($from) {
+        if ($from)
+        {
             $q = "select * from tracks where point_time >= '{$from}' ";
-            if ($to) {
+            if ($to)
                 $q .= "and point_time < '{$to}'";
-            }
             $q .= " {$order}";
         }
-        else {
+        else
             $q = "SELECT * from tracks " . $order;
-        }
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
     public function allTracksForOrg($org,$order,$from=null,$to=null)
     {
         $q = "select * from tracks where org = ".intval($org). " ";
-        if ($from) {
+        if ($from)
+        {
             $q .= "and point_time >= '{$from}' ";
-            if ($to) {
+            if ($to)
                 $q .= "and point_time < '{$to}'";
-            }
         }
         $q .= " {$order}";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
@@ -275,30 +262,28 @@ class GlidingDB extends SQLPlus
     {
         $dateTimeZone = new DateTimeZone($this->getOrgTimezone($org));
         $dateTime = new DateTime("now", $dateTimeZone);
-        $dateTime = new DateTime($dateTime->format('Y-m-d 00:00:00'), $dateTimeZone);
+        $dateTime = new DateTime($dateTime->format('Y-m-d 00:00:00'),$dateTimeZone);
         $dateTime->setTimezone(new DateTimeZone('UTC'));
 
         $q = "select * from tracks where org = ".intval($org). " and point_time > '{$dateTime->format('Y-m-d H:i:s')}'";
         $q .= " {$order}";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
     public function allTrackHeightsByMinForOrg($org,$toffset=0,$from=null,$to=null)
     {
         $q = "select glider, (hour(point_time) + {$toffset}) % 24 as H, minute(point_time) as M ,max(altitude) as A from tracks where org = " .intval($org);
-        if ($from) {
+        if ($from)
+        {
             $q .= " and point_time >= '{$from}'";
-            if ($to) {
+            if ($to)
                 $q .= " and point_time < '{$to}'";
-            }
         }
         $q .= " group by glider,H,M order by glider,H,M";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
@@ -307,8 +292,7 @@ class GlidingDB extends SQLPlus
     {
         $q = "SELECT * from tracks where point_time < '".$strdate."' order by point_time";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 

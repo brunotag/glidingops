@@ -11,8 +11,8 @@ function var_error_log($object = null, $text = '')
 
 //Start
 //Gte t=environemnt variables
-require "helpers.php";
-$con_params = include './config/database.php';
+include "helpers.php";
+$con_params = require('./config/database.php');
 $con_params = $con_params['gliding'];
 $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
 if (mysqli_connect_errno()) {
@@ -131,7 +131,7 @@ SQL;
         SendMail(implode(', ', $email_addresses), "WWGC Msg | " . $date->format('D d M h:i A'), $msg);
     }
     
-    $Q = "UPDATE texts SET txt_status=3 WHERE txt_id IN (" . implode(', ', $ids_to_update) .")";
+    $Q = "UPDATE texts SET txt_status=3 WHERE txt_id IN (" . implode(', ',$ids_to_update) .")";
     $r2 = mysqli_query($con, $Q);
 
     mysqli_close($con);

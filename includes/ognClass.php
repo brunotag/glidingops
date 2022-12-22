@@ -6,11 +6,10 @@ class ogn
     {
         
         
-        if (null != $controller) {
+        if (null != $controller)
             $this->host = $controller;
-        } else {
+        else
             $this->host = 'live.glidernet.org';
-        }
     }
     
     public function getCurrentFlarms()
@@ -26,7 +25,8 @@ class ogn
         curl_close($ch);
 
         $doc = new DOMDocument();
-        if (!$doc->loadXML($data) ) {
+        if (!$doc->loadXML($data) )
+        {
             echo "Could not load XML<br/>";
             echo $data;
         }
@@ -38,7 +38,7 @@ class ogn
             foreach ($gliders AS $glider) 
             {
                 $str = $glider->attributes->getNamedItem('a')->nodeValue;
-                $parms =  str_getcsv($str);
+                $parms =  str_getcsv ($str);
                 
                 $upd = array();
                 $upd['time'] = $parms[5];

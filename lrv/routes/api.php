@@ -11,31 +11,22 @@
 |
 */
 
-
-Route::resource(
-    'members', 'MembersController', ['only' => [
+Route::resource('members', 'MembersController', ['only' => [
     'index'
-    ]
-    ]
-);
+  ]
+]);
 
-Route::resource(
-    'flights', 'FlightsController', ['only' => [
+Route::resource('flights', 'FlightsController', ['only' => [
     'index'
-    ]
-    ]
-);
+  ]
+]);
 
-Route::resource(
-    'launch-types', 'LaunchTypesController', ['only' => [
+Route::resource('launch-types', 'LaunchTypesController', ['only' => [
     'index'
-    ]
-    ]
-);
+  ]
+]);
 
-Route::resource(
-    'aircrafts', 'AircraftsController', ['only' => [
+Route::resource('aircrafts', 'AircraftsController', ['only' => [
     'index'
-    ]
-    ]
-);
+  ]
+]);

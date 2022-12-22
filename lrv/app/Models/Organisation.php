@@ -55,11 +55,11 @@ class Organisation extends Model
     public function getTowChargeType()
     {
         if($this->tow_height_charging) {
-            return TowChargeType::heightBased();
+          return TowChargeType::heightBased();
         }
 
         if($this->tow_time_based) {
-            return TowChargeType::timeBased();
+          return TowChargeType::timeBased();
         }
 
         return TowChargeType::notDefined();

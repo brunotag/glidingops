@@ -22,21 +22,18 @@ class LaunchType extends Model
 
     private static function getLaunchType($strType)
     {
-        return LaunchType::where('name', $strType)->first();
+      return LaunchType::where('name', $strType)->first();
     }
 
-    public static function towLaunchType()
-    {
+    public static function towLaunchType(){
         return LaunchType::getLaunchType('Tow Plane');
     }
 
-    public static function selfLaunchType()
-    {
+    public static function selfLaunchType(){
         return LaunchType::getLaunchType('Self Launch');
     }
 
-    public static function winchLaunchType()
-    {
+    public static function winchLaunchType(){
         return LaunchType::getLaunchType('Winch');
     }
 }

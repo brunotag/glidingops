@@ -28,10 +28,8 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         // add gops guard
-        Auth::extend(
-            'gops', function ($app, $name, array $config) {
-                return new GopsGuard(Auth::createUserProvider($config['provider']), $app->make('request'));
-            }
-        );
+        Auth::extend('gops', function ($app, $name, array $config) {
+          return new GopsGuard(Auth::createUserProvider($config['provider']), $app->make('request'));
+        });
     }
 }

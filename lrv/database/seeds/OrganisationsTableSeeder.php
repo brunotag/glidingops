@@ -11,8 +11,7 @@ class OrganisationsTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('organisations')->insert(
-            [
+        DB::table('organisations')->insert([
             'id'                        => 1,
             'name'                      => 'Wellington Gliding Club',
             'addr1'                     => 'PO Box 30 200',
@@ -36,7 +35,6 @@ class OrganisationsTableSeeder extends Seeder
             'twitter_consumerSecret'    => '????',
             'twitter_accessToken'       => '????',
             'twitter_accessTokenSecret' => '????',
-            ]
-        );
+        ]);
     }
 }

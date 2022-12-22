@@ -11,15 +11,13 @@
 |
 */
 
-$factory->define(
-    App\Models\User::class, function (Faker\Generator $faker) {
-        static $password;
+$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
+    static $password;
 
-        return [
+    return [
         'name' => $faker->name,
         'email' => $faker->safeEmail,
         'password' => $password ?: $password = bcrypt('secret'),
         'remember_token' => str_random(10),
-        ];
-    }
-);
+    ];
+});

@@ -57,12 +57,10 @@ class Member extends Model
     
     public function setRoles($org, $roleIds)
     {
-        $updates = collect($roleIds)->reduce(
-            function ($carry, $roleId) use ($org) {
-                $carry[$roleId] = ['org' => $org];
-                return $carry;
-            }, array()
-        );
+        $updates = collect($roleIds)->reduce(function($carry, $roleId) use ($org) {
+            $carry[$roleId] = ['org' => $org];
+            return $carry;
+        }, array());
         $this->roles()->sync($updates);
     }
 }

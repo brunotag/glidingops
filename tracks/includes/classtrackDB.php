@@ -33,19 +33,17 @@ class trackDB extends SQLPlus
 
     public function updateAircraft($id,$reg,$type)
     {
-        if (intval($type) > 0) {
+        if (intval($type) > 0)
             return $this->update("update aircraft set aircraft_reg = '".$reg."', aircraft_type = ".intval($type)." where idaircraft = " . intval($id));
-        } else {
+        else
             return $this->update("update aircraft set aircraft_reg = '".$reg."' where idaircraft = " . intval($id));
-        }
     }
 
     public function allAircraft($order = '')
     {
         $q = "select * from aircraft " . $order;
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
@@ -61,8 +59,7 @@ class trackDB extends SQLPlus
     {
         $q = "select * from aircraft_type " . $order;
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
@@ -89,13 +86,11 @@ class trackDB extends SQLPlus
     {
         $d = new DateTime();
         $f='false';
-        if ($odd) {
+        if ($odd)
             $f = 'true';
-        }
         $cm = 'none';
-        if (strlen($calctype) > 0) {
+        if (strlen($calctype) > 0)
             $cm = $calctype;
-        }
         return $this->create("insert into position (position_timestamp,position_aircraft,position_lat,position_lon,position_alt,position_odd_flag,position_lat_cpr,position_lon_cpr,position_calc_method) values ('".$d->format('Y-m-d H:i:s')."',".$iacoid.",".$lat.",".$lon.",".$alt.",".$f.",".$latcpr.",".$loncpr.",'".$cm."')");
     }
 
@@ -103,8 +98,7 @@ class trackDB extends SQLPlus
     {
         $q = "select * from position order by position_timestamp";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
@@ -112,8 +106,7 @@ class trackDB extends SQLPlus
     {
         $q = "select * from position where position_aircraft = " . intval($aid) . " order by position_timestamp";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
@@ -164,7 +157,7 @@ class trackDB extends SQLPlus
     //*********************************************************************
     public function getVehilce($id)
     {
-        return $this->singlequery("select * from vehicle where idvehicle = ". intval($id));
+        return $this->singlequery("select * from vehicle where idvehicle = ". intval($id) );
     }
 
     public function getVehilceByDevId($devid)
@@ -181,11 +174,10 @@ class trackDB extends SQLPlus
     public function updateVehicleLastHello($id,$version=null)
     {
         $d = new DateTime('now');
-        if (is_null($version)) {
+        if (is_null($version))
             return $this->update("update vehicle set vehicle_last_hello = '".$d->format('Y-m-d H:i:s')."', vehicle_last_seen = '".$d->format('Y-m-d H:i:s')."', vehicle_last_status = 'hello' where idvehicle = " . intval($id));
-        } else {
+        else
             return $this->update("update vehicle set vehicle_last_hello = '".$d->format('Y-m-d H:i:s')."', vehicle_last_seen = '".$d->format('Y-m-d H:i:s')."', vehicle_last_status = 'hello' , vehicle_particle_version = {$version} where idvehicle = " . intval($id));
-        }
     }
 
     public function updateVehilceBattery($id,$level)
@@ -203,8 +195,7 @@ class trackDB extends SQLPlus
     {
         $q = "select * from vehicle " . $order;
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
@@ -213,16 +204,18 @@ class trackDB extends SQLPlus
     //*********************************************************************
     public function createTrack($vid,$lat,$lon,$alt,$timestamp,$udp = false)
     {
-        if ($vid != 0 && $lat != 0.0 && $lon != 0.0) {
+        if ($vid != 0 && $lat != 0.0 && $lon != 0.0)
+        {
             $q = '';
-            if ($udp) {
+            if ($udp)
                 $q = "insert into track (track_vehicle,track_timestamp,track_lat,track_lon,track_alt,track_from_udp) values (".intval($vid).",'".$timestamp."',".$lat.",".$lon.",".$alt.",true)";
-            } else {
+            else
                 $q = "insert into track (track_vehicle,track_timestamp,track_lat,track_lon,track_alt,track_from_udp) values (".intval($vid).",'".$timestamp."',".$lat.",".$lon.",".$alt.",false)";
-            }
             $r = $this->query($q);
-            if (!$r) {
-                if ($this->errno != 1062) {
+            if (!$r)
+            {
+                if ($this->errno != 1062)
+                {
                     $this->sqlError($q);
                     return false;
                 }
@@ -246,8 +239,7 @@ class trackDB extends SQLPlus
     {
         $q = "select * from track where track_vehicle = " . intval($vid);
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
@@ -255,8 +247,7 @@ class trackDB extends SQLPlus
     {
         $q = "select * from track where track_vehicle = " . intval($vid) . " and track_trip is null order by track_timestamp";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
@@ -264,8 +255,7 @@ class trackDB extends SQLPlus
     {
         $q = "select * from track where track_vehicle = " . intval($vid) . " and track_trip = ".intval($tripid)." order by track_timestamp";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 
@@ -291,17 +281,15 @@ class trackDB extends SQLPlus
     {
         $q = "insert into trip (trip_vehicle,trip_start) values (".intval($vid).",'{$strStart}')";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
-        return $this->getTripByVehStart($vid, $strStart);
+        if (!$r) {$this->sqlError($q); return null;}
+        return $this->getTripByVehStart($vid,$strStart);
     }
 
     public function allTripsForVehilce($vid)
     {
         $q = "select * from trip where trip_vehicle = " . intval($vid) . " order by trip_start";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r;
     }
 

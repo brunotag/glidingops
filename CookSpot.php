@@ -1,22 +1,25 @@
 <?php session_start(); ?>
 <?php
-$con_params = include './config/database.php'; $con_params = $con_params['gliding'];
-$con=mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-if (mysqli_connect_errno()) {
+$con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
+$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+if (mysqli_connect_errno())
+{
     echo "Database Error";
     exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['what']) ) {
+if ($_SERVER["REQUEST_METHOD"] == "POST")
+{
+    if (isset($_POST['what']) )
+    {
         error_log("Abount to change to {$_POST['what']}");
         $q = "UPDATE spots set rego_short = '{$_POST['what']}' WHERE spotkey = '01Gd66kbzX1grQGKt0W4d4zzClcB0nECk'";
-        $r = mysqli_query($con, $q);
+        $r = mysqli_query($con,$q);
     }
 }
 
 $q = "SELECT * FROM spots WHERE spotkey = '01Gd66kbzX1grQGKt0W4d4zzClcB0nECk'";
-$r = mysqli_query($con, $q);
+$r = mysqli_query($con,$q);
 $spot = mysqli_fetch_array($r);
 
 ?>

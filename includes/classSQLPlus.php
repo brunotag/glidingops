@@ -1,7 +1,6 @@
 <?php
-class SQLPlus extends mysqli
-{
- 
+class SQLPlus extends mysqli 
+{ 
     private $_sqlerr;
     
     function __construct($params)
@@ -9,19 +8,19 @@ class SQLPlus extends mysqli
         $connected = false;
         while (!$connected) 
         {
-            parent::__construct($params['hostname'], $params['username'], $params['password'], $params['dbname']);
-            if ($this->connect_error) {
-                if ($this->connect_errno == 2006) {
+            parent::__construct($params['hostname'],$params['username'],$params['password'],$params['dbname']);
+            if ($this->connect_error) 
+            {
+                if ($this->connect_errno == 2006)
                     sleep(1000);
-                } else
+                else
                 {
                     error_log("Unable to connect to database " . $params['dbname']);
                     throw new Exception("SQL Connect error {$this->connect_error} [{$this->connect_errno}]");
                 }
             }
-            else {
+            else
                 $connected = true;
-            }
         }
             
     }
@@ -40,42 +39,37 @@ class SQLPlus extends mysqli
     public function singlequery($q)
     {
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
+        if (!$r) {$this->sqlError($q); return null;}
         return $r->fetch_array();
     }
     
     public function create($q)
     {
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return false;
-        }
+        if (!$r) {$this->sqlError($q); return false;}
         return true;
     }
     
     public function update($q)
     {
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return false;
-        }
+        if (!$r) {$this->sqlError($q); return false;}
         return true;
     }
     
     public function delete($q)
     {
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return false;
-        }
+        if (!$r) {$this->sqlError($q); return false;}
         return true;
     }
     
     public function allFromTable($table,$where='',$order='')
     {
-        $q = "select * from ".$table." " . $where . " " . $order;
-        $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return null;
-        }
-        return $r;
+       $q = "select * from ".$table." " . $where . " " . $order;
+       $r = $this->query($q);
+       if (!$r) {$this->sqlError($q); return null;}
+       return $r;
     }
     
     public function update_from_array($table,$a,$whereclause)
@@ -83,33 +77,32 @@ class SQLPlus extends mysqli
         $bstart = true;
         $q = "update " . $table . " set ";
     
-        $keys = array_keys($a);
+        $keys = array_keys ($a);
         for($idx = 0;$idx < count($keys);$idx++)
         {
-            if (!is_numeric($keys[$idx]) ) {
-                if (isset($a[$keys[$idx]])) {
-                    if (!$bstart) {
+            if (!is_numeric($keys[$idx]) )
+            {
+                if (isset($a[$keys[$idx]]))
+                {
+                    if (!$bstart)
                         $q .= ",";
-                    }
-                    if (gettype($a[$keys[$idx]]) == 'boolean') {
+                    if (gettype($a[$keys[$idx]]) == 'boolean')
+                    {
                         $q .= $keys[$idx] . " = ";
-                        if ($a[$keys[$idx]]) {
+                        if ($a[$keys[$idx]])
                             $q .= "true";
-                        } else {
+                        else
                             $q .= "false";
-                        }
                     }
-                    else {
+                    else
                         $q .=  $keys[$idx] . " = '".$this->real_escape_string($a[$keys[$idx]])."'";
-                    }
                     $bstart = false;
                 }
             }
         }
         $q .= " " . $whereclause;
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return false;
-        }
+        if (!$r) {$this->sqlError($q); return false;}
         return true;
     }
     
@@ -118,14 +111,15 @@ class SQLPlus extends mysqli
         $bstart = true;
         $q = "insert into " . $table . "(";
     
-        $keys = array_keys($a);
+        $keys = array_keys ($a);
         for($idx = 0;$idx < count($keys);$idx++)
         {
-            if (!is_numeric($keys[$idx]) ) {
-                if (isset($a[$keys[$idx]])) {
-                    if (!$bstart) {
+            if (!is_numeric($keys[$idx]) )
+            {
+                if (isset($a[$keys[$idx]]))
+                {
+                    if (!$bstart)
                         $q .= ",";
-                    }
                     $q .=  $keys[$idx];
                     $bstart = false;
                 }
@@ -136,29 +130,28 @@ class SQLPlus extends mysqli
         $bstart = true;
         for($idx = 0;$idx < count($keys);$idx++)
         {
-            if (!is_numeric($keys[$idx]) ) {
-                if (isset($a[$keys[$idx]])) {
-                    if (!$bstart) {
+            if (!is_numeric($keys[$idx]) )
+            {
+                if (isset($a[$keys[$idx]]))
+                {
+                    if (!$bstart)
                         $q .= ",";
-                    }
-                    if (gettype($a[$keys[$idx]]) == 'boolean') {
-                        if ($a[$keys[$idx]]) {
+                    if (gettype($a[$keys[$idx]]) == 'boolean')
+                    {
+                        if ($a[$keys[$idx]])
                             $q .= "true";
-                        } else {
+                        else
                             $q .= "false";
-                        }
                     }
-                    else {
+                    else
                         $q .=  "'".$this->real_escape_string($a[$keys[$idx]])."'";
-                    }
                     $bstart = false;
                 }
             }
         }
         $q .= ")";
         $r = $this->query($q);
-        if (!$r) {$this->sqlError($q); return false;
-        }
+        if (!$r) {$this->sqlError($q); return false;}
         return true;
     }
     
@@ -175,11 +168,10 @@ class SQLPlus extends mysqli
     
     public function EndTransaction()
     {
-        if (!$this->_sqlerr) {
+        if (!$this->_sqlerr)
             $this->commit();
-        } else {
+        else
             $this->rollback();
-        }
             
         $this->autocommit(true);
     }

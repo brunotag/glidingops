@@ -2,12 +2,12 @@
 error_reporting(0);
 $appservlang = $_GET['appservlang'];
 switch ($appservlang) {
-case "th" :
-    $appservlang = "th";
-    break;
-default :
-    $appservlang = "en";
-    break;
+	case "th" :
+		$appservlang = "th";
+	break;
+	default :
+		$appservlang = "en";
+	break;
 }
 /************************************************************************/
 /* AppServ Open Project                                          */
@@ -20,7 +20,7 @@ default :
 /* it under the terms of the GNU General Public License as published by */
 /* the Free Software Foundation; either version 2 of the License.       */
 /************************************************************************/
-require "appserv/main.php";
+include("appserv/main.php");
 
 $phpver=phpversion();
 print "<html>
