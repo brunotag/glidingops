@@ -76,7 +76,7 @@ class RouteServiceProvider extends ServiceProvider
             [
             'middleware' => ['auth', 'api'],
             'namespace' => $this->apiNamespace,
-            'prefix' => 'api',
+            'prefix' => 'api/v2',
             ], function ($router) {
                 include base_path('routes/api.php');
             }

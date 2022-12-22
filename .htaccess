@@ -10,8 +10,12 @@ RewriteRule ^(.*)$ /$1 [R=503,L]
 
 RewriteRule   ^app/css/(.*)    /lrv/public/css/$1  [L]
 RewriteRule   ^app/(.*)    /lrv/public/app/$1  [L]
-# TODO find another way to map laravel /api as gops has already implemented /api/v1/json/
-# RewriteRule   ^api/(.*)    /lrv/public/api/$1  [L]
+
+# this is the in-house manually built api
+RewriteRule api/v1/json/(.*)$ apiglidjsonv1.php?r=$1 [QSA,NC,L]
+
+# this is the laravel api
+RewriteRule   ^api/v2/(.*)    /lrv/public/api/v2/$1  [L]
 
 RewriteRule home home.php [L]
 RewriteRule AssignRoles role_member-list.php [L]
@@ -63,6 +67,5 @@ RewriteRule ssb MasterDisplay.php?org=2 [L]
 RewriteRule wgc MasterDisplay.php?org=1 [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule api/v1/json/(.*)$ apiglidjsonv1.php?r=$1 [QSA,NC,L]
 
 

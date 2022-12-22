@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
 
 use App\Models\Organisation;
 use App\Models\Aircraft;
@@ -15,9 +14,9 @@ class AircraftsController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $orgInput = Input::get('org');
+        $orgInput = $request->input('org');
         $org = Organisation::find($orgInput);
 
         return response()->json(
