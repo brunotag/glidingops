@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 class UsersTableSeeder extends Seeder
@@ -11,9 +13,9 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        $org = App\Models\Organisation::where('name', 'Wellington Gliding Club')->first();
+        $org = \App\Models\Organisation::where('name', 'Wellington Gliding Club')->first();
 
-        $user = new App\Models\User();
+        $user = new \App\Models\User();
         $user->name = 'Flash Gordon';
         $user->usercode = 'fgordon';
         $user->password = md5('fgordon');
