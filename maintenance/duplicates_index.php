@@ -1,5 +1,5 @@
 <?php 
-  require '../helpers/session_helpers.php';
+  include '../helpers/session_helpers.php';
   session_start();
   require_security_level(64);
   $current_org = current_org();
@@ -35,11 +35,9 @@
   </head>
 
 <?php
-  $con_params = include '../config/database.php'; $con_params = $con_params['gliding']; 
-$con=mysqli_connect(
-    $con_params['hostname'], $con_params['username'],
-    $con_params['password'], $con_params['dbname']
-);
+  $con_params = require('../config/database.php'); $con_params = $con_params['gliding']; 
+  $con=mysqli_connect($con_params['hostname'],$con_params['username'],
+                      $con_params['password'],$con_params['dbname']);
 
   $q = "
         SELECT 
@@ -66,26 +64,26 @@ $con=mysqli_connect(
       <tbody>
 <?php
   $tr_class = 'even';
-  $result = mysqli_query($con, $q);
-while($row = $result->fetch_assoc())
-{
+  $result = mysqli_query($con,$q);
+  while($row = $result->fetch_assoc())
+  {
     $tr_class = ($tr_class == 'even') ? 'odd' : 'even';
-    ?>
+?>
       <tr class='<?php echo $tr_class ?>'>
         <td><?php echo $row['firstname'] ?></td>
         <td><?php echo $row['surname'] ?></td>
         <td><?php echo $row['org_name'] ?></td>
-    <?php
-    $firstname=urlencode($row['firstname']);
-    $surname=urlencode($row['surname']);
-    $query = "firstname={$firstname}&surname={$surname}&org={$row['org']}"
-    ?>
+<?php
+      $firstname=urlencode($row['firstname']);
+      $surname=urlencode($row['surname']);
+      $query = "firstname={$firstname}&surname={$surname}&org={$row['org']}"
+?>
         <td>
           <a href='./duplicates_show.php?<?php echo $query ?>'><?php echo $row['dup_count'] ?></a>
         </td>
       </tr>
-    <?php
-}
+<?php
+  }
   mysqli_free_result($result);
   mysqli_close($con);
 ?>

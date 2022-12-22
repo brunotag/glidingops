@@ -8,26 +8,20 @@ $attach = '';
 $msg ='';
 for ($i=1;$i<$argc;$i++)
 {
-    $str = $argv[$i];
-    if (substr($str, 0, 2) == "-t") {
-        $to = substr($str, 2, strlen($str)-2);
-    }
-    if (substr($str, 0, 2) == "-f") {
-        $from = substr($str, 2, strlen($str)-2);
-    }
-    if (substr($str, 0, 2) == "-s") {
-        $subject = substr($str, 2, strlen($str)-2);
-    }
-    if (substr($str, 0, 2) == "-a") {
-        $attach = substr($str, 2, strlen($str)-2);
-    }
-    if (substr($str, 0, 2) == "-m") {
-        $msg = substr($str, 2, strlen($str)-2);
-    }
+  $str = $argv[$i];
+  if (substr($str,0,2) == "-t")
+     $to = substr($str,2,strlen($str)-2);
+  if (substr($str,0,2) == "-f")
+     $from = substr($str,2,strlen($str)-2);
+  if (substr($str,0,2) == "-s")
+     $subject = substr($str,2,strlen($str)-2);
+  if (substr($str,0,2) == "-a")
+     $attach = substr($str,2,strlen($str)-2);
+  if (substr($str,0,2) == "-m")
+     $msg = substr($str,2,strlen($str)-2);
 }
-if (strlen($replyto) == 0) {
-    $replyto = $from;
-}
+if (strlen($replyto) == 0)
+   $replyto = $from;
 
 //create a boundary string. It must be unique 
 //so we use the MD5 algorithm to generate a random hash 
@@ -73,7 +67,7 @@ Content-Disposition: attachment
 //copy current buffer contents into $message variable and delete current output buffer 
 $message = ob_get_clean(); 
 //send the email 
-$mail_sent = @mail($to, $subject, $message, $headers); 
+$mail_sent = @mail( $to, $subject, $message, $headers ); 
 //if the message is sent successfully print "Mail sent". Otherwise print "Mail failed" 
 echo $mail_sent ? "Mail sent" : "Mail failed"; 
 ?>

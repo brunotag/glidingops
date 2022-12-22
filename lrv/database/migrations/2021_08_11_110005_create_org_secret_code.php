@@ -13,11 +13,9 @@ class CreateOrgSecretCode extends Migration
      */
     public function up()
     {
-        Schema::table(
-            'organisations', function ($table) {
-                $table->string('secret_code', 32)->nullable(true);
-            }
-        );
+        Schema::table('organisations', function($table) {
+            $table->string('secret_code', 32)->nullable(true);
+        });
     }
 
     /**
@@ -27,10 +25,8 @@ class CreateOrgSecretCode extends Migration
      */
     public function down()
     {
-        Schema::table(
-            'organisations', function ($table) {
-                $table->dropColumn('secret_code');
-            }
-        );
+        Schema::table('organisations', function($table) {
+            $table->dropColumn('secret_code');
+        });
     }
 }

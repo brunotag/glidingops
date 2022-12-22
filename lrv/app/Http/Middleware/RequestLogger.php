@@ -9,11 +9,11 @@ class RequestLogger
 {
     public function handle( $request, Closure $next )
     {
-        \Log::debug('LOGGING REQUEST', [ $request ]);
+        \Log::debug( 'LOGGING REQUEST', [ $request ] );
 
-        $response = $next($request);
+        $response = $next( $request );
 
-        \Log::debug('LOGGING RESPONSE', [ $response ]);
+        \Log::debug( 'LOGGING RESPONSE', [ $response ] );
 
         return $response;
     }

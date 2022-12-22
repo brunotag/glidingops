@@ -5,52 +5,52 @@
 //TODO: what does this do? Delete.
 function tableDumpChange($db,$tablename,$insertafterfield,$valInsert)
 {
-    $recdone = false;
-    echo "INSERT INTO ".$tablename." VALUES ";
-    $q="SELECT * from ".$tablename." order by id";   
-    $r = mysqli_query($db, $q);  
-    while ($row = mysqli_fetch_array($r) )
-    {
-        $done1 = false;
-        if ($recdone) {
+ $recdone = false;
+ echo "INSERT INTO ".$tablename." VALUES ";
+ $q="SELECT * from ".$tablename." order by id";   
+ $r = mysqli_query($db,$q);  
+ while ($row = mysqli_fetch_array($r) )
+ {
+     $done1 = false;
+     if ($recdone)
+         echo ",";
+     echo "(";
+     $finfo = $r->fetch_fields();
+     foreach ($finfo as $val)
+     {
+        if ($done1)
             echo ",";
-        }
-        echo "(";
-        $finfo = $r->fetch_fields();
-        foreach ($finfo as $val)
-        {
-            if ($done1) {
-                echo ",";
-            }
-            if ($val->type == 3) { 
-                if (null == $row[$val->name]) {
-                    echo "NULL";
-                } else {
-                    echo $row[$val->name];
-                }
-            }
+        if ($val->type == 3)
+        { 
+            if (NULL == $row[$val->name])
+                echo "NULL";
             else
-            {
-                echo "'" . str_replace("'", "\'", $row[$val->name]) . "'";
-            }
-            $done1 = true;
-            if (strcmp($val->name, $insertafterfield) == 0) {
-                echo ",";
-                echo $valInsert;
-            }
+                echo $row[$val->name];
         }
-        echo ")";  
-        $recdone = true; 
-    }
-    echo ";";
+        else
+        {
+           echo "'" . str_replace("'", "\'", $row[$val->name]) . "'";
+        }
+        $done1 = true;
+        if (strcmp($val->name,$insertafterfield) == 0)
+        {
+            echo ",";
+            echo $valInsert;
+        }
+     }
+     echo ")";  
+     $recdone = true; 
+ }
+ echo ";";
 }
-$con_params = include './config/database.php'; $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-if (mysqli_connect_errno()) {
-    echo "<p>Unable to connect to database</p>";
-    exit();
+$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
+$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+if (mysqli_connect_errno())
+{
+ echo "<p>Unable to connect to database</p>";
+ exit();
 }
-tableDumpChange($con, 'flights', 'start', '0');
+tableDumpChange($con,'flights','start','0');
 ?>
 </body>
 </html>

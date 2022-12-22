@@ -167,12 +167,12 @@ function buildmap(tracks) {
         else
             c = '#FF0000';
         var l = new google.maps.Polyline({
-                        path: coord,
-                        geodesic: true,
-                        strokeColor: c,
-                        strokeOpacity: 1.0,
-                        strokeWeight: 2
-                      });
+    		            path: coord,
+    		            geodesic: true,
+    		            strokeColor: c,
+    		            strokeOpacity: 1.0,
+    		            strokeWeight: 2
+  		            });
         l.setMap(map);
           
     }
