@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
 
 use App\Models\Organisation;
 use App\Models\Member;
@@ -16,10 +15,10 @@ class MembersController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $orgInput = Input::get('org');
-        $roleInput = Input::get('role');
+        $orgInput = $request->input('org');
+        $roleInput = $request->input('role');
 
         $org = Organisation::find($orgInput);
         $role = null;

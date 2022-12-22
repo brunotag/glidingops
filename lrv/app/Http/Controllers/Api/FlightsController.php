@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
 use DateTimeZone;
 use DateTime;
 
@@ -17,10 +16,10 @@ class FlightsController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $orgInput       = Input::get('org');
-        $localdateInput = Input::get('localdate');
+        $orgInput       = $request->input('org');
+        $localdateInput = $request->input('localdate');
 
         $org = Organisation::find($orgInput);
         if(! $localdateInput) {

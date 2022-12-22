@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
-use phpDocumentor\Reflection\Types\Array_;
 use Illuminate\Auth\AuthenticationException;
 
 class GopsGuard implements Guard
