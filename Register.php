@@ -17,6 +17,7 @@ p.p2 {font-size:12px;}
 <body>
 
 <?php
+include "./helpers/mail.php";
 $errtext="";
 function generateRandomString($length = 6) {
 $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -75,10 +76,9 @@ $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params[
     }
     $r = mysqli_query($con,$q);
     //TODO:replace hardcoded urls
-    $headers = 'From: gops.wwgc.co.nz@gmail.com' . "\r\n" .
-     'Reply-To: wgcoperations@gmail.com' . "\r\n" .
-     'X-Mailer: PHP/' . phpversion();
     $message = 
+      "Hi, ".$dispname.",\n".
+      "\n".
       "Here are your login details for Gliding Ops.\n".
       "\n".
       "Username: ".$email."\n".
@@ -87,7 +87,7 @@ $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params[
       "You will be asked to change the temporary password on your first login.".
       "\n".
       "http://gops.wwgc.co.nz/Login.php";
-    mail($email, "Welcome - Gliding Ops", $message, $headers);
+    Mail::SendMailPlainText($email, "Welcome - Gliding Ops", $message);
     header('Location: Login.php?registered=1');
    }
   }

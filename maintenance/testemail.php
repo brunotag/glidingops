@@ -1,5 +1,7 @@
 <?php session_start(); ?>
 <?php
+include "../helpers/mail.php";
+
 $org = 0;
 $updtext = '';
 if (isset($_SESSION['org'])) $org = $_SESSION['org'];
@@ -16,7 +18,6 @@ $con_params = $con_params['gliding'];
 $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
 if (mysqli_connect_errno())
    die("Failed to connect to Database: " . mysqli_connect_error());
-include '../helpers.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
    $thisorg = $_POST['org'];
    $mem = $_POST['member'];
@@ -25,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    $q = "SELECT * from members where org = " . $thisorg . " and id =  " . $mem;
    $r = mysqli_query($con, $q);
    $row = mysqli_fetch_array($r);
-   SendMail($row['email'], $sj, $mess);
+   Mail::SendMailPlainText($row['email'], $sj, $mess);
    $updtext = "Message sent to: " . $row['email'];
 }
 ?>

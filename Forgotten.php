@@ -65,6 +65,7 @@
 <body>
   <?php
   include "helpers.php";
+  include "./helpers/mail.php";
   $errtext = "";
   function generateRandomString($length = 8)
   {
@@ -109,7 +110,7 @@ You will be asked to change the temporary password on your first login.
 https://@gops.wwgc.co.nz/Login.php;
 MAIL;
         //TODO: replace hardcoded url
-        SendMail($email, "Password Recovery - Gliding Ops", $message);
+        Mail::SendMailPlainText($email, "Password Recovery - Gliding Ops", $message);
         header('Location: Login.php?recovered=1');
       } else
         $errtext = "Sorry, that email address is not recorded as a member";
