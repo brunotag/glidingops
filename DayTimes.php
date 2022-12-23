@@ -1,4 +1,5 @@
 <?php
+include "./helpers/mail.php";
 require dirname(__FILE__) . '/includes/classGlidingDB.php';
 $con_params = require( dirname(__FILE__) .'/config/database.php');
 $DB = new GlidingDB($con_params['gliding']);
@@ -118,15 +119,8 @@ if (isset($options['m']))
 
     $msg = "<html><head><style>h1 {font-size: 12pt;} .r {text-align: right;} .l {text-align: left;}</style></head><body>{$v}</body></html>";
     
-    
     //TODO: replace hardcoded domain
-    $headers = 'From: Gliding Operations <gops.wwgc.co.nz@gmail.com>' . "\r\n" .
-               'Reply-To: wgcoperations@gmail.com' . "\r\n" .
-               'Content-type: text/html; charset=iso-8859-1' . "\r\n" .
-                'X-Mailer: PHP/' . phpversion();
-
-    //TODO: replace hardcoded domain
-    mail($options['m'],"Daily Flight Times from Tracks",$msg,$headers,'-r gops.wwgc.co.nz@gmail.com');
+    Mail::SendMailHtml($options['m'],"Daily Flight Times from Tracks",$msg);
     exit();
 }
 

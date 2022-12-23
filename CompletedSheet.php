@@ -27,6 +27,7 @@ function printit(){window.print();}
 <?php
 include 'helpers.php';
 include './helpers/timehelpers.php';
+include './helpers/mail.php';
 $DEBUG=0;
 $org=0;
 $diagtext="";
@@ -83,7 +84,7 @@ if (mysqli_num_rows($r) > 0)
 $message="";
 $stClass = getShortTermClass($con,$org);
 $towLaunchType = getTowLaunchType($con);
-$q= "SELECT members.id, members.email from members where class <> " . $stClass . " and enable_email > 0 and localdate_lastemail <> " .$dateStr;
+$q= "SELECT members.id, members.email, members.displayname from members where class <> " . $stClass . " and enable_email > 0 and localdate_lastemail <> " .$dateStr;
 
 $r = mysqli_query($con,$q);
 while ($row = mysqli_fetch_array($r) )
@@ -121,6 +122,7 @@ table {border-collapse: collapse;}
 <table>
 <tr class='tr1'><td colspan='7' class='headp1'>".$orgname."</td></tr>
 <tr class='tr1'><td colspan='7'class='headp2'>operations</td></tr>
+<tr><td colspan='7' class='td1'>Hi ".$row[2].",</td></tr>
 <tr><td colspan='7' class='td1'>Your flights for ";
              $message .= $dateStr2;
              $message .= "</td></tr><tr><td colspan='7' class='td1'></td></tr>
@@ -193,12 +195,7 @@ $message .= "<th>LAUNCH TYPE</th><th>TYPE</th></tr>";
 </table>
 </body>
 </html>";
-        //TODO: replace hardcoded domains
-	   $headers = 'From: gops.wwgc.co.nz@gmail.com' . "\r\n" .
-                 'Reply-To: wgcoperations@gmail.com' . "\r\n" .
-                 'Content-type: text/html; charset=iso-8859-1' . "\r\n" .
-                  'X-Mailer: PHP/' . phpversion();
-           mail($row[1], "Your flight summary", $message, $headers);
+           Mail::SendMailHtml($row[1], "Your flight summary", $message);
            $q5 = "UPDATE members SET localdate_lastemail = ".$dateStr." WHERE members.id = ".$row[0];
            $r5 = mysqli_query($con,$q5);
 

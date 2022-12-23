@@ -12,6 +12,7 @@ function var_error_log($object = null, $text = '')
 //Start
 //Gte t=environemnt variables
 include "helpers.php";
+include "./helpers/mail.php";
 $con_params = require('./config/database.php');
 $con_params = $con_params['gliding'];
 $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
@@ -128,7 +129,7 @@ SQL;
     //TODO: localisation?
     $date = new DateTime("now", new DateTimeZone('Pacific/Auckland'));
     foreach ($messages_and_email_addresses as $msg => $email_addresses) {
-        SendMail(implode(', ', $email_addresses), "WWGC Msg | " . $date->format('D d M h:i A'), $msg);
+        Mail::SendMailPlainText(implode(', ', $email_addresses), "WWGC Msg | " . $date->format('D d M h:i A'), $msg);
     }
     
     $Q = "UPDATE texts SET txt_status=3 WHERE txt_id IN (" . implode(', ',$ids_to_update) .")";

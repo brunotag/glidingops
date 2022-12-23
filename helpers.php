@@ -1,44 +1,6 @@
 <?php
 require_once 'load_model.php';
 //TODO: reliably move this class into /includes
-function getOrgAircraftPrefix($db,$org)
-{
-   $ret='';
-   $q="SELECT aircraft_prefix from organisations where id = " . $org;
-   $r = mysqli_query($db,$q);
-   if (mysqli_num_rows($r) > 0)
-   {
-     $row = mysqli_fetch_array($r);
-     $ret=$row[0];
-   }
-   return $ret;
-}
-
-function getOrgDefautLaunchLat($db,$org)
-{
-   $ret=0.0;
-   $q="SELECT def_launch_lat from organisations where id = " . $org;
-   $r = mysqli_query($db,$q);
-   if (mysqli_num_rows($r) > 0)
-   {
-     $row = mysqli_fetch_array($r);
-     $ret=$row[0];
-   }
-   return $ret;
-}
-
-function getOrgDefautLaunchLon($db,$org)
-{
-   $ret=0.0;
-   $q="SELECT def_launch_lon from organisations where id = " . $org;
-   $r = mysqli_query($db,$q);
-   if (mysqli_num_rows($r) > 0)
-   {
-     $row = mysqli_fetch_array($r);
-     $ret=$row[0];
-   }
-   return $ret;
-}
 
 function getFlightType($strType)
 {
@@ -284,19 +246,6 @@ function isFirstPilotFlightDay($db,$org,$date,$seq,$memberid)
   else
     return true;
 }
-
-//TODO: make use of this SendMail method
-function SendMail($to,$subject,$message)
-{
-  //TODO: replace hardcoded domains
-  $headers =
-    'From: Gliding Operations <gops.wwgc.co.nz@gmail.com>' . "\r\n" .
-    'Reply-To: wgcoperations@gmail.com' . "\r\n" .
-    'Return-PATH: gops.wwgc.co.nz@gmail.com' . "\r\n" .
-    'X-Mailer: PHP/' . phpversion();
-  return mail($to, $subject, $message, $headers, '-r gops.wwgc.co.nz@gmail.com');
-}
-
 function getMemmbersXmlRows($db, $org, $timesheedDate)
 {
   $activeStatusID = getActiveStatusId($db);
