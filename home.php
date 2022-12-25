@@ -271,8 +271,6 @@ if (isset($_SESSION['security'])) {
                   if (($_SESSION['security'] & 24))
                      echo "<p class='u'><a href='/app/reports/membersRolesStatsReport'>Members roles Report</a></p>";
                   if (($_SESSION['security'] & 24))
-                     echo "<p class='u'><a href='MedicalBfr.php'>Medical/BFR Report</a></p>";
-                  if (($_SESSION['security'] & 24))
                      echo "<p class='u'><a href='Towy.php'>Tow Pilots Report</a></p>";
                   if (($_SESSION['security'] & 32))
                      echo "<p class='u'><a href='Engineer.php'>Engineer Report</a></p>";
