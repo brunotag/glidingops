@@ -95,7 +95,7 @@ SELECT
     ,MAX(CASE WHEN f.pic = m.id and f.p2 is not null THEN localdate ELSE NULL END) as last_p1_with_p2_flight
 FROM gliding.flights f JOIN gliding.members m ON (f.pic = m.id OR f.p2 = m.id)
 WHERE
-    f.org = {$_SESSION['org']} AND m.class = 1 AND m.status = 1
+    f.org = {$_SESSION['org']} AND m.class = 1 AND m.status = 1 AND f.deleted <> 1
 GROUP BY m.id
 SQL;
 $sql.=" ORDER BY ";
