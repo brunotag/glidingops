@@ -270,13 +270,10 @@ if (isset($_SESSION['security'])) {
                      echo "<p class='u'><a href='/app/allFlightsReport'>All Flights Report</a></p>";
                   if (($_SESSION['security'] & 24))
                      echo "<p class='u'><a href='/app/reports/membersRolesStatsReport'>Members roles Report</a></p>";
-                  if (($_SESSION['security'] & 24))
-                     echo "<p class='u'><a href='Towy.php'>Tow Pilots Report</a></p>";
                   if (($_SESSION['security'] & 32))
                      echo "<p class='u'><a href='Engineer.php'>Engineer Report</a></p>";
                   if (($_SESSION['security'] & 32))
                      echo "<p class='u'><a href='last-flights-list.php?col=1&descsort=1'>Currency Report</a></p>";
-
                   echo "</td>";
                   $col = ($col + 1) % $totcol;
                   if ($col == 0) echo "</tr><tr>";
