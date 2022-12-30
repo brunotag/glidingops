@@ -68,5 +68,6 @@ RewriteRule wgc MasterDisplay.php?org=1 [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-
+# disable directory browsing, specifically .git
 RedirectMatch 404 /\.git
+Options -Indexes
