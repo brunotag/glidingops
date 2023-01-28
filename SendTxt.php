@@ -23,11 +23,11 @@ if (mysqli_connect_errno()) {
 } else {
 
     $sql = <<<SQL
-    SELECT texts.txt_id,texts.txt_to, messages.msg, members.email as email_to, users.usercode as email_to_2
+    SELECT texts.txt_id,texts.txt_to, messages.msg, COALESCE(members.email,"") as email_to, COALESCE(users.usercode,"") as email_to_2
     FROM texts 
         INNER JOIN messages ON messages.id = texts.txt_msg_id
         INNER JOIN members ON texts.txt_member_id = members.id
-        INNER JOIN users on users.member = members.id
+        LEFT JOIN users on users.member = members.id
     WHERE txt_status = 0;
 SQL;
     $r = mysqli_query($con, $sql);
