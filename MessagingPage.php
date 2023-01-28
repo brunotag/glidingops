@@ -327,6 +327,7 @@ $consumerKey = $row[1];
           <li><a href='members-list.php'>Members</a></li>
           <li><a href='GroupAllocate.php'>Groups</a></li>
           <li><a href='texts-list.php'>List Texts</a></li>
+          <li><a href='texts-list-last-200.php'>Last 200 Sent</a></li>
           <li class='right'>Help</li>
         </ul>
       </div>
