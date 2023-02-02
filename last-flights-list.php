@@ -77,6 +77,7 @@ $renderHeaderCell(1, "LAST FLIGHT", $colsort, $descsort);
 $renderHeaderCell(2, "LAST SOLO", $colsort, $descsort);
 $renderHeaderCell(3, "LAST AS P2", $colsort, $descsort);
 $renderHeaderCell(4, "LAST AS P1 WITH OTHER P2", $colsort, $descsort);
+$renderHeaderCell(5, "HAS FLOWN IN THE PAST 90 DAYS", $colsort, $descsort);
 ?>
 </tr>
 <?php
@@ -93,6 +94,7 @@ SELECT
     ,MAX(CASE WHEN f.p2 is null THEN localdate ELSE NULL END) as last_solo_flight
     ,MAX(CASE WHEN f.p2 = m.id THEN localdate ELSE NULL END) as last_flight_as_P2
     ,MAX(CASE WHEN f.pic = m.id and f.p2 is not null THEN localdate ELSE NULL END) as last_p1_with_p2_flight
+    ,CASE WHEN DATEDIFF(CURDATE(), (MAX(CASE WHEN f.pic = m.id OR f.p2 = m.id THEN localdate ELSE NULL END))) <= 90 THEN TRUE ELSE FALSE END as has_flown_last_90_days
 FROM gliding.flights f JOIN gliding.members m ON (f.pic = m.id OR f.p2 = m.id)
 WHERE
     f.org = {$_SESSION['org']} AND m.class = 1 AND m.status = 1 AND f.deleted <> 1
@@ -115,6 +117,9 @@ switch ($colsort) {
  case 4:
    $sql .= "last_p1_with_p2_flight";
    break;
+ case 5:
+   $sql .= "has_flown_last_90_days";
+   break;
 }
 if ($descsort == 1)
     $sql .= " ASC";
@@ -133,6 +138,16 @@ $renderDateCell = function($column){
     echo "</td>";
 };
 
+$renderBoolCell = function($column){
+    echo "<td>";
+    if ($column>0){
+        echo "Yes";
+    }else {
+        echo "No";
+    }
+    echo "</td>";
+};
+
 while ($row = mysqli_fetch_array($r))
 {
  $rownum = $rownum + 1;
@@ -142,6 +157,7 @@ while ($row = mysqli_fetch_array($r))
     $renderDateCell($row[2]);
     $renderDateCell($row[3]);
     $renderDateCell($row[4]);
+    $renderBoolCell($row[5]);
   echo "</tr>";
 }
 
