@@ -72,6 +72,12 @@ class FlightsController extends Controller
             ->orderBy('flights.seq')
             ;
 
+        $totalDurationQuery = DB::table('flights')
+            ->select(DB::raw('SUM(flights.land-flights.start) as totalDuration'))
+            ->where('flights.org', $_SESSION['org'])
+            ->where('flights.localdate', '>=', $dateStart2)
+            ->where('flights.localdate', '<=', $dateEnd2);
+
         $filterByMember = null;
         if ($request->has('filterByMemberId')) {
             $memberId = $request->input('filterByMemberId');
@@ -82,13 +88,13 @@ class FlightsController extends Controller
                 $query->where('flights.pic', $memberId)
                       ->orWhere('flights.p2', $memberId);
             });
+            $totalDurationQuery = $totalDurationQuery->where(function($query) use($memberId){
+                $query->where('flights.pic', $memberId)
+                      ->orWhere('flights.p2', $memberId);
+            });
         }
 
-        $totalDuration = DB::table('flights')
-            ->select(DB::raw('SUM(flights.land-flights.start) as totalDuration'))
-            ->where('flights.org', $_SESSION['org'])
-            ->where('flights.localdate', '>=', $dateStart2)
-            ->where('flights.localdate', '<=', $dateEnd2)
+        $totalDuration = $totalDurationQuery
             ->first()
             ->totalDuration
         ;
