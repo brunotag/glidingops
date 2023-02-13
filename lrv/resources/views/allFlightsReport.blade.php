@@ -170,21 +170,23 @@
     </tr>
     @endforeach
 
-    {{-- totals --}}
+    {{-- partials --}}
     <tr>
-      <td colspan='11'>Total</td>
-    @if ($towChargeType->isTimeBased())
-      <td></td>
-      <td class='right'>
-        {{App\Helpers\DateTimeFormat::duration($towTotalTime)}}
-      </td>
-    @endif
+      <td>Partial (page) Duration Time:</td>
       <td class='right'>
         {{App\Helpers\DateTimeFormat::duration($gliderTotalTime)}}
       </td>
     </tr>
+
+    {{-- totals --}}
     <tr>
-        <td>Count</td>
+      <td>Total Duration Time:</td>
+      <td class='right'>
+        {{App\Helpers\DateTimeFormat::duration(App\Helpers\FlightHelper::durationRoundedToMinutes($totalDuration))}}
+      </td>
+    </tr>
+    <tr>
+        <td>Total Count</td>
         <td class='right'>{{$flights->total()}}</td>
     </tr>
   </table>

@@ -84,6 +84,15 @@ class FlightsController extends Controller
             });
         }
 
+        $totalDuration = DB::table('flights')
+            ->select(DB::raw('SUM(flights.land-flights.start) as totalDuration'))
+            ->where('flights.org', $_SESSION['org'])
+            ->where('flights.localdate', '>=', $dateStart2)
+            ->where('flights.localdate', '<=', $dateEnd2)
+            ->first()
+            ->totalDuration
+        ;
+
         $flights = $flights->paginate(100);
 
         $flights->appends($_GET)->links();
@@ -94,7 +103,8 @@ class FlightsController extends Controller
             'strDateFrom' => $strDateFrom,
             'strDateTo' => $strDateTo,
             'towChargeType' => $user->organisation->getTowChargeType(),
-            'timezone' => $user->organisation->timezone
+            'timezone' => $user->organisation->timezone,
+            'totalDuration' => $totalDuration
         ]);
     }
 }
