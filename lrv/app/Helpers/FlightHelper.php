@@ -84,7 +84,7 @@ class FlightHelper {
       return "/MyFlightMap.php?glider={$flight->glider}&from={$startDate}&to={$landDate}&flightid={$flight->id}";
     }
 
-    private static function durationRoundedToMinutes($durationInMillies) {
+    public static function durationRoundedToMinutes($durationInMillies) {
       $durationInSeconds = intval($durationInMillies / 1000);
       $durationRoundedToMinutes  = ($durationInSeconds - $durationInSeconds%60);
       return $durationRoundedToMinutes;
