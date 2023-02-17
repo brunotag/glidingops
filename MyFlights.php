@@ -166,7 +166,7 @@ while ($row = mysqli_fetch_array($r) )
   if ($rownum == 1)
   {
      if ($istowy) echo "<h2>Gliding Flights</h2>";
-     echo "<table><tr><th>DATE</th><th>GLIDER</th><th>MAKE/MODEL</th><th>LOCATION</th><th>DURATION</th><th>START</th><th>LAND</th><th>TOW HEIGHT</th><th>LAUNCH TYPE</th><th>TYPE</th><th>COMMENTS</th><th>TRACK</th></tr>";
+     echo "<table><tr><th>DATE</th><th>GLIDER</th><th>MAKE/MODEL</th><th>LOCATION</th><th>DURATION</th><th>START</th><th>LAND</th><th>TOW HEIGHT</th><th>LAUNCH TYPE</th><th>TYPE</th><th>COMMENTS</th><th>TRACK</th><th>IGC FILE</th><th>CSV FILE</th></tr>";
   } 
 
 
@@ -299,7 +299,8 @@ while ($row = mysqli_fetch_array($r) )
   if ($DB->numTracksForFlight($trDateStart,$trDateLand,$row[1]) > 0 || $DBArchive->numTracksForFlight($trDateStart,$trDateLand,$row[1]) > 0)
   {
      echo "<td class='lnk'><a href='MyFlightMap.php?glider=".$row[1]."&from=".$trDateStart->format('Y-m-d H:i:s')."&to=".$trDateLand->format('Y-m-d H:i:s')."&flightid=".$row[11]."'>MAP</a></td>";
-     echo "<td class='lnk'><a href='OlcFile.igc?flightid=".$row[11]."'>IGC FILE</a></td>";
+     echo "<td class='lnk'><div title='Open this IGC file in OLC, WeGlide, SeeYou, ...'><a href='OlcFile.igc?flightid=".$row[11]."'>IGC_FILE</a></div></td>";
+     echo "<td class='lnk'><div title='Import this CSV file in a map from on google.com/maps/d/u/0/'><a href='googlemapsgenerate.php?flightid=".$row[11]."'>CSV_GMAPS</a></div></td>";
   }
 
   echo "</tr>";
