@@ -61,10 +61,10 @@ RewriteRule GlideAccounts.csv Treasurer2.php [L]
 RewriteRule Engineering.csv Engineer2.php [L]
 RewriteRule OlcFile.igc igcgenerate.php [L]
 RewriteRule PasswordChange PasswordChange.php [L]
-RewriteRule agc MasterDisplay.php?org=4 [L]
-RewriteRule cgc MasterDisplay.php?org=3 [L]
-RewriteRule ssb MasterDisplay.php?org=2 [L]
-RewriteRule wgc MasterDisplay.php?org=1 [L]
+RewriteRule agc MasterDisplay.php?org=4 [L,QSA]
+RewriteRule cgc MasterDisplay.php?org=3 [L,QSA]
+RewriteRule ssb MasterDisplay.php?org=2 [L,QSA]
+RewriteRule wgc MasterDisplay.php?org=1 [L,QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
