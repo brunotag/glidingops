@@ -4,6 +4,14 @@ if (isset($_GET['org']))
   $org = $_GET['org'];
 else
   die("Organisation number not set");
+
+if (isset($_GET['date'])){
+  $date = $_GET['date'];
+}
+else{
+  $date = null;
+}
+
 $global_settings = require(dirname(__FILE__) . '/config/site.php');
 $global_settings = $global_settings['globalSettings'];
 ?>
@@ -337,6 +345,12 @@ $global_settings = $global_settings['globalSettings'];
     var toRadians = (3.14159265358979 / 180.0);
     var tripColours = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#00ffff", "#800000", "#008000", "#000080"];
     var gOrg = <?php echo $org; ?>;
+    var gDate = undefined;
+    <?php
+      if ($date){
+        echo "gDate = " . $date . ";";
+      }
+    ?>
     var clok = <?php echo $clockNow->getTimestamp(); ?>;
     var clokoff = 0;
     var mapId = 0;
@@ -416,7 +430,11 @@ $global_settings = $global_settings['globalSettings'];
     }
 
     function GetUpd() {
-      var v = "todayxml.php?org=" + gOrg;
+      if (gDate){
+        var v = "todayxml.php?org=" + gOrg + "&date=" +gDate;
+      }else{
+        var v = "todayxml.php?org=" + gOrg;
+      }
       console.log("Send Request for Todays");
       xmlhttp.open("GET", v, true);
       xmlhttp.send();

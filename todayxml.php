@@ -9,7 +9,11 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     exit();
   }
   $dateTimeZoneNZ = new DateTimeZone("Pacific/Auckland");
-  $dateTimeNZ = new DateTime("now", $dateTimeZoneNZ);
+  if($_GET['date']){
+    $dateTimeNZ = DateTime::createFromFormat('Ymd',$_GET['date']);
+  }else{
+    $dateTimeNZ = new DateTime("now", $dateTimeZoneNZ);
+  }
   $dateStr = $dateTimeNZ->format('Ymd');
   $dateStr2 = $dateTimeNZ->format('Y-m-d');
 
