@@ -48,7 +48,8 @@
         </p>
       @endif
       <br/>
-      {!! Form::submit('View Report', ['name' => 'view']) !!}
+      <input name="html" type="submit" value="View Report">
+      <input name="csv" type="submit" value="Export CSV" formtarget="_blank">
     {!! Form::close() !!}
   </div>
   <h2>Flights</h2>
