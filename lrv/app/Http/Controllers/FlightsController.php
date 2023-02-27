@@ -15,12 +15,62 @@ use DB;
 
 class FlightsController extends Controller
 {
-    /**
-     * Display a listing of all the flights.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function allFlightsReport(Request $request)
+    public function allFlightsReport(Request $request){
+        if (isset($_GET['csv'])){
+            return $this->getAllFlightsCSV($request);
+        }
+        return $this->getAllFlightsHTML($request);
+    }
+
+    private function getAllFlightsCSV(Request $request){
+        set_time_limit(120);
+        $user = Auth::user();
+
+        $dateTimeZone = new DateTimeZone($_SESSION['timezone']);
+        $dateTime = new DateTime('now', $dateTimeZone);
+        $dateStr = $dateTime->format('Y-m-d');
+
+        $strDateFrom  = $request->input("fromdate", $dateStr);
+        $strDateTo    = $request->input("todate", $dateStr);
+
+        $dateStart2 = substr($strDateFrom,0,4) . substr($strDateFrom,5,2) . substr($strDateFrom,8,2);
+        $dateEnd2 = substr($strDateTo,0,4) . substr($strDateTo,5,2) . substr($strDateTo,8,2);
+
+        $filterByMember = null;
+        $memberId = null;
+        if ($request->has('filterByMemberId')) {
+            $memberId = $request->input('filterByMemberId');
+            $filterByMember = Member::where('id', $memberId)->first();
+        }
+
+        $flights = $this->getAllFlights($dateStart2, $dateEnd2, $memberId)
+            ->get();
+
+        $headers = array(
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=export.csv",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        );
+
+        $columns = array('DATE', 'SEQ', 'LOCATION', 'LAUNCH TYPE', 'GLIDER', 'TOWY', 'PIC', 'P2', 'TAKE OFF', 'LAND', 'DURATION', 'CHARGE', 'COMMENTS');
+
+        $callback = function() use ($flights, $columns)
+        {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach($flights as $f) {
+                fputcsv($file, array($f->localdate, $f->seq, $f->location, $f->launchtype_name, $f->glider, $f->towpilot_displayname, $f->pic_displayname, $f->p2_displayname, $f->start, $f->land, $f->flightDuration, $f->billingoption_name, $f->comments));
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    private function getAllFlightsHTML(Request $request)
     {
         set_time_limit(120);
         $user = Auth::user();
