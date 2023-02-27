@@ -35,6 +35,31 @@ class FlightsController extends Controller
         $dateStart2 = substr($strDateFrom,0,4) . substr($strDateFrom,5,2) . substr($strDateFrom,8,2);
         $dateEnd2 = substr($strDateTo,0,4) . substr($strDateTo,5,2) . substr($strDateTo,8,2);
 
+        $filterByMember = null;
+        $memberId = null;
+        if ($request->has('filterByMemberId')) {
+            $memberId = $request->input('filterByMemberId');
+            $filterByMember = Member::where('id', $memberId)->first();
+        }
+
+        $flights = $this->getAllFlights($dateStart2, $dateEnd2, $memberId);
+        $flights = $flights->paginate(100);
+        $flights->appends($_GET)->links();
+
+        $totalDuration = $this->getTotalDuration($dateStart2, $dateEnd2, $memberId);
+
+        return response()->view('allFlightsReport', [
+            'filterByMember' => $filterByMember,
+            'flights' => $flights,
+            'strDateFrom' => $strDateFrom,
+            'strDateTo' => $strDateTo,
+            'towChargeType' => $user->organisation->getTowChargeType(),
+            'timezone' => $user->organisation->timezone,
+            'totalDuration' => $totalDuration
+        ]);
+    }
+
+    private function getAllFlights($dateStart2, $dateEnd2, $memberId){
         $flights = DB::table('flights')
             ->select(
                 'flights.id',
@@ -72,25 +97,27 @@ class FlightsController extends Controller
             ->orderBy('flights.seq')
             ;
 
+        if($memberId) {
+            $flights = $flights->where(function($query) use($memberId){
+                $query->where('flights.pic', $memberId)
+                      ->orWhere('flights.p2', $memberId);
+            });
+        }
+
+        return $flights;
+    }
+
+    private function getTotalDuration($dateStart2, $dateEnd2, $memberId){
         $totalDurationQuery = DB::table('flights')
             ->select(DB::raw('SUM(flights.land-flights.start) as totalDuration'))
             ->where('flights.org', $_SESSION['org'])
             ->where('flights.localdate', '>=', $dateStart2)
             ->where('flights.localdate', '<=', $dateEnd2);
 
-        $filterByMember = null;
-        if ($request->has('filterByMemberId')) {
-            $memberId = $request->input('filterByMemberId');
-            $filterByMember = Member::where('id', $memberId)->first();
-        }
-        if($filterByMember) {
-            $flights = $flights->where(function($query) use($memberId){
-                $query->where('flights.pic', $memberId)
-                      ->orWhere('flights.p2', $memberId);
-            });
+        if($memberId) {
             $totalDurationQuery = $totalDurationQuery->where(function($query) use($memberId){
                 $query->where('flights.pic', $memberId)
-                      ->orWhere('flights.p2', $memberId);
+                    ->orWhere('flights.p2', $memberId);
             });
         }
 
@@ -99,18 +126,6 @@ class FlightsController extends Controller
             ->totalDuration
         ;
 
-        $flights = $flights->paginate(100);
-
-        $flights->appends($_GET)->links();
-
-        return response()->view('allFlightsReport', [
-            'filterByMember' => $filterByMember,
-            'flights' => $flights,
-            'strDateFrom' => $strDateFrom,
-            'strDateTo' => $strDateTo,
-            'towChargeType' => $user->organisation->getTowChargeType(),
-            'timezone' => $user->organisation->timezone,
-            'totalDuration' => $totalDuration
-        ]);
+        return $totalDuration;
     }
 }
