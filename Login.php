@@ -22,31 +22,36 @@
 
     #entry {
       background-color: #d1d1ff;
-      float: right;
       padding: 10px;
-    }
-
-    #picy {
-      float: right;
-    }
-
-    #picy2 {
-      margin: 20px;
-    }
-
-    #main2 {
       margin: 10px;
-      max-width: 800px;
     }
-
-    #main3 {
+    
+    #tweets {
+      padding: 10px;
       margin: 10px;
-      max-width: 800px;
-    }
-
-    #footer {
-      float: bottom;
       text-align: center;
+    }    
+
+    .container::before,.container::after{
+      content: " ";
+      display:table;
+    }
+    .container::after{
+      clear:both
+    }
+
+    .box{
+      float:left;
+    }
+
+    .box:last-child{
+      float:none;
+    }    
+
+    @media screen and (max-width:768px){
+      .box{
+        float:none;
+      }
     }
 
     table {
@@ -103,19 +108,19 @@
     <div id='heading-logo'><img src='HomeLogo.jpg'></div>
     <div id='heading-right'><img src='minilogo.jpg'></div>
   </div>
-  <div id='main'>
-    <div id='entry'>
+  <div id='main' class="container">
+    <div id='entry' class="box">
       <p>Please enter your login details</p>
       <form method='POST' action='checklogin.php'>
         <table>
           <tr>
             <td>Username:</td>
-            <td><input type='text' name='user' size='20' title='Enter email address' autofocus></td>
+            <td><input type='text' name='user' size='30' title='Enter email address' autofocus></td>
             <td></td>
           </tr>
           <tr>
             <td>Password:</td>
-            <td><input type='password' name='pcode' size='20'></td>
+            <td><input type='password' name='pcode' size='30'></td>
             <td></td>
           </tr>
           <tr>
@@ -127,33 +132,9 @@
       </form>
       <p>Club members not registered yet, click <a href='RegisterMe'>here</a></p>
     </div>
-    <div id='main2'>
-      <p>Welcome to glidingops.com, the place where we help manage your Gliding club's operations. Here you will find a set of web based tools that helps the operations of your club, giving you more time to do what you really want to do, fly.</p>
-      <p>The glidingops.com project started with the <a href='http://www.soar.co.nz/'>Wellington Gliding Club, New Zealand</a> in 2014 when a better tool for communicating with varying groups of multiple members was required. From there, it has now grown to a rich operations and management tool for the club.</p>
-      <p>The club Treasurer can now get a spreadsheet with all the members' billing information with just a few clicks whilst engineers and the CFI can get immediate access to flying hours and logs for both gliders and pilots.</p>
-      <p>A large screen TV in the club house gives live coverage of the days activities, creating a central spot for both members and visitors to congregate and enjoy the activities.</p>
+    <div id='tweets' class="box">
+      <a class="twitter-timeline" href="https://twitter.com/glidingwlgtn?ref_src=twsrc%5Etfw" data-tweet-limit="3"><img src="https://i.gifer.com/VAyR.gif"/></a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     </div>
-    <div id="picy">
-      <img src="HomePhoto.jpg"></img>
-    </div>
-    <div id='main3'>
-      <h1>Features</h1>
-      <ul>
-        <li>Management of membership database</li>
-        <li>Flexible communications to selected groups of members</li>
-        <li>Enables electronic flight recording (with data entry possible on mobile devices)</li>
-        <li>CFI, CTP, Treasurer and Engineering Reports</li>
-        <li>Automated billing</li>
-        <li>Individual flight summaries emailed to pilots at the end of each flying day</li>
-        <li>Integrated SPOT and other tracking</li>
-        <li>Enables display of flight tracking</li>
-        <li>Full member portal incluidng booking system under devlopment</li>
-      </ul>
-      <p>If your club is interested in options to use the system, please email us at <a href='mailto:wgcoperations@gmail.com?subject=Interest%20in%20gliding%20ops'>wgcoperations@gmail.com</a></p>
-    </div>
-  </div>
-  <div id='foot'>
-    Copyright &#169; glidingops.com 2014
   </div>
 </body>
 
