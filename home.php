@@ -353,9 +353,11 @@ if (isset($_SESSION['security'])) {
             </table>
             <?php
             if ($org == 1) {
-               echo "<h1>KEEP UP TO DATE ON TWITTER</h1>";
-               echo "<a href='https://twitter.com/glidingwlgtn' class='twitter-follow-button' data-show-count='false' data-lang='en'>Follow @glidingwlgtn</a>";
-            }
+               ?>
+               <div id='tweets' class="box">
+                  <a class="twitter-timeline" href="https://twitter.com/glidingwlgtn?ref_src=twsrc%5Etfw" data-tweet-limit="3"><img src="https://i.gifer.com/VAyR.gif"/></a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+               </div>
+            <?php}
             ?>
          </div>
       </div>
