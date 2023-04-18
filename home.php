@@ -245,7 +245,7 @@ if (isset($_SESSION['security'])) {
                if (($_SESSION['security'] & 1)) {
                   echo "<td><h2 class='u'>MESSAGING</h2>";
                   echo "<p class='u'><a href='MessagingPage'>Broadcast A Message</a></p>";
-                  if (($_SESSION['security'] & 1)) {
+                  if (($_SESSION['security'] & 4)) {
                      echo "<p class='u'><a href='maintenance/testemail.php'>Send Single Email</a></p>";
                   }
                   echo "</td>";
