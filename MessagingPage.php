@@ -2,7 +2,7 @@
 include './helpers/session_helpers.php';
 include 'helpers.php';
 session_start();
-require_security_level(4);
+require_security_level(1);
 
 $org = current_org();
 $membershipStatusActive = App\Models\MembershipStatus::activeStatus();
