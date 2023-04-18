@@ -242,10 +242,12 @@ if (isset($_SESSION['security'])) {
                $col = ($col + 1) % $totcol;
                if ($col == 0) echo "</tr><tr>";
 
-               if (($_SESSION['security'] & 4)) {
+               if (($_SESSION['security'] & 1)) {
                   echo "<td><h2 class='u'>MESSAGING</h2>";
                   echo "<p class='u'><a href='MessagingPage'>Broadcast A Message</a></p>";
-                  echo "<p class='u'><a href='maintenance/testemail.php'>Send Single Email</a></p>";
+                  if (($_SESSION['security'] & 1)) {
+                     echo "<p class='u'><a href='maintenance/testemail.php'>Send Single Email</a></p>";
+                  }
                   echo "</td>";
                   $col = ($col + 1) % $totcol;
                   if ($col == 0) echo "</tr><tr>";
