@@ -357,7 +357,8 @@ if (isset($_SESSION['security'])) {
                <div id='tweets' class="box">
                   <a class="twitter-timeline" href="https://twitter.com/glidingwlgtn?ref_src=twsrc%5Etfw" data-tweet-limit="3"><img src="https://i.gifer.com/VAyR.gif"/></a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                </div>
-            <?php}
+            <?php
+               }
             ?>
          </div>
       </div>
