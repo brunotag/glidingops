@@ -1,4 +1,5 @@
 <?php
+use Noweh\TwitterApi\Client;
 include './helpers/session_helpers.php';
 include 'helpers.php';
 session_start();
@@ -15,11 +16,10 @@ $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_par
 if (mysqli_connect_errno()) {
   echo "<p>Unable to connect to database</p>";
 }
-$q = "SELECT name, twitter_consumerKey from organisations where id = " . $org;
+$q = "SELECT name from organisations where id = " . $org;
 $r = mysqli_query($con, $q);
 $row = mysqli_fetch_array($r);
 $strOrgName = $row[0];
-$consumerKey = $row[1];
 ?>
 
 <!DOCTYPE HTML>
@@ -276,17 +276,21 @@ $consumerKey = $row[1];
       }
       //Do we send to twitter
       if (in_array("twitter", $_POST["member"])) {
-        require_once './includes/twitter.class.php';
 
-        // ENTER HERE YOUR CREDENTIALS (see readme.txt)
-        //$consumerKey="KUeT6uiFJibrAAOFHly5fJJqH";
-        $consumerSecret = "ecH6zt0IAbuKCayUUV35BFwlsw6MlHodiPpZ22HWz1kvhncUIQ";
-        $accessToken = "2521364305-uQbdUP4p9xma4ec6gEaPkqHB6PjlPq1LwWLlwjb";
-        $accessTokenSecret = "bTxQVJ8MJLfDyvGKf64l8XN2MgxMd44RsK6KY2djzW1UZ";
+        $q = "SELECT twitter_account_id, twitter_consumerKey, twitter_consumerSecret, twitter_accessToken, twitter_accessTokenSecret, twitter_bearer from organisations where id = " . $org;
+        $r = mysqli_query($con, $q);
+        $row = mysqli_fetch_array($r);        
+
+        $settings['account_id'] = $row[0];
+        $settings['consumer_key'] = $row[1];
+        $settings['consumer_secret'] = $row[2];
+        $settings['access_token'] = $row[3];
+        $settings['access_token_secret'] = $row[4];
+        $settings['bearer_token'] = $row[5];
 
         try {
-          $twitter = new Twitter($consumerKey, $consumerSecret, $accessToken, $accessTokenSecret);
-        } catch (TwitterException $e) {
+          $client = new Client($settings);
+        } catch (Exception $e) {
           echo 'Error: ' . $e->getMessage();
         }
         if ($lastmsgid == 0)
@@ -296,8 +300,7 @@ $consumerKey = $row[1];
           $tweetmsg = htmlspecialchars_decode($msg_f);
           if (strlen($tweetmsg) > 140)
             $tweetmsg = substr($tweetmsg, 0, 140);
-          $tweet = $twitter->send($tweetmsg); // you can add $imagePath as second argument
-
+          $return = $client->tweet()->create()->performRequest(['text' => $tweetmsg]);
         } catch (TwitterException $e) {
           $errtxt =  "Twitter Error: " . $e->getMessage();
         }
@@ -340,9 +343,7 @@ $consumerKey = $row[1];
         <div id="wholists">
           <p class='p1'>Select who to send to:</p>
           <?php
-          if (strlen($consumerKey) > 0) {
             echo "<table><tr><td class='td1'><input type='checkbox' name='member[]' value='twitter' checked>Twitter</td></tr></table>";
-          }
           ?>
           <?php
           $q_retrieve_roles_used_by_current_org = <<<SQL
