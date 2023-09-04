@@ -23,11 +23,12 @@ if (mysqli_connect_errno()) {
 } else {
 
     $sql = <<<SQL
-    SELECT texts.txt_id,texts.txt_to, messages.msg, COALESCE(members.email,"") as email_to, COALESCE(users.usercode,"") as email_to_2
+    SELECT texts.txt_id,texts.txt_to, messages.msg, COALESCE(members.email,"") as email_to, COALESCE(users.usercode,"") as email_to_2, COALESCE(members2.email, "") as email_from
     FROM texts 
         INNER JOIN messages ON messages.id = texts.txt_msg_id
         INNER JOIN members ON texts.txt_member_id = members.id
-        LEFT JOIN users on users.member = members.id
+        INNER JOIN users on users.member = members.id
+        INNER JOIN members members2 ON messages.txt_sender_member_id = members2.id
     WHERE txt_status = 0;
 SQL;
     $r = mysqli_query($con, $sql);
@@ -37,88 +38,26 @@ SQL;
 
         if ($row["msg"] && strlen($row["msg"]) > 0) {
             $email_to = "";
+            $email_from = "";
             if (filter_var($row["email_to"], FILTER_VALIDATE_EMAIL)) {
                 $email_to = $row["email_to"];
             } else if (filter_var($row["email_to_2"], FILTER_VALIDATE_EMAIL)) {
                 $email_to = $row["email_to_2"];
             }
-            //SEND EMAIL
+            if (filter_var($row["email_from"], FILTER_VALIDATE_EMAIL)) {
+                $email_from = $row["email_from"];
+            }
+            //PREP SEND EMAIL
             if (strlen($email_to) > 0) {
                 if (!$messages_and_email_addresses[$row["msg"]]) {
-                    $messages_and_email_addresses[$row["msg"]] = [];
+                    $messages_and_email_addresses[$row["msg"]] = [
+                        "email_from" => $email_from,
+                        "email_to" => []
+                    ];
                 }
-                array_push($messages_and_email_addresses[$row["msg"]], $email_to);
+                array_push($messages_and_email_addresses[$row["msg"]]["email_to"], $email_to);
             }
             array_push($ids_to_update, $row['txt_id']);
-            //SEND Text
-            // TODO: review all this logic
-            // if ($row['txt_to']) {
-            //     $strTo = trim($row['txt_to']);
-            //     $strTo = trim($strTo, "+");
-            //     $strTo = str_replace(" ", "", $strTo);
-
-            //     $smskey = getenv("SMS_KEY");
-            //     $gateway_host = getenv("SMS_HOST");
-            //     if (
-            //         strlen($strTo) > 0
-            //         && ($smskey && strlen($smskey) > 0)
-            //         && ($gateway_host && strlen($gateway_host) > 0)
-            //     ) { //TODO: emails don't log as error nor as successful...
-            //         $strTo = urlencode($strTo);
-            //         $postparam = array();
-            //         $postparam['smskey'] = $smskey;
-            //         $postparam['phone'] = $strTo;
-            //         $postparam['msg'] = $row[2];
-            //         $postparam['county_code'] = "64";
-            //         $callback = '';
-            //         if (empty($_SERVER['HTTPS']))
-            //             $callback = "http://";
-            //         else
-            //             $callback = "https://";
-
-            //         $callback .= $_SERVER['HTTP_HOST'];
-            //         $callback .= "/TextStatus.php";
-            //         $postparam['callback_url'] = $callback;
-
-            //         $str = json_encode($postparam);
-            //         $url = $gateway_host;
-
-            //         $ch = curl_init($url);
-            //         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-            //         curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
-            //         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            //         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-            //         curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
-            //         $result = curl_exec($ch);
-            //         if (!$result) {
-            //             error_log("Curl error in SendTxt.php " . curl_error($ch));
-            //         }
-
-            //         $result = json_decode($result, true);
-
-            //         $smsid = 0;
-            //         $status = "ERROR";
-            //         if (isset($result['meta']) && $result['meta']['status'] = "OK") {
-            //             $Q = "UPDATE texts SET txt_status=1 txt_timestamp_sent = now() WHERE txt_id = " . $row['txt_id'];
-            //             $r2 = mysqli_query($con, $Q);
-
-            //             $data = $result['data'];
-            //             $smsid = intval($data['textid']);
-            //             //if (isset($data['status']) && $data['status'])
-            //             //    $status = "SENT";
-            //             $Q = "UPDATE texts SET txt_unique=" . $smsid . " WHERE txt_id = " . $row['txt_id'];
-            //             $r2 = mysqli_query($con, $Q);
-            //         } else {
-            //             //Mark as error
-            //             $Q = "UPDATE texts SET txt_status=2 WHERE txt_id = " . $row['txt_id'];
-            //             $r2 = mysqli_query($con, $Q);
-            //         }
-            //     } else {
-            //         //Mark as error
-            //         $Q = "UPDATE texts SET txt_status=2 WHERE txt_id = " . $row['txt_id'];
-            //         $r2 = mysqli_query($con, $Q);
-            //     }
-            // }
         } else {
             //Mark as error
             $Q = "UPDATE texts SET txt_status=2 WHERE txt_id = " . $row['txt_id'];
@@ -129,7 +68,7 @@ SQL;
     //TODO: localisation?
     $date = new DateTime("now", new DateTimeZone('Pacific/Auckland'));
     foreach ($messages_and_email_addresses as $msg => $email_addresses) {
-        Mail::SendMailPlainText(implode(', ', $email_addresses), "WWGC Msg | " . $date->format('D d M h:i A'), $msg);
+        Mail::SendMailPlainTextReplyTo(implode(', ', $email_addresses["email_to"]), "WWGC Msg | " . $date->format('D d M h:i A'), $msg, $email_addresses["email_from"]);
     }
     
     $Q = "UPDATE texts SET txt_status=3 WHERE txt_id IN (" . implode(', ',$ids_to_update) .")";
