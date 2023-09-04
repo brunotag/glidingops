@@ -13,7 +13,7 @@ class OrganisationsTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('organisations')->insert([
+        \DB::table('organisations')->insert([
             'id'                        => 1,
             'name'                      => 'Wellington Gliding Club',
             'addr1'                     => 'PO Box 30 200',
