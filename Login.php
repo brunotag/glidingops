@@ -133,7 +133,8 @@
       <p>Club members not registered yet, click <a href='RegisterMe'>here</a></p>
     </div>
     <div id='tweets' class="box">
-      <a class="twitter-timeline" href="https://twitter.com/glidingwlgtn?ref_src=twsrc%5Etfw" data-tweet-limit="3"><img src="https://i.gifer.com/VAyR.gif"/></a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <script src="https://static.elfsight.com/platform/platform.js" data-use-service-core defer></script>
+      <div class="elfsight-app-0afbf9b2-1431-4b52-b8b4-a52eb1b66f4d"></div>
     </div>
   </div>
 </body>

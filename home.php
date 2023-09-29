@@ -143,17 +143,6 @@ if (isset($_SESSION['security'])) {
          color: #000080
       }
    </style>
-   <script>
-      ! function(d, s, id) {
-         var js, fjs = d.getElementsByTagName(s)[0];
-         if (!d.getElementById(id)) {
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "//platform.twitter.com/widgets.js";
-            fjs.parentNode.insertBefore(js, fjs);
-         }
-      }(document, "script", "twitter-wjs");
-   </script>
 </head>
 
 <body>
@@ -355,7 +344,8 @@ if (isset($_SESSION['security'])) {
             if ($org == 1) {
                ?>
                <div id='tweets' class="box">
-                  <a class="twitter-timeline" href="https://twitter.com/glidingwlgtn?ref_src=twsrc%5Etfw" data-tweet-limit="3"><img src="https://i.gifer.com/VAyR.gif"/></a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                  <script src="https://static.elfsight.com/platform/platform.js" data-use-service-core defer></script>
+                  <div class="elfsight-app-0afbf9b2-1431-4b52-b8b4-a52eb1b66f4d"></div>
                </div>
             <?php
                }
