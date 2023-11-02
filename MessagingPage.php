@@ -203,7 +203,7 @@ $strOrgName = $row[0];
     }
   }
 
-  function CreateMsgRecord($msg, $sendermemberid)
+  function CreateMsgRecord($msg, $sendermemberid, $isbroadcast)
   {
     $msgid = 0;
     $con_params = require('./config/database.php');
@@ -212,9 +212,12 @@ $strOrgName = $row[0];
     if (!mysqli_connect_errno()) {
       $msg2 = htmlspecialchars_decode($msg);
       $msg2 = mysqli_real_escape_string($con, $msg2);
-      $sqlmsg = "INSERT INTO messages (org,msg,txt_sender_member_id) VALUES (" . $_SESSION['org'] . ",'" . $msg2 . "','". $sendermemberid ."')";
+      $sendermemberid = isset($sendermemberid) ? $sendermemberid : 'null';
+      $sqlmsg = "INSERT INTO messages (org,msg,txt_sender_member_id, is_broadcast) VALUES (" . $_SESSION['org'] . ",'" . $msg2 . "', ". $sendermemberid . ", ". $isbroadcast ." )";
       if (mysqli_query($con, $sqlmsg)) {
         $msgid = mysqli_insert_id($con);
+      }else{
+        echo("Error: " . mysqli_error($con));
       }
       mysqli_close($con);
     }
@@ -239,7 +242,7 @@ $strOrgName = $row[0];
             if ($bHaveMember == 0) {
               //Create the message record
               if ($lastmsgid == 0)
-                $lastmsgid = CreateMsgRecord($msg_f, $_SESSION['memberid']);
+                $lastmsgid = CreateMsgRecord($msg_f, $_SESSION['memberid'], false);
             }
             $bHaveMember = 1;
             //Create a text message linking to this message
@@ -265,8 +268,9 @@ $strOrgName = $row[0];
               $row3 = mysqli_fetch_array($r2);
               if ($row3['enable_text'] > 0) {
                 $bHaveMember = 1;
-                if ($lastmsgid == 0)
-                  $lastmsgid = CreateMsgRecord($msg_f, $_SESSION['memberid']);
+                if ($lastmsgid == 0){
+                  $lastmsgid = CreateMsgRecord($msg_f, $_SESSION['memberid'], false);
+                }
                 if ($lastmsgid != 0)
                   CreateTextRecord($lastmsgid, $row3['id'], $row3['phone_mobile']);
               }
@@ -293,8 +297,9 @@ $strOrgName = $row[0];
         } catch (Exception $e) {
           echo 'Error: ' . $e->getMessage();
         }
-        if ($lastmsgid == 0)
-          $lastmsgid = CreateMsgRecord($msg_f, $_SESSION['memberid']);
+        if ($lastmsgid == 0){
+          $lastmsgid = CreateMsgRecord($msg_f, $_SESSION['memberid'], true);
+        }
 
         try {
           $tweetmsg = htmlspecialchars_decode($msg_f);
