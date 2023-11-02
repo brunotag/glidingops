@@ -343,10 +343,7 @@ if (isset($_SESSION['security'])) {
             <?php
             if ($org == 1) {
                ?>
-               <div id='tweets' class="box">
-                  <script src="https://static.elfsight.com/platform/platform.js" data-use-service-core defer></script>
-                  <div class="elfsight-app-0afbf9b2-1431-4b52-b8b4-a52eb1b66f4d"></div>
-               </div>
+               <iframe style="width: 100%;height: 300px;" src="/messages-list.php?org=1" title="Twitter feed"></iframe>
             <?php
                }
             ?>
