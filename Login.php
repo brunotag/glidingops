@@ -132,10 +132,10 @@
       </form>
       <p>Club members not registered yet, click <a href='RegisterMe'>here</a></p>
     </div>
-    <div id='tweets' class="box">
-    <script src="https://static.elfsight.com/platform/platform.js" data-use-service-core defer></script>
-      <div class="elfsight-app-0afbf9b2-1431-4b52-b8b4-a52eb1b66f4d"></div>
+    <div class="box">
+      <iframe style="width:100%;height:500px" src="/messages-list.php?org=1" title="Twitter feed"></iframe>
     </div>
+    
   </div>
 </body>
 
