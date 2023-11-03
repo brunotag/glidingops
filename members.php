@@ -15,7 +15,6 @@ if (isset($_SESSION['security'])) {
 $DEBUG = 0;
 $dateTimeZone = new DateTimeZone($_SESSION['timezone']);
 $dateTime = new DateTime('now', $dateTimeZone);
-$dateStr = $dateTime->format('Y-m-d');
 $timeoffset = $dateTime->getOffset();
 $pageid = 11;
 $errtext = "";
@@ -33,7 +32,7 @@ $surname_f = "";
 $surname_err = "";
 $displayname_f = "";
 $displayname_err = "";
-$date_of_birth_f = $dateStr;
+$date_of_birth_f = "";
 $date_of_birth_err = "";
 $mem_addr1_f = "";
 $mem_addr1_err = "";
@@ -85,11 +84,11 @@ $enable_text_f = "";
 $enable_text_err = "";
 $enable_email_f = "";
 $enable_email_err = "";
-$medical_expire_f = $dateStr;
+$medical_expire_f = "";
 $medical_expire_err = "";
-$icr_expire_f = $dateStr;
+$icr_expire_f = "";
 $icr_expire_err = "";
-$bfr_expire_f = $dateStr;
+$bfr_expire_f = "";
 $bfr_expire_err = "";
 $official_observer_f = "";
 $official_observer_err = "";
@@ -349,7 +348,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           $Q .= ",displayname=";
           $Q .= "'" . mysqli_real_escape_string($con, $displayname_f)  . "'";
           $Q .= ",date_of_birth=";
-          $Q .= "'" . $date_of_birth_f . "'";
+          $Q .= empty($date_of_birth_f) ? "null": "'" . $date_of_birth_f . "'";
           $Q .= ",mem_addr1=";
           $Q .= "'" . mysqli_real_escape_string($con, $mem_addr1_f)  . "'";
           $Q .= ",mem_addr2=";
@@ -412,15 +411,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           $Q .= "'" . $enable_email_f . "'";
           if ($_SESSION['security'] & 16) {
             $Q .= ",medical_expire=";
-            $Q .= "'" . $medical_expire_f . "'";
+            $Q .= empty($medical_expire_f) ? "null": "'" . $medical_expire_f . "'";
           }
           if ($_SESSION['security'] & 16) {
             $Q .= ",icr_expire=";
-            $Q .= "'" . $icr_expire_f . "'";
+            $Q .= empty($icr_expire_f) ? "null": "'" . $icr_expire_f . "'";
           }
           if ($_SESSION['security'] & 16) {
             $Q .= ",bfr_expire=";
-            $Q .= "'" . $bfr_expire_f . "'";
+            $Q .= empty($bfr_expire_f) ? "null": "'" . $bfr_expire_f . "'";
           }
           $Q .= ",official_observer=";
           $Q .= "'" . $official_observer_f . "'";
@@ -480,7 +479,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           $Q .= ",";
           $Q .= "'" . mysqli_real_escape_string($con, $displayname_f) . "'";
           $Q .= ",";
-          $Q .= "'" . $date_of_birth_f . "'";
+          $Q .= empty($date_of_birth_f) ? "null":"'" . $date_of_birth_f . "'";
           $Q .= ",";
           $Q .= "'" . mysqli_real_escape_string($con, $mem_addr1_f) . "'";
           $Q .= ",";
@@ -543,15 +542,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           $Q .= "'" . $enable_email_f . "'";
           if ($_SESSION['security'] & 16) {
             $Q .= ",";
-            $Q .= "'" . $medical_expire_f . "'";
+            $Q .= empty($medical_expire_f) ? "null": "'" . $medical_expire_f . "'";
           }
           if ($_SESSION['security'] & 16) {
             $Q .= ",";
-            $Q .= "'" . $icr_expire_f . "'";
+            $Q .= empty($icr_expire_f) ? "null": "'" . $icr_expire_f . "'";
           }
           if ($_SESSION['security'] & 16) {
             $Q .= ",";
-            $Q .= "'" . $bfr_expire_f . "'";
+            $Q .= empty($bfr_expire_f) ? "null": "'" . $bfr_expire_f . "'";
           }
           $Q .= ",";
           $Q .= "'" . $official_observer_f . "'";
