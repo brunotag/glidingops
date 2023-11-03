@@ -17,7 +17,6 @@ $dateTimeZone = new DateTimeZone($_SESSION['timezone']);
 $dateTime = new DateTime('now', $dateTimeZone);
 $timeoffset = $dateTime->getOffset();
 $pageid = 11;
-$errtext = "";
 $sqltext = "";
 $error = 0;
 $trantype = "Create";
@@ -110,7 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
       $con_params = $con_params['gliding'];
       $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
       if (mysqli_connect_errno()) {
-        $errtext = "Failed to connect to Database: " . mysqli_connect_error();
+        $_SESSION["errtext"] = "Failed to connect to Database: " . mysqli_connect_error();
       } else {
         $q = "SELECT * FROM members WHERE id = " . $recid;
         $r = mysqli_query($con, $q);
@@ -167,6 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
   }
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $_SESSION["errtext"] = "";
   $error = 0;
   $id_err = "";
   $member_id_err = "";
@@ -216,7 +216,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $member_id_f = InputChecker($_POST["member_id_i"]);
   if (!empty($member_id_f)) {
     if (!is_numeric($member_id_f)) {
-      $member_id_err = "MEMBER NUM is not numeric";
+      $member_id_err = $_SESSION["errtext"] = "MEMBER NUM is not numeric";
       $error = 1;
     }
   }else {
@@ -224,17 +224,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
   $firstname_f = InputChecker($_POST["firstname_i"]);
   if (empty($firstname_f)) {
-    $firstname_err = "FIRSTNAME is required";
+    $firstname_err = $_SESSION["errtext"] = "FIRSTNAME is required";
     $error = 1;
   }
   $surname_f = InputChecker($_POST["surname_i"]);
   if (empty($surname_f)) {
-    $surname_err = "SURNAME is required";
+    $surname_err = $_SESSION["errtext"] = "SURNAME is required";
     $error = 1;
   }
   $displayname_f = InputChecker($_POST["displayname_i"]);
   if (empty($displayname_f)) {
-    $displayname_err = "DISPLAY NAME is required";
+    $displayname_err = $_SESSION["errtext"] = "DISPLAY NAME is required";
     $error = 1;
   }
   $date_of_birth_f = InputChecker($_POST["date_of_birth_i"]);
@@ -255,7 +255,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $gnz_number_f = InputChecker($_POST["gnz_number_i"]);
   if (!empty($gnz_number_f)) {
     if (!is_numeric($gnz_number_f)) {
-      $gnz_number_err = "GNZ NUMBER is not numeric";
+      $gnz_number_err = $_SESSION["errtext"] = "GNZ NUMBER is not numeric";
       $error = 1;
     }
   }else {
@@ -264,7 +264,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $qgp_number_f = InputChecker($_POST["qgp_number_i"]);
   if (!empty($qgp_number_f)) {
     if (!is_numeric($qgp_number_f)) {
-      $qgp_number_err = "QGP NUMBER is not numeric";
+      $qgp_number_err = $_SESSION["errtext"] = "QGP NUMBER is not numeric";
       $error = 1;
     }
   }else {
@@ -282,7 +282,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $gone_solo_f = 0;
   if (!empty($gone_solo_f)) {
     if (!is_numeric($gone_solo_f)) {
-      $gone_solo_err = "SOLO is not numeric";
+      $gone_solo_err = $_SESSION["errtext"] = "SOLO is not numeric";
       $error = 1;
     }
   }
@@ -292,7 +292,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $enable_text_f = 0;
   if (!empty($enable_text_f)) {
     if (!is_numeric($enable_text_f)) {
-      $enable_text_err = "ENABLE TEXTS is not numeric";
+      $enable_text_err = $_SESSION["errtext"] = "ENABLE TEXTS is not numeric";
       $error = 1;
     }
   }
@@ -302,7 +302,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $enable_email_f = 0;
   if (!empty($enable_email_f)) {
     if (!is_numeric($enable_email_f)) {
-      $enable_email_err = "ENABLE EMALS is not numeric";
+      $enable_email_err = $_SESSION["errtext"] = "ENABLE EMALS is not numeric";
       $error = 1;
     }
   }
@@ -328,7 +328,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $con_params = $con_params['gliding'];
     $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
     if (mysqli_connect_errno()) {
-      $errtext = "Failed to connect to Database: " . mysqli_connect_error();
+      $_SESSION["errtext"] = "Failed to connect to Database: " . mysqli_connect_error();
     } else {
       $Q = "";
       if (isset($_POST["del"])) {
@@ -565,7 +565,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $member->setRoles($org, []);
       }
       if (!mysqli_query($con, $Q)) {
-        $errtext = "Database entry: " . mysqli_error($con) . "<br>" . $Q;
+        $_SESSION["errtext"] = "Database entry: " . mysqli_error($con) . "<br>" . $Q;
       } else {
         if ($_POST["tran"] == "Create") {
           $recid = $con->insert_id;
@@ -648,6 +648,7 @@ $userRoles = App\Models\Role::find($roleIds);
   </script>
   <div id='divform'>
     <form method="post" action="<?php echo htmlspecialchars('./Member'); ?>">
+      <?php include "./helpers/error_message.php" ?>
       <table>
         <?php if (true) {
           echo "<tr><td class='desc'>ID</td><td></td>";
@@ -1032,7 +1033,7 @@ $userRoles = App\Models\Role::find($roleIds);
           $con_params = $con_params['gliding'];
           $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
           if (mysqli_connect_errno()) {
-            $errtext = "Failed to connect to Database: " . mysqli_connect_error();
+            $_SESSION["errtext"] = "Failed to connect to Database: " . mysqli_connect_error();
           } else {
             echo "<option value='0'></option>";
             $qs = "SELECT * FROM membership_class";
@@ -1062,7 +1063,7 @@ $userRoles = App\Models\Role::find($roleIds);
           $con_params = $con_params['gliding'];
           $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
           if (mysqli_connect_errno()) {
-            $errtext = "Failed to connect to Database: " . mysqli_connect_error();
+            $_SESSION["errtext"] = "Failed to connect to Database: " . mysqli_connect_error();
           } else {
             echo "<option value='0'></option>";
             $qs = "SELECT * FROM membership_status ORDER BY status_name ASC";
@@ -1271,7 +1272,6 @@ $userRoles = App\Models\Role::find($roleIds);
     </form>
   </div>
   <div>
-    <p><?php echo $errtext; ?></p>
     <?php if ($DEBUG > 0) echo "<p>" . $sqltext . "</p>"; ?>
   </div>
 </body>
