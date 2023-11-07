@@ -343,7 +343,7 @@ if (isset($_SESSION['security'])) {
             <?php
             if ($org == 1) {
                ?>
-               <iframe style="width: 100%;height: 300px;" src="/messages-list.php?org=1" title="Twitter feed"></iframe>
+               <iframe style="width: 100%;height: 300px;border:0px;" src="/messages-list.php?org=1" title="Twitter feed"></iframe>
             <?php
                }
             ?>

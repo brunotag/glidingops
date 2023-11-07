@@ -133,7 +133,7 @@
       <p>Club members not registered yet, click <a href='RegisterMe'>here</a></p>
     </div>
     <div class="box">
-      <iframe style="width:100%;height:500px" src="/messages-list.php?org=1" title="Twitter feed"></iframe>
+      <iframe style="width:100%;height:500px;border:0px;" src="/messages-list.php?org=1" title="Twitter feed"></iframe>
     </div>
     
   </div>
