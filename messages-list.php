@@ -2,75 +2,75 @@
 <html>
 <body>
 <style>
+
+
 body {
-  background: #e6ecf0;
+  background: #F1F1EF;
   font-family: 'Asap', sans-serif;
   font-family: 'Roboto', sans-serif;
 
 }
-img {
-  max-width:100%;
+.imgdiv{
+  float:left;
+  width:25%;
+  max-width:60px;
 }
+.paragraph{
+  display: block;
+  margin-left: 2px;
+  margin-right: 2px;
+  width:100%;
+}
+.paragraph p{
+  margin-top:33px;
+}
+
 .avator {
   border-radius:100px;
-  width:48px;
+  max-width:45px;
   margin-right: 15px;
 }
 
-
 .tweet-wrap {
   max-width:530px;
-  background: #fff;
+  background: #FFFFFF;
   margin: 0 auto;
-  margin-top: 30px;
+  margin-top: 15px;
   border-radius:3px;
-  padding: 25px;
+  padding: 15px;
   border-bottom: 1px solid #e6ecf0;
   border-top: 1px solid #e6ecf0;
+  color: #203A5E;
 }
 
 .tweet-header {
-  display: flex;
-  align-items:flex-start;
+  display: block;
+  width:100%;
+  min-height:40px;
   font-size:18px;
 }
 .tweet-header-info {
+  float:left;
+  width:75%;
   font-weight:bold;
 }
 .tweet-header-info span {
   color:#657786;
   font-weight:normal;
-  margin-left: 5px;
 }
 .tweet-header-info p {
   font-weight:normal;
-  margin-top: 5px;
+  margin-top: 10px;
   
 }
 .tweet-img-wrap {
   padding-left: 60px;
 }
 
-.tweet-info-counts {
-  display: flex;
-  margin-left: 60px;
-  margin-top: 10px;
-}
-.tweet-info-counts div {
-  display: flex;
-  margin-right: 20px;
-}
-.tweet-info-counts div svg {
-  color:#657786;
-  margin-right: 10px;
-}
 @media screen and (max-width:430px){
   body {
     padding-left: 20px;
     padding-right: 20px;
-  }
-  .tweet-header {
-    flex-direction:column;
   }
   .tweet-header img {
     margin-bottom: 20px;
@@ -78,17 +78,28 @@ img {
   .tweet-header-info p {
     margin-bottom: 30px;
   }
-  .tweet-img-wrap {
-    padding-left: 0;
-  }
-  .tweet-info-counts {
-  display: flex;
-  margin-left: 0;
-  }
-  .tweet-info-counts div {
-    margin-right: 10px;
+  .tweet-header {
+    font-size:14px;
+  }  
+  .paragraph p{
+    font-size: 12px;
   }
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background:  #F1F1EF;
+}
+::-webkit-scrollbar-thumb {
+  background: #203A5E;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #E9560D;
+}
+
+
 </style>
 
 <link href="https://fonts.googleapis.com/css?family=Asap" rel="stylesheet">
@@ -117,14 +128,21 @@ while ($row = mysqli_fetch_array($result))
         
     echo "<div class=\"tweet-wrap\">";
     echo "  <div class=\"tweet-header\">";
-    echo "    <img src=\""."./orgs/" . $org . "/twitter_icon.jpg"."\" alt=\"\" class=\"avator\">";
+    echo "    <div class=\"imgdiv\">";
+    echo "      <img src=\""."./orgs/" . $org . "/twitter_icon.jpg"."\" alt=\"\" class=\"avator\">";
+    echo "    </div>";
     echo "    <div class=\"tweet-header-info\">";
+    echo "       <div class=\"titlediv\">";
     echo file_get_contents("./orgs/" . $org . "/twitter_name.txt");
-    echo "<span> ".$date."</span>";
-    echo "      <p> ".$row[1]." </p>";
-          
-    echo "    </div>    ";
-    echo "</div>";
+    echo "       </div>";
+    echo "       <div class=\"datetimediv\">";
+    echo "          <span>".$date."</span>";
+    echo "       </div>";                 
+    echo "    </div>";
+    echo "  </div>";
+    echo "    <div class=\"paragraph\">";    
+    echo "       <p> ".$row[1]." </p>";
+    echo "    </div>";     
     echo "</div>  ";
 }
 $conn = null;
