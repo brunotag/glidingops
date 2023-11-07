@@ -79,10 +79,10 @@ body {
     margin-bottom: 30px;
   }
   .tweet-header {
-    font-size:14px;
+    font-size:15px;
   }  
   .paragraph p{
-    font-size: 12px;
+    font-size: 13px;
   }
 }
 
