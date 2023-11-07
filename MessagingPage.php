@@ -213,11 +213,11 @@ $strOrgName = $row[0];
       $msg2 = htmlspecialchars_decode($msg);
       $msg2 = mysqli_real_escape_string($con, $msg2);
       $sendermemberid = isset($sendermemberid) ? $sendermemberid : 'null';
-      $sqlmsg = "INSERT INTO messages (org,msg,txt_sender_member_id, is_broadcast) VALUES (" . $_SESSION['org'] . ",'" . $msg2 . "', ". $sendermemberid . ", ". $isbroadcast ." )";
+      $sqlmsg = "INSERT INTO messages (org,msg,txt_sender_member_id, is_broadcast) VALUES (" . $_SESSION['org'] . ",'" . $msg2 . "', ". $sendermemberid . ", ". ($isbroadcast ? 'true' : 'false')." )";
       if (mysqli_query($con, $sqlmsg)) {
         $msgid = mysqli_insert_id($con);
       }else{
-        echo("Error: " . mysqli_error($con));
+        die("Error: " . mysqli_error($con));
       }
       mysqli_close($con);
     }
