@@ -124,7 +124,9 @@ $query = "SELECT create_time, msg FROM gliding.messages WHERE is_broadcast AND o
 $result = mysqli_query($conn, $query);
 while ($row = mysqli_fetch_array($result))
 {
-    $date = date_format(date_create($row[0]),"d M Y - H:ia");
+    $dateobj = date_create($row[0]);
+    $dateobj->setTimezone(new DateTimeZone('Pacific/Auckland');)
+    $date = date_format($dateobj,"d M Y - H:ia");
         
     echo "<div class=\"tweet-wrap\">";
     echo "  <div class=\"tweet-header\">";
