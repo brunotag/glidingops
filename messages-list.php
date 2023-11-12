@@ -125,7 +125,7 @@ $result = mysqli_query($conn, $query);
 while ($row = mysqli_fetch_array($result))
 {
     $dateobj = date_create($row[0]);
-    $dateobj->setTimezone(new DateTimeZone('Pacific/Auckland');)
+    $dateobj->setTimezone(new DateTimeZone('Pacific/Auckland'));
     $date = date_format($dateobj,"d M Y - H:ia");
         
     echo "<div class=\"tweet-wrap\">";
