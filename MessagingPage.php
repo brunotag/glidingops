@@ -242,7 +242,7 @@ $strOrgName = $row[0];
             if ($bHaveMember == 0) {
               //Create the message record
               if ($lastmsgid == 0)
-                $lastmsgid = CreateMsgRecord($msg_f, $_SESSION['memberid'], false);
+                $lastmsgid = CreateMsgRecord($msg_f, $_SESSION['memberid'], in_array("twitter", $_POST["member"]));
             }
             $bHaveMember = 1;
             //Create a text message linking to this message
@@ -269,7 +269,7 @@ $strOrgName = $row[0];
               if ($row3['enable_text'] > 0) {
                 $bHaveMember = 1;
                 if ($lastmsgid == 0){
-                  $lastmsgid = CreateMsgRecord($msg_f, $_SESSION['memberid'], false);
+                  $lastmsgid = CreateMsgRecord($msg_f, $_SESSION['memberid'], in_array("twitter", $_POST["member"]));
                 }
                 if ($lastmsgid != 0)
                   CreateTextRecord($lastmsgid, $row3['id'], $row3['phone_mobile']);
@@ -298,7 +298,7 @@ $strOrgName = $row[0];
           echo 'Error: ' . $e->getMessage();
         }
         if ($lastmsgid == 0){
-          $lastmsgid = CreateMsgRecord($msg_f, $_SESSION['memberid'], true);
+          $lastmsgid = CreateMsgRecord($msg_f, $_SESSION['memberid'], in_array("twitter", $_POST["member"]));
         }
 
         try {
