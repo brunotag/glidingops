@@ -299,8 +299,8 @@ while ($row = mysqli_fetch_array($r) )
   if ($DB->numTracksForFlight($trDateStart,$trDateLand,$row[1]) > 0 || $DBArchive->numTracksForFlight($trDateStart,$trDateLand,$row[1]) > 0)
   {
      echo "<td class='lnk'><a href='MyFlightMap.php?glider=".$row[1]."&from=".$trDateStart->format('Y-m-d H:i:s')."&to=".$trDateLand->format('Y-m-d H:i:s')."&flightid=".$row[11]."'>MAP</a></td>";
-     echo "<td class='lnk'><div title='Open this IGC file in OLC, WeGlide, SeeYou, ...'><a href='OlcFile.igc?flightid=".$row[11]."'>IGC_FILE</a></div></td>";
-     echo "<td class='lnk'><div title='Import this CSV file in a map from on google.com/maps/d/u/0/'><a href='googlemapsgenerate.php?flightid=".$row[11]."'>CSV_GMAPS</a></div></td>";
+     echo "<td class='lnk'><a href='OlcFile.igc?flightid=".$row[11]."'>IGC_FILE</a></td>";
+     echo "<td class='lnk'><a href='googlemapsgenerate.php?flightid=".$row[11]."'>CSV_GMAPS</a></td>";
   }
 
   echo "</tr>";
