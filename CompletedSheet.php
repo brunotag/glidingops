@@ -51,14 +51,15 @@ if ($_SERVER["REQUEST_METHOD"] == "GET")
  }
  $dateTimeZone = new DateTimeZone(orgTimezone($con,$org));
  $dateTime = new DateTime("now", $dateTimeZone);
- $dateStr = $dateTime->format('Ymd');
- $dateStr2=$dateTime->format('d/m/Y');
-
+ 
  if(isset($_GET['date']))
  {
   $dateStr=$_GET['date'];
   $dateTime->setDate ( substr($dateStr,0,4), substr($dateStr,4,2), substr($dateStr,6,2) );
  }
+
+ $dateStr = $dateTime->format('Ymd');
+ $dateStr2=$dateTime->format('d/m/Y');
 }
 ?>
 <?php
@@ -94,7 +95,11 @@ while ($row = mysqli_fetch_array($r) )
     $done=0;
     if (strlen($row[1]) > 0)
     {
-        $q1= "SELECT flights.glider, flights.location, (flights.land - flights.start), flights.height, flights.launchtype, a.acronym, flights.pic , flights.p2, flights.start, flights.land from flights LEFT JOIN launchtypes a on a.id = flights.launchtype where flights.org = ".$org." and flights.localdate=" . $dateStr . " and flights.finalised = 1 and (flights.pic = ".$row[0]." or flights.p2 = ".$row[0].") order by flights.seq ASC";
+        $q1= "SELECT flights.glider, flights.location, (flights.land - flights.start), flights.height, flights.launchtype, a.acronym, flights.pic , flights.p2, flights.start, flights.land, m.displayname as p2_name "
+                ."from flights LEFT JOIN launchtypes a on a.id = flights.launchtype "
+                ."LEFT JOIN members m on flights.p2 = m.id "
+                ."where flights.org = ".$org." and flights.localdate=" . $dateStr . " and flights.finalised = 1 and (flights.pic = ".$row[0]." or flights.p2 = ".$row[0].") "
+                ."order by flights.seq ASC";
         $r2 = mysqli_query($con,$q1);
         while ($row2 = mysqli_fetch_array($r2) )
         {
@@ -129,7 +134,7 @@ table {border-collapse: collapse;}
 <tr><th>GLIDER</th><th>MAKE/MODEL</th><th>LOCATION</th><th>DURATION</th><th>START</th><th>LAND</th>";
 if ($towChargeType==1)
    $message .= "<th>HEIGHT</th>";
-$message .= "<th>LAUNCH TYPE</th><th>TYPE</th></tr>";
+$message .= "<th>LAUNCH TYPE</th><th>TYPE</th><th>P2</th></tr>";
              $done=1;
           }
           $model=getGliderModel($con,$org,$row2[0]);
@@ -183,7 +188,14 @@ $message .= "<th>LAUNCH TYPE</th><th>TYPE</th></tr>";
 	  else
              $tr .= "P2";
 
-	  $tr .= "</td>";
+	  $tr .= "</td><td class='right'>";
+          if ($row2[6] == $row[0])
+          {
+            $tr .= $row2[10];
+          }else{
+            $tr .= "---";
+          }
+          $tr .= "</td>";
           $tr .= "</tr>";
           $message .= $tr;
         }
