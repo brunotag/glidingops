@@ -126,6 +126,7 @@ class FlightsController extends Controller
                 'flights.land',
                 'flights.towland',
                 'flights.launchtype',
+                'flights.finalised',
                 DB::raw('flights.land-flights.start AS flightDuration'),
                 DB::raw('IF(towland != 0, flights.towland-flights.start, 0) AS towDuration'),
                 'towplanes.rego_short AS towplane_rego_short',
