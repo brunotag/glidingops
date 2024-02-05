@@ -78,6 +78,8 @@
     @endif
       <th>CHARGE</th>
       <th>COMMENTS</th>
+      <th>MAP</th>
+      <th>FINALISED?</th>
     </tr>
 
     @php
@@ -166,12 +168,15 @@
       <td>{{App\Helpers\FlightHelper::fullComments($flight)}}</td>
 
       {{-- link to tracks database --}}
+      <td>
       @if (App\Helpers\FlightHelper::hasTracks($flight))
-        <td>
-          <a href="{{App\Helpers\FlightHelper::trackURI($flight)}}">MAP</a>
-        </td>
+        <a href="{{App\Helpers\FlightHelper::trackURI($flight)}}">MAP</a>
       @endif
+      </td>
 
+      <td>
+        {{$flight->finalised ? "YES" : "NO"}}
+      <td>
     </tr>
     @endforeach
 
