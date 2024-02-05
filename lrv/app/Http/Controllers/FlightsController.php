@@ -54,7 +54,7 @@ class FlightsController extends Controller
             "Expires" => "0"
         );
 
-        $columns = array('DATE', 'SEQ', 'LOCATION', 'LAUNCH TYPE', 'GLIDER', 'TOWY', 'PIC', 'P2', 'TAKE OFF', 'LAND', 'DURATION', 'CHARGE', 'COMMENTS');
+        $columns = array('DATE', 'SEQ', 'LOCATION', 'LAUNCH TYPE', 'GLIDER', 'TOWY', 'PIC', 'P2', 'TAKE OFF', 'LAND', 'DURATION', 'CHARGE', 'COMMENTS', 'MAP', 'FINALISED?');
 
         $callback = function() use ($flights, $columns)
         {
@@ -62,7 +62,7 @@ class FlightsController extends Controller
             fputcsv($file, $columns);
 
             foreach($flights as $f) {
-                fputcsv($file, array($f->localdate, $f->seq, $f->location, $f->launchtype_name, $f->glider, $f->towpilot_displayname, $f->pic_displayname, $f->p2_displayname, $f->start, $f->land, $f->flightDuration, $f->billingoption_name, $f->comments));
+                fputcsv($file, array($f->localdate, $f->seq, $f->location, $f->launchtype_name, $f->glider, $f->towpilot_displayname, $f->pic_displayname, $f->p2_displayname, $f->start, $f->land, $f->flightDuration, $f->billingoption_name, $f->comments, "NO MAP IN CSV", $f->finalised ? "YES" : "NO"));
             }
             fclose($file);
         };
