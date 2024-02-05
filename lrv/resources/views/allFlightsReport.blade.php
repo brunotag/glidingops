@@ -93,7 +93,11 @@
       $gliderTotalTime += App\Helpers\FlightHelper::flightDuration($flight);
     @endphp
 
+    @if($flight->finalised)
     <tr>
+    @else
+    <tr style="background-color:yellow">
+    @endif
       <td>{{App\Helpers\DateTimeFormat::formatDateStr($flight->localdate)}}</td>
       <td class='right'>{{$flight->seq}}</td>
       <td>{{$flight->location}}</td>
