@@ -8,3 +8,7 @@ lrv/.vagrant
 vagrant.log
 lrv/vagrant.log
 img/members
+orgs/*/camera/*.jpg
+orgs/*/camera/*.jpeg
+orgs/*/camera/*.txt
+orgs/*/camera/*.sh
