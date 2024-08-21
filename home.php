@@ -214,7 +214,7 @@ if (isset($_SESSION['security'])) {
                $col = ($col + 1) % $totcol;
                if ($col == 0) echo "</tr><tr>";
                //TODO: BOOKING - HARDCODED LINK
-               echo "<td><h2 class='u'><a href='https://www.wwgc.co.nz/members-pilots#bookings' target='_blank'>BOOKINGS</a></h2>";
+               echo "<td><h2 class='u'><a href='https://glidegreytown.nz/latest/#booking' target='_blank'>BOOKINGS</a></h2>";
                echo "</td>";
                $col = ($col + 1) % $totcol;
                if ($col == 0) echo "</tr><tr>";
