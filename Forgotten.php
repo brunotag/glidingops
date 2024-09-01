@@ -107,7 +107,7 @@ Username: {$email}
 Temporary Password: {$pw}
 
 You will be asked to change the temporary password on your first login.
-https://@gops.wwgc.co.nz/Login.php;
+https://gops.wwgc.co.nz/Login.php;
 MAIL;
         //TODO: replace hardcoded url
         Mail::SendMailPlainText($email, "Password Recovery - Gliding Ops", $message);
