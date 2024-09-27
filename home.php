@@ -219,7 +219,7 @@ if (isset($_SESSION['security'])) {
                $col = ($col + 1) % $totcol;
                if ($col == 0) echo "</tr><tr>";
 
-               echo "<td><h2 class='u'><a href='Rosters'>ROSTERS</a></h2></td>";
+               echo "<td><h2 class='u'><a href='https://docs.google.com/spreadsheets/d/1bXYn5oiQfIt6CEzK0Gc33L9HDUBd9A_HEQcDrOHxt1s/edit?usp=sharing'>ROSTERS</a></h2></td>";
                $col = ($col + 1) % $totcol;
                if ($col == 0) echo "</tr><tr>";
 

@@ -24,24 +24,22 @@
       background-color: #d1d1ff;
       padding: 10px;
       margin: 10px;
+      float:left;
     }
-    
-    #tweets {
+
+    #links{
+      background-color: #d1d1ff;
       padding: 10px;
       margin: 10px;
-      text-align: center;
-    }    
-
+      float:left;
+    }
+    
     .container::before,.container::after{
       content: " ";
       display:table;
     }
     .container::after{
       clear:both
-    }
-
-    .box{
-      float:left;
     }
 
     .box:last-child{
@@ -95,7 +93,7 @@
     <script>
       //TODO: replace hardcoded domain
       var options = {
-        message: "<br/> Check your mail box! <br/> </br> You should have received an email from gops.wwgc.co.nz@gmail.com",
+        message: "<br/> Check your mail box! <br/> </br> You should have received an email from machinery.gops@wwgc.co.nz",
         color: "success",
         timeout: 10000,
       };
@@ -132,10 +130,24 @@
       </form>
       <p>Club members not registered yet, click <a href='RegisterMe'>here</a></p>
     </div>
-    <div class="box">
-      <iframe style="width:100%;height:500px;border:0px;" src="/messages-list.php?org=1" title="Twitter feed"></iframe>
+    <div id='links' class="box">
+        <p>Handy links</p>
+        <table>
+            <tr>
+              <td>Bookings:</td>
+              <td><a href='https://glidegreytown.nz/latest/#booking' target='_blank'>https://glidegreytown.nz/latest/#booking</a></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Rosters:</td>
+              <td><a href='https://docs.google.com/spreadsheets/d/1bXYn5oiQfIt6CEzK0Gc33L9HDUBd9A_HEQcDrOHxt1s/edit?usp=sharing'>Google Sheet</a></td>
+              <td></td>
+            </tr>
+        </table>
     </div>
-    
+    <div id="twitter" class="box">
+      <iframe style="width:100%;height:500px;border:0px;" src="/messages-list.php?org=1" title="Twitter feed"></iframe>
+    </div>    
   </div>
 </body>
 
