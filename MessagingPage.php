@@ -127,7 +127,7 @@ $MAX_LENGTH = 255;
 
     li {
       float: left;
-      width: 100px;
+      margin-left: 10px;
       background-color: #f0f0f0;
       text-align: center;
       padding-top: 5px;
@@ -337,7 +337,6 @@ $MAX_LENGTH = 255;
           <li><a href='GroupAllocate.php'>Groups</a></li>
           <li><a href='texts-list.php'>List Texts</a></li>
           <li><a href='texts-list-last-200.php' target="_blank">Last 200 Sent to "Fake Twitter"</a></li>
-          <li class='right'>Help</li>
         </ul>
       </div>
       <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
