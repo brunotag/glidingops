@@ -20,6 +20,7 @@ $q = "SELECT name from organisations where id = " . $org;
 $r = mysqli_query($con, $q);
 $row = mysqli_fetch_array($r);
 $strOrgName = $row[0];
+$MAX_LENGTH = 255;
 ?>
 
 <!DOCTYPE HTML>
@@ -303,8 +304,8 @@ $strOrgName = $row[0];
 
         try {
           $tweetmsg = htmlspecialchars_decode($msg_f);
-          if (strlen($tweetmsg) > 140)
-            $tweetmsg = substr($tweetmsg, 0, 140);
+          if (strlen($tweetmsg) > $MAX_LENGTH)
+            $tweetmsg = substr($tweetmsg, 0, $MAX_LENGTH);
           $return = $client->tweet()->create()->performRequest(['text' => $tweetmsg]);
         } catch (TwitterException $e) {
           $errtxt =  "Twitter Error: " . $e->getMessage();
@@ -342,8 +343,8 @@ $strOrgName = $row[0];
       <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
         <div id="entrybox">
           <p class='p1'>Enter your broadcast message:</p>
-          <textarea onkeyup="textCounter(this,'cnter' ,140)" onmouseup="textCounter(this,'cnter' ,140)" rows="4" cols="80" type='text' name='msg' maxlength="140"></textarea>
-          <span id="cnter" class='span1'>140</span>
+          <textarea onkeyup="textCounter(this,'cnter' ,<?php echo $MAX_LENGTH?>)" onmouseup="textCounter(this,'cnter' ,<?php echo $MAX_LENGTH?>)" rows="4" cols="80" type='text' name='msg' maxlength="<?php echo $MAX_LENGTH?>"></textarea>
+          <span id="cnter" class='span1'><?php echo $MAX_LENGTH?></span>
         </div>
         <div id="wholists">
           <p class='p1'>Select who to send to:</p>
