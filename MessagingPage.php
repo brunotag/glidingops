@@ -344,6 +344,7 @@ $MAX_LENGTH = 255;
           <p class='p1'>Enter your broadcast message:</p>
           <textarea onkeyup="textCounter(this,'cnter' ,<?php echo $MAX_LENGTH?>)" onmouseup="textCounter(this,'cnter' ,<?php echo $MAX_LENGTH?>)" rows="4" cols="80" type='text' name='msg' maxlength="<?php echo $MAX_LENGTH?>"></textarea>
           <span id="cnter" class='span1'><?php echo $MAX_LENGTH?></span>
+          <input type='submit' value='Send'></td>
         </div>
         <div id="wholists">
           <p class='p1'>Select who to send to:</p>
