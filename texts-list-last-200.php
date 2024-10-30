@@ -29,21 +29,33 @@ function dtfmt($dt)
 }
 $DEBUG=0;
 $diagtext="";
-$pageid=189;
+$pageid=18;
+$pkcol=1;
+$pagesortdata = $_SESSION['pagesortdata'];
+$colsort = $pagesortdata[$pageid];
+if ($_SERVER["REQUEST_METHOD"] == "GET")
+{
+ if(isset($_GET['col']))
+ {
+  if($_GET['col'] != "" && $_GET['col'] != null)
+  {
+   $colsort = $_GET['col'];
+   $pagesortdata[$pageid] = $colsort;
+   $_SESSION['pagesortdata'] = $pagesortdata;
+  }
+ }
+}
+if ($colsort == 0)
+ 	$colsort = $pkcol;
 ?>
 <div id="div1">
 <div id="div2">
 <table><tr>
 <?php
-if (true){echo '<th ';echo " style='cursor:pointer;'";echo ">";echo "ID";echo "</th>";}
-if (true){echo '<th ';echo " style='cursor:pointer;'";echo ">";echo "Unique ID";echo "</th>";}
-if (true){echo '<th ';echo " style='cursor:pointer;'";echo ">";echo "Message Text";echo "</th>";}
-if (true){echo '<th ';echo " style='cursor:pointer;'";echo ">";echo "Member Name";echo "</th>";}
-if (true){echo '<th ';echo " style='cursor:pointer;'";echo ">";echo "To";echo "</th>";}
-if (true){echo '<th ';echo " style='cursor:pointer;'";echo ">";echo "Status";echo "</th>";}
-if (true){echo '<th ';echo " style='cursor:pointer;'";echo ">";echo "Creation Time";echo "</th>";}
-if (true){echo '<th ';echo " style='cursor:pointer;'";echo ">";echo "Sent Time";echo "</th>";}
-if (true){echo '<th ';echo " style='cursor:pointer;'";echo ">";echo "Received Time";echo "</th>";}
+if (true){echo '<th ';if ($colsort == 1) echo "class='colsel'";echo ">";echo "ID";echo "</th>";}
+if (true){echo '<th ';if ($colsort == 2) echo "class='colsel'";echo ">";echo "Message Text";echo "</th>";}
+if (true){echo '<th ';if ($colsort == 3) echo "class='colsel'";echo ">";echo "Sender";echo "</th>";}
+if (true){echo '<th ';if ($colsort == 4) echo "class='colsel'";echo ">";echo "Creation Time";echo "</th>";}
 ?>
 </tr>
 <?php
@@ -53,29 +65,29 @@ if (mysqli_connect_errno())
 {
  echo "<p>Unable to connect to database</p>";
 }
-$sql= "SELECT TOP 200 texts.txt_id,texts.txt_unique,a.msg,b.displayname,texts.txt_to,texts.txt_status,texts.txt_timestamp_create,texts.txt_timestamp_sent,texts.txt_timestamp_recv FROM texts LEFT JOIN messages a ON a.id = texts.txt_msg_id LEFT JOIN members b ON b.id = texts.txt_member_id"; 
-$sql.=" ORDER BY texts.txt_id DESC";
-$diagtext.= "SQL=".$sql;
+
+$sql= <<<SQL
+SELECT mx.id, msg, m.displayname as sender, mx.create_time
+FROM messages mx INNER JOIN members m on mx.txt_sender_member_id = m.id
+WHERE is_broadcast = 1
+ORDER BY id DESC
+LIMIT 200
+SQL;
 $r = mysqli_query($con,$sql);
 $rownum = 0;
 while ($row = mysqli_fetch_array($r) )
 {
- $rownum = $rownum + 1;
-  echo "<tr class='";if (($rownum % 2) == 0)echo "even";else echo "odd";  echo "'>";if (true){echo "<td class='right'>";echo "<a href='texts.php?id=";echo $row[0];echo "'>";echo $row[0];echo "</a>";echo "</td>";}
-if (true){echo "<td class='right'>";echo $row[1];echo "</td>";}
-if (true){echo "<td>";echo $row[2];echo "</td>";}
-if (true){echo "<td>";echo $row[3];echo "</td>";}
-if (true){echo "<td>";echo $row[4];echo "</td>";}
-if (true){echo "<td class='right'>";echo $row[5];echo "</td>";}
-if (true){echo "<td>";if ($row[6]!=0){$txt_timestamp_create_d=new DateTime($row[6]); echo timeLocalFormat($txt_timestamp_create_d,$_SESSION['timezone'],'d/m/Y H:i:s');}echo "</td>";}
-if (true){echo "<td>";if ($row[7]!=0){$txt_timestamp_sent_d=new DateTime($row[7]); echo timeLocalFormat($txt_timestamp_sent_d,$_SESSION['timezone'],'d/m/Y H:i:s');}echo "</td>";}
-if (true){echo "<td>";if ($row[8]!=0){$txt_timestamp_recv_d=new DateTime($row[8]); echo timeLocalFormat($txt_timestamp_recv_d,$_SESSION['timezone'],'d/m/Y H:i:s');}echo "</td>";}
+  $rownum = $rownum + 1;
+  echo "<tr class='";if (($rownum % 2) == 0)echo "even";else echo "odd";  echo "'>";
+  	if (true){echo "<td>";echo "<a href='texts.php?id=";echo $row[0];echo "'>";echo $row[0];echo "</a>";echo "</td>";}
+	if (true){echo "<td>";echo $row[1];echo "</td>";}
+	if (true){echo "<td>";echo $row[2];echo "</td>";}
+	if (true){echo "<td>";if ($row[3]!=0){$txt_timestamp_create_d=new DateTime($row[3]); echo timeLocalFormat($txt_timestamp_create_d,$_SESSION['timezone'],'d/m/Y H:i:s');}echo "</td>";}
   echo "</tr>";
 }
 ?>
 </table>
 </div>
 </div>
-<?php if($DEBUG>0) echo "<p>".$diagtext."</p>";?>
 </body>
 </html>

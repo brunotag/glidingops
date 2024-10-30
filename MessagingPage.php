@@ -336,7 +336,7 @@ $MAX_LENGTH = 255;
           <li><a href='members-list.php'>Members</a></li>
           <li><a href='GroupAllocate.php'>Groups</a></li>
           <li><a href='texts-list.php'>List Texts</a></li>
-          <li><a href='texts-list-last-200.php'>Last 200 Sent</a></li>
+          <li><a href='texts-list-last-200.php' target="_blank">Last 200 Sent to "Fake Twitter"</a></li>
           <li class='right'>Help</li>
         </ul>
       </div>
@@ -349,7 +349,7 @@ $MAX_LENGTH = 255;
         <div id="wholists">
           <p class='p1'>Select who to send to:</p>
           <?php
-            echo "<table><tr><td class='td1'><input type='checkbox' name='member[]' value='twitter' checked>Twitter</td></tr></table>";
+            echo "<table><tr><td class='td1'><input type='checkbox' name='member[]' value='twitter' checked><b>'Fake Twitter' (website)</b></td></tr></table>";
           ?>
           <?php
           $q_retrieve_roles_used_by_current_org = <<<SQL
