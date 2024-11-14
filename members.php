@@ -627,6 +627,9 @@ $userRoles = App\Models\Role::find($roleIds);
   <style>
     <?php $inc = "./orgs/" . $org . "/heading2.css";
     include $inc; ?>
+    .tableform tr {
+      outline: thin dotted lightgrey
+    }
   </style>
   <style>
     <?php $inc = "./orgs/" . $org . "/menu1.css";
@@ -649,7 +652,7 @@ $userRoles = App\Models\Role::find($roleIds);
   <div id='divform'>
     <form method="post" action="<?php echo htmlspecialchars('./Member'); ?>">
       <?php include "./helpers/error_message.php" ?>
-      <table>
+      <table class="tableform">
         <?php if (true) {
           echo "<tr><td class='desc'>ID</td><td></td>";
           echo "<td>";
@@ -660,7 +663,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if (true) {
+        <?php if (false) {
           echo "<tr><td class='desc'>MEMBER NUM</td><td></td>";
           echo "<td>";
           echo "<input ";
@@ -731,13 +734,161 @@ $userRoles = App\Models\Role::find($roleIds);
         }
         ?>
         <?php if (true) {
+          echo "<tr><td class='desc'>CLASS</td><td>*</td>";
+          echo "<td><select name='class_i'>";
+          $con_params = require('./config/database.php');
+          $con_params = $con_params['gliding'];
+          $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+          if (mysqli_connect_errno()) {
+            $_SESSION["errtext"] = "Failed to connect to Database: " . mysqli_connect_error();
+          } else {
+            echo "<option value='0'></option>";
+            $qs = "SELECT * FROM membership_class";
+            if ($_SESSION['org'] > 0) {
+              $qs .= " WHERE membership_class.org = " . $_SESSION['org'] . " ";
+            }
+            $qs .= " ORDER BY class ASC";
+            $r = mysqli_query($con, $qs);
+            while ($row = mysqli_fetch_array($r)) {
+              if ($class_f == $row['id'])
+                echo "<option value='" . $row['id'] . "' selected>" . $row['class'] . "</option>";
+              else
+                echo "<option value='" . $row['id'] . "'>" . $row['class'] . "</option>";
+            }
+            mysqli_close($con);
+          }
+          echo "</select></td>";
+          echo "<td>";
+          echo $class_err;
+          echo "</td></tr>";
+        }
+        ?>
+        <?php if (true) {
+          echo "<tr><td class='desc'>STATUS</td><td>*</td>";
+          echo "<td><select name='status_i'>";
+          $con_params = require('./config/database.php');
+          $con_params = $con_params['gliding'];
+          $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+          if (mysqli_connect_errno()) {
+            $_SESSION["errtext"] = "Failed to connect to Database: " . mysqli_connect_error();
+          } else {
+            echo "<option value='0'></option>";
+            $qs = "SELECT * FROM membership_status ORDER BY status_name ASC";
+            $r = mysqli_query($con, $qs);
+            while ($row = mysqli_fetch_array($r)) {
+              if ($status_f == $row['id'])
+                echo "<option value='" . $row['id'] . "' selected>" . $row['status_name'] . "</option>";
+              else
+                echo "<option value='" . $row['id'] . "'>" . $row['status_name'] . "</option>";
+            }
+            mysqli_close($con);
+          }
+          echo "</select></td>";
+          echo "<td>";
+          echo $status_err;
+          echo "</td></tr>";
+        }
+        ?>  
+        <?php if (true) {
           echo "<tr><td class='desc'>DATE OF BIRTH</td><td></td>";
           echo "<td><input type='date' name='date_of_birth_i' Value='" . substr($date_of_birth_f, 0, 10) . "'></td>";
           echo "<td>";
           echo $date_of_birth_err;
           echo "</td></tr>";
         }
+        ?>             
+        <?php if (true) {
+          echo "<tr><td class='desc'>HOME PHONE</td><td></td>";
+          echo "<td>";
+          echo "<input ";
+          if (strlen($phone_home_err) > 0) echo "class='err' ";
+          echo "type='text' ";
+          echo "name='phone_home_i' ";
+          echo "size='20' ";
+          echo "Value='";
+          echo $phone_home_f;
+          echo "' ";
+          echo "maxlength='30'";
+          echo ">";
+          echo "</td>";
+          echo "<td>";
+          echo $phone_home_err;
+          echo "</td></tr>";
+        }
         ?>
+        <?php if (true) {
+          echo "<tr><td class='desc'>MOBILE PHONE</td><td></td>";
+          echo "<td>";
+          echo "<input ";
+          if (strlen($phone_mobile_err) > 0) echo "class='err' ";
+          echo "type='text' ";
+          echo "name='phone_mobile_i' ";
+          echo "size='20' ";
+          echo "Value='";
+          echo $phone_mobile_f;
+          echo "' ";
+          echo "maxlength='30'";
+          echo ">";
+          echo "</td>";
+          echo "<td>";
+          echo $phone_mobile_err;
+          echo "</td></tr>";
+        }
+        ?>  
+        <?php if (true) {
+          echo "<tr><td class='desc'>EMERGENCY CONTACT INFO</td><td></td>";
+          echo "<td>";
+          echo "<input ";
+          if (strlen($emerg_addr1_err) > 0) echo "class='err' ";
+          echo "type='text' ";
+          echo "name='emerg_addr1_i' ";
+          echo "Value='";
+          echo $emerg_addr1_f;
+          echo "' ";
+          echo "maxlength='45'";
+          echo ">";
+          echo "</td>";
+          echo "<td>";
+          echo $emerg_addr1_err;
+          echo "</td></tr>";
+        }
+        ?>
+        <?php if (true) {
+          echo "<tr><td class='desc'></td><td></td>";
+          echo "<td>";
+          echo "<input ";
+          if (strlen($emerg_addr2_err) > 0) echo "class='err' ";
+          echo "type='text' ";
+          echo "name='emerg_addr2_i' ";
+          echo "Value='";
+          echo $emerg_addr2_f;
+          echo "' ";
+          echo "maxlength='45'";
+          echo ">";
+          echo "</td>";
+          echo "<td>";
+          echo $emerg_addr2_err;
+          echo "</td></tr>";
+        }
+        ?>
+        <?php if (true) {
+          echo "<tr><td class='desc'></td><td></td>";
+          echo "<td>";
+          echo "<input ";
+          if (strlen($emerg_addr3_err) > 0) echo "class='err' ";
+          echo "type='text' ";
+          echo "name='emerg_addr3_i' ";
+          echo "Value='";
+          echo $emerg_addr3_f;
+          echo "' ";
+          echo "maxlength='45'";
+          echo ">";
+          echo "</td>";
+          echo "<td>";
+          echo $emerg_addr3_err;
+          echo "</td></tr>";
+        }
+        ?>               
         <?php if (true) {
           echo "<tr><td class='desc'>POSTAL ADDRESS</td><td></td>";
           echo "<td>";
@@ -864,61 +1015,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if (true) {
-          echo "<tr><td class='desc'>EMERGENCY CONTACT INFO</td><td></td>";
-          echo "<td>";
-          echo "<input ";
-          if (strlen($emerg_addr1_err) > 0) echo "class='err' ";
-          echo "type='text' ";
-          echo "name='emerg_addr1_i' ";
-          echo "Value='";
-          echo $emerg_addr1_f;
-          echo "' ";
-          echo "maxlength='45'";
-          echo ">";
-          echo "</td>";
-          echo "<td>";
-          echo $emerg_addr1_err;
-          echo "</td></tr>";
-        }
-        ?>
-        <?php if (true) {
-          echo "<tr><td class='desc'></td><td></td>";
-          echo "<td>";
-          echo "<input ";
-          if (strlen($emerg_addr2_err) > 0) echo "class='err' ";
-          echo "type='text' ";
-          echo "name='emerg_addr2_i' ";
-          echo "Value='";
-          echo $emerg_addr2_f;
-          echo "' ";
-          echo "maxlength='45'";
-          echo ">";
-          echo "</td>";
-          echo "<td>";
-          echo $emerg_addr2_err;
-          echo "</td></tr>";
-        }
-        ?>
-        <?php if (true) {
-          echo "<tr><td class='desc'></td><td></td>";
-          echo "<td>";
-          echo "<input ";
-          if (strlen($emerg_addr3_err) > 0) echo "class='err' ";
-          echo "type='text' ";
-          echo "name='emerg_addr3_i' ";
-          echo "Value='";
-          echo $emerg_addr3_f;
-          echo "' ";
-          echo "maxlength='45'";
-          echo ">";
-          echo "</td>";
-          echo "<td>";
-          echo $emerg_addr3_err;
-          echo "</td></tr>";
-        }
-        ?>
-        <?php if (true) {
+        <?php if (false) {
           echo "<tr><td class='desc'></td><td></td>";
           echo "<td>";
           echo "<input ";
@@ -936,7 +1033,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if (true) {
+        <?php if (false) {
           echo "<tr><td class='desc'>CITY</td><td></td>";
           echo "<td>";
           echo "<input ";
@@ -954,7 +1051,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if (true) {
+        <?php if (false) {
           echo "<tr><td class='desc'>COUNTRY</td><td></td>";
           echo "<td>";
           echo "<input ";
@@ -972,7 +1069,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if (true) {
+        <?php if (false) {
           echo "<tr><td class='desc'>POSTCODE</td><td></td>";
           echo "<td>";
           echo "<input ";
@@ -990,7 +1087,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if (true) {
+        <?php if (false) {
           echo "<tr><td class='desc'>GNZ NUMBER</td><td></td>";
           echo "<td>";
           echo "<input ";
@@ -1008,7 +1105,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if (true) {
+        <?php if (false) {
           echo "<tr><td class='desc'>QGP NUMBER</td><td></td>";
           echo "<td>";
           echo "<input ";
@@ -1026,101 +1123,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if (true) {
-          echo "<tr><td class='desc'>CLASS</td><td></td>";
-          echo "<td><select name='class_i'>";
-          $con_params = require('./config/database.php');
-          $con_params = $con_params['gliding'];
-          $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-          if (mysqli_connect_errno()) {
-            $_SESSION["errtext"] = "Failed to connect to Database: " . mysqli_connect_error();
-          } else {
-            echo "<option value='0'></option>";
-            $qs = "SELECT * FROM membership_class";
-            if ($_SESSION['org'] > 0) {
-              $qs .= " WHERE membership_class.org = " . $_SESSION['org'] . " ";
-            }
-            $qs .= " ORDER BY class ASC";
-            $r = mysqli_query($con, $qs);
-            while ($row = mysqli_fetch_array($r)) {
-              if ($class_f == $row['id'])
-                echo "<option value='" . $row['id'] . "' selected>" . $row['class'] . "</option>";
-              else
-                echo "<option value='" . $row['id'] . "'>" . $row['class'] . "</option>";
-            }
-            mysqli_close($con);
-          }
-          echo "</select></td>";
-          echo "<td>";
-          echo $class_err;
-          echo "</td></tr>";
-        }
-        ?>
-        <?php if (true) {
-          echo "<tr><td class='desc'>STATUS</td><td></td>";
-          echo "<td><select name='status_i'>";
-          $con_params = require('./config/database.php');
-          $con_params = $con_params['gliding'];
-          $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-          if (mysqli_connect_errno()) {
-            $_SESSION["errtext"] = "Failed to connect to Database: " . mysqli_connect_error();
-          } else {
-            echo "<option value='0'></option>";
-            $qs = "SELECT * FROM membership_status ORDER BY status_name ASC";
-            $r = mysqli_query($con, $qs);
-            while ($row = mysqli_fetch_array($r)) {
-              if ($status_f == $row['id'])
-                echo "<option value='" . $row['id'] . "' selected>" . $row['status_name'] . "</option>";
-              else
-                echo "<option value='" . $row['id'] . "'>" . $row['status_name'] . "</option>";
-            }
-            mysqli_close($con);
-          }
-          echo "</select></td>";
-          echo "<td>";
-          echo $status_err;
-          echo "</td></tr>";
-        }
-        ?>
-        <?php if (true) {
-          echo "<tr><td class='desc'>HOME PHONE</td><td></td>";
-          echo "<td>";
-          echo "<input ";
-          if (strlen($phone_home_err) > 0) echo "class='err' ";
-          echo "type='text' ";
-          echo "name='phone_home_i' ";
-          echo "size='20' ";
-          echo "Value='";
-          echo $phone_home_f;
-          echo "' ";
-          echo "maxlength='30'";
-          echo ">";
-          echo "</td>";
-          echo "<td>";
-          echo $phone_home_err;
-          echo "</td></tr>";
-        }
-        ?>
-        <?php if (true) {
-          echo "<tr><td class='desc'>MOBILE PHONE</td><td></td>";
-          echo "<td>";
-          echo "<input ";
-          if (strlen($phone_mobile_err) > 0) echo "class='err' ";
-          echo "type='text' ";
-          echo "name='phone_mobile_i' ";
-          echo "size='20' ";
-          echo "Value='";
-          echo $phone_mobile_f;
-          echo "' ";
-          echo "maxlength='30'";
-          echo ">";
-          echo "</td>";
-          echo "<td>";
-          echo $phone_mobile_err;
-          echo "</td></tr>";
-        }
-        ?>
-        <?php if (true) {
+        <?php if (false) {
           echo "<tr><td class='desc'>WORK PHONE</td><td></td>";
           echo "<td>";
           echo "<input ";
@@ -1158,7 +1161,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if (true) {
+        <?php if (false) {
           echo "<tr><td class='desc'>SOLO</td><td></td>";
           echo "<td><input type='checkbox' name='gone_solo_i[]' Value='1' ";
           if ($gone_solo_f == 1) echo "checked";
@@ -1168,7 +1171,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if (true) {
+        <?php if (false) {
           echo "<tr><td class='desc'>ENABLE TEXTS</td><td></td>";
           echo "<td><input type='checkbox' name='enable_text_i[]' Value='1' ";
           if ($enable_text_f == 1) echo "checked";
@@ -1188,7 +1191,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if ($_SESSION['security'] & 16) {
+        <?php if (false && $_SESSION['security'] & 16) {
           echo "<tr><td class='desc'>MEDICAL EXPIRES</td><td></td>";
           echo "<td><input type='date' name='medical_expire_i' Value='" . substr($medical_expire_f, 0, 10) . "'></td>";
           echo "<td>";
@@ -1196,7 +1199,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if ($_SESSION['security'] & 16) {
+        <?php if (false && $_SESSION['security'] & 16) {
           echo "<tr><td class='desc'>ICR EXPIRES</td><td></td>";
           echo "<td><input type='date' name='icr_expire_i' Value='" . substr($icr_expire_f, 0, 10) . "'></td>";
           echo "<td>";
@@ -1204,7 +1207,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if ($_SESSION['security'] & 16) {
+        <?php if (false && $_SESSION['security'] & 16) {
           echo "<tr><td class='desc'>BFR EXPIRES</td><td></td>";
           echo "<td><input type='date' name='bfr_expire_i' Value='" . substr($bfr_expire_f, 0, 10) . "'></td>";
           echo "<td>";
@@ -1212,7 +1215,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if (true) {
+        <?php if (false) {
           echo "<tr><td class='desc'>OFFICIAL OBSERVER</td><td></td>";
           echo "<td><input type='checkbox' name='official_observer_i[]' Value='1' ";
           if ($official_observer_f == 1) echo "checked";
@@ -1222,7 +1225,7 @@ $userRoles = App\Models\Role::find($roleIds);
           echo "</td></tr>";
         }
         ?>
-        <?php if (true) {
+        <?php if (false) {
           echo "<tr><td class='desc'>FIRST AIDER</td><td></td>";
           echo "<td><input type='checkbox' name='first_aider_i[]' Value='1' ";
           if ($first_aider_f == 1) echo "checked";
@@ -1233,7 +1236,7 @@ $userRoles = App\Models\Role::find($roleIds);
         }
         ?>
         <tr>
-          <td class='desc'>ROLES</td>
+          <td class='desc' style='vertical-align:top'>ROLES:</td>
           <td />
           <td>
             <?php
@@ -1243,6 +1246,7 @@ $userRoles = App\Models\Role::find($roleIds);
             ?>
               <input type='checkbox' value="<?= $role->id ?>" <?= ($selected) ? 'checked' : '' ?> name='roles[]' id='<?= $key ?>' />
               <label for='<?= $key ?>'><?= $role->name ?></label>
+              <br/>
             <?php
             });
             ?>
