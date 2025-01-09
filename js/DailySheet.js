@@ -113,11 +113,11 @@ var DailySheet = function() {
         $('#loading-spinner').show()
         setTimeout(function(){
             try{
-                MemberSelectTemplate = null;
+                MemberSelect.MemberSelectTemplate = null;
                 $.each(membersFields, function(index, field) {
                     field.refresh()
                 })
-                ChargesSelectTemplate = null;
+                ChargesSelect.ChargesSelectTemplate = null;
                 $.each(chargesFields, function(index, field) {
                     field.refresh()
                 })
@@ -389,20 +389,6 @@ var DailySheet = function() {
         $(row).find('.bootstrap-select').removeClass('deleted')
         $(row).find(':input').removeClass('deleted')
         $(row).find('td').removeClass('deleted')
-    }
-
-    function createDropDownList(row, colnum, colname, collid, listxml, listtag, selvalue, newval, options = {}) {
-        var cell = row.insertCell(colnum);
-        if(options.cellClasses) {
-            $(cell).addClass(options.cellClasses);
-        }
-        var xmlSelect = new XMLSelect(colname, collid, listxml, listtag, selvalue, newval)
-        if(options.comboClasses) {
-            $(xmlSelect.domNode).addClass(options.comboClasses)
-        }
-        cell.appendChild(xmlSelect.domNode)
-
-        return xmlSelect
     }
 
     function addComboCell(row, colnum, combo, options = {}) {
