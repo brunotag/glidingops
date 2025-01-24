@@ -1220,8 +1220,7 @@ function AddNewLine()
         <?php if ($towChargeType==2) echo "<th>TOW LAND</th>";?>
         <th>LAND</th>
         <?php if ($towChargeType==1) echo "<th>HEIGHT</th>";
-              else if ($towChargeType==2) echo "<th>TOW</th><th>GLIDER</th>";
-              else echo "<th></th>"?>
+              else if ($towChargeType==2) echo "<th>TOW</th><th>GLIDER</th>";?>
         <?php if ($towChargeType<>2) echo "<th>TIME</th>";?>
         <th>BILLING</th>
         <th>COMMENTS</th>
