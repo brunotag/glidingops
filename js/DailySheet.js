@@ -35,6 +35,7 @@ var DailySheet = function() {
             var para = getTimeTextBox(new Date(today.year, today.month, today.day, now.getHours(), now.getMinutes(), 0));
             para.id = stid;
             parent.appendChild(para);
+            $(para).clockpicker({autoclose: true});
 
             calcFlightTime(iRow);
             fieldchange(what);
@@ -60,6 +61,8 @@ var DailySheet = function() {
         para.id = stid;
         para.size = 1;
         parent.appendChild(para);
+
+        $(para).clockpicker({autoclose: true});
 
         //Get the value of P2
         var p2 = document.getElementById("f" + iRow).value;
@@ -176,6 +179,7 @@ var DailySheet = function() {
         } else {
             var para = getTimeTextBox(new Date(parseInt(start)));
             r6.appendChild(para);
+            $(para).clockpicker({autoclose: true});
             r6.firstChild.setAttribute("id", "g" + nextRow);
         }
 
@@ -204,6 +208,7 @@ var DailySheet = function() {
         } else {
             var para = getTimeTextBox(new Date(parseInt(land)));
             r7.appendChild(para);
+            $(para).clockpicker({autoclose: true});
             r7.firstChild.setAttribute("id", "h" + nextRow);
         }
 
