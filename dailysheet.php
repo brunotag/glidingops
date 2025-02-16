@@ -70,7 +70,6 @@ include 'jsLibraies.php';
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="stylesheet" type="text/css" href="calstyle.css">
   <link rel="stylesheet" type="text/css" href="css/dailysheet.css">
-  <link rel="stylesheet" type="text/css" href="https://weareoutman.github.io/clockpicker/dist/jquery-clockpicker.min.css">
 
   <script type="text/javascript" src="cal.js"></script>
   <script type="text/javascript" src="js/DailySheet.js"></script>
@@ -78,7 +77,6 @@ include 'jsLibraies.php';
   <script type="text/javascript" src="js/XMLSelect.js"></script>
   <script type="text/javascript" src="js/CrewSelect.js"></script>
   <script type="text/javascript" src="js/ChargesSelect.js"></script>
-  <script type="text/javascript" src="https://weareoutman.github.io/clockpicker/dist/jquery-clockpicker.min.js"></script>
 <script>
 var debug = 0;
 var nextRow;
