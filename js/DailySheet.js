@@ -35,6 +35,7 @@ var DailySheet = function() {
             var para = getTimeTextBox(new Date(today.year, today.month, today.day, now.getHours(), now.getMinutes(), 0));
             para.id = stid;
             parent.appendChild(para);
+            buildClockPicker(para);
 
             calcFlightTime(iRow);
             fieldchange(what);
@@ -60,6 +61,8 @@ var DailySheet = function() {
         para.id = stid;
         para.size = 1;
         parent.appendChild(para);
+
+        buildClockPicker(para);
 
         //Get the value of P2
         var p2 = document.getElementById("f" + iRow).value;
@@ -176,6 +179,7 @@ var DailySheet = function() {
         } else {
             var para = getTimeTextBox(new Date(parseInt(start)));
             r6.appendChild(para);
+            buildClockPicker(para);
             r6.firstChild.setAttribute("id", "g" + nextRow);
         }
 
@@ -204,6 +208,8 @@ var DailySheet = function() {
         } else {
             var para = getTimeTextBox(new Date(parseInt(land)));
             r7.appendChild(para);
+            buildClockPicker(para);
+            
             r7.firstChild.setAttribute("id", "h" + nextRow);
         }
 
@@ -397,6 +403,16 @@ var DailySheet = function() {
             $(cell).addClass(options.classes);
         }
         combo.addTo(cell)
+    }
+
+    function buildClockPicker(txtBox){
+        $(txtBox).flatpickr({
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i", // 24-hour format
+            time_24hr: true, // Enables 24-hour format
+            minuteIncrement: 1
+        });
     }
 
     return myPublic
