@@ -70,13 +70,62 @@ include 'jsLibraies.php';
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="stylesheet" type="text/css" href="calstyle.css">
   <link rel="stylesheet" type="text/css" href="css/dailysheet.css">
-
+  
   <script type="text/javascript" src="cal.js"></script>
   <script type="text/javascript" src="js/DailySheet.js"></script>
   <script type="text/javascript" src="js/DailySheetEntryType.js"></script>
   <script type="text/javascript" src="js/XMLSelect.js"></script>
   <script type="text/javascript" src="js/CrewSelect.js"></script>
   <script type="text/javascript" src="js/ChargesSelect.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+  <style>
+        /* Increase the size of time numbers for timepicker **/
+        .flatpickr-time input {
+            font-size: 24px;
+            height: 50px; /* Adjust input height */
+        }
+
+        /* Make the up/down arrow area bigger for timepicker **/
+        .numInputWrapper {
+            width: 60px; /* Increase width for better touch interaction */
+            height: 60px;
+        }
+
+        /* Make the arrow up and down larger for timepicker*/
+        .numInputWrapper span.arrowUp:after,
+        .numInputWrapper span.arrowDown:after {
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid black; /* Up arrow */
+            top: 35%;
+        }
+
+        .numInputWrapper span.arrowDown:after {
+            border-bottom: none;
+            border-top: 8px solid black; /* Down arrow */
+            bottom: 35%;
+        }
+
+        /* Make sure the arrows are properly positioned for timepicker **/
+        .numInputWrapper span {
+            width: 20px; 
+            height: 20px;
+        }
+
+        /* Make arrows always visible for timepicker */
+        .numInputWrapper span {
+          opacity: 1;
+        }
+
+        /* Background always white for timepicker */
+        .numInputWrapper{
+            background: rgba(255, 255, 255, 1) !important;
+        }
+    </style>
+
 <script>
 var debug = 0;
 var nextRow;
