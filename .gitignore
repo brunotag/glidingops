@@ -12,3 +12,4 @@ orgs/*/camera/*.jpg
 orgs/*/camera/*.jpeg
 orgs/*/camera/*.txt
 orgs/*/camera/*.sh
+.aider*
