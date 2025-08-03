@@ -61,11 +61,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     Homestead.configure(config, settings)
 
     if File.exist? afterScriptPath then
-        config.vm.provision "shell", path: afterScriptPath, privileged: false, keep_color: true
+        config.vm.provision "shell", path: afterScriptPath, privileged: false, keep_color: true, run: "always"
     end
 
     if File.exist? customizationScriptPath then
-        config.vm.provision "shell", path: customizationScriptPath, privileged: false, keep_color: true
+        config.vm.provision "shell", path: customizationScriptPath, privileged: false, keep_color: true, run: "always"
     end
 
     if defined? VagrantPlugins::HostsUpdater
@@ -74,5 +74,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     config.vm.provider "virtualbox" do |vb|
         vb.customize ["modifyvm", :id, "--cableconnected1", "on"]
+        vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     end
 end
