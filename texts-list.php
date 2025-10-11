@@ -104,7 +104,7 @@ break;
    $sql .= "txt_timestamp_recv";
    break;
 }
-$sql .= " ASC";
+$sql .= " DESC";
 $diagtext.= "SQL=".$sql;
 $r = mysqli_query($con,$sql);
 $rownum = 0;
