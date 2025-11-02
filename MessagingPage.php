@@ -371,7 +371,15 @@ SQL;
             $colm = 0;
 
 
-            $sql2 = "SELECT a.id, a.displayname, a.surname , a.firstname from role_member LEFT JOIN members a ON a.id = role_member.member_id where role_member.org = " . $_SESSION['org'] . " and role_id = " . $roles[$roleidx]['id'] . " order by a.surname,a.firstname";
+            $sql2 = <<<SQL
+SELECT a.id, a.displayname, a.surname, a.firstname
+FROM role_member 
+LEFT JOIN members a ON a.id = role_member.member_id
+WHERE role_member.org = {$_SESSION['org']}
+  AND role_id = {$roles[$roleidx]['id']}
+  AND a.status = {$membershipStatusActive->id}
+ORDER BY a.surname, a.firstname;
+SQL;
 
 
             $r2 = mysqli_query($con, $sql2);
