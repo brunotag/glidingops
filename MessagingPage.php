@@ -179,6 +179,7 @@ $MAX_LENGTH = 255;
   <?php include __DIR__ . '/helpers/dev_mode_banner.php' ?>
   <?php
   $errtxt = "";
+  $successtxt = "";
   function InputChecker($data)
   {
     $data = trim($data);
@@ -233,6 +234,7 @@ $MAX_LENGTH = 255;
       $errtxt = "You must enter a message";
     } else {
       //Loop here checking what members have been checked
+      $successtxt = "Message will be sent to selected members ":
       {
         $bHaveMember = 0;
         //Loop here for all members
@@ -247,7 +249,6 @@ $MAX_LENGTH = 255;
             }
             $bHaveMember = 1;
             //Create a text message linking to this message
-
             if ($lastmsgid != 0) {
               CreateTextRecord($lastmsgid, $row['id'], $row['phone_mobile']);
             }
@@ -307,6 +308,7 @@ $MAX_LENGTH = 255;
           if (strlen($tweetmsg) > $MAX_LENGTH)
             $tweetmsg = substr($tweetmsg, 0, $MAX_LENGTH);
           $return = $client->tweet()->create()->performRequest(['text' => $tweetmsg]);
+          $successtxt = " and Fake Twitter";
         } catch (TwitterException $e) {
           $errtxt =  "Twitter Error: " . $e->getMessage();
         }
@@ -349,7 +351,7 @@ $MAX_LENGTH = 255;
         <div>
           <table>
             <tr>
-              <td><input type='submit' value='Send'></td>
+              <?php echo "<td class = 'rederr' style='color:#46923c'>" . $successtxt . "</td>"; ?>
               <?php echo "<td class = 'rederr'>" . $errtxt . "</td>"; ?>
             </tr>
           </table>                
