@@ -346,6 +346,14 @@ $MAX_LENGTH = 255;
           <span id="cnter" class='span1'><?php echo $MAX_LENGTH?></span>
           <input type='submit' value='Send'></td>
         </div>
+        <div>
+          <table>
+            <tr>
+              <td><input type='submit' value='Send'></td>
+              <?php echo "<td class = 'rederr'>" . $errtxt . "</td>"; ?>
+            </tr>
+          </table>                
+        </div>
         <div id="wholists">
           <p class='p1'>Select who to send to:</p>
           <?php
@@ -464,12 +472,6 @@ SQL;
 
           mysqli_close($con);
           ?>
-          <table>
-            <tr>
-              <td><input type='submit' value='Send'></td>
-              <?php echo "<td class = 'rederr'>" . $errtxt . "</td>"; ?>
-            </tr>
-          </table>
         </div>
       </form>
       <?php
