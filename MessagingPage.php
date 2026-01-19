@@ -239,7 +239,7 @@ $MAX_LENGTH = 255;
         $sql = "SELECT * FROM members WHERE org=" . $_SESSION['org'];
         $r = mysqli_query($con, $sql);
         while ($row = mysqli_fetch_array($r)) {
-          if (in_array((string)$row['id'], $_POST["member"]) && $row['enable_text'] > 0) {
+          if (in_array((string)$row['id'], $_POST["member"])) {
             if ($bHaveMember == 0) {
               //Create the message record
               if ($lastmsgid == 0)
