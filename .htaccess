@@ -17,6 +17,13 @@ RewriteRule api/v1/json/(.*)$ apiglidjsonv1.php?r=$1 [QSA,NC,L]
 # this is the laravel api
 RewriteRule   ^api/v2/(.*)    /lrv/public/api/v2/$1  [L]
 
+# DataTables API for members
+RewriteRule ^api/members$ api/members.php [L,QSA]
+
+# New members list versions
+RewriteRule MembersListV2a members-list-v2a.php [L,QSA]
+RewriteRule MembersListV2b members-list-v2b.php [L,QSA]
+
 RewriteRule home home.php [L]
 RewriteRule AssignRoles role_member-list.php [L]
 RewriteRule AssignRole role_member.php [L]
