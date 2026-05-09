@@ -20,6 +20,12 @@ RewriteRule   ^api/v2/(.*)    /lrv/public/api/v2/$1  [L]
 # DataTables API for members
 RewriteRule ^api/members$ api/members.php [L,QSA]
 
+# DataTables API for users
+RewriteRule ^api/users$ api/users.php [L,QSA]
+
+# User form API (create/update)
+RewriteRule ^api/user-form$ api/user-form.php [L,QSA]
+
 # MyFlights data API
 RewriteRule ^api/myflights$ api/myflights-data.php [L,QSA]
 
@@ -30,6 +36,11 @@ RewriteRule MembersListOld members-list.php [L]
 # New member create/edit page
 RewriteRule MemberNew members-new.php [L,QSA]
 RewriteRule EditMyDetails members-new.php [L,QSA]
+
+# New users list and create/edit
+RewriteRule UsersList users-list-v2b.php [L,QSA]
+RewriteRule Users/([0-9]+) users-new.php?id=$1 [L,QSA]
+RewriteRule Users users-new.php [L,QSA]
 
 RewriteRule home home.php [L]
 RewriteRule AssignRoles role_member-list.php [L]

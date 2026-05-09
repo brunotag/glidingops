@@ -310,15 +310,15 @@ if (isset($_SESSION['security'])) {
                   if ($col == 0) echo "</tr><tr>";
                }
 
-               if (($_SESSION['security'] & 64)) {
-                  echo "<td><h2 class='u'>USERS</h2>";
-                  echo "<p class='u'><a href='users.php'>Create User</a></p>";
-                  echo "<p class='u'><a href='users-list.php'>View users</a></p>";
+if (($_SESSION['security'] & 64)) {
+                   echo "<td><h2 class='u'>USERS</h2>";
+                   echo "<p class='u'><a href='/Users'>Create User</a></p>";
+                   echo "<p class='u'><a href='/UsersList'>View users</a></p>";
 
-                  echo "</td>";
-                  $col = ($col + 1) % $totcol;
-                  if ($col == 0) echo "</tr><tr>";
-               }
+                   echo "</td>";
+                   $col = ($col + 1) % $totcol;
+                   if ($col == 0) echo "</tr><tr>";
+                }
 
                if (($_SESSION['security'] & 64)) {
                   echo "<td><h2 class='u'>DIAGNOSTICS & RECOVERY</h2>";

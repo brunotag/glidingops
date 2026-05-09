@@ -13,6 +13,10 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/AllMembers` | members-list-v2b.php | Member list (modern) |
 | `/Member` | members.php | Add/edit member (legacy) |
 | `/MemberNew` | members-new.php | Add/edit member (modern) |
+| `/UsersList` | users-list-v2b.php | User list (modern) |
+| `/UsersListOld` | users-list.php | User list (legacy) |
+| `/Users` | users-new.php | Add/edit user (modern) |
+| `/UsersOld` | users.php | Add/edit user (legacy) |
 | `/AllAircraft` | aircraft-list.php | Aircraft list |
 | `/Aircraft` | aircraft.php | Add/edit aircraft |
 | `/AircraftTypes` | aircrafttype-list.php | Aircraft types |
@@ -66,6 +70,8 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/api/v2/*` | /lrv/public/api/v2/* | Laravel API routes |
 | `/api/members` | api/members.php | DataTables member list |
 | `/api/member-form` | api/member-form.php | Member form API (GET: classes/statuses/roles, POST: save) |
+| `/api/users` | api/users.php | DataTables user list |
+| `/api/user-form` | api/user-form.php | User form API (GET: orgs/members, POST: save) |
 | `/GlideAccounts.csv` | Treasurer2.php | Treasurer CSV export |
 | `/Engineering.csv` | Engineer2.php | Engineer CSV export |
 | `/OlcFile.igc` | igcgenerate.php | IGC file download |

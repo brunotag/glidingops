@@ -244,19 +244,15 @@ $(document).ready(function() {
         filterStatuses = statusesVal ? statusesVal : [];
     }
     
-    function buildDataTable() {
-        // Destroy existing table if any
+function buildDataTable() {
+        // Only build if table doesn't exist yet
         if ($.fn.DataTable.isDataTable('#members-table')) {
-            try {
-                $('#members-table').DataTable().destroy();
-            } catch(e) {}
-            $('#members-table').empty();
+            return;
         }
-        
-        // Rebuild table
+
         var searchVal = $('#dt-search').val() || '';
         var lengthVal = parseInt($('#dt-length').val()) || 50;
-        
+
         table = $('#members-table').DataTable({
             processing: true,
             serverSide: true,
@@ -278,7 +274,7 @@ $(document).ready(function() {
                 }
             },
             columns: [
-                { 
+                {
                     data: 'edit_url',
                     title: 'Actions',
                     render: function(data, type, full) {
@@ -288,7 +284,7 @@ $(document).ready(function() {
                     searchable: false,
                     width: '80px'
                 },
-                { 
+                {
                     data: 'photo_url',
                     title: 'Photo',
                     render: function(data) {
@@ -325,19 +321,18 @@ $(document).ready(function() {
             },
             searching: false,
             lengthChange: false,
-            // Use dom to hide default top pagination, keep bottom
             dom: '<"top"f>t<"bottom"ip>',
-            drawCallback: function(settings) {
-                // Move bottom pagination to controls-bar (remove existing first)
-                $('.controls-bar .dataTables_paginate').remove();
-                var pagination = $('.dataTables_paginate');
-                $('.controls-bar').append(pagination);
-                pagination.css('margin-left', 'auto');
+            initComplete: function(settings, json) {
+                var pagination = $('#members-table_wrapper .dataTables_paginate');
+                if (pagination.length) {
+                    pagination.detach();
+                    $('.controls-bar').append(pagination);
+                    pagination.css('margin-left', 'auto');
+                }
             }
         });
     }
-    
-    // Initial build - wrap in try/catch
+
     try {
         buildDataTable();
     } catch(e) {

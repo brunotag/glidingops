@@ -178,6 +178,26 @@ The DailySheet already has some mobile optimizations (flatpickr, dropdown positi
 
 ---
 
+## IMPORTANT: Adding New API Endpoints
+
+When creating a new API endpoint file (e.g., `api/user-form.php`), you MUST also add the corresponding RewriteRule to `.htaccess`:
+
+```apache
+# Example - adding api/user-form.php
+RewriteRule ^api/user-form$ api/user-form.php [L,QSA]
+```
+
+**Pattern:** `RewriteRule ^api/<endpoint-name>$ api/<endpoint-name>.php [L,QSA]`
+
+**Why this matters:** Without the route, the file exists but Apache returns 404 because the URL doesn't map to the file.
+
+**Places to check when adding new routes:**
+- `.htaccess` - all RewriteRules
+- `api/users.php` and `api/members.php` - DataTables API files return `edit_url` fields that must match actual routes
+- Routes for pages vs routes for APIs are separate sections
+
+---
+
 ## Post-Modernization Cleanup (After Thorough Testing)
 
 Once the new pages are verified working, these files can be deleted.
@@ -205,10 +225,26 @@ Once the new pages are verified working, these files can be deleted.
 
 **Check for any direct links to the old implementation before cleanup.**
 
+### New Users System
+**Replace:** `users.php` (old), `users-list.php` (old)
+**New:** `users-new.php`, `users-list-v2b.php`, `/Users`, `/UsersList`
+**APIs:** `api/users.php`, `api/user-form.php`
+
+**Files to DELETE after testing:**
+- `users.php` - old user form
+- `users-list.php` - old user list
+
+**Routes to remove after cleanup:**
+- From `.htaccess`: `UsersListOld`, `UsersOld` (if added)
+
+---
+
 ### Route Cleanup
 After deleting old files, remove these routes from `.htaccess`:
 - `MembersListOld` (points to old members-list.php)
 - `Member` (points to old members.php)
+- `UsersListOld` (if points to old users-list.php)
+- `UsersOld` (if points to old users.php)
 
 And remove the "Old Version" links from the new pages.
 

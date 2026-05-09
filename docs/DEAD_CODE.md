@@ -325,6 +325,24 @@ If no references, can delete.
 
 ---
 
+## Old Users System (2026)
+
+### Old Users List
+**File:** `users-list.php`
+**Replaced by:** `users-list-v2b.php`
+**Route:** `/UsersListOld`
+**Links to delete:**
+- `users-list-v2b.php` - "Old Version" button
+
+### Old Users Form
+**File:** `users.php`
+**Replaced by:** `users-new.php`
+**Route:** `/UsersOld`
+**Links to delete:**
+- `users-new.php` - "Old Version" button
+
+---
+
 ## What NOT to Delete
 
 - Core operational files (DailySheet, flights, members, etc.)
