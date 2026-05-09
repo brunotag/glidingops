@@ -644,6 +644,7 @@ $userRoles = App\Models\Role::find($roleIds);
   include $inc; ?>
   <?php $inc = "./orgs/" . $org . "/menu1.txt";
   include $inc; ?>
+  <p><a href="/MemberNew<?php echo $recid >= 0 ? '?id=' . $recid : ''; ?>">New Version</a></p>
   <script>
     function goBack() {
       window.location = 'AllMembers'

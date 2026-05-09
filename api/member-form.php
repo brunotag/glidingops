@@ -52,7 +52,7 @@ while ($row = mysqli_fetch_assoc($r)) {
 
 // Get roles
 $roles = [];
-$q = "SELECT * FROM role WHERE org = " . $org . " OR org = 0 ORDER BY name";
+$q = "SELECT * FROM roles WHERE org = " . $org . " OR org = 0 ORDER BY name";
 $r = mysqli_query($con, $q);
 while ($row = mysqli_fetch_assoc($r)) {
     $roles[] = ['id' => $row['id'], 'name' => $row['name']];
@@ -218,7 +218,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($roles as $roleId) {
             $roleId = intval($roleId);
             if ($roleId > 0) {
-                mysqli_query($con, "INSERT INTO role_member (member_id, role_id, org) VALUES ($newId, $roleId, $org)");
+                mysqli_query($con, "INSERT INTO role_member (org, role_id, member_id) VALUES ($org, $roleId, $newId)");
             }
         }
 

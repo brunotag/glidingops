@@ -21,7 +21,7 @@ $isEdit = $memberId !== null;
 <meta name="viewport" content="width=device-width">
 <head>
     <title><?php echo $isEdit ? 'Edit Member' : 'New Member'; ?></title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <?php include 'jsLibraies.php'; ?>
     <style>
         body { padding: 0; margin: 0; }
         .no-padding-container { width: 100%; }
@@ -47,6 +47,7 @@ $isEdit = $memberId !== null;
     <div class="title-row">
         <h2><?php echo $isEdit ? 'Edit Member' : 'New Member'; ?></h2>
         <a href="/AllMembers" class="btn btn-default btn-sm">Back to Members List</a>
+        <a href="/Member<?php echo $memberId ? '?id=' . $memberId : ''; ?>" class="btn btn-default btn-sm">Old Version</a>
     </div>
 
     <div id="message-area"></div>
