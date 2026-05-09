@@ -211,10 +211,14 @@ $(document).ready(function() {
         method: 'GET',
         dataType: 'json',
         success: function(data) {
+            console.log('API Response:', data);
             if (data.error) {
                 $('#message-area').html('<div class="error-msg">' + data.message + '</div>');
                 return;
             }
+
+            // Debug: show what's loaded
+            $('#message-area').append('<div class="help-block">Debug: classes=' + data.classes.length + ', statuses=' + data.statuses.length + ', roles=' + data.roles.length + '</div>');
 
             // Populate class dropdown
             var classSelect = $('#class');
