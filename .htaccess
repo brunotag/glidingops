@@ -29,6 +29,11 @@ RewriteRule ^api/user-form$ api/user-form.php [L,QSA]
 # MyFlights data API
 RewriteRule ^api/myflights$ api/myflights-data.php [L,QSA]
 
+# Texts/Messages API
+RewriteRule ^api/texts$ api/texts.php [L,QSA]
+RewriteRule texts-list texts-list-v2b.php [L,QSA]
+RewriteRule texts-list-old texts-list.php [L,QSA]
+
 # New members list (v2b is now the default)
 RewriteRule AllMembers members-list-v2b.php [L,QSA]
 RewriteRule MembersListOld members-list.php [L]

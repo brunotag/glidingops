@@ -43,5 +43,57 @@ $csv.Headers['Content-Type']          # Should be "text/csv"
 
 ### URLs
 
-- Dev environment: `http://glidingops.test` (also available at `http://192.168.10.10`)
+- Dev environment: `http://glidingops.test` (NOT https - SSL issues with self-signed certs)
 - Test user: `[dev-creds]` / `[dev-creds]`
+
+---
+
+## API Development Rules
+
+### 1. Always call `session_start()` before any output
+
+```php
+<?php
+session_start();  // Must be first!
+require_once __DIR__ . '/../helpers/api-base.php';
+```
+
+### 2. Use `apiExit($con)` to terminate, NOT `apiExitWithError()`
+
+The `apiExitWithError()` function does NOT exist - it was never defined. Use this pattern instead:
+
+```php
+// For errors:
+http_response_code(403);
+header('Content-Type: application/json');
+echo json_encode(['success' => false, 'message' => 'Security level too low']);
+apiExit($con);
+
+// For DB connection errors:
+http_response_code(500);
+header('Content-Type: application/json');
+echo json_encode(['error' => 'Database connection failed']);
+apiExit($con);
+```
+
+### 3. Database config path
+
+```php
+$con_params = require(__DIR__ . '/../config/database.php');
+```
+
+NOT `./config/database.php` - the `./` path is relative to the script location when accessed via web server, which may not be correct.
+
+### 4. Test API with authenticated session first
+
+Use PowerShell with session variable to test authenticated APIs:
+
+```powershell
+# Login
+$body = "user=[dev-creds]&pcode=[dev-creds]"
+$login = Invoke-WebRequest -Uri 'https://glidingops.test/checklogin.php' -Method POST -Body $body -ContentType "application/x-www-form-urlencoded" -UseBasicParsing -SessionVariable ws -MaximumRedirection 10
+
+# Test API
+$result = Invoke-WebRequest -Uri 'https://glidingops.test/api/texts' -WebSession $ws -UseBasicParsing
+$result.Content | ConvertFrom-Json
+```

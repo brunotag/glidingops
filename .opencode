@@ -3,7 +3,7 @@
 ## Quick Reference
 
 ### Dev URLs
-- **App:** https://glidingops.test
+- **App:** http://glidingops.test (NOT https - self-signed cert issues)
 - **Login:** Username: fgordon / Password: fgordon
 - **Local logs:** `C:\Users\bruno\dev\glidingops\log\`
 
@@ -17,13 +17,14 @@ Ignore vagrant warning about homestead - actual PHP output follows after.
 - `log/app.log` - Debug log via logMsg()
 - `log/error.log` - PHP errors (fatal handler in helpers/logging.php)
 
-### API Endpoints
-All API endpoints (`api/*.php`) MUST:
-- Include `helpers/api-base.php` at top (before session_start)
-- Use `apiExit($con)` instead of `exit`
-- Always return JSON (api-base error handler catches PHP errors)
-- Use `header('Content-Type: application/json')` before output
-- Log with `logMsg("START method=" . $_SERVER['REQUEST_METHOD'])`
+### API Development Rules
+1. **Call `session_start()` FIRST** before any output
+2. **Use `apiExit()` NOT `apiExitWithError()`** - that function doesn't exist!
+3. **Use `header('Content-Type: application/json')` before any echo**
+4. **Use `__DIR__ . '/../config/database.php'`** NOT `./config/database.php`
+5. **Always log with `logMsg()`** to track execution
+6. **Add route to `.htaccess`** - `RewriteRule ^api/<name>$ api/<name>.php [L,QSA]`
+7. **For errors before DB connection, use `apiExit()` without `$con`**
 
 ### Key Files
 - `helpers/api-base.php` - API error handling, apiExit()
@@ -38,6 +39,18 @@ All API endpoints (`api/*.php`) MUST:
 - membership_status column is `status_name` (NOT `status`)
 - Connection from `config/database.php` → `['gliding']`
 - Always use `intval()` for integer values in SQL
+
+### Modernized List Pages (v2b pattern)
+All new list pages use the same pattern:
+- DataTables server-side AJAX
+- Search with auto-trigger on type (debounce 500ms after 2+ chars)
+- Pagination in controls bar
+- "Old Version" link points to original .php file
+
+Files:
+- `members-list-v2b.php` - Members list
+- `users-list-v2b.php` - Users list
+- `texts-list-v2b.php` - Messages/texts list
 
 ## Documentation (start at README.md)
 
@@ -54,3 +67,4 @@ All docs in `docs/` folder:
 - `docs/DEVELOP.md` - Dev workflow, logging, API patterns
 - `docs/DEAD_CODE.md` - Files marked for deletion, links to delete before deletion
 - `docs/TODO.md` - Known issues and planned work
+- `docs/FUTURE_DEVELOPMENT_MAGIC_LINK.md` - Passwordless email login spec

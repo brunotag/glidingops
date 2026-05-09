@@ -335,7 +335,7 @@ $MAX_LENGTH = 255;
           <li><a href='home'>Home</a></li>
           <li><a href='members-list.php'>Members</a></li>
           <li><a href='GroupAllocate.php'>Groups</a></li>
-          <li><a href='texts-list.php'>List Texts</a></li>
+          <li><a href='texts-list'>List Texts</a></li>
           <li><a href='texts-list-last-200.php' target="_blank">Last 200 Sent to "Fake Twitter"</a></li>
         </ul>
       </div>

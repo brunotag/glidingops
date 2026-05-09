@@ -230,9 +230,21 @@ Once the new pages are verified working, these files can be deleted.
 **New:** `users-new.php`, `users-list-v2b.php`, `/Users`, `/UsersList`
 **APIs:** `api/users.php`, `api/user-form.php`
 
+### New Texts/Messages System
+**Replace:** `texts-list.php` (old)
+**New:** `texts-list-v2b.php`, `/texts-list`
+**APIs:** `api/texts.php`
+
+**Features:**
+- Shows ID, Message (full text, clickable to filter), Member, Email, Status, Created, Sent
+- Status shown as colored label (Pending=yellow, Sent=green, Error=red, Sent via Email=blue)
+- Click message text to search for that exact message
+- Auto-search on type after 500ms debounce
+
 **Files to DELETE after testing:**
-- `users.php` - old user form
-- `users-list.php` - old user list
+- `texts-list.php` - old list
+- `texts-list-last-200.php` - redundant
+- `texts.php` - old form (if exists)
 
 **Routes to remove after cleanup:**
 - From `.htaccess`: `UsersListOld`, `UsersOld` (if added)
