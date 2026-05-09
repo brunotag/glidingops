@@ -245,10 +245,13 @@ $(document).ready(function() {
     }
     
 function buildDataTable() {
-        // Only build if table doesn't exist yet
         if ($.fn.DataTable.isDataTable('#members-table')) {
-            return;
+            $('#members-table').DataTable().destroy();
+            $('#members-table').empty();
         }
+
+        // Remove old pagination from controls-bar before building new table
+        $('.controls-bar .dataTables_paginate').remove();
 
         var searchVal = $('#dt-search').val() || '';
         var lengthVal = parseInt($('#dt-length').val()) || 50;
@@ -338,33 +341,42 @@ function buildDataTable() {
     } catch(e) {
         console.error('Initial table build error:', e);
     }
-    
-    // Search on Enter key
+
+    // Auto-search on type (debounce 500ms after 2+ chars)
+    var searchTimeout;
     $('#dt-search').on('keyup', function(e) {
         if (e.key === 'Enter' || e.keyCode === 13) {
             buildDataTable();
+            return;
+        }
+        var searchVal = $(this).val() || '';
+        clearTimeout(searchTimeout);
+        if (searchVal.length >= 2) {
+            searchTimeout = setTimeout(function() {
+                buildDataTable();
+            }, 500);
         }
     });
-    
+
     // Length change
     $('#dt-length').on('change', function() {
         buildDataTable();
     });
-    
+
     // Apply filters button
     $('#apply-filters').click(function() {
         buildDataTable();
     });
-    
+
     // Reset button
     $('#reset-filters').click(function() {
         var defaultClasses = <?php echo json_encode($defaultClasses); ?>;
         var defaultStatuses = <?php echo json_encode($defaultStatuses); ?>;
-        
+
         $('#filter-classes').selectpicker('val', defaultClasses);
         $('#filter-statuses').selectpicker('val', defaultStatuses);
         $('#dt-search').val('');
-        
+
         buildDataTable();
     });
 });

@@ -87,7 +87,7 @@ mysqli_close($con);
 <div class="padding-container">
 <div class="title-row" style="display: flex; align-items: center; margin-bottom: 10px;">
     <h2><?php echo $isEdit ? 'Edit User' : 'Create User'; ?></h2>
-    <a href="users.php" class="btn btn-default btn-sm" style="margin-left: 10px;">Old Version</a>
+    <a href="/users.php<?php echo $requestedId ? '?id=' . $requestedId : ''; ?>" class="btn btn-default btn-sm" style="margin-left: 10px;">Old Version</a>
 </div>
 
 <div id="message-area"></div>

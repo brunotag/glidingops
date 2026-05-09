@@ -161,10 +161,13 @@ $(document).ready(function() {
     var table;
 
 function buildDataTable() {
-        // Only build if table doesn't exist yet
         if ($.fn.DataTable.isDataTable('#users-table')) {
-            return;
+            $('#users-table').DataTable().destroy();
+            $('#users-table').empty();
         }
+
+        // Remove old pagination from controls-bar before building new table
+        $('.controls-bar .dataTables_paginate').remove();
 
         var searchVal = $('#dt-search').val() || '';
         var lengthVal = parseInt($('#dt-length').val()) || 50;
@@ -241,9 +244,19 @@ function buildDataTable() {
         console.error('Initial table build error:', e);
     }
 
+    // Auto-search on type (debounce 500ms after 2+ chars)
+    var searchTimeout;
     $('#dt-search').on('keyup', function(e) {
         if (e.key === 'Enter' || e.keyCode === 13) {
             buildDataTable();
+            return;
+        }
+        var searchVal = $(this).val() || '';
+        clearTimeout(searchTimeout);
+        if (searchVal.length >= 2) {
+            searchTimeout = setTimeout(function() {
+                buildDataTable();
+            }, 500);
         }
     });
 

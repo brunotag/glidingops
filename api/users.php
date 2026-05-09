@@ -51,13 +51,14 @@ $orderDir = isset($_GET['order'][0]['dir']) ? $_GET['order'][0]['dir'] : 'asc';
 
 // Column mapping (DataTables column index -> DB field)
 $columns = [
-    0 => 'users.id',
-    1 => 'users.name',
-    2 => 'users.usercode',
-    3 => 'organisations.name',
-    4 => 'users.securitylevel',
-    5 => 'members.displayname',
-    6 => 'users.force_pw_reset'
+    0 => null, // Actions - not sortable, won't be used
+    1 => 'users.id',
+    2 => 'users.name',
+    3 => 'users.usercode',
+    4 => 'organisations.name',
+    5 => 'users.securitylevel',
+    6 => 'members.displayname',
+    7 => 'users.force_pw_reset'
 ];
 
 $orderField = isset($columns[$orderColumn]) ? $columns[$orderColumn] : 'users.name';
