@@ -20,9 +20,9 @@ RewriteRule   ^api/v2/(.*)    /lrv/public/api/v2/$1  [L]
 # DataTables API for members
 RewriteRule ^api/members$ api/members.php [L,QSA]
 
-# New members list versions
-RewriteRule MembersListV2a members-list-v2a.php [L,QSA]
-RewriteRule MembersListV2b members-list-v2b.php [L,QSA]
+# New members list (v2b is now the default)
+RewriteRule AllMembers members-list-v2b.php [L,QSA]
+RewriteRule MembersListOld members-list.php [L]
 
 RewriteRule home home.php [L]
 RewriteRule AssignRoles role_member-list.php [L]

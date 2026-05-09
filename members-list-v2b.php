@@ -113,10 +113,9 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
 <?php $inc = "./orgs/" . $org . "/heading2.txt"; if (file_exists($inc)) include $inc; ?>
 <?php $inc = "./orgs/" . $org . "/menu1.txt"; if (file_exists($inc)) include $inc; ?>
 
-<h2>Members List - Version B (DataTables with Filters)</h2>
+<h2>Members List</h2>
 <div class="nav-links">
-    <a href="members-list-v2a.php?org=<?php echo $org; ?>">Go to Version A (Legacy Filters)</a>
-    <a href="AllMembers">Original Version</a>
+    <a href="/MembersListOld">Old Version</a>
 </div>
 
 <div class="controls-bar">
@@ -153,7 +152,7 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
     </div>
     
     <div class="filter-group">
-        <label for="dt-length">Show:</label>
+        <label for="dt-length">Elements per page:</label>
         <select id="dt-length" class="form-control" style="display: inline-block; width: auto; padding: 4px;">
             <option value="25">25</option>
             <option value="50" selected>50</option>
@@ -162,6 +161,12 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
     </div>
     
     <span id="record-count"></span>
+</div>
+
+<!-- Top pagination -->
+<div class="dt-top-controls">
+    <div class="dataTables_info" id="record-count-top" style="margin-bottom: 10px;"></div>
+    <div class="dataTables_paginate paging_full_numbers" id="pagination-top"></div>
 </div>
 
 <table id="members-table" class="table table-striped table-bordered" style="width:100%">
@@ -231,6 +236,7 @@ $(document).ready(function() {
                 },
                 dataSrc: function(json) {
                     $('#record-count').text('Showing ' + json.recordsFiltered + ' of ' + json.recordsTotal + ' members');
+                    $('#record-count-top').text('Showing ' + json.recordsFiltered + ' of ' + json.recordsTotal + ' members');
                     return json.data;
                 }
             },
@@ -279,7 +285,32 @@ $(document).ready(function() {
                 }
             },
             searching: false,
-            lengthChange: false
+            lengthChange: false,
+            drawCallback: function(settings) {
+                // Update top pagination
+                var api = this.api();
+                var info = api.page.info();
+                
+                // Update count display at top
+                var start = info.start + 1;
+                var end = info.end;
+                var total = info.recordsTotal;
+                $('#record-count-top').text('Showing ' + start + ' to ' + end + ' of ' + total + ' members');
+                
+                // Clone bottom pagination to top
+                var bottomPaging = $('.dataTables_paginate');
+                if (bottomPaging.length > 0) {
+                    $('#pagination-top').html(bottomPaging.clone());
+                    // Fix the cloned pagination to work
+                    $('#pagination-top .paginate_button').on('click', function(e) {
+                        e.preventDefault();
+                        var page = $(this).data('page');
+                        if (!$(this).hasClass('disabled') && page !== undefined) {
+                            api.page(page).draw(false);
+                        }
+                    });
+                }
+            }
         });
     }
     
