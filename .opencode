@@ -1,0 +1,39 @@
+# Glidingops Development Context
+
+## Quick Reference
+
+### PHP Syntax Check (Vagrant)
+```bash
+cd C:\Users\bruno\dev\glidingops\lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
+```
+Ignore vagrant warning about homestead - actual output follows after.
+
+### API Endpoints
+All API endpoints (`api/*.php`) MUST:
+- Include `helpers/api-base.php` at top (before session_start)
+- Use `apiExit($con)` instead of `exit`
+- Always return JSON (api-base error handler catches PHP errors)
+- Use `header('Content-Type: application/json')` before output
+- Log with `logMsg("START method=" . $_SERVER['REQUEST_METHOD'])`
+
+### Key Files
+- `helpers/api-base.php` - API error handling, apiExit()
+- `helpers/logging.php` - logMsg() for local debug logging
+- `log/app.log` - Debug log (local only, gitignored)
+
+### Session Variables
+- `$_SESSION['memberid']`, `$_SESSION['security']` (bitmask), `$_SESSION['org']`
+
+### Database
+- Primary key is `id` (NOT `member_id`) in members table
+- Connection from `config/database.php` → `['gliding']`
+
+## Documentation References
+
+See these files for detailed patterns and context:
+- `DEVELOP.md` - Development workflow, PHP syntax checks, logging, session handling, database conventions
+- `WEB_AUTH.md` - Session handling with WebRequestSession
+- `FEATURES.md` - App features and routes
+- `ROUTES.md` - Route definitions in .htaccess
+- `ARCHITECTURE.md` - App structure and architecture
+- `DATABASE.md` - Database schema reference

@@ -1,12 +1,21 @@
 <?php
+require_once __DIR__ . '/../helpers/api-base.php';
+
 session_start();
+
+require_once __DIR__ . '/../helpers/logging.php';
+
+logMsg("START method=" . $_SERVER['REQUEST_METHOD']);
 
 // Check authentication - require security level 1 (member access)
 if (!isset($_SESSION['security']) || !($_SESSION['security'] & 1)) {
+    logMsg("AUTH FAIL - security=" . ($_SESSION['security'] ?? 'null'));
     header('Content-Type: application/json');
     echo json_encode(['error' => 'Unauthorized', 'message' => 'Please log in']);
     exit;
 }
+
+logMsg("AUTH OK - memberid=" . ($_SESSION['memberid'] ?? 'null'));
 
 $org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 if ($org === null) $org = 0;
@@ -23,39 +32,55 @@ $con = mysqli_connect(
 );
 
 if (mysqli_connect_errno()) {
-    echo json_encode(['error' => 'Database connection failed']);
-    exit;
-}
+        logMsg("DB CONNECTION ERROR: " . mysqli_connect_error());
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+        exit;
+    }
 
-// Get member_id if in edit mode
+    logMsg("DB connected OK");
+
+    // Get member_id if in edit mode
 $memberId = isset($_GET['id']) ? intval($_GET['id']) : null;
 
 // Get membership classes
 $classes = [];
 $q = "SELECT * FROM membership_class";
 if ($org > 0) {
-    $q .= " WHERE org = " . $org . " OR org = 0";
+    $q .= " WHERE org = " . intval($org) . " OR org = 0";
 }
 $q .= " ORDER BY class";
 $r = mysqli_query($con, $q);
-while ($row = mysqli_fetch_assoc($r)) {
-    $classes[] = ['id' => $row['id'], 'class' => $row['class']];
+if ($r) {
+    while ($row = mysqli_fetch_assoc($r)) {
+        $classes[] = ['id' => $row['id'], 'class' => $row['class']];
+    }
+} else {
+    logMsg("membership_class query failed: " . mysqli_error($con));
 }
 
 // Get membership statuses
 $statuses = [];
-$q = "SELECT * FROM membership_status ORDER BY status";
+$q = "SELECT * FROM membership_status ORDER BY status_name";
 $r = mysqli_query($con, $q);
-while ($row = mysqli_fetch_assoc($r)) {
-    $statuses[] = ['id' => $row['id'], 'status' => $row['status']];
+if ($r) {
+    while ($row = mysqli_fetch_assoc($r)) {
+        $statuses[] = ['id' => $row['id'], 'status' => $row['status_name']];
+    }
+} else {
+    logMsg("membership_status query failed: " . mysqli_error($con));
 }
 
 // Get roles
 $roles = [];
-$q = "SELECT * FROM roles WHERE org = " . $org . " OR org = 0 ORDER BY name";
+$q = "SELECT * FROM roles WHERE org = " . intval($org) . " OR org = 0 ORDER BY name";
 $r = mysqli_query($con, $q);
-while ($row = mysqli_fetch_assoc($r)) {
-    $roles[] = ['id' => $row['id'], 'name' => $row['name']];
+if ($r) {
+    while ($row = mysqli_fetch_assoc($r)) {
+        $roles[] = ['id' => $row['id'], 'name' => $row['name']];
+    }
+} else {
+    logMsg("roles query failed: " . mysqli_error($con));
 }
 
 // Get member data if editing
@@ -109,28 +134,45 @@ mysqli_close($con);
 
 // Handle POST (save member)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Check security level for edit (need level 6)
-    if (!isset($_SESSION['security']) || !($_SESSION['security'] & 6)) {
-        header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => 'Security level too low']);
-        exit;
-    }
-
+    logMsg("POST - Opening new DB connection");
     $con = mysqli_connect(
         $con_params['hostname'],
         $con_params['username'],
         $con_params['password'],
         $con_params['dbname']
     );
-
+    logMsg("POST mysqli_connect_errno: " . mysqli_connect_errno());
+    logMsg("POST mysqli_connect_error: " . mysqli_connect_error());
     if (mysqli_connect_errno()) {
+        logMsg("POST DB CONNECTION FAILED");
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => 'Database connection failed']);
         exit;
     }
-
+    logMsg("POST DB connected OK");
+    logMsg("POST RECEIVED");
     $memberId = isset($_POST['id']) ? intval($_POST['id']) : null;
+    logMsg("memberId from POST=" . $memberId);
     $isEdit = $memberId !== null;
+    $currentMemberId = isset($_SESSION['memberid']) ? intval($_SESSION['memberid']) : 0;
+    $securityLevel = isset($_SESSION['security']) ? $_SESSION['security'] : 0;
+    logMsg("currentMemberId=$currentMemberId securityLevel=$securityLevel");
+    
+    // Check if editing someone else's data
+    if ($isEdit && $memberId !== $currentMemberId) {
+        logMsg("EDITING OTHER - memberId=$memberId vs current=$currentMemberId");
+        // Only admins (level 6) can edit other members
+        if (!($securityLevel & 6)) {
+            logMsg("FAIL - not admin");
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Security level too low']);
+            exit;
+        }
+        logMsg("Admin confirmed, proceeding...");
+    } else {
+        logMsg("EDITING SELF OR NEW");
+    }
+    // Members can always edit their own details (level 1 is sufficient)
 
     // Validate required fields
     $firstname = isset($_POST['firstname']) ? trim($_POST['firstname']) : '';
@@ -187,18 +229,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $emergAddr2Esc = mysqli_real_escape_string($con, $emergAddr2);
     $emergAddr3Esc = mysqli_real_escape_string($con, $emergAddr3);
 
+    logMsg("isEdit=$isEdit memberId=$memberId");
+    logMsg("firstname=$firstname surname=$surname displayname=$displayname");
+    logMsg("classId=$classId statusId=$statusId");
+
+    // Validate required fields
+    if (empty($firstname) || empty($surname) || empty($displayname) || $classId === 0 || $statusId === 0) {
+        logMsg("VALIDATION FAILED");
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Please fill all required fields']);
+        exit;
+    }
+    logMsg("Validation passed");
+
     if ($isEdit) {
         // Check org access
-        $q = "SELECT org FROM members WHERE id = " . $memberId;
+        $q = "SELECT org FROM members WHERE id = " . intval($memberId);
+        logMsg("Looking for member " . intval($memberId));
+        logMsg("Connection ping: " . ($con ? ($con->ping() ? 'OK' : 'FAIL') : 'NULL'));
         $r = mysqli_query($con, $q);
-        $row = mysqli_fetch_assoc($r);
-        if (!$row || ($org > 0 && $row['org'] != $org)) {
+        if ($r === false) {
+            logMsg("QUERY FAILED");
+            logMsg("mysqli_error: '" . mysqli_error($con) . "'");
+        } else {
+            logMsg("Query OK, num_rows: " . mysqli_num_rows($r));
+        }
+        $row = $r ? mysqli_fetch_assoc($r) : null;
+        if (!$row) {
+            logMsg("MEMBER NOT FOUND");
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Record not found']);
             exit;
         }
+        if ($org > 0 && $row['org'] != $org) {
+            logMsg("ORG MISMATCH - member org=" . $row['org'] . " vs session org=$org");
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Record not found']);
+            exit;
+        }
+        logMsg("Org check passed");
 
-        // Update
+        // Build UPDATE query
         $q = "UPDATE members SET
             firstname = '$firstnameEsc',
             surname = '$surnameEsc',
@@ -225,7 +296,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             emerg_addr3 = '$emergAddr3Esc'
             WHERE id = $memberId";
     } else {
-        // Insert
+        // Build INSERT query
         $q = "INSERT INTO members (
             org, firstname, surname, displayname, class, status,
             date_of_birth, gnz_number, phone_mobile, email,
@@ -242,40 +313,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         )";
     }
 
+    logMsg("Executing query: " . substr($q, 0, 200));
     if (mysqli_query($con, $q)) {
+        logMsg("QUERY SUCCESS");
         $newId = $isEdit ? $memberId : mysqli_insert_id($con);
+        logMsg("newId=$newId");
 
         // Update roles
-        // Delete existing roles
-        mysqli_query($con, "DELETE FROM role_member WHERE member_id = " . $newId);
+        $delR = mysqli_query($con, "DELETE FROM role_member WHERE member_id = " . intval($newId));
+        logMsg("Deleted old roles" . ($delR ? "" : " FAILED: " . mysqli_error($con)));
 
-        // Insert new roles
         foreach ($roles as $roleId) {
             $roleId = intval($roleId);
             if ($roleId > 0) {
-                mysqli_query($con, "INSERT INTO role_member (org, role_id, member_id) VALUES ($org, $roleId, $newId)");
+                $insR = mysqli_query($con, "INSERT INTO role_member (org, role_id, member_id) VALUES (" . intval($org) . ", $roleId, $newId)");
+                logMsg("Inserted role $roleId" . ($insR ? "" : " FAILED: " . mysqli_error($con)));
             }
         }
 
         header('Content-Type: application/json');
+        logMsg("ABOUT TO ECHO JSON RESPONSE");
         echo json_encode([
             'success' => true,
             'message' => $isEdit ? 'Member updated successfully' : 'Member created successfully',
             'member_id' => $newId
         ]);
+        logMsg("JSON RESPONSE SENT");
     } else {
+        logMsg("QUERY ERROR: " . mysqli_error($con));
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => 'Error saving member: ' . mysqli_error($con)]);
     }
 
     mysqli_close($con);
-    exit;
+    apiExit();
 }
 
 // Return form data
+header('Content-Type: application/json');
 echo json_encode([
     'classes' => $classes,
     'statuses' => $statuses,
     'roles' => $roles,
     'member' => $member
 ]);
+apiExit();

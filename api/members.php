@@ -1,17 +1,22 @@
 <?php
+require_once __DIR__ . '/../helpers/api-base.php';
+
 session_start();
 
-// Check authentication - require security level 1 (member)
+require_once __DIR__ . '/../helpers/logging.php';
+logMsg("START");
+
 if (!isset($_SESSION['security']) || !($_SESSION['security'] & 1)) {
+    logMsg("AUTH FAIL");
+    http_response_code(401);
     header('Content-Type: application/json');
-    echo json_encode(['error' => 'Unauthorized', 'message' => 'Please log in']);
-    exit;
+    echo json_encode(['error' => 'Unauthorized']);
+    apiExit($con);
 }
+logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
 
 $org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 if ($org === null) $org = 0;
-
-header('Content-Type: application/json');
 
 $con_params = require(__DIR__ . '/../config/database.php');
 $con_params = $con_params['gliding'];
@@ -23,8 +28,11 @@ $con = mysqli_connect(
 );
 
 if (mysqli_connect_errno()) {
+    logMsg("DB CONNECTION FAILED: " . mysqli_connect_error());
+    http_response_code(500);
+    header('Content-Type: application/json');
     echo json_encode(['error' => 'Database connection failed']);
-    exit;
+    apiExit($con);
 }
 
 // DataTables parameters
@@ -225,9 +233,11 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 mysqli_close($con);
 
+header('Content-Type: application/json');
 echo json_encode([
     'draw' => $draw,
     'recordsTotal' => $recordsTotal,
     'recordsFiltered' => $recordsFiltered,
     'data' => $data
 ]);
+apiExit();

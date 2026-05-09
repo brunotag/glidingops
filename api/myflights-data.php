@@ -1,16 +1,28 @@
 <?php
+require_once __DIR__ . '/../helpers/api-base.php';
+
 session_start();
+
+require_once __DIR__ . '/../helpers/logging.php';
+
+logMsg("START");
 
 if (!isset($_SESSION['security']) || $_SESSION['security'] < 1) {
     http_response_code(401);
-    echo "Unauthorized";
-    exit;
+    logMsg("AUTH FAIL");
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Unauthorized']);
+    apiExit($con);
 }
 if (!isset($_SESSION['memberid'])) {
     http_response_code(401);
-    echo "Unauthorized";
-    exit;
+    logMsg("AUTH FAIL - no memberid");
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Unauthorized']);
+    apiExit($con);
 }
+
+logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
 
 $memberid = intval($_SESSION['memberid']);
 $org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
@@ -22,8 +34,10 @@ $db_params = require '../config/database.php';
 $con = mysqli_connect($db_params['gliding']['hostname'], $db_params['gliding']['username'], $db_params['gliding']['password'], $db_params['gliding']['dbname']);
 if (mysqli_connect_errno()) {
     http_response_code(500);
-    echo "Database connection error";
-    exit;
+    logMsg("DB CONNECTION FAILED: " . mysqli_connect_error());
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Database connection error']);
+    apiExit($con);
 }
 
 $towlaunch = getTowLaunchType($con);
@@ -84,3 +98,4 @@ echo json_encode([
     'flights' => $flights,
     'tows' => $tows
 ]);
+apiExit($con);

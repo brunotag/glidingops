@@ -29,6 +29,7 @@ RewriteRule MembersListOld members-list.php [L]
 
 # New member create/edit page
 RewriteRule MemberNew members-new.php [L,QSA]
+RewriteRule EditMyDetails members-new.php [L,QSA]
 
 RewriteRule home home.php [L]
 RewriteRule AssignRoles role_member-list.php [L]

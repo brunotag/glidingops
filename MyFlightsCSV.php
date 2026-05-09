@@ -1,14 +1,21 @@
 <?php
 session_start();
+
+require_once __DIR__ . '/helpers/logging.php';
+logMsg("START");
+
 $org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 
 if (!isset($_SESSION['security']) || $_SESSION['security'] < 1) {
+    logMsg("AUTH FAIL");
     die("Security level too low for this page");
 }
 if (!isset($_SESSION['memberid'])) {
+    logMsg("AUTH FAIL - no memberid");
     header('Location: Login.php');
     die("Please logon");
 }
+logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
 
 $memberid = intval($_SESSION['memberid']);
 

@@ -196,7 +196,7 @@ if (isset($_SESSION['security'])) {
                if (intval($_SESSION['memberid']) > 0) {
                   echo "<td><h2 class='u'>MY GOPs</h2>";
                   echo "<p class='u'><a href='MyFlights'>My Flights</a></p>";
-                  echo "<p class='u'><a href='edit-my-details.php'>My Details</a></p>";
+                  echo "<p class='u'><a href='EditMyDetails'>My Details</a></p>";
                   echo "</td>";
                   $col = ($col + 1) % $totcol;
                   if ($col == 0) echo "</tr><tr>";

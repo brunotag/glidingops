@@ -1,20 +1,40 @@
 <?php session_start(); ?>
 <?php
 require_once __DIR__ . '/load_model.php';
+require_once __DIR__ . '/helpers/logging.php';
+
+logMsg("START - " . ($_GET['id'] ?? 'no id'));
 
 $org = 0;
 if (isset($_SESSION['org'])) $org = $_SESSION['org'];
 if (isset($_SESSION['security'])) {
-    if (!($_SESSION['security'] & 6)) {
+    if ($_SESSION['security'] < 1) {
+        logMsg("AUTH FAIL - security too low");
         die("Security level too low for this page");
     }
 } else {
+    logMsg("AUTH FAIL - no session");
     header('Location: Login.php');
     die("Please logon");
 }
 
-$memberId = isset($_GET['id']) ? intval($_GET['id']) : null;
-$isEdit = $memberId !== null;
+$requestedId = isset($_GET['id']) ? intval($_GET['id']) : null;
+$currentMemberId = isset($_SESSION['memberid']) ? intval($_SESSION['memberid']) : 0;
+$securityLevel = isset($_SESSION['security']) ? $_SESSION['security'] : 0;
+
+if ($requestedId !== null && $requestedId !== $currentMemberId) {
+    if (!($securityLevel & 6)) {
+        die("You can only edit your own details");
+    }
+}
+
+if ($requestedId !== null) {
+    $memberId = $requestedId;
+} else {
+    $memberId = $currentMemberId;
+}
+$isEdit = $memberId !== null && $memberId > 0;
+$isMyDetails = $requestedId === null && $memberId === $currentMemberId;
 
 // Load data using direct queries (like other pages)
 $con_params = require('./config/database.php');
@@ -108,9 +128,17 @@ mysqli_close($con);
 
 <div class="padding-container">
     <div class="title-row">
-        <h2><?php echo $isEdit ? 'Edit Member' : 'New Member'; ?></h2>
+        <h2><?php 
+            if ($isMyDetails) {
+                echo 'Edit Your Details';
+            } else {
+                echo $isEdit ? 'Edit Member' : 'New Member';
+            }
+        ?></h2>
+        <?php if (!$isMyDetails): ?>
         <a href="/AllMembers" class="btn btn-default btn-sm">Back to Members List</a>
         <a href="/Member<?php echo $memberId ? '?id=' . $memberId : ''; ?>" class="btn btn-default btn-sm">Old Version</a>
+        <?php endif; ?>
     </div>
 
     <div id="message-area"></div>
@@ -306,6 +334,7 @@ mysqli_close($con);
             </div>
         </div>
 
+        <?php if (!$isMyDetails): ?>
         <div class="panel panel-default">
             <div class="panel-heading"><strong>Roles</strong></div>
             <div class="panel-body">
@@ -323,6 +352,7 @@ mysqli_close($con);
                 <?php endif; ?>
             </div>
         </div>
+        <?php endif; ?>
 
         <div style="margin-top: 15px; margin-bottom: 30px;">
             <button type="submit" class="btn btn-primary"><?php echo $isEdit ? 'Update Member' : 'Create Member'; ?></button>
@@ -362,16 +392,17 @@ $(document).ready(function() {
             data: formData,
             dataType: 'json',
             success: function(data) {
+                console.log('AJAX success:', data);
                 if (data.success) {
                     $('#message-area').html('<div class="success-msg">' + data.message + '</div>');
-                    setTimeout(function() {
-                        window.location.href = '/AllMembers';
-                    }, 1500);
+                    $('html, body').scrollTop(0);
                 } else {
+                    console.log('Showing error:', data.message);
                     $('#message-area').html('<div class="error-msg">' + (data.message || 'Error saving member') + '</div>');
                 }
             },
-            error: function() {
+            error: function(xhr, status, error) {
+                console.log('AJAX error:', status, error);
                 $('#message-area').html('<div class="error-msg">Failed to save member</div>');
             }
         });
