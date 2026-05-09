@@ -245,11 +245,7 @@ $(document).ready(function() {
                     return d;
                 },
 dataSrc: function(json) {
-                    // Get start from the request that was made
-                    var pageInfo = this.api().page.info();
-                    var start = pageInfo.start + 1;
-                    var end = pageInfo.end;
-                    var text = 'Showing ' + start + ' to ' + end + ' of ' + json.recordsFiltered + ' members';
+                    var text = 'Showing ' + json.recordsFiltered + ' members';
                     if (json.recordsFiltered !== json.recordsTotal) {
                         text += ' (filtered from ' + json.recordsTotal + ' total)';
                     }
