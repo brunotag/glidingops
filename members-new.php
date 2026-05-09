@@ -17,11 +17,11 @@ $memberId = isset($_GET['id']) ? intval($_GET['id']) : null;
 $isEdit = $memberId !== null;
 
 // Load data server-side (like members-list-v2b.php)
-if ($org > 0) {
-    $organisation = App\Models\Organisation::find($org);
-    $allClasses = $organisation ? $organisation->membershipClasses()->orderBy('class')->get() : collect([]);
+$organisation = $org > 0 ? App\Models\Organisation::find($org) : null;
+if ($organisation) {
+    $allClasses = $organisation->membershipClasses()->orderBy('class')->get();
 } else {
-    $allClasses = App\Models\MembershipClass::orderBy('class')->get();
+    $allClasses = collect([]);
 }
 
 $allStatuses = App\Models\MembershipStatus::orderBy('status')->get();
