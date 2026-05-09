@@ -244,7 +244,7 @@ Fields:
 ## Members Management
 
 ### members.php
-**Purpose:** Add/edit member records
+**Purpose:** Add/edit member records (legacy)
 
 **Fields:** 40+ fields including:
 - Personal: name, DOB
@@ -260,16 +260,46 @@ Fields:
 
 ---
 
-### members-list.php
-**Purpose:** List all members with filtering
+### members-list-v2b.php (Modern Member List)
+**Purpose:** List all members with DataTables filtering
 
 **Features:**
-- Filter by class, status, role
+- Server-side pagination via DataTables
+- Filter by class, status
 - Sort by any column
-- Pagination
+- Pagination with page size selector (10/25/50/100)
 - Export to CSV
+- Photo display (60px, clickable modal)
+- Actions column with Edit button
+- "Create New" button links to members-new.php
+- Vertical alignment for all table cells
 
 **Security:** Requires security level 1 (Member)
+
+**Route:** `/AllMembers`
+
+---
+
+### members-new.php (Modern Member Form)
+**Purpose:** Add/edit member records - new modernized form
+
+**Features:**
+- Single page form with 4 sections: Member Details, Address, Emergency Contact, Roles
+- Uses direct mysqli queries (not Laravel Eloquent)
+- Auto-suggest displayname from Firstname + Surname
+- Default class = Flying, default status = Active
+- enable_email always true (no checkbox needed)
+- Photo upload to /media/members/<org>/
+- Address fields: mem_addr1-4, mem_city, mem_country, mem_postcode
+- Emergency contact: emerg_addr1-3, emerg_phone
+- Role assignment via checkboxes
+- Form validation with server-side checks
+
+**API Endpoint:** `api/member-form.php` - handles POST (save) and GET (load classes/statuses/roles)
+
+**Security:** Requires security level 6 (Member + Booking Admin)
+
+**Route:** `/MemberNew`
 
 ---
 

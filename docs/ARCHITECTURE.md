@@ -70,6 +70,12 @@ Connection configured in:
 - `home.php` - Main dashboard after login
 - `SignOut.php` - Logout
 
+### Member Management
+- `members-list-v2b.php` - Modern member list (DataTables)
+- `members-new.php` - Modern member create/edit form
+- `api/member-form.php` - API for member form (classes, statuses, roles, save)
+- `api/members.php` - DataTables API for member list
+
 ### Daily Operations
 - `StartDay.php` - Select location to start flying day
 - `DailySheet.php` - Flight entry form (core feature, 1300 lines)

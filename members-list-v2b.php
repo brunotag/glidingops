@@ -192,7 +192,10 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
     <span id="record-count"></span>
 </div>
 
-<table id="members-table" class="table table-striped table-bordered" style="width:100%">
+<table id="members-table" class="table table-striped table-bordered" style="width:100%;">
+<style>
+    #members-table td, #members-table th { vertical-align: middle; }
+</style>
 <thead>
             <th>Actions</th>
             <th>Photo</th>
@@ -208,6 +211,21 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
         <tr><td colspan="10">Loading...</td></tr>
     </tbody>
 </table>
+
+<!-- Photo Modal -->
+<div id="photoModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="photoModalLabel">Member Photo</h4>
+            </div>
+            <div class="modal-body" style="text-align:center;">
+                <img id="modalPhoto" src="" style="max-width:100%;max-height:80vh;">
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap.min.js"></script>
@@ -262,21 +280,22 @@ $(document).ready(function() {
             columns: [
                 { 
                     data: 'edit_url',
-                    render: function(data) {
-                        return '<a href="' + data + '" class="btn btn-primary btn-xs">Edit</a>';
-                    },
                     title: 'Actions',
+                    render: function(data, type, full) {
+                        return '<a href="' + data + '" class="btn btn-primary btn-xs" style="display:flex;align-items:center;justify-content:center;width:100%;height:40px;box-sizing:border-box;">Edit</a>';
+                    },
                     orderable: false,
                     searchable: false,
                     width: '80px'
                 },
                 { 
                     data: 'photo_url',
+                    title: 'Photo',
                     render: function(data) {
-                        if (data) {
-                            return '<a href="' + data + '" target="_blank"><img width="60" src="' + data + '" alt="photo"></a>';
+                        if (!data) {
+                            return '<span style="color:#999;font-size:12px;">no photo</span>';
                         }
-                        return '';
+                        return '<img width="60" src="' + data + '" alt="photo" style="cursor:pointer;" onerror="$(this).replaceWith(\'<span style=color:#999;font-size:12px;>no photo</span>\')" onclick="var src=$(this).attr(\'src\');var name=src.replace(\'img/members/\',\'\').replace(\'.jpg\',\'\');$(\'#modalPhoto\').attr(\'src\',src);$(\'#photoModalLabel\').text(name);$(\'#photoModal\').modal(\'show\');">';
                     },
                     orderable: false,
                     searchable: false,

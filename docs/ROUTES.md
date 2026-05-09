@@ -9,8 +9,9 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | URL | Maps To | Purpose |
 |-----|---------|---------|
 | `/home` | home.php | Main dashboard |
-| `/AllMembers` | members-list.php | Member list |
-| `/Member` | members.php | Add/edit member |
+| `/AllMembers` | members-list-v2b.php | Member list (modern) |
+| `/Member` | members.php | Add/edit member (legacy) |
+| `/MemberNew` | members-new.php | Add/edit member (modern) |
 | `/AllAircraft` | aircraft-list.php | Aircraft list |
 | `/Aircraft` | aircraft.php | Add/edit aircraft |
 | `/AircraftTypes` | aircrafttype-list.php | Aircraft types |
@@ -62,6 +63,8 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/app/css/*` | /lrv/public/css/* | Laravel CSS |
 | `/api/v1/json/*` | apiglidjsonv1.php | Internal JSON API |
 | `/api/v2/*` | /lrv/public/api/v2/* | Laravel API routes |
+| `/api/members` | api/members.php | DataTables member list |
+| `/api/member-form` | api/member-form.php | Member form API (GET: classes/statuses/roles, POST: save) |
 | `/GlideAccounts.csv` | Treasurer2.php | Treasurer CSV export |
 | `/Engineering.csv` | Engineer2.php | Engineer CSV export |
 | `/OlcFile.igc` | igcgenerate.php | IGC file download |
