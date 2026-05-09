@@ -16,36 +16,67 @@ if (isset($_SESSION['security'])) {
 $memberId = isset($_GET['id']) ? intval($_GET['id']) : null;
 $isEdit = $memberId !== null;
 
-// Load data server-side (like members-list-v2b.php)
-$organisation = $org > 0 ? App\Models\Organisation::find($org) : null;
-if ($organisation) {
-    $allClasses = $organisation->membershipClasses()->orderBy('class')->get();
-} else {
-    $allClasses = collect([]);
+// Load data using direct queries (like other pages)
+$con_params = require('./config/database.php');
+$con_params = $con_params['gliding'];
+$con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+
+// Get membership classes
+$allClasses = [];
+$q = "SELECT * FROM membership_class ORDER BY class";
+$r = mysqli_query($con, $q);
+while ($row = mysqli_fetch_assoc($r)) {
+    $allClasses[] = $row;
 }
 
-$allStatuses = App\Models\MembershipStatus::orderBy('status')->get();
+// Get membership statuses  
+$allStatuses = [];
+$q = "SELECT * FROM membership_status ORDER BY status_name";
+$r = mysqli_query($con, $q);
+while ($row = mysqli_fetch_assoc($r)) {
+    $allStatuses[] = $row;
+}
 
-$allRoles = App\Models\Role::where('org', $org)->orWhere('org', 0)->orderBy('name')->get();
+// Get roles
+$allRoles = [];
+$q = "SELECT * FROM roles ORDER BY name";
+$r = mysqli_query($con, $q);
+while ($row = mysqli_fetch_assoc($r)) {
+    $allRoles[] = $row;
+}
 
 // Default values
-$flyingClass = $allClasses->firstWhere('class', 'Flying');
-$defaultClassId = $flyingClass ? $flyingClass->id : null;
-$activeStatus = $allStatuses->firstWhere('status', 'Active');
-$defaultStatusId = $activeStatus ? $activeStatus->id : null;
+$defaultClassId = null;
+$defaultStatusId = null;
+foreach ($allClasses as $c) {
+    if ($c['class'] === 'Flying') { $defaultClassId = $c['id']; break; }
+}
+foreach ($allStatuses as $s) {
+    if ($s['status_name'] === 'Active') { $defaultStatusId = $s['id']; break; }
+}
 
 // Load member data if editing
 $member = null;
 $memberRoles = [];
 if ($isEdit) {
-    $member = \App\Models\Member::find($memberId);
-    if ($member && $org > 0 && $member->org != $org) {
-        die("Record not found");
-    }
-    if ($member) {
-        $memberRoles = $member->roles->pluck('id')->toArray();
+    $q = "SELECT * FROM members WHERE id = " . $memberId;
+    $r = mysqli_query($con, $q);
+    if ($row = mysqli_fetch_assoc($r)) {
+        if ($org > 0 && $row['org'] != $org) {
+            die("Record not found");
+        }
+        $member = $row;
+        
+        // Get roles
+        $q = "SELECT role_id FROM role_member WHERE member_id = " . $memberId;
+        $r = mysqli_query($con, $q);
+        while ($row = mysqli_fetch_assoc($r)) {
+            $memberRoles[] = $row['role_id'];
+        }
     }
 }
+
+mysqli_close($con);
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -66,7 +97,8 @@ if ($isEdit) {
         .error-msg { color: #a94442; font-size: 12px; }
         .success-msg { color: #3c763d; font-size: 14px; margin-bottom: 15px; }
     </style>
-    <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
+    <?php $inc = "./orgs/" . $org . "/heading2.css"; if (file_exists($inc)) { echo '<style>'; include $inc; echo '</style>'; } ?>
+    <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) { echo '<style>'; include $inc; echo '</style>'; } ?>
 </head>
 <body>
 <div class="no-padding-container">
@@ -85,142 +117,191 @@ if ($isEdit) {
 
     <form id="member-form" method="post">
         <input type="hidden" name="id" id="member-id" value="<?php echo $memberId; ?>">
-
+        
         <div class="panel panel-default">
-            <div class="panel-heading"><strong>Basic Information</strong></div>
+            <div class="panel-heading"><strong>Member Details</strong></div>
             <div class="panel-body">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="firstname">First Name *</label>
-                            <input type="text" class="form-control" name="firstname" id="firstname" value="<?php echo $member ? htmlspecialchars($member->firstname ?? '') : ''; ?>" required maxlength="40">
+                            <input type="text" class="form-control" name="firstname" id="firstname" value="<?php echo $member ? htmlspecialchars($member['firstname'] ?? '') : ''; ?>" required maxlength="40">
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="surname">Surname *</label>
-                            <input type="text" class="form-control" name="surname" id="surname" value="<?php echo $member ? htmlspecialchars($member->surname ?? '') : ''; ?>" required maxlength="40">
+                            <input type="text" class="form-control" name="surname" id="surname" value="<?php echo $member ? htmlspecialchars($member['surname'] ?? '') : ''; ?>" required maxlength="40">
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="displayname">Display Name *</label>
-                            <input type="text" class="form-control" name="displayname" id="displayname" value="<?php echo $member ? htmlspecialchars($member->displayname ?? '') : ''; ?>" required maxlength="80">
-                            <span class="help-block">Auto-suggested from first + surname</span>
+                            <input type="text" class="form-control" name="displayname" id="displayname" value="<?php echo $member ? htmlspecialchars($member['displayname'] ?? '') : ''; ?>" required maxlength="80">
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="date_of_birth">Date of Birth</label>
-                            <input type="date" class="form-control" name="date_of_birth" id="date_of_birth" value="<?php echo $member ? $member->date_of_birth ?? '' : ''; ?>">
+                            <input type="date" class="form-control" name="date_of_birth" id="date_of_birth" value="<?php echo $member ? $member['date_of_birth'] ?? '' : ''; ?>">
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="panel panel-default">
-            <div class="panel-heading"><strong>Membership</strong></div>
-            <div class="panel-body">
+                
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="class">Class *</label>
                             <select class="form-control" name="class" id="class" required>
                                 <option value="">Select Class</option>
                                 <?php foreach ($allClasses as $class): ?>
-                                    <option value="<?php echo $class->id; ?>" <?php echo ($member && $member->class == $class->id) || (!$member && $defaultClassId == $class->id) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($class->class); ?>
+                                    <option value="<?php echo $class['id']; ?>" <?php echo ($member && $member['class'] == $class['id']) || (!$member && $defaultClassId == $class['id']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($class['class']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="status">Status *</label>
                             <select class="form-control" name="status" id="status" required>
                                 <option value="">Select Status</option>
                                 <?php foreach ($allStatuses as $status): ?>
-                                    <option value="<?php echo $status->id; ?>" <?php echo ($member && $member->status == $status->id) || (!$member && $defaultStatusId == $status->id) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($status->status); ?>
+                                    <option value="<?php echo $status['id']; ?>" <?php echo ($member && $member['status'] == $status['id']) || (!$member && $defaultStatusId == $status['id']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($status['status_name']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="gnz_number">GNZ Number</label>
-                            <input type="text" class="form-control" name="gnz_number" id="gnz_number" value="<?php echo $member ? htmlspecialchars($member->gnz_number ?? '') : ''; ?>">
+                            <input type="text" class="form-control" name="gnz_number" id="gnz_number" value="<?php echo $member ? htmlspecialchars($member['gnz_number'] ?? '') : ''; ?>">
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="panel panel-default">
-            <div class="panel-heading"><strong>Contact</strong></div>
-            <div class="panel-body">
+                
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="phone_mobile">Mobile Phone</label>
-                            <input type="text" class="form-control" name="phone_mobile" id="phone_mobile" value="<?php echo $member ? htmlspecialchars($member->phone_mobile ?? '') : ''; ?>">
+                            <input type="text" class="form-control" name="phone_mobile" id="phone_mobile" value="<?php echo $member ? htmlspecialchars($member['phone_mobile'] ?? '') : ''; ?>">
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" class="form-control" name="email" id="email" value="<?php echo $member ? htmlspecialchars($member->email ?? '') : ''; ?>">
+                            <input type="email" class="form-control" name="email" id="email" value="<?php echo $member ? htmlspecialchars($member['email'] ?? '') : ''; ?>">
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="panel panel-default">
-            <div class="panel-heading"><strong>Certifications</strong></div>
-            <div class="panel-body">
+                
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="medical_expire">Medical Expiry</label>
-                            <input type="date" class="form-control" name="medical_expire" id="medical_expire" value="<?php echo $member ? $member->medical_expire ?? '' : ''; ?>">
+                            <input type="date" class="form-control" name="medical_expire" id="medical_expire" value="<?php echo $member ? $member['medical_expire'] ?? '' : ''; ?>">
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="bfr_expire">BFR Expiry</label>
-                            <input type="date" class="form-control" name="bfr_expire" id="bfr_expire" value="<?php echo $member ? $member->bfr_expire ?? '' : ''; ?>">
+                            <input type="date" class="form-control" name="bfr_expire" id="bfr_expire" value="<?php echo $member ? $member['bfr_expire'] ?? '' : ''; ?>">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="gone_solo" id="gone_solo" value="1" <?php echo $member && isset($member['gone_solo']) && $member['gone_solo'] ? 'checked' : ''; ?>>
+                                Gone Solo
+                            </label>
+                            <label style="margin-left: 20px;">
+                                <input type="checkbox" name="official_observer" id="official_observer" value="1" <?php echo $member && isset($member['official_observer']) && $member['official_observer'] ? 'checked' : ''; ?>>
+                                Official Observer
+                            </label>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <div class="panel panel-default">
-            <div class="panel-heading"><strong>Attributes</strong></div>
+            <div class="panel-heading"><strong>Address</strong></div>
             <div class="panel-body">
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" name="gone_solo" id="gone_solo" value="1" <?php echo $member && $member->gone_solo ? 'checked' : ''; ?>>
-                        Gone Solo
-                    </label>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="mem_addr1">Address Line 1</label>
+                            <input type="text" class="form-control" name="mem_addr1" id="mem_addr1" value="<?php echo $member ? htmlspecialchars($member['mem_addr1'] ?? '') : ''; ?>">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="mem_addr2">Address Line 2</label>
+                            <input type="text" class="form-control" name="mem_addr2" id="mem_addr2" value="<?php echo $member ? htmlspecialchars($member['mem_addr2'] ?? '') : ''; ?>">
+                        </div>
+                    </div>
                 </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" name="enable_email" id="enable_email" value="1" checked disabled>
-                        Enable Email (always enabled)
-                    </label>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="mem_addr3">Suburb</label>
+                            <input type="text" class="form-control" name="mem_addr3" id="mem_addr3" value="<?php echo $member ? htmlspecialchars($member['mem_addr3'] ?? '') : ''; ?>">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="mem_city">City</label>
+                            <input type="text" class="form-control" name="mem_city" id="mem_city" value="<?php echo $member ? htmlspecialchars($member['mem_city'] ?? '') : ''; ?>">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="mem_postcode">Postcode</label>
+                            <input type="text" class="form-control" name="mem_postcode" id="mem_postcode" value="<?php echo $member ? htmlspecialchars($member['mem_postcode'] ?? '') : ''; ?>">
+                        </div>
+                    </div>
                 </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" name="official_observer" id="official_observer" value="1" <?php echo $member && $member->official_observer ? 'checked' : ''; ?>>
-                        Official Observer
-                    </label>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="mem_country">Country</label>
+                            <input type="text" class="form-control" name="mem_country" id="mem_country" value="<?php echo $member ? htmlspecialchars($member['mem_country'] ?? '') : ''; ?>">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel panel-default">
+            <div class="panel-heading"><strong>Emergency Contact</strong></div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="emerg_addr1">Name</label>
+                            <input type="text" class="form-control" name="emerg_addr1" id="emerg_addr1" value="<?php echo $member ? htmlspecialchars($member['emerg_addr1'] ?? '') : ''; ?>">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="emerg_addr2">Phone</label>
+                            <input type="text" class="form-control" name="emerg_addr2" id="emerg_addr2" value="<?php echo $member ? htmlspecialchars($member['emerg_addr2'] ?? '') : ''; ?>">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="emerg_addr3">Relationship</label>
+                            <input type="text" class="form-control" name="emerg_addr3" id="emerg_addr3" value="<?php echo $member ? htmlspecialchars($member['emerg_addr3'] ?? '') : ''; ?>">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -228,14 +309,14 @@ if ($isEdit) {
         <div class="panel panel-default">
             <div class="panel-heading"><strong>Roles</strong></div>
             <div class="panel-body">
-                <?php if ($allRoles->count() === 0): ?>
+                <?php if (count($allRoles) === 0): ?>
                     <p>No roles available</p>
                 <?php else: ?>
                     <?php foreach ($allRoles as $role): ?>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" name="roles[]" value="<?php echo $role->id; ?>" <?php echo in_array($role->id, $memberRoles) ? 'checked' : ''; ?>>
-                                <?php echo htmlspecialchars($role->name); ?>
+                                <input type="checkbox" name="roles[]" value="<?php echo $role['id']; ?>" <?php echo in_array($role['id'], $memberRoles) ? 'checked' : ''; ?>>
+                                <?php echo htmlspecialchars($role['name']); ?>
                             </label>
                         </div>
                     <?php endforeach; ?>

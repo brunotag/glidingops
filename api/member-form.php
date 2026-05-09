@@ -156,6 +156,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $officialObserver = isset($_POST['official_observer']) ? 1 : 0;
     $enableEmail = 1; // Always true
     $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
+    
+    // Address fields
+    $memAddr1 = isset($_POST['mem_addr1']) ? trim($_POST['mem_addr1']) : '';
+    $memAddr2 = isset($_POST['mem_addr2']) ? trim($_POST['mem_addr2']) : '';
+    $memAddr3 = isset($_POST['mem_addr3']) ? trim($_POST['mem_addr3']) : '';
+    $memCity = isset($_POST['mem_city']) ? trim($_POST['mem_city']) : '';
+    $memCountry = isset($_POST['mem_country']) ? trim($_POST['mem_country']) : '';
+    $memPostcode = isset($_POST['mem_postcode']) ? trim($_POST['mem_postcode']) : '';
+    
+    // Emergency contact fields
+    $emergAddr1 = isset($_POST['emerg_addr1']) ? trim($_POST['emerg_addr1']) : '';
+    $emergAddr2 = isset($_POST['emerg_addr2']) ? trim($_POST['emerg_addr2']) : '';
+    $emergAddr3 = isset($_POST['emerg_addr3']) ? trim($_POST['emerg_addr3']) : '';
 
     // Escape strings for SQL
     $firstnameEsc = mysqli_real_escape_string($con, $firstname);
@@ -164,6 +177,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gnzNumberEsc = mysqli_real_escape_string($con, $gnzNumber);
     $phoneMobileEsc = mysqli_real_escape_string($con, $phoneMobile);
     $emailEsc = mysqli_real_escape_string($con, $email);
+    $memAddr1Esc = mysqli_real_escape_string($con, $memAddr1);
+    $memAddr2Esc = mysqli_real_escape_string($con, $memAddr2);
+    $memAddr3Esc = mysqli_real_escape_string($con, $memAddr3);
+    $memCityEsc = mysqli_real_escape_string($con, $memCity);
+    $memCountryEsc = mysqli_real_escape_string($con, $memCountry);
+    $memPostcodeEsc = mysqli_real_escape_string($con, $memPostcode);
+    $emergAddr1Esc = mysqli_real_escape_string($con, $emergAddr1);
+    $emergAddr2Esc = mysqli_real_escape_string($con, $emergAddr2);
+    $emergAddr3Esc = mysqli_real_escape_string($con, $emergAddr3);
 
     if ($isEdit) {
         // Check org access
@@ -191,19 +213,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             bfr_expire = " . ($bfrExpire ? "'$bfrExpire'" : "NULL") . ",
             gone_solo = $goneSolo,
             enable_email = $enableEmail,
-            official_observer = $officialObserver
+            official_observer = $officialObserver,
+            mem_addr1 = '$memAddr1Esc',
+            mem_addr2 = '$memAddr2Esc',
+            mem_addr3 = '$memAddr3Esc',
+            mem_city = '$memCityEsc',
+            mem_country = '$memCountryEsc',
+            mem_postcode = '$memPostcodeEsc',
+            emerg_addr1 = '$emergAddr1Esc',
+            emerg_addr2 = '$emergAddr2Esc',
+            emerg_addr3 = '$emergAddr3Esc'
             WHERE id = $memberId";
     } else {
         // Insert
         $q = "INSERT INTO members (
             org, firstname, surname, displayname, class, status,
             date_of_birth, gnz_number, phone_mobile, email,
-            medical_expire, bfr_expire, gone_solo, enable_email, official_observer
+            medical_expire, bfr_expire, gone_solo, enable_email, official_observer,
+            mem_addr1, mem_addr2, mem_addr3, mem_city, mem_country, mem_postcode,
+            emerg_addr1, emerg_addr2, emerg_addr3
         ) VALUES (
             $org, '$firstnameEsc', '$surnameEsc', '$displaynameEsc', $classId, $statusId,
             " . ($dateOfBirth ? "'$dateOfBirth'" : "NULL") . ", '$gnzNumberEsc', '$phoneMobileEsc', '$emailEsc',
             " . ($medicalExpire ? "'$medicalExpire'" : "NULL") . ", " . ($bfrExpire ? "'$bfrExpire'" : "NULL") . ",
-            $goneSolo, $enableEmail, $officialObserver
+            $goneSolo, $enableEmail, $officialObserver,
+            '$memAddr1Esc', '$memAddr2Esc', '$memAddr3Esc', '$memCityEsc', '$memCountryEsc', '$memPostcodeEsc',
+            '$emergAddr1Esc', '$emergAddr2Esc', '$emergAddr3Esc'
         )";
     }
 
