@@ -1,95 +1,58 @@
-# Title
+# GlidingOps
 
 A bunch of tools to assist gliding operations.
-
 Based on original by Tim Hogan.
 
-## How to install
+## Quick Reference
 
-## How to configure the database connections for production deployment
-Due to the mixed `vanilla php`/`laravel` nature of the project, we need to configure the database parameters in two places. 
-One is the conventional `laravel` `.env` file that has to be located at `glidingops/lrv/.env`.
+### Documentation (in `docs/`)
+
+| Area | Documentation |
+|------|---------------|
+| **Start Here** | This file - overview and navigation |
+| **Architecture** | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Technical structure |
+| **Database** | [docs/DATABASE.md](docs/DATABASE.md) - Tables, schemas, relationships |
+| **Features** | [docs/FEATURES.md](docs/FEATURES.md) - What each feature does |
+| **Routes** | [docs/ROUTES.md](docs/ROUTES.md) - URL routing via .htaccess |
+| **Security** | [docs/SECURITY.md](docs/SECURITY.md) - Auth, permissions, roles |
+| **Messaging** | [docs/MESSAGING.md](docs/MESSAGING.md) - Email/SMS system |
+| **Dead Code** | [docs/DEAD_CODE.md](docs/DEAD_CODE.md) - What can be deleted |
+| **Codebase** | [docs/CODEBASE_MAP.md](docs/CODEBASE_MAP.md) - File organization |
+| **Web Auth** | [docs/WEB_AUTH.md](docs/WEB_AUTH.md) - Session handling |
+| **Develop** | [docs/DEVELOP.md](docs/DEVELOP.md) - Dev workflow, logging, API patterns |
+| **TODO** | [docs/TODO.md](docs/TODO.md) - Known issues and planned work |
+
+### Dev Environment
+
 ```bash
-APP_ENV=development
+# SSH into Vagrant
+cd lrv; vagrant ssh
 
-DB_HOST=localhost
-DB_PORT=3306
+# PHP syntax check
+vagrant ssh -c "php -l ./code/<path>" 2>&1
 
-DB_DATABASE=gliding
-DB_USERNAME=homestead
-DB_PASSWORD=secret
-
-DB_TRACKS_DATABASE=tracks
-DB_TRACKS_USERNAME=homestead
-DB_TRACKS_PASSWORD=secret
-
-APP_KEY=base64:m8XNVK0wYvRJoDLfIcBYuK+/vZdmTP2+g8A1dPOOEUc=
-APP_DEBUG=true
+# Access
+https://glidingops.test
+Username: [dev-creds] / Password: [dev-creds]
 ```
 
-The second one is `glidingops`' custom database configuration file that needs to be located at `glidingops/config/database.php`
-```bash
-<?php
-return [
-    'gliding' => [
-        'username' => 'admin',
-        'password' => '****',
-        'hostname' => 'localhost',
-        'dbname' => 'gliding'
-    ],
-    'tracks' => [
-        'username' => 'track',
-        'password' => '****',
-        'hostname' => 'localhost',
-        'dbname' => 'tracks'
-    ]
-];
-?>
-```
-Please note that `glidingops/lrv/.env` and `glidingops/config/database.php` are not tracked in git because they contain real credentials for the database connection.
+### Database Config
 
-Make sure mysql *STRICT_MODE* is not enabled (*STRICT_TRANS_TABLES* nor *STRICT_ALL_TABLES*). Please see https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sql-mode-strict
+Two config locations needed:
 
-To list the currently enabled modes use
-```sql
-SELECT @@sql_mode;
-```
+1. `lrv/.env` - Laravel config
+2. `config/database.php` - Custom PHP config
 
-## How to contribute
+### Key Files
 
-## How to configure your development environment
-First you'll have to checkout the project from github. It comes configured with [Laravel Homestead](https://laravel.com/docs/5.8/homestead) for ease of spining up a confined development environment.
+- `helpers/api-base.php` - API error handling, `apiExit()`
+- `helpers/logging.php` - `logMsg()` for local debug logging
+- `log/app.log` - Debug log (local only, gitignored)
+- `log/error.log` - PHP errors (local only, gitignored)
 
-[Laravel Homestead](https://laravel.com/docs/5.8/homestead) uses [Vagrant](https://www.vagrantup.com/) to build and provision a virtual machine with all the packages necessary for running the project on your local machine (php5.6, mysql, apache etc.).
+### Log Locations (Local Dev)
 
-Before you move on, you'll have to make sure you have [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and Vagrant(https://www.vagrantup.com/) installed on your development machine. VirtualBox is our default choice for running the aformentioned virtual machine. If you do not fency VirtualBox, you can use any of the Vagrant's [supported providers](https://www.vagrantup.com/docs/providers/). Just edit `glidingops/lrv/Homestead.yaml` and specify your provider of choice.
+- `C:\Users\bruno\dev\glidingops\log\app.log`
+- `C:\Users\bruno\dev\glidingops\log\error.log`
 
-After you've checked out the project, change current folder to `lrv`. All commands for setting up the environment will be run from this folder.
-```bash
-cd glidingops/lrv
-```
-
-Build up and provision the virtual box.
-```bash
-vagrant up
-```
-
-This will configure and build a VM image and at the end of the process will crate and seed a test database to be used during development.
-
-:warning: This process will overwrite `lrv/.env` and `config/database.php`. If already present make sure you have a backup copy.
-
-You might see a couple of errors related to php7.1 failing to be properly configured. You can safely ignore them as the project is using the older php5.6.
-
-The project's root `glidingops` from your host machine is automatically mapped under the `code` folder on the virtual machine. You can use your editor of choice on your host machine to edit any of the source files and as soon as you save, the changes will be synced with the virtual macine. 
-
-From now on, all `laravel` and `php` commands should be run from inside the virtual machine. You can ssh into it using vagrant.
-```bash
-vagrant ssh
-```
-
-You shold be able to visit https://glidingops.test and login using Username: **[dev-creds]** and Password: **[dev-creds]**. Because in development mode we are using a self signed certificate, your server will give you a warning. You can safely add an exception for this certificate and instruct your browser to trust it.
-
-If your browser complains that it can not find https://glidingops.test then check your `hosts` file and make sure you have an entry that reads
-```bash
-192.168.10.10   glidingops.test
-```
+Read directly with `Read` tool - NO vagrant ssh needed.

@@ -291,6 +291,40 @@ If no references, can delete.
 
 ---
 
+## 8. Recent Replacements (2026)
+
+### Old MyFlights Page
+**File:** `MyFlights.php`
+**Replaced by:** `MyFlights.php` (modernized with AJAX loading), `MyFlightsCSV.php`
+**Route:** `/MyFlights`
+**Links to delete:** Find with `grep -r "MyFlights.php" --include="*.php"`
+**Notes:** Still has old tracks DB dependency for non-essential data
+
+### Old Members List
+**File:** `members-list.php`
+**Replaced by:** `members-list-v2b.php`
+**Route:** `/AllMembers` (currently both point to v2b), `/MembersListOld` points to old
+**Links to delete:**
+- `MessagingPage.php:336` - `<li><a href='members-list.php'>Members</a></li>`
+
+### Old Member Form
+**File:** `members.php`
+**Replaced by:** `members-new.php`
+**Route:** `/Member`
+**Links to delete:**
+- `members-new.php:140` - link to "Old Version"
+- `members-list-v2b.php:145` - link to "Old Version"
+- `members.php:654` - form action (self-referential)
+
+### edit-my-details.php
+**File:** `edit-my-details.php`
+**Replaced by:** `members-new.php` via `/EditMyDetails` route
+**Route:** None (internal page)
+**Links to delete:** None - no external links found, only self-references
+**Notes:** No other files link to it, can be deleted once `/EditMyDetails` is verified working
+
+---
+
 ## What NOT to Delete
 
 - Core operational files (DailySheet, flights, members, etc.)

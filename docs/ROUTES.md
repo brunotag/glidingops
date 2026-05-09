@@ -9,6 +9,7 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | URL | Maps To | Purpose |
 |-----|---------|---------|
 | `/home` | home.php | Main dashboard |
+| `/EditMyDetails` | members-new.php | Edit own details (member) |
 | `/AllMembers` | members-list-v2b.php | Member list (modern) |
 | `/Member` | members.php | Add/edit member (legacy) |
 | `/MemberNew` | members-new.php | Add/edit member (modern) |

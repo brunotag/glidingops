@@ -2,11 +2,20 @@
 
 ## Quick Reference
 
+### Dev URLs
+- **App:** https://glidingops.test
+- **Login:** Username: fgordon / Password: fgordon
+- **Local logs:** `C:\Users\bruno\dev\glidingops\log\`
+
 ### PHP Syntax Check (Vagrant)
 ```bash
 cd C:\Users\bruno\dev\glidingops\lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
 ```
-Ignore vagrant warning about homestead - actual output follows after.
+Ignore vagrant warning about homestead - actual PHP output follows after.
+
+### Log Locations (Read directly - NO vagrant ssh needed)
+- `log/app.log` - Debug log via logMsg()
+- `log/error.log` - PHP errors (fatal handler in helpers/logging.php)
 
 ### API Endpoints
 All API endpoints (`api/*.php`) MUST:
@@ -18,22 +27,30 @@ All API endpoints (`api/*.php`) MUST:
 
 ### Key Files
 - `helpers/api-base.php` - API error handling, apiExit()
-- `helpers/logging.php` - logMsg() for local debug logging
-- `log/app.log` - Debug log (local only, gitignored)
+- `helpers/logging.php` - logMsg(), isLocal(), fatal error handler
+- `config/database.php` - gliding and tracks DB config
 
 ### Session Variables
-- `$_SESSION['memberid']`, `$_SESSION['security']` (bitmask), `$_SESSION['org']`
+- `$_SESSION['memberid']`, `$_SESSION['security']` (bitmask: 1=member, 6=admin), `$_SESSION['org']`
 
-### Database
+### Database Conventions
 - Primary key is `id` (NOT `member_id`) in members table
+- membership_status column is `status_name` (NOT `status`)
 - Connection from `config/database.php` → `['gliding']`
+- Always use `intval()` for integer values in SQL
 
-## Documentation References
+## Documentation (start at README.md)
 
-See these files for detailed patterns and context:
-- `DEVELOP.md` - Development workflow, PHP syntax checks, logging, session handling, database conventions
-- `WEB_AUTH.md` - Session handling with WebRequestSession
-- `FEATURES.md` - App features and routes
-- `ROUTES.md` - Route definitions in .htaccess
-- `ARCHITECTURE.md` - App structure and architecture
-- `DATABASE.md` - Database schema reference
+All docs in `docs/` folder:
+- `README.md` (root) - Entry point - overview and navigation
+- `docs/ARCHITECTURE.md` - Technical structure
+- `docs/DATABASE.md` - Tables, schemas, relationships
+- `docs/FEATURES.md` - What each feature does
+- `docs/ROUTES.md` - URL routing via .htaccess
+- `docs/SECURITY.md` - Auth, permissions, roles
+- `docs/MESSAGING.md` - Email/SMS system
+- `docs/CODEBASE_MAP.md` - File organization
+- `docs/WEB_AUTH.md` - Session handling with WebRequestSession
+- `docs/DEVELOP.md` - Dev workflow, logging, API patterns
+- `docs/DEAD_CODE.md` - Files marked for deletion, links to delete before deletion
+- `docs/TODO.md` - Known issues and planned work

@@ -175,3 +175,45 @@ The DailySheet already has some mobile optimizations (flatpickr, dropdown positi
 - Check docs/DEAD_CODE.md before adding features
 - Security model documented in docs/SECURITY.md
 - Database schema in docs/DATABASE.md
+
+---
+
+## Post-Modernization Cleanup (After Thorough Testing)
+
+Once the new pages are verified working, these files can be deleted.
+
+### New Member System
+**Replace:** `members.php` (old), `members-list.php` (old), `edit-my-details.php`
+**New:** `members-new.php`, `members-list-v2b.php`, `/MemberNew`, `/EditMyDetails`
+
+**Files to DELETE after testing:**
+- `members.php` - old member form
+- `members-list.php` - old member list
+- `edit-my-details.php` - replaced by members-new.php via /EditMyDetails
+
+**Links to remove first:**
+- `members-new.php:140` - "Old Version" link
+- `members-list-v2b.php:145` - "Old Version" link
+- `MessagingPage.php:336` - links to old members-list.php
+
+### New MyFlights System
+**Replace:** old MyFlights.php with AJAX version
+**New:** `MyFlights.php` (modernized), `MyFlightsCSV.php`, `api/myflights-data.php`
+
+**Files to DELETE after testing:**
+- (none yet - MyFlights.php was modernized in place)
+
+**Check for any direct links to the old implementation before cleanup.**
+
+### Route Cleanup
+After deleting old files, remove these routes from `.htaccess`:
+- `MembersListOld` (points to old members-list.php)
+- `Member` (points to old members.php)
+
+And remove the "Old Version" links from the new pages.
+
+### Verify Before Delete
+1. All functionality works on new pages
+2. No remaining links to old files
+3. Database connections stable
+4. Sessions/Auth working correctly
