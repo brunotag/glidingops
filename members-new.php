@@ -1,5 +1,7 @@
 <?php session_start(); ?>
 <?php
+require_once __DIR__ . '/load_model.php';
+
 $org = 0;
 if (isset($_SESSION['org'])) $org = $_SESSION['org'];
 if (isset($_SESSION['security'])) {
@@ -14,7 +16,33 @@ if (isset($_SESSION['security'])) {
 $memberId = isset($_GET['id']) ? intval($_GET['id']) : null;
 $isEdit = $memberId !== null;
 
-// For demo/demo: show empty form initially, JS will load data
+// Load data server-side (like members-list-v2b.php)
+$allClasses = \App\Models\MembershipClass::when($org > 0, function($query) use ($org) {
+    return $query->where('org', $org)->orWhere('org', 0);
+})->orderBy('class')->get();
+
+$allStatuses = \App\Models\MembershipStatus::orderBy('status')->get();
+
+$allRoles = \App\Models\Role::where('org', $org)->orWhere('org', 0)->orderBy('name')->get();
+
+// Default values
+$flyingClass = $allClasses->firstWhere('class', 'Flying');
+$defaultClassId = $flyingClass ? $flyingClass->id : null;
+$activeStatus = $allStatuses->firstWhere('status', 'Active');
+$defaultStatusId = $activeStatus ? $activeStatus->id : null;
+
+// Load member data if editing
+$member = null;
+$memberRoles = [];
+if ($isEdit) {
+    $member = \App\Models\Member::find($memberId);
+    if ($member && $org > 0 && $member->org != $org) {
+        die("Record not found");
+    }
+    if ($member) {
+        $memberRoles = $member->roles->pluck('id')->toArray();
+    }
+}
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -62,19 +90,19 @@ $isEdit = $memberId !== null;
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="firstname">First Name *</label>
-                            <input type="text" class="form-control" name="firstname" id="firstname" required maxlength="40">
+                            <input type="text" class="form-control" name="firstname" id="firstname" value="<?php echo $member ? htmlspecialchars($member->firstname ?? '') : ''; ?>" required maxlength="40">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="surname">Surname *</label>
-                            <input type="text" class="form-control" name="surname" id="surname" required maxlength="40">
+                            <input type="text" class="form-control" name="surname" id="surname" value="<?php echo $member ? htmlspecialchars($member->surname ?? '') : ''; ?>" required maxlength="40">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="displayname">Display Name *</label>
-                            <input type="text" class="form-control" name="displayname" id="displayname" required maxlength="80">
+                            <input type="text" class="form-control" name="displayname" id="displayname" value="<?php echo $member ? htmlspecialchars($member->displayname ?? '') : ''; ?>" required maxlength="80">
                             <span class="help-block">Auto-suggested from first + surname</span>
                         </div>
                     </div>
@@ -83,7 +111,7 @@ $isEdit = $memberId !== null;
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="date_of_birth">Date of Birth</label>
-                            <input type="date" class="form-control" name="date_of_birth" id="date_of_birth">
+                            <input type="date" class="form-control" name="date_of_birth" id="date_of_birth" value="<?php echo $member ? $member->date_of_birth ?? '' : ''; ?>">
                         </div>
                     </div>
                 </div>
@@ -98,7 +126,12 @@ $isEdit = $memberId !== null;
                         <div class="form-group">
                             <label for="class">Class *</label>
                             <select class="form-control" name="class" id="class" required>
-                                <option value="">Loading...</option>
+                                <option value="">Select Class</option>
+                                <?php foreach ($allClasses as $class): ?>
+                                    <option value="<?php echo $class->id; ?>" <?php echo ($member && $member->class == $class->id) || (!$member && $defaultClassId == $class->id) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($class->class); ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
@@ -106,14 +139,19 @@ $isEdit = $memberId !== null;
                         <div class="form-group">
                             <label for="status">Status *</label>
                             <select class="form-control" name="status" id="status" required>
-                                <option value="">Loading...</option>
+                                <option value="">Select Status</option>
+                                <?php foreach ($allStatuses as $status): ?>
+                                    <option value="<?php echo $status->id; ?>" <?php echo ($member && $member->status == $status->id) || (!$member && $defaultStatusId == $status->id) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($status->status); ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="gnz_number">GNZ Number</label>
-                            <input type="text" class="form-control" name="gnz_number" id="gnz_number">
+                            <input type="text" class="form-control" name="gnz_number" id="gnz_number" value="<?php echo $member ? htmlspecialchars($member->gnz_number ?? '') : ''; ?>">
                         </div>
                     </div>
                 </div>
@@ -127,13 +165,13 @@ $isEdit = $memberId !== null;
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="phone_mobile">Mobile Phone</label>
-                            <input type="text" class="form-control" name="phone_mobile" id="phone_mobile">
+                            <input type="text" class="form-control" name="phone_mobile" id="phone_mobile" value="<?php echo $member ? htmlspecialchars($member->phone_mobile ?? '') : ''; ?>">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" class="form-control" name="email" id="email">
+                            <input type="email" class="form-control" name="email" id="email" value="<?php echo $member ? htmlspecialchars($member->email ?? '') : ''; ?>">
                         </div>
                     </div>
                 </div>
@@ -147,13 +185,13 @@ $isEdit = $memberId !== null;
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="medical_expire">Medical Expiry</label>
-                            <input type="date" class="form-control" name="medical_expire" id="medical_expire">
+                            <input type="date" class="form-control" name="medical_expire" id="medical_expire" value="<?php echo $member ? $member->medical_expire ?? '' : ''; ?>">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="bfr_expire">BFR Expiry</label>
-                            <input type="date" class="form-control" name="bfr_expire" id="bfr_expire">
+                            <input type="date" class="form-control" name="bfr_expire" id="bfr_expire" value="<?php echo $member ? $member->bfr_expire ?? '' : ''; ?>">
                         </div>
                     </div>
                 </div>
@@ -165,7 +203,7 @@ $isEdit = $memberId !== null;
             <div class="panel-body">
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" name="gone_solo" id="gone_solo" value="1">
+                        <input type="checkbox" name="gone_solo" id="gone_solo" value="1" <?php echo $member && $member->gone_solo ? 'checked' : ''; ?>>
                         Gone Solo
                     </label>
                 </div>
@@ -177,7 +215,7 @@ $isEdit = $memberId !== null;
                 </div>
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" name="official_observer" id="official_observer" value="1">
+                        <input type="checkbox" name="official_observer" id="official_observer" value="1" <?php echo $member && $member->official_observer ? 'checked' : ''; ?>>
                         Official Observer
                     </label>
                 </div>
@@ -186,8 +224,19 @@ $isEdit = $memberId !== null;
 
         <div class="panel panel-default">
             <div class="panel-heading"><strong>Roles</strong></div>
-            <div class="panel-body" id="roles-container">
-                <p>Loading roles...</p>
+            <div class="panel-body">
+                <?php if ($allRoles->count() === 0): ?>
+                    <p>No roles available</p>
+                <?php else: ?>
+                    <?php foreach ($allRoles as $role): ?>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="roles[]" value="<?php echo $role->id; ?>" <?php echo in_array($role->id, $memberRoles) ? 'checked' : ''; ?>>
+                                <?php echo htmlspecialchars($role->name); ?>
+                            </label>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -198,97 +247,9 @@ $isEdit = $memberId !== null;
     </form>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
-    var isEdit = <?php echo $isEdit ? 'true' : 'false'; ?>;
-    var memberId = <?php echo $memberId ? $memberId : 'null'; ?>;
-    var displayNameModified = false;
-
-    // Load form data
-    $.ajax({
-        url: '/api/member-form.php' + (memberId ? '?id=' + memberId : ''),
-        method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            console.log('API Response:', data);
-            if (data.error) {
-                $('#message-area').html('<div class="error-msg">' + data.message + '</div>');
-                return;
-            }
-
-            // Debug: show what's loaded
-            $('#message-area').append('<div class="help-block">Debug: classes=' + data.classes.length + ', statuses=' + data.statuses.length + ', roles=' + data.roles.length + '</div>');
-
-            // Populate class dropdown
-            var classSelect = $('#class');
-            classSelect.empty();
-            classSelect.append('<option value="">Select Class</option>');
-            data.classes.forEach(function(c) {
-                classSelect.append('<option value="' + c.id + '">' + c.class + '</option>');
-            });
-
-            // Set default class (Flying)
-            var flyingClass = data.classes.find(function(c) { return c.class === 'Flying'; });
-            if (flyingClass) {
-                classSelect.val(flyingClass.id);
-            }
-
-            // Populate status dropdown
-            var statusSelect = $('#status');
-            statusSelect.empty();
-            statusSelect.append('<option value="">Select Status</option>');
-            data.statuses.forEach(function(s) {
-                statusSelect.append('<option value="' + s.id + '">' + s.status + '</option>');
-            });
-
-            // Set default status (Active)
-            var activeStatus = data.statuses.find(function(s) { return s.status === 'Active'; });
-            if (activeStatus) {
-                statusSelect.val(activeStatus.id);
-            }
-
-            // Populate roles
-            var rolesContainer = $('#roles-container');
-            rolesContainer.empty();
-            if (data.roles.length === 0) {
-                rolesContainer.append('<p>No roles available</p>');
-            } else {
-                data.roles.forEach(function(role) {
-                    var checked = data.member && data.member.roles && data.member.roles.indexOf(role.id) !== -1 ? 'checked' : '';
-                    rolesContainer.append(
-                        '<div class="checkbox">' +
-                        '<label>' +
-                        '<input type="checkbox" name="roles[]" value="' + role.id + '" ' + checked + '>' +
-                        role.name +
-                        '</label>' +
-                        '</div>'
-                    );
-                });
-            }
-
-            // Populate member data if editing
-            if (data.member) {
-                $('#firstname').val(data.member.firstname);
-                $('#surname').val(data.member.surname);
-                $('#displayname').val(data.member.displayname);
-                $('#date_of_birth').val(data.member.date_of_birth || '');
-                $('#class').val(data.member.class);
-                $('#status').val(data.member.status);
-                $('#gnz_number').val(data.member.gnz_number || '');
-                $('#phone_mobile').val(data.member.phone_mobile || '');
-                $('#email').val(data.member.email || '');
-                $('#medical_expire').val(data.member.medical_expire || '');
-                $('#bfr_expire').val(data.member.bfr_expire || '');
-                $('#gone_solo').prop('checked', data.member.gone_solo == 1);
-                $('#official_observer').prop('checked', data.member.official_observer == 1);
-                displayNameModified = true;
-            }
-        },
-        error: function() {
-            $('#message-area').html('<div class="error-msg">Failed to load form data</div>');
-        }
-    });
+    var displayNameModified = <?php echo $isEdit ? 'true' : 'false'; ?>;
 
     // Auto-suggest displayname
     function updateDisplayName() {
