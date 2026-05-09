@@ -40,7 +40,7 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
     <style>
-        body { padding: 10px; }
+        body { padding: 0; }
         h2 { margin-bottom: 10px; }
         .nav-links { margin-bottom: 15px; }
         .nav-links a { margin-right: 15px; }
@@ -105,10 +105,10 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
         }
         
         /* Container structure */
-        .no-margin-container {
+        .no-padding-container {
             width: 100%;
         }
-        .margin-container {
+        .padding-container {
             padding: 15px;
         }
     </style>
@@ -118,62 +118,49 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
     </style>
 </head>
 <body>
-<!-- No margin container for head and menu -->
-<div class="no-margin-container">
+<!-- No padding container for head and menu -->
+<div class="no-padding-container">
 <?php $inc = "./orgs/" . $org . "/heading2.txt"; if (file_exists($inc)) include $inc; ?>
 <?php $inc = "./orgs/" . $org . "/menu1.txt"; if (file_exists($inc)) include $inc; ?>
 </div>
 
-<!-- Margin container for content -->
-<div class="margin-container">
-<h2>Members List</h2>
-<div class="nav-links">
-    <a href="/MembersListOld">Old Version</a>
+<!-- Padding container for content -->
+<div class="padding-container">
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+    <h4 style="margin: 0;">Members</h4>
+    <a href="/MembersListOld" style="font-size: 12px;">Old Version</a>
 </div>
 
-<div class="controls-bar">
-    <!-- Filters -->
-    <div class="filter-group">
-        <label for="filter-classes">Class:</label>
-        <select id="filter-classes" name="classes[]" multiple class="selectpicker" data-live-search="true" data-width="150px">
-            <?php foreach ($allClasses as $class): ?>
-                <option value="<?php echo $class->id; ?>" <?php echo in_array($class->id, $filterClasses) ? 'selected' : ''; ?>>
-                    <?php echo htmlspecialchars($class->class); ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
+<div class="controls-bar" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 8px;">
+    <!-- Compact filters -->
+    <select id="filter-classes" name="classes[]" multiple class="selectpicker" data-live-search="true" data-width="120px" data-placeholder="Class">
+        <?php foreach ($allClasses as $class): ?>
+            <option value="<?php echo $class->id; ?>" <?php echo in_array($class->id, $filterClasses) ? 'selected' : ''; ?>>
+                <?php echo htmlspecialchars($class->class); ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
     
-    <div class="filter-group">
-        <label for="filter-statuses">Status:</label>
-        <select id="filter-statuses" name="statuses[]" multiple class="selectpicker" data-live-search="true" data-width="120px">
-            <?php foreach ($allStatuses as $status): ?>
-                <option value="<?php echo $status->id; ?>" <?php echo in_array($status->id, $filterStatuses) ? 'selected' : ''; ?>>
-                    <?php echo htmlspecialchars($status->status_name); ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
+    <select id="filter-statuses" name="statuses[]" multiple class="selectpicker" data-width="100px" data-placeholder="Status">
+        <?php foreach ($allStatuses as $status): ?>
+            <option value="<?php echo $status->id; ?>" <?php echo in_array($status->id, $filterStatuses) ? 'selected' : ''; ?>>
+                <?php echo htmlspecialchars($status->status_name); ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
     
-    <button id="apply-filters" class="btn btn-primary btn-sm">Apply</button>
-    <button id="reset-filters" class="btn btn-default btn-sm">Reset</button>
+    <button id="apply-filters" class="btn btn-primary btn-xs">Apply</button>
+    <button id="reset-filters" class="btn btn-default btn-xs">Reset</button>
     
-    <!-- Search and length together -->
-    <div class="filter-group">
-        <label for="dt-search">Search:</label>
-        <input type="text" id="dt-search" placeholder="Name, email, phone..." style="padding: 4px; border: 1px solid #ccc; border-radius: 3px;">
-    </div>
+    <!-- Search -->
+    <input type="text" id="dt-search" placeholder="Search..." style="padding: 3px 6px; border: 1px solid #ccc; border-radius: 3px; width: 120px;">
     
-    <div class="filter-group">
-        <label for="dt-length">Elements per page:</label>
-        <select id="dt-length" class="form-control" style="display: inline-block; width: auto; padding: 4px;">
-            <option value="25">25</option>
-            <option value="50" selected>50</option>
-            <option value="100">100</option>
-        </select>
-    </div>
-    
-    <span id="record-count"></span>
+    <!-- Length -->
+    <select id="dt-length" style="padding: 3px; width: 60px;">
+        <option value="25">25</option>
+        <option value="50" selected>50</option>
+        <option value="100">100</option>
+    </select>
 </div>
 
 <table id="members-table" class="table table-striped table-bordered" style="width:100%">
@@ -241,11 +228,9 @@ $(document).ready(function() {
                     d['length'] = lengthVal;
                     return d;
                 },
-                dataSrc: function(json) {
-                    $('#record-count').text('Showing ' + json.recordsFiltered + ' of ' + json.recordsTotal + ' members');
+dataSrc: function(json) {
                     return json.data;
-                }
-            },
+                },
             columns: [
                 { data: 'id' },
                 { 
@@ -293,7 +278,7 @@ $(document).ready(function() {
             searching: false,
             lengthChange: false,
             // Use dom to place pagination at both top and bottom
-            dom: '<"top"ip>t<"bottom"ip>'
+            dom: 't<"bottom"ip>'
         });
     }
     
@@ -335,7 +320,7 @@ $(document).ready(function() {
 });
 </script>
 
-</div><!-- end margin-container -->
+</div><!-- end padding-container -->
 
 </body>
 </html>
