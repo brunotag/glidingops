@@ -17,13 +17,16 @@ $memberId = isset($_GET['id']) ? intval($_GET['id']) : null;
 $isEdit = $memberId !== null;
 
 // Load data server-side (like members-list-v2b.php)
-$allClasses = \App\Models\MembershipClass::when($org > 0, function($query) use ($org) {
-    return $query->where('org', $org)->orWhere('org', 0);
-})->orderBy('class')->get();
+if ($org > 0) {
+    $organisation = App\Models\Organisation::find($org);
+    $allClasses = $organisation ? $organisation->membershipClasses()->orderBy('class')->get() : collect([]);
+} else {
+    $allClasses = App\Models\MembershipClass::orderBy('class')->get();
+}
 
-$allStatuses = \App\Models\MembershipStatus::orderBy('status')->get();
+$allStatuses = App\Models\MembershipStatus::orderBy('status')->get();
 
-$allRoles = \App\Models\Role::where('org', $org)->orWhere('org', 0)->orderBy('name')->get();
+$allRoles = App\Models\Role::where('org', $org)->orWhere('org', 0)->orderBy('name')->get();
 
 // Default values
 $flyingClass = $allClasses->firstWhere('class', 'Flying');
