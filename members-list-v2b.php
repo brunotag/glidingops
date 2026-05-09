@@ -97,6 +97,9 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
             font-size: 12px;
             color: #666;
         }
+        .dataTables_info {
+            display: none !important;
+        }
         
         /* DataTables button styling */
         .dt-buttons {
@@ -241,11 +244,18 @@ $(document).ready(function() {
                     d['length'] = lengthVal;
                     return d;
                 },
-                dataSrc: function(json) {
-                    $('#record-count').text('Showing ' + json.recordsFiltered + ' of ' + json.recordsTotal + ' members');
+dataSrc: function(json) {
+                    // Get start from the request that was made
+                    var pageInfo = this.api().page.info();
+                    var start = pageInfo.start + 1;
+                    var end = pageInfo.end;
+                    var text = 'Showing ' + start + ' to ' + end + ' of ' + json.recordsFiltered + ' members';
+                    if (json.recordsFiltered !== json.recordsTotal) {
+                        text += ' (filtered from ' + json.recordsTotal + ' total)';
+                    }
+                    $('#record-count').text(text);
                     return json.data;
-                }
-            },
+                },
             columns: [
                 { data: 'id' },
                 { 
