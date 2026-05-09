@@ -56,6 +56,7 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
             background: #f8f9fa;
             border-radius: 4px;
             margin-bottom: 15px;
+            font-size: 14px;
         }
         .controls-bar > * {
             margin: 0;
@@ -103,6 +104,9 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
         }
         #members-table + .dataTables_wrapper > .dataTables_paginate {
             display: none !important;
+        }
+        .dataTables_paginate {
+            margin: 0;
         }
         
         /* DataTables button styling */
