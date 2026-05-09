@@ -146,6 +146,8 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
 </div>
 
 <div class="controls-bar">
+    <a href="/MemberNew" class="btn btn-primary btn-sm">Create New</a>
+    
     <!-- Filters -->
     <div class="filter-group">
         <label for="filter-classes">Class:</label>
@@ -191,9 +193,8 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
 </div>
 
 <table id="members-table" class="table table-striped table-bordered" style="width:100%">
-    <thead>
-        <tr>
-            <th>ID</th>
+<thead>
+            <th>Actions</th>
             <th>Photo</th>
             <th>First Name</th>
             <th>Surname</th>
@@ -202,9 +203,7 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
             <th>Status</th>
             <th>Email</th>
             <th>Mobile</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
+        </thead>
     <tbody>
         <tr><td colspan="10">Loading...</td></tr>
     </tbody>
@@ -261,18 +260,27 @@ $(document).ready(function() {
                 }
             },
             columns: [
-                { data: 'id' },
+                { 
+                    data: 'edit_url',
+                    render: function(data) {
+                        return '<a href="' + data + '" class="btn btn-primary btn-xs">Edit</a>';
+                    },
+                    title: 'Actions',
+                    orderable: false,
+                    searchable: false,
+                    width: '80px'
+                },
                 { 
                     data: 'photo_url',
                     render: function(data) {
                         if (data) {
-                            return '<img width="40" src="' + data + '" alt="photo">';
+                            return '<a href="' + data + '" target="_blank"><img width="60" src="' + data + '" alt="photo"></a>';
                         }
                         return '';
                     },
                     orderable: false,
                     searchable: false,
-                    width: '50px'
+                    width: '70px'
                 },
                 { data: 'firstname' },
                 { data: 'surname' },
@@ -280,17 +288,9 @@ $(document).ready(function() {
                 { data: 'class' },
                 { data: 'status' },
                 { data: 'email' },
-                { data: 'phone_mobile' },
-                { 
-                    data: 'edit_url',
-                    render: function(data) {
-                        return '<a href="' + data + '">Edit</a>';
-                    },
-                    sortable: false,
-                    searchable: false
-                }
+                { data: 'phone_mobile' }
             ],
-            order: [[3, 'asc']],
+            order: [[2, 'asc']],
             lengthMenu: [[25, 50, 100], ['25', '50', '100']],
             pageLength: 50,
             language: {
@@ -309,7 +309,8 @@ $(document).ready(function() {
             // Use dom to hide default top pagination, keep bottom
             dom: '<"top"f>t<"bottom"ip>',
             drawCallback: function(settings) {
-                // Move bottom pagination to controls-bar
+                // Move bottom pagination to controls-bar (remove existing first)
+                $('.controls-bar .dataTables_paginate').remove();
                 var pagination = $('.dataTables_paginate');
                 $('.controls-bar').append(pagination);
                 pagination.css('margin-left', 'auto');
