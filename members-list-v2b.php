@@ -168,6 +168,7 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
     <thead>
         <tr>
             <th>ID</th>
+            <th>Photo</th>
             <th>First Name</th>
             <th>Surname</th>
             <th>Display Name</th>
@@ -178,7 +179,9 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
             <th>Actions</th>
         </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+        <tr><td colspan="10">Loading...</td></tr>
+    </tbody>
 </table>
 
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
@@ -192,14 +195,24 @@ $(document).ready(function() {
     var table;
     
     function updateFiltersFromSelect() {
-        filterClasses = $('#filter-classes').val() || [];
-        filterStatuses = $('#filter-statuses').val() || [];
+        var classesVal = $('#filter-classes').val();
+        var statusesVal = $('#filter-statuses').val();
+        filterClasses = classesVal ? classesVal : [];
+        filterStatuses = statusesVal ? statusesVal : [];
     }
     
-    function rebuildTable() {
+    function buildDataTable() {
+        // Destroy existing table if any
         if ($.fn.DataTable.isDataTable('#members-table')) {
-            $('#members-table').DataTable().destroy();
+            try {
+                $('#members-table').DataTable().destroy();
+            } catch(e) {}
+            $('#members-table').empty();
         }
+        
+        // Rebuild table
+        var searchVal = $('#dt-search').val() || '';
+        var lengthVal = parseInt($('#dt-length').val()) || 50;
         
         table = $('#members-table').DataTable({
             processing: true,
@@ -212,8 +225,8 @@ $(document).ready(function() {
                     updateFiltersFromSelect();
                     d['filter[classes]'] = filterClasses;
                     d['filter[statuses]'] = filterStatuses;
-                    d['search[value]'] = $('#dt-search').val();
-                    d['length'] = $('#dt-length').val();
+                    d['search[value]'] = searchVal;
+                    d['length'] = lengthVal;
                     return d;
                 },
                 dataSrc: function(json) {
@@ -227,13 +240,13 @@ $(document).ready(function() {
                     data: 'photo_url',
                     render: function(data) {
                         if (data) {
-                            return '<img width="50" src="' + data + '" alt="photo">';
+                            return '<img width="40" src="' + data + '" alt="photo">';
                         }
                         return '';
                     },
                     orderable: false,
                     searchable: false,
-                    width: '60px'
+                    width: '50px'
                 },
                 { data: 'firstname' },
                 { data: 'surname' },
@@ -251,7 +264,9 @@ $(document).ready(function() {
                     searchable: false
                 }
             ],
-            order: [[3, 'asc']], // Default: surname (column index 3 - now includes photo column)
+            order: [[3, 'asc']],
+            lengthMenu: [[25, 50, 100], ['25', '50', '100']],
+            pageLength: 50,
             language: {
                 search: "Search:",
                 lengthMenu: "Show _MENU_ entries",
@@ -263,35 +278,37 @@ $(document).ready(function() {
                     previous: "Previous"
                 }
             },
-            // Remove default DataTables search/length since we use custom
             searching: false,
             lengthChange: false
         });
     }
     
-    // Initial build
-    rebuildTable();
+    // Initial build - wrap in try/catch
+    try {
+        buildDataTable();
+    } catch(e) {
+        console.error('Initial table build error:', e);
+    }
     
     // Search on Enter key
     $('#dt-search').on('keyup', function(e) {
         if (e.key === 'Enter' || e.keyCode === 13) {
-            rebuildTable();
+            buildDataTable();
         }
     });
     
     // Length change
     $('#dt-length').on('change', function() {
-        rebuildTable();
+        buildDataTable();
     });
     
     // Apply filters button
     $('#apply-filters').click(function() {
-        rebuildTable();
+        buildDataTable();
     });
     
-    // Reset button - defaults: Active status, no Short Term
+    // Reset button
     $('#reset-filters').click(function() {
-        // Reset to defaults: Active status (1), all except Short Term
         var defaultClasses = <?php echo json_encode($defaultClasses); ?>;
         var defaultStatuses = <?php echo json_encode($defaultStatuses); ?>;
         
@@ -299,7 +316,7 @@ $(document).ready(function() {
         $('#filter-statuses').selectpicker('val', defaultStatuses);
         $('#dt-search').val('');
         
-        rebuildTable();
+        buildDataTable();
     });
 });
 </script>
