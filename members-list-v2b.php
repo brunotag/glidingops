@@ -146,7 +146,21 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
     <button id="apply-filters" class="btn btn-primary btn-sm">Apply</button>
     <button id="reset-filters" class="btn btn-default btn-sm">Reset</button>
     
-    <!-- DataTables controls will go here via dom -->
+    <!-- Search and length together -->
+    <div class="filter-group">
+        <label for="dt-search">Search:</label>
+        <input type="text" id="dt-search" placeholder="Name, email, phone..." style="padding: 4px; border: 1px solid #ccc; border-radius: 3px;">
+    </div>
+    
+    <div class="filter-group">
+        <label for="dt-length">Show:</label>
+        <select id="dt-length" class="form-control" style="display: inline-block; width: auto; padding: 4px;">
+            <option value="25">25</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+        </select>
+    </div>
+    
     <span id="record-count"></span>
 </div>
 
@@ -175,6 +189,7 @@ $(document).ready(function() {
     var filterClasses = <?php echo json_encode($filterClasses); ?>;
     var filterStatuses = <?php echo json_encode($filterStatuses); ?>;
     var org = <?php echo $org; ?>;
+    var table;
     
     function updateFiltersFromSelect() {
         filterClasses = $('#filter-classes').val() || [];
@@ -184,10 +199,9 @@ $(document).ready(function() {
     function rebuildTable() {
         if ($.fn.DataTable.isDataTable('#members-table')) {
             $('#members-table').DataTable().destroy();
-            $('#members-table').find('tbody').empty();
         }
         
-        $('#members-table').DataTable({
+        table = $('#members-table').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
@@ -198,6 +212,8 @@ $(document).ready(function() {
                     updateFiltersFromSelect();
                     d['filter[classes]'] = filterClasses;
                     d['filter[statuses]'] = filterStatuses;
+                    d['search[value]'] = $('#dt-search').val();
+                    d['length'] = $('#dt-length').val();
                     return d;
                 },
                 dataSrc: function(json) {
@@ -207,6 +223,18 @@ $(document).ready(function() {
             },
             columns: [
                 { data: 'id' },
+                { 
+                    data: 'photo_url',
+                    render: function(data) {
+                        if (data) {
+                            return '<img width="50" src="' + data + '" alt="photo">';
+                        }
+                        return '';
+                    },
+                    orderable: false,
+                    searchable: false,
+                    width: '60px'
+                },
                 { data: 'firstname' },
                 { data: 'surname' },
                 { data: 'displayname' },
@@ -223,9 +251,7 @@ $(document).ready(function() {
                     searchable: false
                 }
             ],
-            order: [[2, 'asc']], // Default: surname (column index 2)
-            lengthMenu: [[25, 50, 100], [25, 50, 100]],
-            pageLength: 50,
+            order: [[3, 'asc']], // Default: surname (column index 3 - now includes photo column)
             language: {
                 search: "Search:",
                 lengthMenu: "Show _MENU_ entries",
@@ -236,19 +262,27 @@ $(document).ready(function() {
                     next: "Next",
                     previous: "Previous"
                 }
-            }
+            },
+            // Remove default DataTables search/length since we use custom
+            searching: false,
+            lengthChange: false
         });
-        
-        // Style the DataTables wrapper controls to be inline with our filters
-        $('.dataTables_length').css('display', 'inline-block').css('margin-right', '15px');
-        $('.dataTables_filter').css('display', 'inline-block').css('margin-right', '15px');
-        $('.dataTables_info').css('display', 'inline-block').css('margin-right', '15px');
-        $('.dataTables_paginate').css('display', 'inline-block');
-        $('.dataTables_wrapper').css('margin-top', '10px');
     }
     
     // Initial build
     rebuildTable();
+    
+    // Search on Enter key
+    $('#dt-search').on('keyup', function(e) {
+        if (e.key === 'Enter' || e.keyCode === 13) {
+            rebuildTable();
+        }
+    });
+    
+    // Length change
+    $('#dt-length').on('change', function() {
+        rebuildTable();
+    });
     
     // Apply filters button
     $('#apply-filters').click(function() {
@@ -263,6 +297,7 @@ $(document).ready(function() {
         
         $('#filter-classes').selectpicker('val', defaultClasses);
         $('#filter-statuses').selectpicker('val', defaultStatuses);
+        $('#dt-search').val('');
         
         rebuildTable();
     });

@@ -204,6 +204,10 @@ $result = mysqli_stmt_get_result($stmt);
 
 $data = [];
 while ($row = mysqli_fetch_assoc($result)) {
+    // Generate photo URL - photos stored as img/members/{displayname}.jpg
+    $photoName = str_replace("'", "_", $row['displayname']);
+    $photoUrl = 'img/members/' . $photoName . '.jpg';
+    
     $data[] = [
         'id' => $row['id'],
         'member_id' => $row['member_id'],
@@ -214,6 +218,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         'status' => $row['status_name'],
         'email' => $row['email'],
         'phone_mobile' => $row['phone_mobile'],
+        'photo_url' => $photoUrl,
         'edit_url' => '/Member?id=' . $row['id']
     ];
 }
