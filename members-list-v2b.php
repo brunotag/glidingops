@@ -108,6 +108,9 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
         .dataTables_paginate {
             margin: 0;
         }
+        .controls-bar .pagination {
+            margin: 0;
+        }
         
         /* DataTables button styling */
         .dt-buttons {
