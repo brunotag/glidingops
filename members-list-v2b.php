@@ -1,7 +1,13 @@
 <?php session_start(); ?>
 <?php
+// Allow org to be passed via URL for testing, otherwise use session
 $org = 0;
-if (isset($_SESSION['org'])) $org = $_SESSION['org'];
+if (isset($_GET['org'])) {
+    $org = intval($_GET['org']);
+} elseif (isset($_SESSION['org'])) {
+    $org = $_SESSION['org'];
+}
+
 if (isset($_SESSION['security'])) {
     if (!($_SESSION['security'] & 1)) {
         die("Security level too low for this page");
@@ -66,7 +72,8 @@ $(document).ready(function() {
         serverSide: true,
         ajax: {
             url: '/api/members?org=<?php echo $org; ?>',
-            type: 'GET'
+            type: 'GET',
+            xhrFields: { withCredentials: true }
         },
         columns: [
             { data: 'id' },

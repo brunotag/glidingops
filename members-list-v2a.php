@@ -1,7 +1,15 @@
 <?php session_start(); ?>
 <?php
+require_once __DIR__ . '/load_model.php';
+
+// Allow org to be passed via URL for testing, otherwise use session
 $org = 0;
-if (isset($_SESSION['org'])) $org = $_SESSION['org'];
+if (isset($_GET['org'])) {
+    $org = intval($_GET['org']);
+} elseif (isset($_SESSION['org'])) {
+    $org = $_SESSION['org'];
+}
+
 if (isset($_SESSION['security'])) {
     if (!($_SESSION['security'] & 1)) {
         die("Security level too low for this page");
@@ -169,34 +177,13 @@ $(document).ready(function() {
     
     var pageLength = 50;
     
-    $('#members-table').DataTable({
+$('#members-table').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
             url: '/api/members?org=<?php echo $org; ?>',
             type: 'GET',
-            data: function(d) {
-                // Add filter data to request from URL params
-                if (filterRoles.length > 0) {
-                    filterRoles.forEach(function(r) {
-                        d['filter[roles][]'] = r;
-                    });
-                }
-                if (filterRolesNone) {
-                    d['filter[roles_none]'] = 1;
-                }
-                if (filterClasses.length > 0) {
-                    filterClasses.forEach(function(c) {
-                        d['filter[classes][]'] = c;
-                    });
-                }
-                if (filterStatuses.length > 0) {
-                    filterStatuses.forEach(function(s) {
-                        d['filter[statuses][]'] = s;
-                    });
-                }
-                return d;
-            }
+            xhrFields: { withCredentials: true }
         },
         columns: [
             { data: 'id' },

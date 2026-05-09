@@ -1,14 +1,19 @@
 <?php
 session_start();
-require_once './helpers/session_helpers.php';
-require_security_level(1);
 
-header('Content-Type: application/json');
+// Check authentication - require security level 1 (member)
+if (!isset($_SESSION['security']) || !($_SESSION['security'] & 1)) {
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Unauthorized', 'message' => 'Please log in']);
+    exit;
+}
 
 $org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 if ($org === null) $org = 0;
 
-$con_params = require('./config/database.php');
+header('Content-Type: application/json');
+
+$con_params = require(__DIR__ . '/../config/database.php');
 $con_params = $con_params['gliding'];
 $con = mysqli_connect(
     $con_params['hostname'],
