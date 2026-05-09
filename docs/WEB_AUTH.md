@@ -43,5 +43,5 @@ $csv.Headers['Content-Type']          # Should be "text/csv"
 
 ### URLs
 
-- Dev environment: `http://192.168.10.10` or `http://glidingops.test`
+- Dev environment: `http://glidingops.test` (also available at `http://192.168.10.10`)
 - Test user: `[dev-creds]` / `[dev-creds]`

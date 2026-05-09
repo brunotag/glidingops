@@ -16,17 +16,15 @@ if ($loginResult.Content -match "Wrong Username") {
 
 # Step 3: Visit home to ensure session is established
 $homeResult = Invoke-WebRequest -Uri 'http://192.168.10.10/home' -WebSession $webSession -UseBasicParsing
-Write-Host "Home:" $homeResult.StatusCode
 
-# Step 4: Try CSV - use direct file path with query param for test mode
-$csv = Invoke-WebRequest -Uri 'http://192.168.10.10/MyFlightsCSV.php?test=1' -WebSession $webSession -UseBasicParsing
+# Step 4: Visit MyFlights to establish session properly
+$myflights = Invoke-WebRequest -Uri 'http://192.168.10.10/MyFlights' -WebSession $webSession -UseBasicParsing
+Write-Host "MyFlights:" $myflights.StatusCode
 
-# Check headers
-Write-Host "CSV Headers:"
-$csv.Headers.Keys | ForEach-Object { Write-Host "  $_ : $($csv.Headers[$_])" }
-
-Write-Host ""
-Write-Host "CSV Content first 500 chars:"
-Write-Host $csv.Content.Substring(0, [Math]::Min(500, $csv.Content.Length))
+# Step 5: Test the MyFlights API - direct file
+$api = Invoke-WebRequest -Uri 'http://192.168.10.10/api/myflights-data.php' -WebSession $webSession -UseBasicParsing
+Write-Host "API Status:" $api.StatusCode
+Write-Host "API Content-Type:" $api.Headers['Content-Type']
+Write-Host "API Content:" $api.Content.Substring(0, [Math]::Min(500, $api.Content.Length))
 Write-Host "CSV:" $csv.StatusCode "Length:" $csv.Content.Length
 Write-Host "CSV Content:" $csv.Content.Substring(0, [Math]::Min(300, $csv.Content.Length))
