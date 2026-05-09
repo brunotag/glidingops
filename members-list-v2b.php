@@ -41,24 +41,73 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
     <style>
         body { padding: 10px; }
-        .filters-bar {
-            background: #f8f9fa;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-        }
-        .filters-bar label { font-weight: bold; margin-right: 5px; }
-        .filters-bar .selectpicker { max-width: 200px; }
         h2 { margin-bottom: 10px; }
         .nav-links { margin-bottom: 15px; }
         .nav-links a { margin-right: 15px; }
+        
+        /* Combined controls bar - filters, search, length on one row */
+        .controls-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .controls-bar > * {
+            margin: 0;
+        }
+        .controls-bar .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .controls-bar .filter-group label { 
+            font-weight: bold; 
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .controls-bar .selectpicker { 
+            max-width: 180px; 
+        }
+        .controls-bar .dt-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+        .controls-bar .dataTables_filter {
+            margin: 0;
+        }
+        .controls-bar .dataTables_length {
+            margin: 0;
+        }
+        .controls-bar .dataTables_filter input {
+            margin: 0 0 0 5px;
+        }
+        .controls-bar .dataTables_info {
+            margin: 0;
+            font-size: 12px;
+        }
+        
+        /* Record count styling */
+        #record-count {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* DataTables button styling */
+        .dt-buttons {
+            display: inline-block;
+            margin-right: 10px;
+        }
     </style>
+    <style>
     <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
     <?php $inc = "./orgs/" . $org . "/heading2.css"; if (file_exists($inc)) include $inc; ?>
+    </style>
 </head>
 <body>
 <?php $inc = "./orgs/" . $org . "/heading2.txt"; if (file_exists($inc)) include $inc; ?>
@@ -70,10 +119,11 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
     <a href="AllMembers">Original Version</a>
 </div>
 
-<div class="filters-bar">
-    <div>
+<div class="controls-bar">
+    <!-- Filters -->
+    <div class="filter-group">
         <label for="filter-classes">Class:</label>
-        <select id="filter-classes" name="classes[]" multiple class="selectpicker" data-live-search="true" data-actions-box="true">
+        <select id="filter-classes" name="classes[]" multiple class="selectpicker" data-live-search="true" data-width="150px">
             <?php foreach ($allClasses as $class): ?>
                 <option value="<?php echo $class->id; ?>" <?php echo in_array($class->id, $filterClasses) ? 'selected' : ''; ?>>
                     <?php echo htmlspecialchars($class->class); ?>
@@ -82,9 +132,9 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
         </select>
     </div>
     
-    <div>
+    <div class="filter-group">
         <label for="filter-statuses">Status:</label>
-        <select id="filter-statuses" name="statuses[]" multiple class="selectpicker" data-live-search="true" data-actions-box="true">
+        <select id="filter-statuses" name="statuses[]" multiple class="selectpicker" data-live-search="true" data-width="120px">
             <?php foreach ($allStatuses as $status): ?>
                 <option value="<?php echo $status->id; ?>" <?php echo in_array($status->id, $filterStatuses) ? 'selected' : ''; ?>>
                     <?php echo htmlspecialchars($status->status_name); ?>
@@ -93,14 +143,11 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
         </select>
     </div>
     
-    <div>
-        <button id="apply-filters" class="btn btn-primary">Apply Filters</button>
-        <button id="reset-filters" class="btn btn-default">Reset</button>
-    </div>
+    <button id="apply-filters" class="btn btn-primary btn-sm">Apply</button>
+    <button id="reset-filters" class="btn btn-default btn-sm">Reset</button>
     
-    <div style="margin-left: auto;">
-        <span id="record-count" style="font-weight: bold;"></span>
-    </div>
+    <!-- DataTables controls will go here via dom -->
+    <span id="record-count"></span>
 </div>
 
 <table id="members-table" class="table table-striped table-bordered" style="width:100%">
@@ -191,6 +238,13 @@ $(document).ready(function() {
                 }
             }
         });
+        
+        // Style the DataTables wrapper controls to be inline with our filters
+        $('.dataTables_length').css('display', 'inline-block').css('margin-right', '15px');
+        $('.dataTables_filter').css('display', 'inline-block').css('margin-right', '15px');
+        $('.dataTables_info').css('display', 'inline-block').css('margin-right', '15px');
+        $('.dataTables_paginate').css('display', 'inline-block');
+        $('.dataTables_wrapper').css('margin-top', '10px');
     }
     
     // Initial build
