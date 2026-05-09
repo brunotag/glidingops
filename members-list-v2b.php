@@ -295,8 +295,14 @@ $(document).ready(function() {
             },
             searching: false,
             lengthChange: false,
-            // Use dom to place pagination at both top and bottom
-            dom: '<"top"ip>t<"bottom"ip>'
+            // Use dom to hide default top pagination, keep bottom
+            dom: '<"top"f>t<"bottom"ip>',
+            drawCallback: function(settings) {
+                // Move bottom pagination to controls-bar
+                var pagination = $('.dataTables_paginate');
+                $('#controls-bar').append(pagination);
+                pagination.css('margin-left', 'auto');
+            }
         });
     }
     
