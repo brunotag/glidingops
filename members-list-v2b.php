@@ -126,41 +126,54 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
 
 <!-- Padding container for content -->
 <div class="padding-container">
-<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-    <h4 style="margin: 0;">Members</h4>
-    <a href="/MembersListOld" style="font-size: 12px;">Old Version</a>
+<h2>Members List</h2>
+<div class="nav-links">
+    <a href="/MembersListOld">Old Version</a>
 </div>
 
-<div class="controls-bar" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 8px;">
-    <!-- Compact filters -->
-    <select id="filter-classes" name="classes[]" multiple class="selectpicker" data-live-search="true" data-width="120px" data-placeholder="Class">
-        <?php foreach ($allClasses as $class): ?>
-            <option value="<?php echo $class->id; ?>" <?php echo in_array($class->id, $filterClasses) ? 'selected' : ''; ?>>
-                <?php echo htmlspecialchars($class->class); ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
+<div class="controls-bar">
+    <!-- Filters -->
+    <div class="filter-group">
+        <label for="filter-classes">Class:</label>
+        <select id="filter-classes" name="classes[]" multiple class="selectpicker" data-live-search="true" data-width="150px">
+            <?php foreach ($allClasses as $class): ?>
+                <option value="<?php echo $class->id; ?>" <?php echo in_array($class->id, $filterClasses) ? 'selected' : ''; ?>>
+                    <?php echo htmlspecialchars($class->class); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
     
-    <select id="filter-statuses" name="statuses[]" multiple class="selectpicker" data-width="100px" data-placeholder="Status">
-        <?php foreach ($allStatuses as $status): ?>
-            <option value="<?php echo $status->id; ?>" <?php echo in_array($status->id, $filterStatuses) ? 'selected' : ''; ?>>
-                <?php echo htmlspecialchars($status->status_name); ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
+    <div class="filter-group">
+        <label for="filter-statuses">Status:</label>
+        <select id="filter-statuses" name="statuses[]" multiple class="selectpicker" data-live-search="true" data-width="120px">
+            <?php foreach ($allStatuses as $status): ?>
+                <option value="<?php echo $status->id; ?>" <?php echo in_array($status->id, $filterStatuses) ? 'selected' : ''; ?>>
+                    <?php echo htmlspecialchars($status->status_name); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
     
-    <button id="apply-filters" class="btn btn-primary btn-xs">Apply</button>
-    <button id="reset-filters" class="btn btn-default btn-xs">Reset</button>
+    <button id="apply-filters" class="btn btn-primary btn-sm">Apply</button>
+    <button id="reset-filters" class="btn btn-default btn-sm">Reset</button>
     
-    <!-- Search -->
-    <input type="text" id="dt-search" placeholder="Search..." style="padding: 3px 6px; border: 1px solid #ccc; border-radius: 3px; width: 120px;">
+    <!-- Search and length together -->
+    <div class="filter-group">
+        <label for="dt-search">Search:</label>
+        <input type="text" id="dt-search" placeholder="Name, email, phone..." style="padding: 4px; border: 1px solid #ccc; border-radius: 3px;">
+    </div>
     
-    <!-- Length -->
-    <select id="dt-length" style="padding: 3px; width: 60px;">
-        <option value="25">25</option>
-        <option value="50" selected>50</option>
-        <option value="100">100</option>
-    </select>
+    <div class="filter-group">
+        <label for="dt-length">Elements per page:</label>
+        <select id="dt-length" class="form-control" style="display: inline-block; width: auto; padding: 4px;">
+            <option value="25">25</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+        </select>
+    </div>
+    
+    <span id="record-count"></span>
 </div>
 
 <table id="members-table" class="table table-striped table-bordered" style="width:100%">
@@ -228,9 +241,11 @@ $(document).ready(function() {
                     d['length'] = lengthVal;
                     return d;
                 },
-dataSrc: function(json) {
+                dataSrc: function(json) {
+                    $('#record-count').text('Showing ' + json.recordsFiltered + ' of ' + json.recordsTotal + ' members');
                     return json.data;
-                },
+                }
+            },
             columns: [
                 { data: 'id' },
                 { 
@@ -278,7 +293,7 @@ dataSrc: function(json) {
             searching: false,
             lengthChange: false,
             // Use dom to place pagination at both top and bottom
-            dom: 't<"bottom"ip>'
+            dom: '<"top"ip>t<"bottom"ip>'
         });
     }
     
@@ -320,7 +335,7 @@ dataSrc: function(json) {
 });
 </script>
 
-</div><!-- end padding-container -->
+</div><!-- end margin-container -->
 
 </body>
 </html>
