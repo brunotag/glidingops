@@ -24,6 +24,9 @@ RewriteRule ^api/members$ api/members.php [L,QSA]
 RewriteRule AllMembers members-list-v2b.php [L,QSA]
 RewriteRule MembersListOld members-list.php [L]
 
+# New member create/edit page
+RewriteRule MemberNew members-new.php [L,QSA]
+
 RewriteRule home home.php [L]
 RewriteRule AssignRoles role_member-list.php [L]
 RewriteRule AssignRole role_member.php [L]

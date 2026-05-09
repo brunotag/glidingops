@@ -219,7 +219,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         'email' => $row['email'],
         'phone_mobile' => $row['phone_mobile'],
         'photo_url' => $photoUrl,
-        'edit_url' => '/Member?id=' . $row['id']
+        'edit_url' => '/MemberNew?id=' . $row['id']
     ];
 }
 
