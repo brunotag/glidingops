@@ -1,5 +1,7 @@
 <?php session_start(); ?>
 <?php
+require_once __DIR__ . '/load_model.php';
+
 // Allow org to be passed via URL for testing, otherwise use session
 $org = 0;
 if (isset($_GET['org'])) {
@@ -16,98 +18,199 @@ if (isset($_SESSION['security'])) {
     header('Location: Login.php');
     die("Please logon");
 }
+
+// Get filter options from database
+$organisation = App\Models\Organisation::find($org);
+$allClasses = $organisation->membershipClasses()->orderBy('class')->get();
+$allStatuses = App\Models\MembershipStatus::all();
+
+// Get default filter values from URL or set defaults
+$defaultStatuses = [1]; // Active only
+$defaultClasses = $allClasses->where('class', '!=', 'Short Term')->pluck('id')->toArray();
+
+$filterStatuses = isset($_GET['statuses']) ? $_GET['statuses'] : $defaultStatuses;
+$filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
 ?>
 <!DOCTYPE HTML>
-<html style="height: 100%">
+<html>
 <meta name="viewport" content="width=device-width">
-<meta name="viewport" content="initial-scale=1.0">
 <head>
     <title>Members List (v2b - DataTables Search)</title>
     <?php include 'jsLibraies.php'; ?>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
     <style>
-        .main-box { height: 100%; display: flex; flex-direction: column; }
-        .main-box .content { overflow-y: auto; padding: 15px; }
-        .dataTables_wrapper { margin-top: 20px; }
-        th { white-space: nowrap; }
-        td { vertical-align: middle !important; }
+        body { padding: 10px; }
+        .filters-bar {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        .filters-bar label { font-weight: bold; margin-right: 5px; }
+        .filters-bar .selectpicker { max-width: 200px; }
+        h2 { margin-bottom: 10px; }
+        .nav-links { margin-bottom: 15px; }
+        .nav-links a { margin-right: 15px; }
     </style>
     <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
+    <?php $inc = "./orgs/" . $org . "/heading2.css"; if (file_exists($inc)) include $inc; ?>
 </head>
-<body class="main-box">
+<body>
 <?php $inc = "./orgs/" . $org . "/heading2.txt"; if (file_exists($inc)) include $inc; ?>
 <?php $inc = "./orgs/" . $org . "/menu1.txt"; if (file_exists($inc)) include $inc; ?>
 
-<h2>Members List - Version B (DataTables Search)</h2>
-<p><a href="members-list-v2a.php?org=<?php echo $org; ?>">Go to Version A (Legacy Filters)</a> | <a href="AllMembers">Original Version</a></p>
-
-<div class="content">
-    <table id="members-table" class="table table-striped table-bordered" style="width:100%">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Member #</th>
-                <th>First Name</th>
-                <th>Surname</th>
-                <th>Display Name</th>
-                <th>Class</th>
-                <th>Status</th>
-                <th>Email</th>
-                <th>Mobile</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+<h2>Members List - Version B (DataTables with Filters)</h2>
+<div class="nav-links">
+    <a href="members-list-v2a.php?org=<?php echo $org; ?>">Go to Version A (Legacy Filters)</a>
+    <a href="AllMembers">Original Version</a>
 </div>
+
+<div class="filters-bar">
+    <div>
+        <label for="filter-classes">Class:</label>
+        <select id="filter-classes" name="classes[]" multiple class="selectpicker" data-live-search="true" data-actions-box="true">
+            <?php foreach ($allClasses as $class): ?>
+                <option value="<?php echo $class->id; ?>" <?php echo in_array($class->id, $filterClasses) ? 'selected' : ''; ?>>
+                    <?php echo htmlspecialchars($class->class); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    
+    <div>
+        <label for="filter-statuses">Status:</label>
+        <select id="filter-statuses" name="statuses[]" multiple class="selectpicker" data-live-search="true" data-actions-box="true">
+            <?php foreach ($allStatuses as $status): ?>
+                <option value="<?php echo $status->id; ?>" <?php echo in_array($status->id, $filterStatuses) ? 'selected' : ''; ?>>
+                    <?php echo htmlspecialchars($status->status_name); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    
+    <div>
+        <button id="apply-filters" class="btn btn-primary">Apply Filters</button>
+        <button id="reset-filters" class="btn btn-default">Reset</button>
+    </div>
+    
+    <div style="margin-left: auto;">
+        <span id="record-count" style="font-weight: bold;"></span>
+    </div>
+</div>
+
+<table id="members-table" class="table table-striped table-bordered" style="width:100%">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Surname</th>
+            <th>Display Name</th>
+            <th>Class</th>
+            <th>Status</th>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
 
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
 <script>
 $(document).ready(function() {
-    var pageLength = 50;
+    var filterClasses = <?php echo json_encode($filterClasses); ?>;
+    var filterStatuses = <?php echo json_encode($filterStatuses); ?>;
+    var org = <?php echo $org; ?>;
     
-    $('#members-table').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: '/api/members?org=<?php echo $org; ?>',
-            type: 'GET',
-            xhrFields: { withCredentials: true }
-        },
-        columns: [
-            { data: 'id' },
-            { data: 'member_id' },
-            { data: 'firstname' },
-            { data: 'surname' },
-            { data: 'displayname' },
-            { data: 'class' },
-            { data: 'status' },
-            { data: 'email' },
-            { data: 'phone_mobile' },
-            { 
-                data: 'edit_url',
-                render: function(data) {
-                    return '<a href="' + data + '">Edit</a>';
-                },
-                sortable: false,
-                searchable: false
-            }
-        ],
-        order: [[4, 'asc']], // Default: surname (column index 4)
-        lengthMenu: [[25, 50, 100], [25, 50, 100]],
-        pageLength: pageLength,
-        language: {
-            search: "Search:",
-            lengthMenu: "Show _MENU_ entries",
-            info: "Showing _START_ to _END_ of _TOTAL_ members",
-            paginate: {
-                first: "First",
-                last: "Last",
-                next: "Next",
-                previous: "Previous"
-            }
+    function updateFiltersFromSelect() {
+        filterClasses = $('#filter-classes').val() || [];
+        filterStatuses = $('#filter-statuses').val() || [];
+    }
+    
+    function rebuildTable() {
+        if ($.fn.DataTable.isDataTable('#members-table')) {
+            $('#members-table').DataTable().destroy();
+            $('#members-table').find('tbody').empty();
         }
+        
+        $('#members-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '/api/members?org=' + org,
+                type: 'GET',
+                xhrFields: { withCredentials: true },
+                data: function(d) {
+                    updateFiltersFromSelect();
+                    d['filter[classes]'] = filterClasses;
+                    d['filter[statuses]'] = filterStatuses;
+                    return d;
+                },
+                dataSrc: function(json) {
+                    $('#record-count').text('Showing ' + json.recordsFiltered + ' of ' + json.recordsTotal + ' members');
+                    return json.data;
+                }
+            },
+            columns: [
+                { data: 'id' },
+                { data: 'firstname' },
+                { data: 'surname' },
+                { data: 'displayname' },
+                { data: 'class' },
+                { data: 'status' },
+                { data: 'email' },
+                { data: 'phone_mobile' },
+                { 
+                    data: 'edit_url',
+                    render: function(data) {
+                        return '<a href="' + data + '">Edit</a>';
+                    },
+                    sortable: false,
+                    searchable: false
+                }
+            ],
+            order: [[2, 'asc']], // Default: surname (column index 2)
+            lengthMenu: [[25, 50, 100], [25, 50, 100]],
+            pageLength: 50,
+            language: {
+                search: "Search:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ members",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            }
+        });
+    }
+    
+    // Initial build
+    rebuildTable();
+    
+    // Apply filters button
+    $('#apply-filters').click(function() {
+        rebuildTable();
+    });
+    
+    // Reset button - defaults: Active status, no Short Term
+    $('#reset-filters').click(function() {
+        // Reset to defaults: Active status (1), all except Short Term
+        var defaultClasses = <?php echo json_encode($defaultClasses); ?>;
+        var defaultStatuses = <?php echo json_encode($defaultStatuses); ?>;
+        
+        $('#filter-classes').selectpicker('val', defaultClasses);
+        $('#filter-statuses').selectpicker('val', defaultStatuses);
+        
+        rebuildTable();
     });
 });
 </script>
