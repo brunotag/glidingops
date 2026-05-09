@@ -244,14 +244,11 @@ $(document).ready(function() {
                     d['length'] = lengthVal;
                     return d;
                 },
-dataSrc: function(json) {
-                    var text = 'Showing ' + json.recordsFiltered + ' members';
-                    if (json.recordsFiltered !== json.recordsTotal) {
-                        text += ' (filtered from ' + json.recordsTotal + ' total)';
-                    }
-                    $('#record-count').text(text);
+                dataSrc: function(json) {
+                    $('#record-count').text('Showing ' + json.recordsFiltered + ' members (filtered from ' + json.recordsTotal + ' total)');
                     return json.data;
-                },
+                }
+            },
             columns: [
                 { data: 'id' },
                 { 
@@ -341,7 +338,7 @@ dataSrc: function(json) {
 });
 </script>
 
-</div><!-- end margin-container -->
+</div><!-- end padding-container -->
 
 </body>
 </html>
