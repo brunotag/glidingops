@@ -41,7 +41,8 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
     <style>
         body { padding: 0; }
-        h2 { margin-bottom: 10px; }
+        h2 { margin-bottom: 10px; margin-right: 20px; }
+        .title-row { display: flex; align-items: center; margin-bottom: 10px; }
         .nav-links { margin-bottom: 15px; }
         .nav-links a { margin-right: 15px; }
         
@@ -100,6 +101,9 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
         .dataTables_info {
             display: none !important;
         }
+        #members-table + .dataTables_wrapper > .dataTables_paginate {
+            display: none !important;
+        }
         
         /* DataTables button styling */
         .dt-buttons {
@@ -129,9 +133,9 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
 
 <!-- Padding container for content -->
 <div class="padding-container">
-<h2>Members List</h2>
-<div class="nav-links">
-    <a href="/MembersListOld">Old Version</a>
+<div class="title-row">
+    <h2>Members List</h2>
+    <a href="/MembersListOld" class="btn btn-default btn-sm">Old Version</a>
 </div>
 
 <div class="controls-bar">
@@ -300,7 +304,7 @@ $(document).ready(function() {
             drawCallback: function(settings) {
                 // Move bottom pagination to controls-bar
                 var pagination = $('.dataTables_paginate');
-                $('#controls-bar').append(pagination);
+                $('.controls-bar').append(pagination);
                 pagination.css('margin-left', 'auto');
             }
         });
