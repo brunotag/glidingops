@@ -12,8 +12,6 @@ include 'helpers/mail.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'send') {
     header('Content-Type: application/json; charset=utf-8');
-    header('Transfer-Encoding: chunked');
-    header('Cache-Control: no-cache');
 
     $message = isset($_POST['message']) ? trim($_POST['message']) : '';
     $fakeTwitter = isset($_POST['fakeTwitter']) ? (int)$_POST['fakeTwitter'] : 0;
@@ -44,12 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $senderEmail = 'servicedelivery@wwgc.co.nz';
 
     if (isset($_SESSION['memberid'])) {
-        $senderQuery = mysqli_query($con, "SELECT email, email2 FROM members WHERE id = " . intval($_SESSION['memberid']));
+        $senderQuery = mysqli_query($con, "SELECT email FROM members WHERE id = " . intval($_SESSION['memberid']));
         if ($senderRow = mysqli_fetch_array($senderQuery)) {
             if (!empty($senderRow['email']) && filter_var($senderRow['email'], FILTER_VALIDATE_EMAIL)) {
                 $senderEmail = $senderRow['email'];
-            } elseif (!empty($senderRow['email2']) && filter_var($senderRow['email2'], FILTER_VALIDATE_EMAIL)) {
-                $senderEmail = $senderRow['email2'];
             }
         }
     }
@@ -57,12 +53,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $isBroadcast = $fakeTwitter ? 1 : 0;
     $msgSql = "INSERT INTO messages (org, create_time, msg, txt_sender_member_id, is_broadcast) VALUES ($org, NOW(), '" . mysqli_real_escape_string($con, $message) . "', " . intval($_SESSION['memberid']) . ", $isBroadcast)";
     mysqli_query($con, $msgSql);
-    $msgId = mysqli_insert_id($con);
 
     mysqli_close($con);
 
     $total = count($recipients);
-    $processed = 0;
     $success = 0;
     $failed = [];
 
@@ -70,40 +64,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $email = is_array($recipient) ? $recipient['email'] : $recipient;
         $name = is_array($recipient) && isset($recipient['name']) ? $recipient['name'] : '';
 
-        $processed++;
-
         try {
             $to = !empty($name) ? "$name <$email>" : $email;
             $sent = Mail::SendMail($to, $subject, $message, $senderEmail, 'text/plain');
 
             if ($sent) {
-                $status = 'success';
-                $reason = 'Sent';
                 $success++;
             } else {
-                $status = 'failed';
-                $reason = 'Mail server rejected';
-                $failed[] = ['email' => $email, 'reason' => $reason];
+                $failed[] = ['email' => $email, 'reason' => 'Mail server rejected'];
             }
         } catch (Exception $e) {
-            $status = 'failed';
-            $reason = $e->getMessage();
-            $failed[] = ['email' => $email, 'reason' => $reason];
+            $failed[] = ['email' => $email, 'reason' => $e->getMessage()];
         } catch (Error $e) {
-            $status = 'failed';
-            $reason = $e->getMessage();
-            $failed[] = ['email' => $email, 'reason' => $reason];
+            $failed[] = ['email' => $email, 'reason' => $e->getMessage()];
         }
-
-        echo json_encode([
-            'type' => 'progress',
-            'email' => $email,
-            'status' => $status,
-            'reason' => $reason,
-            'processed' => $processed,
-            'total' => $total
-        ]) . "\n";
-        flush();
     }
 
     echo json_encode([
@@ -111,8 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         'success' => $success,
         'failed' => $failed,
         'total' => $total
-    ]) . "\n";
-    flush();
+    ]);
     exit;
 }
 ?>
@@ -495,15 +468,12 @@ confirmSend.addEventListener('click', () => {
 
 async function sendMessages() {
     progressModal.classList.add('active');
-    progressText.textContent = 'Preparing to send...';
-    progressBar.style.width = '0%';
+    progressText.textContent = 'Sending...';
+    progressBar.style.width = '50%';
     emailStatusList.innerHTML = '';
 
     const message = messageText.value.trim();
     const postToFakeTwitter = fakeTwitter.checked ? 1 : 0;
-
-    let successCount = 0;
-    let failedList_data = [];
 
     try {
         const response = await fetch('/MessagingPage.php', {
@@ -518,88 +488,17 @@ async function sendMessages() {
             })
         });
 
+        progressBar.style.width = '90%';
+        progressText.textContent = 'Processing response...';
+
         if (!response.ok) {
             const text = await response.text();
             throw new Error('Server error ' + response.status + ': ' + text);
         }
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let resultData = null;
-        let buffer = '';
-
-        try {
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                buffer += decoder.decode(value, { stream: true });
-                let lines = buffer.split('\n');
-                buffer = lines.pop();
-
-                for (const line of lines) {
-                    if (!line.trim()) continue;
-                    try {
-                        const data = JSON.parse(line);
-                        if (data.type === 'progress') {
-                            const percent = (data.processed / data.total) * 100;
-                            progressBar.style.width = percent + '%';
-                            progressText.textContent = `Sending... ${data.processed}/${data.total}`;
-                            const statusClass = data.status === 'success' ? 'success' : 'failed';
-                            const statusIcon = data.status === 'success' ? '✓' : '✗';
-                            const statusText = data.status === 'success' ? 'Sent' : data.reason || 'Failed';
-                            emailStatusList.innerHTML += `
-                                <div class="email-status-item ${statusClass}">
-                                    <span class="email">${escapeHtml(data.email)}</span>
-                                    <span class="status">${statusIcon} ${statusText}</span>
-                                </div>
-                            `;
-                            emailStatusList.scrollTop = emailStatusList.scrollHeight;
-                            if (data.status === 'success') {
-                                successCount++;
-                            } else {
-                                failedList_data.push({ email: data.email, reason: data.reason || 'Failed' });
-                            }
-                        } else if (data.type === 'result') {
-                            resultData = data;
-                        }
-                    } catch (e) {
-                        console.log('JSON parse error for line: ' + line);
-                    }
-                }
-            }
-        } catch (streamError) {
-            console.log('Stream ended: ' + streamError.message);
-        }
-
-        console.log('Stream complete. resultData:', resultData, 'successCount:', successCount, 'failedList:', failedList_data.length);
-
+        const data = await response.json();
         progressModal.classList.remove('active');
-
-        if (resultData) {
-            showResults(resultData);
-        } else {
-            const total = recipients.length;
-            if (successCount > 0 || failedList_data.length > 0) {
-                resultIcon.textContent = failedList_data.length === 0 ? '✓' : '⚠';
-                resultIcon.className = 'result-icon ' + (failedList_data.length === 0 ? 'success' : 'failed');
-                resultHeader.textContent = failedList_data.length === 0 ? 'Message Sent Successfully!' : 'Send Completed';
-                resultSent.textContent = `Sent to ${successCount} recipient${successCount !== 1 ? 's' : ''}`;
-                resultFailed.textContent = failedList_data.length > 0 ? `${failedList_data.length} failed` : '';
-                failedList.innerHTML = failedList_data.map(f =>
-                    `<div class="failed-item">${escapeHtml(f.email)}: ${escapeHtml(f.reason)}</div>`
-                ).join('');
-                failedList.style.display = failedList_data.length > 0 ? 'block' : 'none';
-            } else {
-                resultIcon.textContent = '⚠';
-                resultIcon.className = 'result-icon failed';
-                resultHeader.textContent = 'Send Completed';
-                resultSent.textContent = 'Sent (result status unknown)';
-                resultFailed.textContent = '';
-                failedList.style.display = 'none';
-            }
-            resultModal.classList.add('active');
-        }
+        showResults(data);
 
     } catch (e) {
         progressModal.classList.remove('active');
