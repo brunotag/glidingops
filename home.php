@@ -346,7 +346,13 @@ if (($_SESSION['security'] & 64)) {
 
                echo "</tr>";
                ?>
-            </table>
+</table>
+            <p style="text-align:right;font-size:10px;color:#888;">
+               <?php
+               $gitHash = trim(@exec('git -C ' . escapeshellarg(__DIR__) . ' rev-parse --short HEAD'));
+               if ($gitHash) echo "v" . $gitHash;
+               ?>
+            </p>
             <?php
             if ($org == 1) {
                ?>
