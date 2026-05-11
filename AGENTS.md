@@ -16,9 +16,7 @@ From `lrv` subfolder: `vagrant ssh -c "php -l ./code/<path>" 2>&1`
 ## Current Work
 
 ### In Progress
-- **Better Messaging v2** — `MessagingPage.php` built ex novo with streaming progress UI
-  - Mailing list email addresses still need fixing (placeholder `soar.co.nz` domain)
-  - Needs end-to-end testing
+- None
 
 ### Completed This Session
 - TreasurerReportNew.php, TreasurerReportNew2.php, TreasurerReportNew3.php (3 layouts)
@@ -26,11 +24,12 @@ From `lrv` subfolder: `vagrant ssh -c "php -l ./code/<path>" 2>&1`
 - `api/members-email.php` for member autocomplete
 - `apiMaybeResumeSession()` + `apiRequireAuth()` added to helpers/api-base.php
 - MessagingPage.php ex novo with two-panel layout, member search, mailing lists, preview modal, streaming progress, result modal
+- Restored old MessagingPage as MessagingPageOld.php (from commit f436d39)
 
 ### Next Steps (Priority Order)
 1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)
 2. Test messaging page end-to-end
-3. Delete old files after testing: texts-list.php, users-list.php, users.php, members-list.php, members.php
+3. Delete old files after testing: texts-list.php, users-list.php, users.php, members-list.php, members.php, MessagingPageOld.php
 4. Magic link passwordless login (docs/FUTURE_DEVELOPMENT_MAGIC_LINK.md)
 
 ## How To Work In This Repo

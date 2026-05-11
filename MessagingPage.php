@@ -574,6 +574,8 @@ async function sendMessages() {
             console.log('Stream ended: ' + streamError.message);
         }
 
+        console.log('Stream complete. resultData:', resultData, 'successCount:', successCount, 'failedList:', failedList_data.length);
+
         progressModal.classList.remove('active');
 
         if (resultData) {
