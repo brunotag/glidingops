@@ -13,7 +13,16 @@ include 'helpers/mail.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'send') {
     header('Content-Type: application/json; charset=utf-8');
 
+    function sendApiError($errno, $errstr, $errfile, $errline) {
+        if (!(error_reporting() & $errno)) return false;
+        http_response_code(500);
+        echo json_encode(['type' => 'result', 'success' => 0, 'failed' => [], 'error' => 'Server error: ' . $errstr]);
+        exit;
+    }
+    set_error_handler('sendApiError');
+
     $message = isset($_POST['message']) ? trim($_POST['message']) : '';
+    $subject = isset($_POST['subject']) ? trim($_POST['subject']) : '';
     $fakeTwitter = isset($_POST['fakeTwitter']) ? (int)$_POST['fakeTwitter'] : 0;
     $recipientsJson = isset($_POST['recipients']) ? $_POST['recipients'] : '[]';
 
@@ -37,24 +46,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         exit;
     }
 
-    $date = new DateTime();
-    $subject = 'WWGC Msg | ' . $date->format('D d M h:i A');
+    if (empty($subject)) {
+        $date = new DateTime();
+        $subject = 'WWGC Msg | ' . $date->format('D d M h:i A');
+    }
     $senderEmail = 'servicedelivery@wwgc.co.nz';
+    $senderName = '';
 
     if (isset($_SESSION['memberid'])) {
-        $senderQuery = mysqli_query($con, "SELECT email FROM members WHERE id = " . intval($_SESSION['memberid']));
-        if ($senderRow = mysqli_fetch_array($senderQuery)) {
+        $senderQuery = mysqli_query($con, "SELECT email, name FROM members WHERE id = " . intval($_SESSION['memberid']));
+        if ($senderQuery && $senderRow = mysqli_fetch_array($senderQuery)) {
             if (!empty($senderRow['email']) && filter_var($senderRow['email'], FILTER_VALIDATE_EMAIL)) {
                 $senderEmail = $senderRow['email'];
             }
+            $senderName = !empty($senderRow['name']) ? $senderRow['name'] : '';
         }
     }
 
     $isBroadcast = $fakeTwitter ? 1 : 0;
     $msgSql = "INSERT INTO messages (org, create_time, msg, txt_sender_member_id, is_broadcast) VALUES ($org, NOW(), '" . mysqli_real_escape_string($con, $message) . "', " . intval($_SESSION['memberid']) . ", $isBroadcast)";
     mysqli_query($con, $msgSql);
-
-    mysqli_close($con);
+    $msgId = mysqli_insert_id($con);
 
     $total = count($recipients);
     $success = 0;
@@ -66,9 +78,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
         try {
             $to = !empty($name) ? "$name <$email>" : $email;
-            $sent = Mail::SendMail($to, $subject, $message, $senderEmail, 'text/plain');
+            $emailBody = $message;
+            if (!empty($senderName)) {
+                $emailBody .= "\n\n $senderName";
+            }
+            $sent = Mail::SendMail($to, $subject, $emailBody, $senderEmail, 'text/plain');
 
             if ($sent) {
+                $memberIdQuery = mysqli_query($con, "SELECT id FROM members WHERE email = '" . mysqli_real_escape_string($con, $email) . "' LIMIT 1");
+                $memberId = null;
+                if ($memberIdQuery && $memberRow = mysqli_fetch_array($memberIdQuery)) {
+                    $memberId = $memberRow['id'];
+                }
+
+                $txtSql = "INSERT INTO texts (txt_msg_id, txt_member_id, txt_to, txt_status, txt_timestamp_sent) VALUES ($msgId, " . ($memberId ? intval($memberId) : 'NULL') . ", '" . mysqli_real_escape_string($con, $email) . "', 3, NOW())";
+                mysqli_query($con, $txtSql);
+
                 $success++;
             } else {
                 $failed[] = ['email' => $email, 'reason' => 'Mail server rejected'];
@@ -79,6 +104,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $failed[] = ['email' => $email, 'reason' => $e->getMessage()];
         }
     }
+
+    mysqli_close($con);
 
     echo json_encode([
         'type' => 'result',
@@ -109,6 +136,9 @@ textarea:focus { outline: none; border-color: #4a90d9; }
 .char-count.error { color: #e74c3c; }
 .checkbox-group { margin-top: 15px; }
 .checkbox-group label { cursor: pointer; }
+.subject-row { display: flex; align-items: center; margin-bottom: 10px; }
+.subject-row input:disabled { background: #f5f5f5; color: #666; }
+.subject-row input.enabled { background: white; color: #333; }
 .search-group { display: flex; gap: 8px; margin-top: 15px; }
 .search-group input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
 .search-group button { padding: 10px 16px; background: #4a90d9; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
@@ -188,6 +218,10 @@ textarea:focus { outline: none; border-color: #4a90d9; }
 <h1>New Message <a href="MessagingPageOld" style="font-size:14px;font-weight:normal;">(Old Version)</a></h1>
 
 <div>
+<div class="subject-row">
+<input type="text" id="messageSubject" readonly style="width:calc(100% - 120px);padding:10px;border:1px solid #ddd;border-radius:4px;font-size:14px;background:#f5f5f5;">
+<label style="margin-left:10px;"><input type="checkbox" id="editSubject"> Custom subject</label>
+</div>
 <textarea id="messageText" placeholder="Type your message here..." maxlength="500"></textarea>
 <div class="char-count"><span id="charCount">0</span>/500</div>
 </div>
@@ -286,8 +320,10 @@ foreach ($mailing_lists as $name => $email):
 
 <script>
 const messageText = document.getElementById('messageText');
+const messageSubject = document.getElementById('messageSubject');
 const charCount = document.getElementById('charCount');
 const fakeTwitter = document.getElementById('fakeTwitter');
+const editSubject = document.getElementById('editSubject');
 const memberSearch = document.getElementById('memberSearch');
 const searchResults = document.getElementById('searchResults');
 const recipientsList = document.getElementById('recipientsList');
@@ -311,6 +347,39 @@ const failedList = document.getElementById('failedList');
 const doneBtn = document.getElementById('doneBtn');
 
 let recipients = [];
+
+function getDefaultSubject() {
+    const now = new Date();
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const d = days[now.getDay()];
+    const dd = String(now.getDate()).padStart(2, '0');
+    const mon = months[now.getMonth()];
+    const h = String(now.getHours());
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    return 'WWGC Msg | ' + d + ' ' + dd + ' ' + mon + ' ' + h12 + ':' + m + ' ' + ampm;
+}
+
+function updateSubjectState() {
+    if (editSubject.checked) {
+        messageSubject.removeAttribute('readonly');
+        messageSubject.classList.remove('enabled');
+        messageSubject.style.background = 'white';
+        messageSubject.style.color = '#333';
+        messageSubject.focus();
+    } else {
+        messageSubject.setAttribute('readonly', 'readonly');
+        messageSubject.classList.add('enabled');
+        messageSubject.style.background = '#f5f5f5';
+        messageSubject.style.color = '#666';
+        messageSubject.value = getDefaultSubject();
+    }
+}
+
+messageSubject.value = getDefaultSubject();
+editSubject.addEventListener('change', updateSubjectState);
 
 function updateCharCount() {
     const len = messageText.value.length;
@@ -456,6 +525,8 @@ doneBtn.addEventListener('click', () => {
     resultModal.classList.remove('active');
     messageText.value = '';
     fakeTwitter.checked = false;
+    editSubject.checked = false;
+    updateSubjectState();
     recipients = [];
     updateRecipientsList();
     updateCharCount();
@@ -473,6 +544,7 @@ async function sendMessages() {
     emailStatusList.innerHTML = '';
 
     const message = messageText.value.trim();
+    const subject = messageSubject.value.trim();
     const postToFakeTwitter = fakeTwitter.checked ? 1 : 0;
 
     try {
@@ -483,6 +555,7 @@ async function sendMessages() {
             body: new URLSearchParams({
                 action: 'send',
                 message: message,
+                subject: subject,
                 fakeTwitter: postToFakeTwitter,
                 recipients: JSON.stringify(recipients)
             })
@@ -496,7 +569,14 @@ async function sendMessages() {
             throw new Error('Server error ' + response.status + ': ' + text);
         }
 
-        const data = await response.json();
+        let data;
+        const responseText = await response.text();
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            throw new Error('Invalid JSON response: ' + responseText.substring(0, 500));
+        }
+
         progressModal.classList.remove('active');
         showResults(data);
 
@@ -509,21 +589,21 @@ async function sendMessages() {
 
 function showResults(data) {
     if (!data) {
-        resultIcon.textContent = '⚠';
+        resultIcon.textContent = '(!)';
         resultIcon.className = 'result-icon failed';
         resultHeader.textContent = 'Send Completed with Errors';
         resultSent.textContent = '';
         resultFailed.textContent = 'An unexpected error occurred';
         failedList.style.display = 'none';
     } else if (data.failed.length === 0) {
-        resultIcon.textContent = '✓';
+        resultIcon.textContent = '(^_^)';
         resultIcon.className = 'result-icon success';
         resultHeader.textContent = 'Message Sent Successfully!';
         resultSent.textContent = `Sent to ${data.success} recipient${data.success !== 1 ? 's' : ''}`;
         resultFailed.textContent = '';
         failedList.style.display = 'none';
     } else {
-        resultIcon.textContent = '⚠';
+        resultIcon.textContent = '(!)';
         resultIcon.className = 'result-icon failed';
         resultHeader.textContent = 'Send Completed';
         resultSent.textContent = `Sent to ${data.success} recipient${data.success !== 1 ? 's' : ''}`;

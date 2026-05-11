@@ -2,21 +2,14 @@
 
 ## Quick Reference
 
-### Dev URLs
-- **App:** http://glidingops.test (NOT https — self-signed cert issues)
-- **Login:** Username: [dev-creds] / Password: [dev-creds]
-
-### Log Locations
-- `log/app.log` — Debug log via `logMsg()`
-- `log/error.log` — PHP errors (fatal handler in `helpers/logging.php`)
-
-### PHP Syntax Check
-From `lrv` subfolder: `vagrant ssh -c "php -l ./code/<path>" 2>&1`
+- **Dev:** http://glidingops.test | User: [dev-creds] / Password: [dev-creds]
+- **Logs:** `log/app.log` (debug), `log/error.log` (PHP errors)
+- **PHP check:** `vagrant ssh -c "php -l ./code/<path>" 2>&1` from `lrv` folder
 
 ## Current Work
 
 ### In Progress
-- None
+- (none)
 
 ### Completed This Session
 - TreasurerReportNew.php, TreasurerReportNew2.php, TreasurerReportNew3.php (3 layouts)
@@ -26,7 +19,7 @@ From `lrv` subfolder: `vagrant ssh -c "php -l ./code/<path>" 2>&1`
 - MessagingPage.php ex novo with two-panel layout, member search, mailing lists, preview modal, streaming progress, result modal
 - Restored old MessagingPage as MessagingPageOld.php (from commit f436d39)
 
-### Next Steps (Priority Order)
+### Next Steps
 1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)
 2. Test messaging page end-to-end
 3. Delete old files after testing: texts-list.php, users-list.php, users.php, members-list.php, members.php, MessagingPageOld.php
@@ -36,69 +29,31 @@ From `lrv` subfolder: `vagrant ssh -c "php -l ./code/<path>" 2>&1`
 
 **BEFORE starting any task:**
 1. Read this AGENTS.md file (mandatory)
-2. Check log/app.log for recent activity: `Get-Content log/app.log -Tail 30`
-3. Check log/error.log for errors: `Get-Content log/error.log -Tail 30`
-4. Run `git status` to see what's changed
+2. Check logs: `Get-Content log/app.log -Tail 30` and `Get-Content log/error.log -Tail 30`
+3. Run `git status`
 
-**WHEN BUILDING NEW FEATURES:**
-1. Build ex novo — do NOT adapt old code
-2. Keep members search as primary recipient selection
-3. Hardcode Google Groups mailing lists (don't make dynamic)
+**BUILDING NEW FEATURES:**
+1. Build ex novo - do NOT adapt old code
+2. Members search is primary recipient selection
+3. Hardcode Google Groups mailing lists (not dynamic)
 4. Save messages to DB for history + Fake Twitter
-5. Send emails synchronously with real-time progress feedback
-6. Always add to .htaccess when creating new API routes
+5. Send emails synchronously with real-time progress
+6. Always add new API routes to .htaccess
+7. Use ASCII only - no unicode or special characters in code
 
-**AFTER MAKING CHANGES:**
-1. Run PHP syntax check: `vagrant ssh -c "php -l ./code/<path>"`
-2. Check log/app.log to confirm expected behavior
-3. Check log/error.log for any errors
+**TESTING:** See `docs/WEB_AUTH.md` for PowerShell WebRequestSession patterns
 
-**TESTING:** See `docs/WEB_AUTH.md` for PowerShell testing with WebRequestSession
-
-**BEFORE DELETING OLD FILES:** See `docs/DEAD_CODE.md` for files marked for deletion and cleanup steps
-
-**WHEN STUCK OR UNSURE:**
-- docs/DEAD_CODE.md — context on old files
-- docs/TODO.md — known issues
-- docs/ARCHITECTURE.md — technical structure
-- Ask for clarification if blocked for more than 5 minutes
+**BEFORE DELETING OLD FILES:** See `docs/DEAD_CODE.md`
 
 ## Key Reference
 
-### Session Variables
-- `$_SESSION['memberid']`
-- `$_SESSION['security']` — bitmask (1=member, 6=admin)
-- `$_SESSION['org']`
+See these documents for detailed info:
+- `docs/DEVELOP.md` - Dev workflow, logging, API patterns, session vars, database conventions, code style
+- `docs/DEAD_CODE.md` - Files marked for deletion
+- `docs/TODO.md` - Known issues
+- `docs/ARCHITECTURE.md` - Technical structure
 
-### Database Conventions
-- Primary key is `id` (NOT `member_id`) in members table
-- Connection from `config/database.php` → `['gliding']`
-- Always use `intval()` for integer values in SQL
-- members.status is INT FK to membership_status.id (not status_name string)
-- **ALWAYS verify schema first** — see `docs/DEVELOP.md`
+## Documentation Index
 
-### API Development
-- See `docs/DEVELOP.md` for API patterns, auth, and error handling
-- Use `helpers/api-base.php` functions: `apiMaybeResumeSession()`, `apiRequireAuth()`, `apiExit()`, `apiExitWithError()`
-
-### Modernized List Pages (v2b pattern)
-All new list pages: DataTables server-side AJAX, auto-trigger search, "Old Version" link points to original.
-
-Files: `members-list-v2b.php`, `users-list-v2b.php`, `texts-list-v2b.php`
-
-## Documentation
-
-All docs in `docs/` folder:
-- `README.md` (root) — Entry point, overview and navigation
-- `docs/ARCHITECTURE.md` — Technical structure, two databases, tracking flow
-- `docs/DATABASE.md` — Tables, schemas, relationships
-- `docs/FEATURES.md` — What each feature does
-- `docs/ROUTES.md` — URL routing via .htaccess
-- `docs/SECURITY.md` — Auth, permissions, roles
-- `docs/MESSAGING.md` — Email/SMS system
-- `docs/CODEBASE_MAP.md` — File organization
-- `docs/WEB_AUTH.md` — Session handling with WebRequestSession, API header auth
-- `docs/DEVELOP.md` — Dev workflow, logging, API patterns, boilerplate
-- `docs/DEAD_CODE.md` — Files marked for deletion
-- `docs/TODO.md` — Known issues and planned work
-- `docs/FUTURE_DEVELOPMENT_MAGIC_LINK.md` — Passwordless email login spec
+All docs in `docs/` folder - see individual files for details:
+- README.md, ARCHITECTURE.md, DATABASE.md, FEATURES.md, ROUTES.md, SECURITY.md, MESSAGING.md, CODEBASE_MAP.md, WEB_AUTH.md, DEVELOP.md, DEAD_CODE.md, TODO.md, FUTURE_DEVELOPMENT_MAGIC_LINK.md

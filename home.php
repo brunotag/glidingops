@@ -235,7 +235,7 @@ if (isset($_SESSION['security'])) {
                   echo "<td><h2 class='u'>MESSAGING</h2>";
                   echo "<p class='u'><a href='MessagingPage'>Broadcast A Message</a></p>";
                   if (($_SESSION['security'] & 4)) {
-                     echo "<p class='u'><a href='maintenance/testemail.php'>Send Single Email</a></p>";
+                     echo "<p class='u'><a href='SentMessages'>See Past Messages</a></p>";
                   }
                   echo "</td>";
                   $col = ($col + 1) % $totcol;
@@ -329,6 +329,7 @@ if (($_SESSION['security'] & 64)) {
                if (($_SESSION['security'] & 64)) {
                   echo "<td><h2 class='u'>DIAGNOSTICS & RECOVERY</h2>";
                   echo "<p class='u'><a href='Recovery.php'>Get Local Browser Cache</a></p>";
+                  echo "<p class='u'><a href='maintenance/testemail.php'>Test Email</a></p>";
 
                   echo "</td>";
                   $col = ($col + 1) % $totcol;

@@ -84,5 +84,11 @@ Never assume columns exist — check `DESCRIBE table` first. Never assume column
 ## Database
 
 - Primary key is `id` (NOT `member_id`) in members table
-- Connection from `config/database.php` → `['gliding']`
+- Connection from `config/database.php` -> `['gliding']`
 - membership_status column is `status_name` (NOT `status`)
+
+## Code Style
+
+- Use ASCII characters only in source code - no unicode, em-dashes, smart quotes, etc.
+- Keep strings simple to avoid encoding issues
+- This applies to PHP, JavaScript, CSS, and any other code files

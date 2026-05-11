@@ -36,6 +36,7 @@ RewriteRule ^api/myflights$ api/myflights-data.php [L,QSA]
 RewriteRule ^api/texts$ api/texts.php [L,QSA]
 RewriteRule texts-list texts-list-v2b.php [L,QSA]
 RewriteRule texts-list-old texts-list.php [L,QSA]
+RewriteRule SentMessages texts-list-v2b.php [L,QSA]
 
 # New members list (v2b is now the default)
 RewriteRule AllMembers members-list-v2b.php [L,QSA]
