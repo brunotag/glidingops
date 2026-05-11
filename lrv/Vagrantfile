@@ -43,6 +43,12 @@ require File.expand_path(confDir + '/scripts/homestead.rb')
 Vagrant.require_version '>= 1.9.0'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+    # Disable PostgreSQL creation by replacing the script with a no-op
+    config.vm.provision "shell", inline: "echo 'Disabling PostgreSQL...'; sudo tee /home/vagrant/code/lrv/vendor/laravel/homestead/scripts/create-postgres.sh > /dev/null << 'NOSCRIPT'\n#!/bin/bash\necho 'PostgreSQL disabled at provisioning time'\nexit 0\nNOSCRIPT\nsudo chmod +x /home/vagrant/code/lrv/vendor/laravel/homestead/scripts/create-postgres.sh; echo 'PostgreSQL disabled'", run: "before"
+
+    # Create composer directory before Update Composer step
+    config.vm.provision "shell", inline: "echo 'Creating composer directory...'; mkdir -p /home/vagrant/.composer && chmod 755 /home/vagrant/.composer; echo 'Composer dir ready'", run: "before"
+
     if File.exist? aliasesPath then
         config.vm.provision "file", source: aliasesPath, destination: "/tmp/bash_aliases"
         config.vm.provision "shell" do |s|
