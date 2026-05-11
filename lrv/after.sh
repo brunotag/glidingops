@@ -1,11 +1,15 @@
-#!/bin/sh
+#!/bin/bash
+
+# ============================================================
+echo "NOTE: The website is available NOW at http://glidingops.test"
+echo "============================================================"
 
 # If you would like to do some extra provisioning you may
 # add any commands you wish to this file and they will
 # be run after the Homestead machine is provisioned.
 #
 # If you have user-specific configurations you would like
-# to apply, you may also create user-customizations.sh,
+# you may also create user-customizations.sh,
 # which will be run after this script.
 
 # Source the user's bashrc to ensure helper functions like 'php74' are available
@@ -14,6 +18,7 @@
 php74
 
 cd code/lrv
+mkdir -p ~/.composer
 composer install -n --prefer-dist --no-progress
 
 php artisan migrate
@@ -25,7 +30,7 @@ sudo a2enconf php7.4-fpm
 
 sudo sed '/^zend_extension=/{h;s/=.*/=xdebug.so/};${x;/^$/{s//zend_extension=xdebug.so/;H};x}' -i /etc/php/7.4/fpm/php.ini
 
-xdebug_ini=/etc/php/7.4/mods-available/xdebug.ini #$(php -i | grep "Loaded Configuration File" | sed 's#.* ##')
+xdebug_ini=/etc/php/7.4/mods-available/xdebug.ini
 
 sudo sed '/^zend_extension=/{h;s/=.*/=xdebug.so/};${x;/^$/{s//zend_extension=xdebug.so/;H};x}' -i $xdebug_ini
 sudo sed '/^xdebug.max_nesting_level=/{h;s/=.*/=512/};${x;/^$/{s//xdebug.max_nesting_level=512/;H};x}' -i  $xdebug_ini
@@ -41,3 +46,11 @@ sudo sed '/^xdebug.start_with_request=/{h;s/=.*/=yes/};${x;/^$/{s//xdebug.start_
 
 sudo service php7.4-fpm restart
 sudo systemctl restart apache2
+
+# Start SMTP email logger (captures emails from PHP mail() to ~/emails.log)
+if ! pgrep -f "smtpd-run.py" > /dev/null 2>&1; then
+    nohup python3 /home/vagrant/code/home/vagrant/smtpd-run.py > /var/log/smtpd.log 2>&1 &
+    echo "SMTP email logger started (PID $!)"
+else
+    echo "SMTP email logger already running"
+fi

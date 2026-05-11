@@ -9,6 +9,7 @@ if (!isset($_SESSION['security']) || !($_SESSION['security'] & 1)) {
 
 include 'helpers.php';
 include 'helpers/mail.php';
+include 'helpers/logging.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'send') {
     header('Content-Type: application/json; charset=utf-8');
@@ -215,6 +216,12 @@ textarea:focus { outline: none; border-color: #4a90d9; }
 <?php $inc = "./orgs/" . $org . "/menu1.txt"; include $inc; ?>
 
 <div class="container">
+<?php if (isLocal()): ?>
+<div style="background-color:#ffffcc;padding:10px;margin:10px;border:1px solid #cccc00;">
+<strong>Dev Mode:</strong> Emails are not sent to real addresses. They are caught by smtp4dev and will appear there.
+Open smtp4dev: <a href='http://localhost:1080' target='_blank'>http://localhost:1080</a>
+</div>
+<?php endif; ?>
 <div class="panel left-panel">
 <h1>New Message <a href="MessagingPageOld" style="font-size:14px;font-weight:normal;">(Old Version)</a></h1>
 
@@ -247,7 +254,7 @@ $mailing_lists = [
     'WGC Instructors Team'   => 'instructors@wwgc.co.nz',
     'WGC LPC Group'          => 'lpc@wwgc.co.nz',
     'WGC Members'            => 'members@wwgc.co.nz',
-    'WGC Service Delivery'    => 'servicedelivery@soar.co.nz',
+    'WGC Service Delivery'    => 'servicedelivery@wwgc.co.nz',
     'WGC Winch Group'       => 'winch@wwgc.co.nz',
     'WWGC Cable Car'        => 'cablecar@wwgc.co.nz',
     'Official Observers'     => 'official-observers@wwgc.co.nz',

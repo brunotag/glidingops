@@ -87,6 +87,54 @@ Never assume columns exist — check `DESCRIBE table` first. Never assume column
 - Connection from `config/database.php` -> `['gliding']`
 - membership_status column is `status_name` (NOT `status`)
 
+## Email Testing in Dev
+
+### Current Setup
+
+PHP `mail()` routes through `ssmtp` to a Python SMTP logger on port 1025. Emails are captured to `~/emails.log`.
+
+The logger starts automatically in `after.sh` on vagrant provision.
+
+### Viewing Captured Emails
+
+```bash
+# On vagrant
+cat ~/emails.log
+
+# Tail in real-time
+tail -f ~/emails.log
+```
+
+### Manual Control
+
+```bash
+# Start
+python3 /home/vagrant/code/home/vagrant/smtpd-run.py &
+
+# Check if running
+pgrep -f smtpd-run.py
+
+# Stop
+pkill -f smtpd-run.py
+```
+
+### How It Works
+
+- `ssmtp` is configured to relay to `127.0.0.1:1025`
+- PHP `sendmail_path` points to `/usr/sbin/ssmtp`
+- Python `smtpd.SMTPServer` logs each email to `~/emails.log`
+- No web UI - just file logging
+
+### Why Not MailCatcher/MailHog
+
+Both require SMTP daemon mode. Our initial approach used `nc` wrappers which caused PHP to hang. The Python logger is simpler and works reliably.
+
+### Future Options
+
+1. Add web UI to Python logger (minimal additional code)
+2. Use Docker for MailCatcher: `docker run -p 1080:1080 -p 1025:1025 schickling/mailcatcher`
+3. Accept dev emails going to real addresses (with care)
+
 ## Code Style
 
 - Use ASCII characters only in source code - no unicode, em-dashes, smart quotes, etc.

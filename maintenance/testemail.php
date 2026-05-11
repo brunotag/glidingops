@@ -1,6 +1,7 @@
 <?php session_start(); ?>
 <?php
 include "../helpers/mail.php";
+include "../helpers/logging.php";
 
 $org = 0;
 $updtext = '';
@@ -105,12 +106,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
          </table>
       </form>
    </div>
-   <div id='d2'>
-      <?php
-      if (strlen($updtext) > 0)
-         echo "<p>" . $updtext . "</p>";
-      ?>
-   </div>
+<div id='d2'>
+       <?php
+       if (strlen($updtext) > 0)
+          echo "<p>" . $updtext . "</p>";
+       ?>
+    </div>
+    <?php if (isLocal()): ?>
+    <div id='d2' style='background-color:#ffffcc;padding:10px;margin:10px;border:1px solid #cccc00;'>
+       <p><strong>Dev Mode:</strong> Emails are not sent to real addresses. They are caught by MailCatcher and will appear there.</p>
+       <p>Open MailCatcher: <a href='http://localhost:1080' target='_blank'>http://localhost:1080</a></p>
+    </div>
+<?php endif; ?>
 </body>
 
 </html>
