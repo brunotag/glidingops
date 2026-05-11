@@ -351,6 +351,7 @@ if (($_SESSION['security'] & 64)) {
                <?php
                $gitHash = trim(@exec('git -C ' . escapeshellarg(__DIR__) . ' rev-parse --short HEAD'));
                if ($gitHash) echo "v" . $gitHash;
+               echo escapeshellarg(__DIR__);
                ?>
             </p>
             <?php
