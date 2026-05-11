@@ -214,7 +214,7 @@ textarea:focus { outline: none; border-color: #4a90d9; }
 
 <div class="container">
 <div class="panel left-panel">
-<h1>New Message</h1>
+<h1>New Message <a href="MessagingPageOld" style="font-size:14px;font-weight:normal;">(Old Version)</a></h1>
 
 <div>
 <textarea id="messageText" placeholder="Type your message here..." maxlength="500"></textarea>
@@ -504,6 +504,9 @@ async function sendMessages() {
     const message = messageText.value.trim();
     const postToFakeTwitter = fakeTwitter.checked ? 1 : 0;
 
+    let successCount = 0;
+    let failedList_data = [];
+
     try {
         const response = await fetch('/MessagingPage.php', {
             method: 'POST',
@@ -554,6 +557,11 @@ async function sendMessages() {
                                 </div>
                             `;
                             emailStatusList.scrollTop = emailStatusList.scrollHeight;
+                            if (data.status === 'success') {
+                                successCount++;
+                            } else {
+                                failedList_data.push({ email: data.email, reason: data.reason || 'Failed' });
+                            }
                         } else if (data.type === 'result') {
                             resultData = data;
                         }
@@ -571,12 +579,25 @@ async function sendMessages() {
         if (resultData) {
             showResults(resultData);
         } else {
-            resultIcon.textContent = '⚠';
-            resultIcon.className = 'result-icon failed';
-            resultHeader.textContent = 'Send Completed';
-            resultSent.textContent = 'Sent (result status unknown)';
-            resultFailed.textContent = '';
-            failedList.style.display = 'none';
+            const total = recipients.length;
+            if (successCount > 0 || failedList_data.length > 0) {
+                resultIcon.textContent = failedList_data.length === 0 ? '✓' : '⚠';
+                resultIcon.className = 'result-icon ' + (failedList_data.length === 0 ? 'success' : 'failed');
+                resultHeader.textContent = failedList_data.length === 0 ? 'Message Sent Successfully!' : 'Send Completed';
+                resultSent.textContent = `Sent to ${successCount} recipient${successCount !== 1 ? 's' : ''}`;
+                resultFailed.textContent = failedList_data.length > 0 ? `${failedList_data.length} failed` : '';
+                failedList.innerHTML = failedList_data.map(f =>
+                    `<div class="failed-item">${escapeHtml(f.email)}: ${escapeHtml(f.reason)}</div>`
+                ).join('');
+                failedList.style.display = failedList_data.length > 0 ? 'block' : 'none';
+            } else {
+                resultIcon.textContent = '⚠';
+                resultIcon.className = 'result-icon failed';
+                resultHeader.textContent = 'Send Completed';
+                resultSent.textContent = 'Sent (result status unknown)';
+                resultFailed.textContent = '';
+                failedList.style.display = 'none';
+            }
             resultModal.classList.add('active');
         }
 
