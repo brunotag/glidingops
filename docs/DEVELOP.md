@@ -13,6 +13,28 @@ cd C:\Users\bruno\dev\glidingops\lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
 ```
 Ignore vagrant warning about homestead - actual PHP output follows.
 
+## Testing APIs with PowerShell
+
+### Login and Test API (PowerShell)
+
+Create a script file `test_api.ps1`:
+```powershell
+$loginResp = Invoke-WebRequest -Uri 'http://glidingops.test/checklogin.php' -Method POST -Body @{user='[dev-creds]'; pcode='[dev-creds]'} -SessionVariable ws
+$apiResp = Invoke-WebRequest -Uri 'http://glidingops.test/api/members-email.php?search=bru' -WebSession $ws
+$apiResp.Content
+```
+
+Run with:
+```powershell
+powershell -File C:\Users\bruno\dev\glidingops\test_api.ps1
+```
+
+### Check Error Log (PowerShell)
+
+```powershell
+Get-Content C:\Users\bruno\dev\glidingops\log\error.log -Tail 20
+```
+
 ## Error Handling
 
 - `helpers/logging.php` registers a fatal error handler that writes to `log/error.log` in dev
@@ -32,15 +54,26 @@ require_once __DIR__ . '/../helpers/api-base.php';
 
 session_start();
 
-require_once __DIR__ . '/../helpers/logging.php';
-logMsg("START method=" . $_SERVER['REQUEST_METHOD']);
+if (!isset($_SESSION['memberid'])) {
+    apiExitWithError('Not logged in');
+}
 ```
+
+## Database Query Rules
+
+**ALWAYS verify schema before writing queries:**
+```bash
+mysql gliding -e "DESCRIBE <table>;"
+mysql gliding -e "SELECT * FROM <lookup_table> LIMIT 5;"
+```
+
+Never assume columns exist — check `DESCRIBE table` first. Never assume column names — verify with a SELECT.
 
 ## SQL Safety
 
 - Always use `intval()` for integer values in SQL
 - Always check `mysqli_query()` result before using it with `mysqli_fetch_assoc()`
-- Column name for status is `status_name`, not `status`
+- members.status is an INT FK to membership_status.id (not a string!)
 
 ## Session Variables
 

@@ -20,6 +20,9 @@ RewriteRule   ^api/v2/(.*)    /lrv/public/api/v2/$1  [L]
 # DataTables API for members
 RewriteRule ^api/members$ api/members.php [L,QSA]
 
+# Members email autocomplete API
+RewriteRule ^api/members-email$ api/members-email.php [L,QSA]
+
 # DataTables API for users
 RewriteRule ^api/users$ api/users.php [L,QSA]
 
