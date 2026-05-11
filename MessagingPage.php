@@ -54,12 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $senderName = '';
 
     if (isset($_SESSION['memberid'])) {
-        $senderQuery = mysqli_query($con, "SELECT email, name FROM members WHERE id = " . intval($_SESSION['memberid']));
+        $senderQuery = mysqli_query($con, "SELECT email, displayname FROM members WHERE id = " . intval($_SESSION['memberid']));
         if ($senderQuery && $senderRow = mysqli_fetch_array($senderQuery)) {
             if (!empty($senderRow['email']) && filter_var($senderRow['email'], FILTER_VALIDATE_EMAIL)) {
                 $senderEmail = $senderRow['email'];
             }
-            $senderName = !empty($senderRow['name']) ? $senderRow['name'] : '';
+            $senderName = !empty($senderRow['displayname']) ? $senderRow['displayname'] : '';
         }
     }
 
@@ -82,7 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             if (!empty($senderName)) {
                 $emailBody .= "\n\n $senderName";
             }
-            $sent = Mail::SendMail($to, $subject, $emailBody, $senderEmail, 'text/plain');
+            $replyTo = !empty($senderName) ? "$senderName <$senderEmail>" : $senderEmail;
+            $sent = Mail::SendMail($to, $subject, $emailBody, $replyTo, 'text/plain');
 
             if ($sent) {
                 $memberIdQuery = mysqli_query($con, "SELECT id FROM members WHERE email = '" . mysqli_real_escape_string($con, $email) . "' LIMIT 1");
