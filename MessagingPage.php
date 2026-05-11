@@ -104,7 +104,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             'total' => $total
         ]) . "\n";
         flush();
-        ob_flush();
     }
 
     echo json_encode([
@@ -114,7 +113,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         'total' => $total
     ]) . "\n";
     flush();
-    ob_flush();
     exit;
 }
 ?>
