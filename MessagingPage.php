@@ -507,6 +507,7 @@ async function sendMessages() {
     try {
         const response = await fetch('/MessagingPage.php', {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
                 action: 'send',
@@ -516,49 +517,73 @@ async function sendMessages() {
             })
         });
 
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error('Server error ' + response.status + ': ' + text);
+        }
+
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let resultData = null;
+        let buffer = '';
 
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
+        try {
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
 
-            const chunk = decoder.decode(value);
-            const lines = chunk.split('\n').filter(line => line.trim());
+                buffer += decoder.decode(value, { stream: true });
+                let lines = buffer.split('\n');
+                buffer = lines.pop();
 
-            for (const line of lines) {
-                try {
-                    const data = JSON.parse(line);
-                    if (data.type === 'progress') {
-                        const percent = (data.processed / data.total) * 100;
-                        progressBar.style.width = percent + '%';
-                        progressText.textContent = `Sending... ${data.processed}/${data.total}`;
-                        const statusClass = data.status === 'success' ? 'success' : 'failed';
-                        const statusIcon = data.status === 'success' ? '✓' : '✗';
-                        const statusText = data.status === 'success' ? 'Sent' : data.reason || 'Failed';
-                        emailStatusList.innerHTML += `
-                            <div class="email-status-item ${statusClass}">
-                                <span class="email">${escapeHtml(data.email)}</span>
-                                <span class="status">${statusIcon} ${statusText}</span>
-                            </div>
-                        `;
-                        emailStatusList.scrollTop = emailStatusList.scrollHeight;
-                    } else if (data.type === 'result') {
-                        resultData = data;
+                for (const line of lines) {
+                    if (!line.trim()) continue;
+                    try {
+                        const data = JSON.parse(line);
+                        if (data.type === 'progress') {
+                            const percent = (data.processed / data.total) * 100;
+                            progressBar.style.width = percent + '%';
+                            progressText.textContent = `Sending... ${data.processed}/${data.total}`;
+                            const statusClass = data.status === 'success' ? 'success' : 'failed';
+                            const statusIcon = data.status === 'success' ? '✓' : '✗';
+                            const statusText = data.status === 'success' ? 'Sent' : data.reason || 'Failed';
+                            emailStatusList.innerHTML += `
+                                <div class="email-status-item ${statusClass}">
+                                    <span class="email">${escapeHtml(data.email)}</span>
+                                    <span class="status">${statusIcon} ${statusText}</span>
+                                </div>
+                            `;
+                            emailStatusList.scrollTop = emailStatusList.scrollHeight;
+                        } else if (data.type === 'result') {
+                            resultData = data;
+                        }
+                    } catch (e) {
+                        console.log('JSON parse error for line: ' + line);
                     }
-                } catch (e) {
-                    // Ignore parse errors for incomplete JSON
                 }
             }
+        } catch (streamError) {
+            console.log('Stream ended: ' + streamError.message);
         }
 
         progressModal.classList.remove('active');
-        showResults(resultData);
+
+        if (resultData) {
+            showResults(resultData);
+        } else {
+            resultIcon.textContent = '⚠';
+            resultIcon.className = 'result-icon failed';
+            resultHeader.textContent = 'Send Completed';
+            resultSent.textContent = 'Sent (result status unknown)';
+            resultFailed.textContent = '';
+            failedList.style.display = 'none';
+            resultModal.classList.add('active');
+        }
 
     } catch (e) {
         progressModal.classList.remove('active');
-        alert('Error sending messages: ' + e.message);
+        console.error('Send error:', e);
+        alert('Error: ' + e.message);
     }
 }
 
