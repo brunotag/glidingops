@@ -115,11 +115,10 @@ function distKm(lat1, lon1, lat2, lon2) {
 
 function secondsToTimer(s) {
   s = Math.floor(s);
-  var h = Math.floor(s / 3600);
-  var m = Math.floor((s % 3600) / 60);
-  var sec = s % 60;
-  if (h > 0) return h + ':' + String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
-  return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+  var h = Math.floor(s / 60);
+  var m = s % 60;
+  if (h > 0) return h + ':' + String(m).padStart(2, '0');
+  return String(m) + 'm';
 }
 
 function secondsToAge(s) {
@@ -229,6 +228,22 @@ function escapeHtml(s) {
 }
 
 function renderSidebar() {
+  var FLYING_HEADER = '<div class="flight-header">' +
+    '<span class="color-dot"></span>' +
+    '<span class="rego">Reg</span>' +
+    '<span class="timer">Time</span>' +
+    '<span class="altitude-msl">MSL</span>' +
+    '<span class="altitude-agl">AGL</span>' +
+    '<span class="distance">Dist</span>' +
+    '<span class="age">Age</span>' +
+    '</div>';
+
+  var DONE_HEADER = '<div class="flight-header">' +
+    '<span class="color-dot"></span>' +
+    '<span class="rego">Reg</span>' +
+    '<span class="timer">Dur</span>' +
+    '</div>';
+
   var flyingEl = document.getElementById('flying-list');
   var completedEl = document.getElementById('completed-list');
   var now = Date.now() / 1000 + clockOffset;
@@ -260,26 +275,40 @@ function renderSidebar() {
 
     var selClass = selectedSeq === f.seq ? ' selected' : '';
 
-    var row = '<div class="flight-row' + selClass + '" data-seq="' + f.seq + '" data-landed="' + f.landed + '">' +
+    var row1 = '<div class="flight-row">' +
       '<span class="color-dot" style="background:' + dotColor + '"></span>' +
       '<span class="rego">' + escapeHtml(f.regoShort) + '</span>' +
-      '<span class="pilot">' + escapeHtml(f.name1) + (f.name2 ? '/' + escapeHtml(f.name2) : '') + '</span>' +
-      '<span class="timer">' + timer + '</span>' +
-      '<span class="altitude-msl">' + altMsl + '\'</span>' +
-      '<span class="altitude-agl">' + altAgl + '\'</span>' +
-      '<span class="distance">' + distStr + '</span>' +
-      '<span class="age">' + ageStr + '</span>' +
-      '</div>';
+      '<span class="timer">' + timer + '</span>';
+
+    if (!f.landed) {
+      row1 += '<span class="altitude-msl">' + altMsl + '\'</span>' +
+        '<span class="altitude-agl">' + altAgl + '\'</span>' +
+        '<span class="distance">' + distStr + '</span>' +
+        '<span class="age">' + ageStr + '</span>';
+    }
+
+    row1 += '</div>';
+
+    var row2 = '<div class="flight-subrow">' +
+      '<span class="pilot-label">PIC:</span>' +
+      '<span class="pilot-name">' + escapeHtml(f.name1) + '</span>';
+    if (f.name2) {
+      row2 += '<span class="pilot-name">' + escapeHtml(f.name2) + '</span>';
+    }
+    row2 += '</div>';
+
+    var wrapper = '<div class="flight-wrapper' + selClass + '" data-seq="' + f.seq + '" data-landed="' + f.landed + '">' +
+      row1 + row2 + '</div>';
 
     if (f.landed) {
-      completedRows.push(row);
+      completedRows.push(wrapper);
     } else {
-      flyingRows.push(row);
+      flyingRows.push(wrapper);
     }
   });
 
-  flyingEl.innerHTML = flyingRows.join('');
-  completedEl.innerHTML = completedRows.join('');
+  flyingEl.innerHTML = FLYING_HEADER + flyingRows.join('');
+  completedEl.innerHTML = DONE_HEADER + completedRows.join('');
 }
 
 function renderMap(dataFlights) {
@@ -466,14 +495,6 @@ function deselectAll() {
 }
 
 function handleFlightClick(seq) {
-  var landing = false;
-  flights.forEach(function(f) {
-    if (f.seq === seq && f.landed) landing = true;
-  });
-  if (landing) {
-    deselectAll();
-    return;
-  }
   selectFlight(seq);
 }
 
@@ -487,7 +508,7 @@ function openOverlay() {
   var content = document.getElementById('overlay-content');
   content.innerHTML = document.getElementById('sidebar').innerHTML;
   overlay.classList.add('open');
-  content.querySelectorAll('.flight-row').forEach(function(row) {
+  content.querySelectorAll('.flight-wrapper').forEach(function(w) {
     var seq = parseInt(row.getAttribute('data-seq'), 10);
     row.addEventListener('click', function() { handleOverlayFlightClick(seq); });
   });
@@ -524,9 +545,9 @@ function init() {
   }).addTo(map);
 
   document.addEventListener('click', function(e) {
-    var row = e.target.closest('.flight-row');
-    if (row) {
-      var seq = parseInt(row.getAttribute('data-seq'), 10);
+    var wrapper = e.target.closest('.flight-wrapper');
+    if (wrapper) {
+      var seq = parseInt(wrapper.getAttribute('data-seq'), 10);
       handleFlightClick(seq);
     }
   });

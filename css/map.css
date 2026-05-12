@@ -173,26 +173,80 @@ html, body {
   accent-color: #e94560;
 }
 
+#flying-section, #completed-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
 #flying-list, #completed-list {
   flex: 1;
+  overflow-y: auto;
+}
+
+.flight-header {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #8899bb;
+  cursor: default;
+  border-bottom: 1px solid #1a3a5a;
+  padding: 4px 12px;
+  background: #0d1a30;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.flight-header .color-dot {
+  visibility: hidden;
+}
+
+.flight-wrapper {
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid #0f3460;
+  padding: 4px 12px;
+}
+.flight-wrapper:hover {
+  background: #1a2745;
+}
+.flight-wrapper.selected {
+  background: #0f3460;
+  outline: 1px solid #e94560;
+  margin: -1px 0;
 }
 
 .flight-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  cursor: pointer;
-  border-bottom: 1px solid #0f3460;
-  transition: background 0.15s;
   font-size: 13px;
 }
-.flight-row:hover {
-  background: #1a2745;
+
+.flight-subrow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-left: 44px;
+  font-size: 11px;
+  color: #b0c0d8;
+  margin-top: 2px;
+  min-height: 18px;
 }
-.flight-row.selected {
-  background: #0f3460;
-  outline: 1px solid #e94560;
+.flight-subrow .pilot-label {
+  color: #8899bb;
+  font-weight: 600;
+}
+.flight-subrow .pilot-name {
+  color: #f0f4fa;
+  font-weight: 500;
+}
+.flight-subrow .pilot-sep {
+  color: #556;
+  margin: 0 4px;
 }
 
 .color-dot {
@@ -207,15 +261,6 @@ html, body {
   font-weight: 800;
   color: #ffffff;
   flex-shrink: 0;
-}
-
-.pilot {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: #f0f4fa;
-  font-weight: 500;
 }
 
 .timer {
@@ -363,10 +408,6 @@ html, body {
   #sidebar {
     display: none;
   }
-#map {
-  flex: 1;
-  height: 100vh;
-}
   #overlay-toggle {
     display: flex;
   }
