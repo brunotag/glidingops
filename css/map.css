@@ -351,11 +351,9 @@ html, body {
   padding: 0;
 }
 
-.leaflet-tile-pane {
-  filter: brightness(0.45) saturate(0.3) contrast(0.85);
-}
-.leaflet-overlay-pane {
-  z-index: 5;
+#map {
+  flex: 1;
+  height: 100vh;
 }
 #map {
   background: #0d1117;
@@ -365,10 +363,10 @@ html, body {
   #sidebar {
     display: none;
   }
-  #map {
-    width: 100vw;
-    height: 100vh;
-  }
+#map {
+  flex: 1;
+  height: 100vh;
+}
   #overlay-toggle {
     display: flex;
   }

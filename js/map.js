@@ -289,7 +289,6 @@ function renderMap(dataFlights) {
       if (flightLayers[key].segments) {
         flightLayers[key].segments.forEach(function(s) { map.removeLayer(s); });
       }
-      if (flightLayers[key].glow) map.removeLayer(flightLayers[key].glow);
       if (flightLayers[key].marker) map.removeLayer(flightLayers[key].marker);
     }
   }
@@ -322,7 +321,7 @@ function renderMap(dataFlights) {
           weight: 3,
           opacity: 1
         }).addTo(map).bindTooltip(f.regoShort + ' - ' + f.name1);
-        flightLayers[f.seq] = { polyline: null, segments: null, glow: null, marker: null };
+        flightLayers[f.seq] = { polyline: null, segments: null, marker: null };
         bounds.push(latlngs[0]);
         hasVisible = true;
       }
@@ -332,57 +331,36 @@ function renderMap(dataFlights) {
     var segments = null;
     var polyline = null;
     var markerColor;
-    var extraGlow = null;
-
-    function makeLine(pts, clr, w) {
-      return L.polyline(pts, { color: clr, weight: w, opacity: 0.9, pane: 'overlayPane' });
-    }
-    function makeGlow(pts, clr, w) {
-      return L.polyline(pts, { color: clr, weight: w + 4, opacity: 0.2, pane: 'overlayPane' });
-    }
 
     if (useAltitudeColor) {
       segments = [];
       for (var i = 1; i < latlngs.length; i++) {
         var altFeet = f.points[i].al * 3.28084;
         var segColor = altitudeColor(altFeet);
-        var segGlow = makeGlow([latlngs[i - 1], latlngs[i]], segColor, 4);
-        var line = makeLine([latlngs[i - 1], latlngs[i]], segColor, 4);
-        segGlow.addTo(map);
-        line.addTo(map);
-        segments.push(segGlow, line);
+        var seg = L.polyline([latlngs[i - 1], latlngs[i]], {
+          color: segColor, weight: 5, opacity: 0.95
+        }).addTo(map);
+        segments.push(seg);
       }
       markerColor = altitudeColor(f.points[f.points.length - 1].al * 3.28084);
     } else {
       color = PALETTE[idx % PALETTE.length];
-      extraGlow = makeGlow(latlngs, color, 4);
-      polyline = makeLine(latlngs, color, 4);
-      extraGlow.addTo(map);
-      polyline.addTo(map);
+      polyline = L.polyline(latlngs, {
+        color: color, weight: 5, opacity: 0.95
+      }).addTo(map);
       markerColor = color;
     }
 
     var lastLatLng = latlngs[latlngs.length - 1];
     var dot = L.circleMarker(lastLatLng, {
-      radius: 8,
-      color: '#fff',
-      fillColor: markerColor,
-      fillOpacity: 1,
-      weight: 3,
-      opacity: 1
-    }).addTo(map);
-    L.circleMarker(lastLatLng, {
-      radius: 5,
-      color: markerColor,
-      fillColor: markerColor,
-      fillOpacity: 1,
-      weight: 0
+      radius: 7, color: markerColor,
+      fillColor: markerColor, fillOpacity: 1, weight: 3, opacity: 1
     }).addTo(map);
 
     var altMsl = f.points.length > 0 ? Math.round(f.points[f.points.length - 1].al * 3.28084) : 0;
     dot.bindTooltip(f.regoShort + ' - ' + f.name1 + ' (' + altMsl + '\')');
 
-    flightLayers[f.seq] = { polyline: polyline, segments: segments, glow: extraGlow, marker: dot };
+    flightLayers[f.seq] = { polyline: polyline, segments: segments, marker: dot };
 
     latlngs.forEach(function(ll) { bounds.push(ll); });
     hasVisible = true;
@@ -532,6 +510,17 @@ function init() {
   L.tileLayer('https://tile.opentopomap.org/{z}/{x}/{y}.png', {
     maxZoom: 17,
     attribution: 'Map data: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors'
+  }).addTo(map);
+
+  map.createPane('darkenPane');
+  map.getPane('darkenPane').style.zIndex = 350;
+  L.rectangle([[90, -180], [-90, 180]], {
+    pane: 'darkenPane',
+    color: '#000',
+    fillColor: '#000',
+    fillOpacity: 0.18,
+    weight: 0,
+    interactive: false
   }).addTo(map);
 
   document.addEventListener('click', function(e) {
