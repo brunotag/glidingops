@@ -238,7 +238,8 @@ if (isset($_SESSION['security'])) {
                   echo "<td><h2 class='u'>MESSAGING</h2>";
                   echo "<p class='u'><a href='MessagingPage'>Broadcast A Message</a></p>";
                   if (($_SESSION['security'] & 4)) {
-                     echo "<p class='u'><a href='SentMessages'>See Past Messages</a></p>";
+                      echo "<p class='u'><a href='SentMessages'>See Past Messages</a></p>";
+                      echo "<p class='u'><a href='/MessagesTree'>Messages Tree</a></p>";
                   }
                   echo "</td>";
                   $col = ($col + 1) % $totcol;
@@ -356,13 +357,8 @@ if (($_SESSION['security'] & 64)) {
                if ($gitHash) echo $gitHash;
                ?>
             </p>
-            <?php
-            if ($org == 1) {
-               ?>
-               <iframe style="width: 100%;height: 300px;border:0px;" src="/messages-list.php?org=1" title="Twitter feed"></iframe>
-            <?php
-               }
-            ?>
+             <?php
+ ?>
          </div>
       </div>
    </div>
