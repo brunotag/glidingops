@@ -312,12 +312,15 @@ $stmt->bind_param("i", $id);
 - incentive_schemes.php, scheme_subs.php (discount schemes)
 
 ### Tracking
-- MasterDisplay.php (live map)
+- MasterDisplay.php (live map - legacy)
+- MasterDisplayNew.php (live map - new Leaflet version)
 - todayxml.php (JSON feed)
 - spots.php (device mapping)
 - FlyingNow.php (current flights)
 
 ### Messaging
 - MessagingPage.php (create broadcast)
-- messages-list.php (display on home)
+- messages-tree.php (sent messages treeview)
+- texts-list-v2b.php (sent messages DataTables view)
+- messages-list.php (display on home - legacy)
 - SendTxt.php (process queue)

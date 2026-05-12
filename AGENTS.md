@@ -17,7 +17,10 @@
 - Dark overlay pane for map (tunable via slider)
 - Dev tools panel (overlay + track opacity sliders)
 - /wgc-new route + homepage link
-- docs/FUTURE_DEVELOPMENT_MAP.md updated with full spec
+- messages-tree.php - Treeview for sent messages with per-recipient expand/collapse, color-coded status (green/amber/red), Twitter badge, horizontal gradient indicators
+- Fixed MessagingPage bug: txt_to column (varchar(20)) too short for email addresses — INSERT failed silently. Changed to store NULL instead.
+- Removed texts.txt_timestamp_create from SentMessages DataTables view (misleading due to on update CURRENT_TIMESTAMP)
+- docs updated: ROUTES.md, MESSAGING.md, DATABASE.md, FUTURE_DEVELOPMENT_MAP.md
 
 ### Next Steps
 1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)

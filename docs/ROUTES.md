@@ -75,10 +75,14 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/GlideAccounts.csv` | Treasurer2.php | Treasurer CSV export |
 | `/Engineering.csv` | Engineer2.php | Engineer CSV export |
 | `/OlcFile.igc` | igcgenerate.php | IGC file download |
+| `/wgc-new` | MasterDisplayNew.php?org=1 | Real-time map (new Leaflet version) |
 | `/wgc` | MasterDisplay.php?org=1 | Wellington club map |
 | `/ssb` | MasterDisplay.php?org=2 | SSB club map |
 | `/cgc` | MasterDisplay.php?org=3 | CGC club map |
 | `/agc` | MasterDisplay.php?org=4 | AGC club map |
+| `/SentMessages` | texts-list-v2b.php | Sent messages table view |
+| `/MessagesTree` | messages-tree.php | Sent messages treeview |
+| `/MessagesTreeOld` | messages-tree.php | (alias) |
 
 ## Security Routes
 

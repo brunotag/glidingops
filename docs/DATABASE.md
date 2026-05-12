@@ -337,7 +337,7 @@ txt_id, txt_unique, txt_msg_id, txt_member_id, txt_to (phone)
 txt_status (0=pending, 1=sent, 2=error, 3=sent via email)
 txt_timestamp_create, txt_timestamp_sent, txt_timestamp_recv
 ```
-**Note:** txt_timestamp_sent/recv never populated - SMS never implemented.
+**Note:** `txt_timestamp_create` has `DEFAULT_GENERATED on update CURRENT_TIMESTAMP`, meaning it resets to the current time on ANY update to the row. This makes it unreliable as a creation timestamp — prefer `messages.create_time` for message timing instead.
 
 ### Audit & Diagnostics
 
