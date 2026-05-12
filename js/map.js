@@ -65,6 +65,29 @@ function distKm(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+function filterOutliers(points) {
+  if (points.length < 3) return points;
+  var MAX_SPEED = 300;
+  var result = [points[0]];
+  var ref = points[0];
+  for (var i = 1; i < points.length; i++) {
+    var p = points[i];
+    var dt = (p.t - ref.t) / 3600;
+    if (dt <= 0) {
+      result.push(p);
+      ref = p;
+      continue;
+    }
+    var maxDist = MAX_SPEED * dt * 1.5;
+    var actualDist = distKm(ref.lt, ref.ln, p.lt, p.ln);
+    if (actualDist <= maxDist) {
+      result.push(p);
+      ref = p;
+    }
+  }
+  return result;
+}
+
 function secondsToTimer(s) {
   s = Math.floor(s);
   var h = Math.floor(s / 3600);
