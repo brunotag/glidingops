@@ -48,17 +48,13 @@ $todayDate = $now->format('Y-m-d');
         <button id="date-today-btn">Today</button>
       </div>
     </div>
-    <div id="glider-filter">
-      <div class="section-header" id="filter-header">GLIDERS <span id="filter-toggle">&#9660;</span></div>
-      <div id="filter-list"></div>
-    </div>
     <div id="duties"></div>
     <div id="flying-section">
       <div class="section-header">FLYING NOW</div>
       <div id="flying-list"></div>
     </div>
     <div id="completed-section">
-      <div class="section-header">COMPLETED TODAY</div>
+      <div class="section-header" id="completed-header">COMPLETED TODAY</div>
       <div id="completed-list"></div>
     </div>
   </div>

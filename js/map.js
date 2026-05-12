@@ -33,54 +33,6 @@ function getTodayYmd() {
   return dateYmd(TODAY_DATE);
 }
 
-function getHiddenKey() {
-  return 'hiddenGliders_' + ORG + '_' + dateYmd(currentDate);
-}
-
-function getHidden() {
-  try { return JSON.parse(localStorage.getItem(getHiddenKey()) || '[]'); }
-  catch (e) { return []; }
-}
-
-function setHidden(arr) {
-  localStorage.setItem(getHiddenKey(), JSON.stringify(arr));
-}
-
-function isHidden(regoShort) {
-  return getHidden().indexOf(regoShort) !== -1;
-}
-
-function toggleHidden(regoShort) {
-  var h = getHidden();
-  var idx = h.indexOf(regoShort);
-  if (idx === -1) { h.push(regoShort); } else { h.splice(idx, 1); }
-  setHidden(h);
-  renderMap(flights);
-}
-
-function filterOutliers(points) {
-  if (points.length < 3) return points;
-  var MAX_SPEED = 300;
-  var result = [points[0]];
-  var ref = points[0];
-  for (var i = 1; i < points.length; i++) {
-    var p = points[i];
-    var dt = (p.t - ref.t) / 3600;
-    if (dt <= 0) {
-      result.push(p);
-      ref = p;
-      continue;
-    }
-    var maxDist = MAX_SPEED * dt * 1.5;
-    var actualDist = distKm(ref.lt, ref.ln, p.lt, p.ln);
-    if (actualDist <= maxDist) {
-      result.push(p);
-      ref = p;
-    }
-  }
-  return result;
-}
-
 function regoShortFromFull(full) {
   if (full.length >= 2) return full.slice(-2);
   return full;
@@ -115,10 +67,10 @@ function distKm(lat1, lon1, lat2, lon2) {
 
 function secondsToTimer(s) {
   s = Math.floor(s);
-  var h = Math.floor(s / 60);
-  var m = s % 60;
+  var h = Math.floor(s / 3600);
+  var m = Math.floor((s % 3600) / 60);
   if (h > 0) return h + ':' + String(m).padStart(2, '0');
-  return String(m) + 'm';
+  return m + 'm';
 }
 
 function secondsToAge(s) {
@@ -180,31 +132,6 @@ function parseXML(xmlDoc) {
   }
 
   return result;
-}
-
-function renderGliderFilter() {
-  var el = document.getElementById('filter-list');
-  var seen = {};
-  var items = [];
-  flights.forEach(function(f) {
-    if (seen[f.regoShort]) return;
-    seen[f.regoShort] = true;
-    var hidden = isHidden(f.regoShort);
-    var checked = hidden ? '' : 'checked';
-    items.push(
-      '<label class="filter-item">' +
-      '<input type="checkbox" data-rego="' + escapeHtml(f.regoShort) + '" ' + checked + ' />' +
-      escapeHtml(f.glider) + ' (' + escapeHtml(f.name1) + ')' +
-      '</label>'
-    );
-  });
-  el.innerHTML = items.join('');
-
-  el.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
-    cb.addEventListener('change', function() {
-      toggleHidden(this.getAttribute('data-rego'));
-    });
-  });
 }
 
 function renderDuties() {
@@ -323,14 +250,11 @@ function renderMap(dataFlights) {
   }
   flightLayers = {};
 
-  var hidden = getHidden();
   var bounds = [];
   var hasVisible = false;
   var now = Date.now() / 1000 + clockOffset;
 
   dataFlights.forEach(function(f, idx) {
-    if (hidden.indexOf(f.regoShort) !== -1) return;
-
     if (selectedSeq !== null && f.seq !== selectedSeq) return;
 
     var color;
@@ -436,6 +360,8 @@ function setDate(raw) {
   currentDate = parsed;
   isViewingToday = (parsed === TODAY_DATE);
   document.getElementById('date-picker').value = parsed;
+  document.getElementById('flying-section').classList.toggle('hidden', !isViewingToday);
+  document.getElementById('completed-header').textContent = isViewingToday ? 'COMPLETED TODAY' : 'FLIGHTS OF THE DAY';
   deselectAll();
   flights = [];
   duties = [];
@@ -464,7 +390,6 @@ function fetchData() {
           flights = data.flights;
           duties = data.duties;
           renderDuties();
-          renderGliderFilter();
           renderSidebar();
           renderMap(flights);
         } catch (e) {
@@ -557,13 +482,6 @@ function init() {
   document.getElementById('overlay-toggle').addEventListener('click', openOverlay);
   document.getElementById('overlay-close').addEventListener('click', closeOverlay);
 
-  document.getElementById('filter-header').addEventListener('click', function() {
-    var list = document.getElementById('filter-list');
-    var toggle = document.getElementById('filter-toggle');
-    list.classList.toggle('collapsed');
-    toggle.classList.toggle('collapsed');
-  });
-
   var datePicker = document.getElementById('date-picker');
   datePicker.value = TODAY_DATE;
   function goDate() {
@@ -584,6 +502,7 @@ function init() {
   if (DATE_PARAM) {
     setDate(DATE_PARAM);
   } else {
+    document.getElementById('flying-section').classList.remove('hidden');
     fetchData();
   }
 

@@ -127,57 +127,14 @@ html, body {
   background: #0f3460;
 }
 
-#glider-filter {
-  border-bottom: 1px solid #0f3460;
-}
-#filter-header {
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-#filter-header:hover {
-  background: #1a2745;
-}
-#filter-toggle {
-  font-size: 10px;
-  transition: transform 0.2s;
-}
-#filter-toggle.collapsed {
-  transform: rotate(-90deg);
-}
-#filter-list {
-  padding: 4px 12px;
-  max-height: 200px;
-  overflow-y: auto;
-}
-#filter-list.collapsed {
-  display: none;
-}
-.filter-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 0;
-  font-size: 12px;
-  cursor: pointer;
-  color: #d0d8e4;
-  font-weight: 500;
-}
-.filter-item:hover {
-  color: #ffffff;
-}
-.filter-item input[type="checkbox"] {
-  cursor: pointer;
-  accent-color: #e94560;
-}
-
 #flying-section, #completed-section {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
+}
+#flying-section.hidden {
+  display: none;
 }
 #flying-list, #completed-list {
   flex: 1;
