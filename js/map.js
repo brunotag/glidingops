@@ -58,6 +58,29 @@ function toggleHidden(regoShort) {
   renderMap(flights);
 }
 
+function filterOutliers(points) {
+  if (points.length < 3) return points;
+  var MAX_SPEED = 300;
+  var result = [points[0]];
+  var ref = points[0];
+  for (var i = 1; i < points.length; i++) {
+    var p = points[i];
+    var dt = (p.t - ref.t) / 3600;
+    if (dt <= 0) {
+      result.push(p);
+      ref = p;
+      continue;
+    }
+    var maxDist = MAX_SPEED * dt * 1.5;
+    var actualDist = distKm(ref.lt, ref.ln, p.lt, p.ln);
+    if (actualDist <= maxDist) {
+      result.push(p);
+      ref = p;
+    }
+  }
+  return result;
+}
+
 function regoShortFromFull(full) {
   if (full.length >= 2) return full.slice(-2);
   return full;
@@ -153,7 +176,7 @@ function parseXML(xmlDoc) {
       name2: getNodeText(fn, 'name2'),
       start: start,
       dur: dur,
-      points: points
+      points: filterOutliers(points)
     });
   }
 
@@ -266,6 +289,7 @@ function renderMap(dataFlights) {
       if (flightLayers[key].segments) {
         flightLayers[key].segments.forEach(function(s) { map.removeLayer(s); });
       }
+      if (flightLayers[key].glow) map.removeLayer(flightLayers[key].glow);
       if (flightLayers[key].marker) map.removeLayer(flightLayers[key].marker);
     }
   }
@@ -289,14 +313,16 @@ function renderMap(dataFlights) {
 
     if (latlngs.length < 2) {
       if (latlngs.length === 1) {
-        var mk = L.circleMarker(latlngs[0], {
-          radius: 5,
-          color: useAltitudeColor ? altitudeColor(f.points[f.points.length - 1].al * 3.28084) : PALETTE[idx % PALETTE.length],
+        var dotColor = useAltitudeColor ? altitudeColor(f.points[f.points.length - 1].al * 3.28084) : PALETTE[idx % PALETTE.length];
+        L.circleMarker(latlngs[0], {
+          radius: 7,
+          color: dotColor,
+          fillColor: dotColor,
           fillOpacity: 1,
-          weight: 2
-        }).addTo(map);
-        mk.bindTooltip(f.regoShort + ' - ' + f.name1);
-        flightLayers[f.seq] = { polyline: null, segments: null, marker: mk };
+          weight: 3,
+          opacity: 1
+        }).addTo(map).bindTooltip(f.regoShort + ' - ' + f.name1);
+        flightLayers[f.seq] = { polyline: null, segments: null, glow: null, marker: null };
         bounds.push(latlngs[0]);
         hasVisible = true;
       }
@@ -306,43 +332,57 @@ function renderMap(dataFlights) {
     var segments = null;
     var polyline = null;
     var markerColor;
+    var extraGlow = null;
+
+    function makeLine(pts, clr, w) {
+      return L.polyline(pts, { color: clr, weight: w, opacity: 0.9, pane: 'overlayPane' });
+    }
+    function makeGlow(pts, clr, w) {
+      return L.polyline(pts, { color: clr, weight: w + 4, opacity: 0.2, pane: 'overlayPane' });
+    }
 
     if (useAltitudeColor) {
       segments = [];
       for (var i = 1; i < latlngs.length; i++) {
         var altFeet = f.points[i].al * 3.28084;
         var segColor = altitudeColor(altFeet);
-        var seg = L.polyline([latlngs[i - 1], latlngs[i]], {
-          color: segColor,
-          weight: 3,
-          opacity: 0.9
-        }).addTo(map);
-        segments.push(seg);
+        var segGlow = makeGlow([latlngs[i - 1], latlngs[i]], segColor, 4);
+        var line = makeLine([latlngs[i - 1], latlngs[i]], segColor, 4);
+        segGlow.addTo(map);
+        line.addTo(map);
+        segments.push(segGlow, line);
       }
       markerColor = altitudeColor(f.points[f.points.length - 1].al * 3.28084);
     } else {
       color = PALETTE[idx % PALETTE.length];
-      polyline = L.polyline(latlngs, {
-        color: color,
-        weight: 3,
-        opacity: 0.9
-      }).addTo(map);
+      extraGlow = makeGlow(latlngs, color, 4);
+      polyline = makeLine(latlngs, color, 4);
+      extraGlow.addTo(map);
+      polyline.addTo(map);
       markerColor = color;
     }
 
     var lastLatLng = latlngs[latlngs.length - 1];
-    var mk = L.circleMarker(lastLatLng, {
-      radius: 6,
+    var dot = L.circleMarker(lastLatLng, {
+      radius: 8,
+      color: '#fff',
+      fillColor: markerColor,
+      fillOpacity: 1,
+      weight: 3,
+      opacity: 1
+    }).addTo(map);
+    L.circleMarker(lastLatLng, {
+      radius: 5,
       color: markerColor,
       fillColor: markerColor,
       fillOpacity: 1,
-      weight: 2
+      weight: 0
     }).addTo(map);
 
     var altMsl = f.points.length > 0 ? Math.round(f.points[f.points.length - 1].al * 3.28084) : 0;
-    mk.bindTooltip(f.regoShort + ' - ' + f.name1 + ' (' + altMsl + '\')');
+    dot.bindTooltip(f.regoShort + ' - ' + f.name1 + ' (' + altMsl + '\')');
 
-    flightLayers[f.seq] = { polyline: polyline, segments: segments, marker: mk };
+    flightLayers[f.seq] = { polyline: polyline, segments: segments, glow: extraGlow, marker: dot };
 
     latlngs.forEach(function(ll) { bounds.push(ll); });
     hasVisible = true;

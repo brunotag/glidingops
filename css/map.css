@@ -38,8 +38,8 @@ html, body {
   padding: 8px 12px;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 1px;
-  color: #8899aa;
+  letter-spacing: 1.5px;
+  color: #e8edf5;
   background: #0f3460;
   text-transform: uppercase;
   position: sticky;
@@ -59,10 +59,12 @@ html, body {
   padding: 2px 0;
 }
 .duty-type {
-  color: #8899aa;
+  color: #b4c7dc;
+  font-weight: 600;
 }
 .duty-name {
-  color: #e0e0e0;
+  color: #f0f4fa;
+  font-weight: 600;
 }
 
 #date-section {
@@ -81,9 +83,10 @@ html, body {
   border: 1px solid #0f3460;
   border-radius: 4px;
   background: #1a1a2e;
-  color: #e0e0e0;
+  color: #f0f4fa;
   font-size: 13px;
   font-family: inherit;
+  font-weight: 500;
 }
 #date-picker:focus {
   outline: 1px solid #e94560;
@@ -113,10 +116,11 @@ html, body {
   border: 1px solid #0f3460;
   border-radius: 4px;
   background: #1a1a2e;
-  color: #4fc3f7;
+  color: #7dd8fc;
   font-size: 12px;
   cursor: pointer;
   font-family: inherit;
+  font-weight: 600;
   white-space: nowrap;
 }
 #date-today-btn:hover {
@@ -158,9 +162,11 @@ html, body {
   padding: 2px 0;
   font-size: 12px;
   cursor: pointer;
+  color: #d0d8e4;
+  font-weight: 500;
 }
 .filter-item:hover {
-  color: #fff;
+  color: #ffffff;
 }
 .filter-item input[type="checkbox"] {
   cursor: pointer;
@@ -198,8 +204,8 @@ html, body {
 
 .rego {
   width: 28px;
-  font-weight: 700;
-  color: #fff;
+  font-weight: 800;
+  color: #ffffff;
   flex-shrink: 0;
 }
 
@@ -208,16 +214,17 @@ html, body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #ccc;
+  color: #f0f4fa;
+  font-weight: 500;
 }
 
 .timer {
   width: 52px;
   text-align: right;
   font-family: "Courier New", monospace;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13px;
-  color: #4fc3f7;
+  color: #7dd8fc;
   flex-shrink: 0;
 }
 
@@ -226,7 +233,8 @@ html, body {
   text-align: right;
   font-family: "Courier New", monospace;
   font-size: 12px;
-  color: #81c784;
+  color: #a5d6a7;
+  font-weight: 600;
   flex-shrink: 0;
 }
 
@@ -235,7 +243,8 @@ html, body {
   text-align: right;
   font-family: "Courier New", monospace;
   font-size: 12px;
-  color: #aed581;
+  color: #c5e1a5;
+  font-weight: 600;
   flex-shrink: 0;
 }
 
@@ -243,7 +252,8 @@ html, body {
   width: 52px;
   text-align: right;
   font-size: 12px;
-  color: #aaa;
+  color: #e0e0e0;
+  font-weight: 500;
   flex-shrink: 0;
 }
 
@@ -251,7 +261,8 @@ html, body {
   width: 36px;
   text-align: right;
   font-size: 11px;
-  color: #ffb74d;
+  color: #ffcc80;
+  font-weight: 600;
   flex-shrink: 0;
 }
 
@@ -325,6 +336,9 @@ html, body {
   top: 0;
   z-index: 3;
   font-weight: 700;
+  color: #e8edf5;
+  font-size: 13px;
+  letter-spacing: 1px;
 }
 #overlay-close {
   background: none;
@@ -335,6 +349,16 @@ html, body {
 }
 #overlay-content {
   padding: 0;
+}
+
+.leaflet-tile-pane {
+  filter: brightness(0.45) saturate(0.3) contrast(0.85);
+}
+.leaflet-overlay-pane {
+  z-index: 5;
+}
+#map {
+  background: #0d1117;
 }
 
 @media (max-width: 768px) {
