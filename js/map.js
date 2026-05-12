@@ -7,7 +7,8 @@ var PALETTE = [
 
 var flights = [];
 var duties = [];
-var selectedSeq = null;
+var selectedFlights = [];
+var useAltColors = false;
 var map = null;
 var flightLayers = {};
 var pollcnt = 0;
@@ -197,14 +198,16 @@ function renderSidebar() {
   var flyingEl = document.getElementById('flying-list');
   var completedEl = document.getElementById('completed-list');
   var now = Date.now() / 1000 + clockOffset;
+  var hasSelection = selectedFlights.length > 0;
 
   var flyingRows = [];
   var completedRows = [];
 
   flights.forEach(function(f, idx) {
+    var isInView = !hasSelection || selectedFlights.indexOf(f.seq) !== -1;
     var dotColor;
-    if (selectedSeq !== null) {
-      dotColor = f.seq === selectedSeq ? '#e94560' : '#555';
+    if (hasSelection) {
+      dotColor = isInView ? PALETTE[idx % PALETTE.length] : '#555';
     } else {
       dotColor = PALETTE[idx % PALETTE.length];
     }
@@ -223,7 +226,7 @@ function renderSidebar() {
     var distStr = dist < 1 ? Math.round(dist * 1000) + 'm' : dist.toFixed(1) + 'km';
     var ageStr = lastPt ? secondsToAge(now - lastPt.t) : '-';
 
-    var selClass = selectedSeq === f.seq ? ' selected' : '';
+    var selClass = isInView && hasSelection ? ' selected' : '';
 
     var row1 = '<div class="flight-row">' +
       '<span class="color-dot" style="background:' + dotColor + '"></span>' +
@@ -240,10 +243,9 @@ function renderSidebar() {
     row1 += '</div>';
 
     var row2 = '<div class="flight-subrow">' +
-      '<span class="pilot-label">PIC:</span>' +
       '<span class="pilot-name">' + escapeHtml(f.name1) + '</span>';
     if (f.name2) {
-      row2 += '<span class="pilot-name">' + escapeHtml(f.name2) + '</span>';
+      row2 += '<span class="pilot-sep">;</span><span class="pilot-name">' + escapeHtml(f.name2) + '</span>';
     }
     row2 += '</div>';
 
@@ -275,20 +277,19 @@ function renderMap(dataFlights) {
 
   var bounds = [];
   var hasVisible = false;
-  var now = Date.now() / 1000 + clockOffset;
+  var hasSelection = selectedFlights.length > 0;
 
   dataFlights.forEach(function(f, idx) {
-    if (selectedSeq !== null && f.seq !== selectedSeq) return;
+    if (hasSelection && selectedFlights.indexOf(f.seq) === -1) return;
 
-    var color;
-    var useAltitudeColor = (selectedSeq !== null && f.seq === selectedSeq);
+    var useAlt = hasSelection && selectedFlights.length === 1 && useAltColors;
 
     var latlngs = f.points.filter(function(p) { return p.lt !== 0 && p.ln !== 0; })
       .map(function(p) { return [p.lt, p.ln]; });
 
     if (latlngs.length < 2) {
       if (latlngs.length === 1) {
-        var dotColor = useAltitudeColor ? altitudeColor(f.points[f.points.length - 1].al * 3.28084) : PALETTE[idx % PALETTE.length];
+        var dotColor = useAlt ? altitudeColor(f.points[f.points.length - 1].al * 3.28084) : PALETTE[idx % PALETTE.length];
         L.circleMarker(latlngs[0], {
           radius: 7,
           color: dotColor,
@@ -308,7 +309,7 @@ function renderMap(dataFlights) {
     var polyline = null;
     var markerColor;
 
-    if (useAltitudeColor) {
+    if (useAlt) {
       segments = [];
       for (var i = 1; i < latlngs.length; i++) {
         var altFeet = f.points[i].al * 3.28084;
@@ -320,7 +321,7 @@ function renderMap(dataFlights) {
       }
       markerColor = altitudeColor(f.points[f.points.length - 1].al * 3.28084);
     } else {
-      color = PALETTE[idx % PALETTE.length];
+      var color = PALETTE[idx % PALETTE.length];
       polyline = L.polyline(latlngs, {
         color: color, weight: 5, opacity: 0.95
       }).addTo(map);
@@ -360,7 +361,7 @@ function updateTimers() {
     }
     var timer = elapsed > 0 ? secondsToTimer(elapsed) : '00:00';
 
-    var rows = document.querySelectorAll('.flight-row[data-seq="' + f.seq + '"]');
+    var wrappers = document.querySelectorAll('.flight-wrapper[data-seq="' + f.seq + '"]');
     rows.forEach(function(row) {
       var timerEl = row.querySelector('.timer');
       if (timerEl) timerEl.textContent = timer;
@@ -424,26 +425,46 @@ function fetchData() {
   xhr.send();
 }
 
-function selectFlight(seq) {
-  if (selectedSeq === seq) {
-    deselectAll();
+function handleFlightClick(seq) {
+  if (selectedFlights.length === 0) {
+    selectedFlights = [seq];
+  } else if (selectedFlights.length === 1 && selectedFlights[0] === seq) {
     return;
+  } else {
+    var idx = selectedFlights.indexOf(seq);
+    if (idx !== -1) {
+      if (selectedFlights.length > 1) {
+        selectedFlights.splice(idx, 1);
+      } else {
+        return;
+      }
+    } else {
+      selectedFlights.push(seq);
+    }
   }
-  selectedSeq = seq;
-  document.getElementById('show-all-btn').classList.remove('hidden');
+  showAltColorsUI(selectedFlights.length === 1);
+  document.getElementById('show-all-btn').classList.toggle('hidden', selectedFlights.length === 0);
   renderSidebar();
   renderMap(flights);
+}
+
+function showAltColorsUI(singleSelected) {
+  var el = document.getElementById('alt-color-area');
+  el.classList.toggle('hidden', !singleSelected);
+  if (singleSelected) {
+    el.querySelector('#alt-color-cb').checked = useAltColors;
+  } else {
+    useAltColors = false;
+  }
 }
 
 function deselectAll() {
-  selectedSeq = null;
+  selectedFlights = [];
+  useAltColors = false;
   document.getElementById('show-all-btn').classList.add('hidden');
+  document.getElementById('alt-color-area').classList.add('hidden');
   renderSidebar();
   renderMap(flights);
-}
-
-function handleFlightClick(seq) {
-  selectFlight(seq);
 }
 
 function handleOverlayFlightClick(seq) {
@@ -457,8 +478,8 @@ function openOverlay() {
   content.innerHTML = document.getElementById('sidebar').innerHTML;
   overlay.classList.add('open');
   content.querySelectorAll('.flight-wrapper').forEach(function(w) {
-    var seq = parseInt(row.getAttribute('data-seq'), 10);
-    row.addEventListener('click', function() { handleOverlayFlightClick(seq); });
+    var seq = parseInt(w.getAttribute('data-seq'), 10);
+    w.addEventListener('click', function() { handleOverlayFlightClick(seq); });
   });
 }
 
@@ -516,10 +537,14 @@ function init() {
     if (e.key === 'Enter') goDate();
   });
   datePicker.addEventListener('change', goDate);
-  document.getElementById('date-go-btn').addEventListener('click', goDate);
   document.getElementById('date-today-btn').addEventListener('click', function() {
     datePicker.value = TODAY_DATE;
     setDate(TODAY_DATE);
+  });
+
+  document.getElementById('alt-color-cb').addEventListener('change', function() {
+    useAltColors = this.checked;
+    renderMap(flights);
   });
 
   if (DATE_PARAM) {

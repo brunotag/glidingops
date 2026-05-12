@@ -47,6 +47,28 @@ html, body {
   z-index: 2;
 }
 
+#alt-color-area {
+  padding: 4px 12px;
+  background: #0d1a30;
+  border-bottom: 1px solid #0f3460;
+  font-size: 12px;
+}
+#alt-color-area.hidden {
+  display: none;
+}
+#alt-color-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #b4c7dc;
+  cursor: pointer;
+  font-weight: 500;
+}
+#alt-color-label input {
+  accent-color: #e94560;
+  cursor: pointer;
+}
+
 #duties {
   padding: 4px 12px;
   background: #1a1a2e;
@@ -96,21 +118,6 @@ html, body {
   cursor: pointer;
 }
 
-#date-go-btn {
-  padding: 4px 10px;
-  border: 1px solid #0f3460;
-  border-radius: 4px;
-  background: #e94560;
-  color: #fff;
-  font-size: 12px;
-  cursor: pointer;
-  font-family: inherit;
-  font-weight: 600;
-  white-space: nowrap;
-}
-#date-go-btn:hover {
-  background: #d63851;
-}
 #date-today-btn {
   padding: 4px 10px;
   border: 1px solid #0f3460;
@@ -192,10 +199,6 @@ html, body {
   color: #b0c0d8;
   margin-top: 2px;
   min-height: 18px;
-}
-.flight-subrow .pilot-label {
-  color: #8899bb;
-  font-weight: 600;
 }
 .flight-subrow .pilot-name {
   color: #f0f4fa;

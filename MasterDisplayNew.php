@@ -44,9 +44,13 @@ $todayDate = $now->format('Y-m-d');
       <div class="section-header">DATE</div>
       <div id="date-controls">
         <input type="date" id="date-picker" />
-        <button id="date-go-btn">Go</button>
         <button id="date-today-btn">Today</button>
       </div>
+    </div>
+    <div id="alt-color-area" class="hidden">
+      <label id="alt-color-label">
+        <input type="checkbox" id="alt-color-cb" /> Altitude colours
+      </label>
     </div>
     <div id="duties"></div>
     <div id="flying-section">
