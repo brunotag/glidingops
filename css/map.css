@@ -374,7 +374,25 @@ html, body {
   #overlay {
     display: block;
   }
-  #show-all-btn {
+#sidebar-show-all {
+  float: right;
+  font-size: 10px;
+  font-weight: 600;
+  color: #7dd8fc;
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+  background: rgba(0,0,0,0.3);
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+#sidebar-show-all:hover {
+  background: rgba(0,0,0,0.5);
+  color: #aee6ff;
+}
+#sidebar-show-all.hidden {
+  display: none;
+}
     left: 12px;
     top: 12px;
   }

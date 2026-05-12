@@ -93,7 +93,7 @@ function secondsToTimer(s) {
   s = Math.floor(s);
   var h = Math.floor(s / 3600);
   var m = Math.floor((s % 3600) / 60);
-  if (h > 0) return h + ':' + String(m).padStart(2, '0');
+  if (h > 0) return h + 'h ' + String(m).padStart(2, '0') + 'm';
   return m + 'm';
 }
 
@@ -425,8 +425,16 @@ function fetchData() {
   xhr.send();
 }
 
+var lastClick = { seq: -1, time: 0 };
+
 function handleFlightClick(seq) {
-  if (selectedFlights.length === 0) {
+  var now = Date.now();
+  var isDbl = (seq === lastClick.seq && now - lastClick.time < 350);
+  lastClick = { seq: seq, time: now };
+
+  if (isDbl) {
+    selectedFlights = [seq];
+  } else if (selectedFlights.length === 0) {
     selectedFlights = [seq];
   } else if (selectedFlights.length === 1 && selectedFlights[0] === seq) {
     return;
@@ -444,6 +452,7 @@ function handleFlightClick(seq) {
   }
   showAltColorsUI(selectedFlights.length === 1);
   document.getElementById('show-all-btn').classList.toggle('hidden', selectedFlights.length === 0);
+  document.getElementById('sidebar-show-all').classList.toggle('hidden', selectedFlights.length === 0);
   renderSidebar();
   renderMap(flights);
 }
@@ -462,6 +471,7 @@ function deselectAll() {
   selectedFlights = [];
   useAltColors = false;
   document.getElementById('show-all-btn').classList.add('hidden');
+  document.getElementById('sidebar-show-all').classList.add('hidden');
   document.getElementById('alt-color-area').classList.add('hidden');
   renderSidebar();
   renderMap(flights);
@@ -522,6 +532,7 @@ function init() {
   });
 
   document.getElementById('show-all-btn').addEventListener('click', deselectAll);
+  document.getElementById('sidebar-show-all').addEventListener('click', deselectAll);
 
   document.getElementById('overlay-toggle').addEventListener('click', openOverlay);
   document.getElementById('overlay-close').addEventListener('click', closeOverlay);
