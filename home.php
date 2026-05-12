@@ -202,14 +202,16 @@ if (isset($_SESSION['security'])) {
                   if ($col == 0) echo "</tr><tr>";
                }
                echo "<td><h2 class='u'><a href='FlyingNow?org=" . $org . "'>FLYING NOW</a></h2>";
-               if ($org == 1)
-                  echo "<p class='u'><a href='wgc'>Real Time map</a></p>";
-               if ($org == 2)
-                  echo "<p class='u'><a href='ssb'>Real Time map</a></p>";
-               if ($org == 3)
-                  echo "<p class='u'><a href='cgc'>Real Time map</a></p>";
-               if ($org == 4)
-                  echo "<p class='u'><a href='agc'>Real Time map</a></p>";
+                if ($org == 1) {
+                   echo "<p class='u'><a href='wgc'>Real Time map</a></p>";
+                   echo "<p class='u'><a href='wgc-new'>Real Time map (new)</a></p>";
+                }
+                if ($org == 2)
+                   echo "<p class='u'><a href='ssb'>Real Time map</a></p>";
+                if ($org == 3)
+                   echo "<p class='u'><a href='cgc'>Real Time map</a></p>";
+                if ($org == 4)
+                   echo "<p class='u'><a href='agc'>Real Time map</a></p>";
                echo "</td>";
                $col = ($col + 1) % $totcol;
                if ($col == 0) echo "</tr><tr>";
