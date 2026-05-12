@@ -34,20 +34,6 @@ if (isset($_SESSION['security'])) {
          border: 0px;
       }
 
-      #messagearea {
-         margin: 5px;
-         border: 0px;
-         background-color: #e0e0e0;
-         padding: 1px;
-         border-radius: 5px;
-      }
-
-      #messagearea2 {
-         margin: 5px;
-         border: 0px;
-         background-color: #e0e0e0;
-      }
-
       #menu1 {
          margin: 5px;
          border: 0px;
@@ -150,28 +136,17 @@ if (isset($_SESSION['security'])) {
    <?php include __DIR__ . '/helpers/dev_mode_banner.php' ?>
    <?php $inc = "./orgs/" . $org . "/heading2.txt";
    include $inc; ?>
-   <div id='container'>
-      <div id='messagearea'>
-         <div id='messagearea2'>
-            <p class='p2'>CLUB MESSAGES:</p>
-            <?php
-            $con_params = require('./config/database.php');
-            $con_params = $con_params['gliding'];
-            $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-            if (!mysqli_connect_errno()) {
-               $rownum = 0;
-               $dateTime = new DateTime('now');
-               $dateStr = $dateTime->format('Y-m-d');
-               $strTZ = orgTimezone($con, $org);
-
-               $q = "SELECT create_time, msg from messages where org =" . $org . " order by create_time DESC";
-               $r = mysqli_query($con, $q);
-               if ($row = mysqli_fetch_array($r)) {
-                  echo "<p class=\"p4\"><span class=\"s1\">" . timeLocalSQL($row[0], $strTZ, 'D j M Y H:i') . "</span> " . $row[1] . "</p>";
-               } else {
-                  echo "<p class='p4'>No messages</p>";
-               }
-               if (isset($_SESSION['memberid'])) {
+    <div id='container'>
+              <?php
+             $con_params = require('./config/database.php');
+             $con_params = $con_params['gliding'];
+             $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+             if (!mysqli_connect_errno()) {
+                $rownum = 0;
+                $dateTime = new DateTime('now');
+                $dateStr = $dateTime->format('Y-m-d');
+                $strTZ = orgTimezone($con, $org);
+                if (isset($_SESSION['memberid'])) {
                   $q = "SELECT localdate, a.name from duty LEFT JOIN dutytypes a ON a.id = duty.type where duty.org = " . $org . " and member = " . $_SESSION['memberid'] . " and localdate >= '" . $dateStr . "' order by localdate asc";
                   $r = mysqli_query($con, $q);
                   while ($row = mysqli_fetch_array($r)) {
@@ -184,10 +159,8 @@ if (isset($_SESSION['security'])) {
                   }
                }
             }
-            ?>
-         </div>
-      </div>
-      <div id="menu1">
+             ?>
+       <div id="menu1">
          <div id="menu2">
             <table class='tbl1'>
                <?php
@@ -358,7 +331,12 @@ if (($_SESSION['security'] & 64)) {
                ?>
             </p>
              <?php
- ?>
+             if ($org == 1) {
+                ?>
+                <iframe style="width: 100%;height: 300px;border:0px;" src="/messages-list.php?org=1" title="Twitter feed"></iframe>
+             <?php
+                }
+             ?>
          </div>
       </div>
    </div>
