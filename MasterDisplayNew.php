@@ -58,7 +58,10 @@ $todayDate = $now->format('Y-m-d');
       <div id="flying-list"></div>
     </div>
     <div id="completed-section">
-      <div class="section-header" id="completed-header">COMPLETED TODAY <span id="sidebar-show-all" class="hidden">Show all</span></div>
+      <div class="section-header">
+        <span id="completed-header-label">COMPLETED TODAY</span>
+        <button id="sidebar-show-all" class="hidden">Show all</button>
+      </div>
       <div id="completed-list"></div>
     </div>
   </div>

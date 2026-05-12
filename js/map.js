@@ -385,7 +385,7 @@ function setDate(raw) {
   isViewingToday = (parsed === TODAY_DATE);
   document.getElementById('date-picker').value = parsed;
   document.getElementById('flying-section').classList.toggle('hidden', !isViewingToday);
-  document.getElementById('completed-header').textContent = isViewingToday ? 'COMPLETED TODAY' : 'FLIGHTS OF THE DAY';
+  document.getElementById('completed-header-label').textContent = isViewingToday ? 'COMPLETED TODAY' : 'FLIGHTS OF THE DAY';
   deselectAll();
   flights = [];
   duties = [];
