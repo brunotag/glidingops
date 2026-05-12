@@ -203,13 +203,22 @@ html, body {
 }
 
 .timer {
-  width: 52px;
   text-align: right;
-  font-family: "Courier New", monospace;
   font-weight: 700;
   font-size: 13px;
   color: #7dd8fc;
   flex-shrink: 0;
+}
+
+.pilot-inline {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #f0f4fa;
+  font-weight: 500;
+  font-size: 12px;
+  padding-left: 4px;
 }
 
 .altitude-msl {
@@ -270,6 +279,47 @@ html, body {
 }
 #show-all-btn:hover {
   background: #d63851;
+}
+
+#dev-panel {
+  position: fixed;
+  bottom: 12px;
+  left: 12px;
+  z-index: 999;
+  background: rgba(15, 20, 40, 0.92);
+  border: 1px solid #0f3460;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 11px;
+  min-width: 160px;
+}
+#dev-header {
+  font-weight: 700;
+  color: #e94560;
+  font-size: 9px;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.dev-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.dev-row label {
+  width: 80px;
+  color: #b4c7dc;
+  flex-shrink: 0;
+}
+.dev-row label span {
+  color: #7dd8fc;
+  font-family: monospace;
+}
+.dev-row input[type="range"] {
+  flex: 1;
+  accent-color: #e94560;
+  height: 4px;
+  cursor: pointer;
 }
 
 #overlay-toggle {

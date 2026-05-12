@@ -7,6 +7,9 @@ else
 
 $date = isset($_GET['date']) ? $_GET['date'] : null;
 
+require_once __DIR__ . '/helpers/logging.php';
+$isDev = isLocal();
+
 $con_params = require(__DIR__ . '/config/database.php');
 $con_params = $con_params['gliding'];
 $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
@@ -68,6 +71,20 @@ $todayDate = $now->format('Y-m-d');
   <div id="map"></div>
 </div>
 
+<?php if ($isDev): ?>
+<div id="dev-panel">
+  <div id="dev-header">DEV TOOLS</div>
+  <div class="dev-row">
+    <label>Overlay <span id="dev-overlay-val">0.25</span></label>
+    <input type="range" id="dev-overlay" min="0" max="50" value="25" />
+  </div>
+  <div class="dev-row">
+    <label>Tracks <span id="dev-track-val">1.0</span></label>
+    <input type="range" id="dev-track" min="20" max="100" value="100" />
+  </div>
+</div>
+<?php endif; ?>
+
 <div id="overlay-toggle" title="Toggle flights list">&#9776;</div>
 <div id="overlay">
   <div id="overlay-header">
@@ -84,6 +101,7 @@ $todayDate = $now->format('Y-m-d');
 var ORG = <?php echo json_encode($org); ?>;
 var DATE_PARAM = <?php echo json_encode($date); ?>;
 var TODAY_DATE = <?php echo json_encode($todayDate); ?>;
+var IS_DEV = <?php echo json_encode($isDev); ?>;
 var LAUNCH_LAT = <?php echo json_encode($orgLat); ?>;
 var LAUNCH_LON = <?php echo json_encode($orgLon); ?>;
 var MAP_LAT = <?php echo json_encode($mapLat); ?>;
