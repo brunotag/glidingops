@@ -235,13 +235,12 @@ if (isset($_SESSION['security'])) {
                if ($col == 0) echo "</tr><tr>";
 
                if (($_SESSION['security'] & 1)) {
-                  echo "<td><h2 class='u'>MESSAGING</h2>";
-                  echo "<p class='u'><a href='MessagingPage'>Broadcast A Message</a></p>";
-                  if (($_SESSION['security'] & 4)) {
-                      echo "<p class='u'><a href='SentMessages'>See Past Messages</a></p>";
-                      echo "<p class='u'><a href='/MessagesTree'>Messages Tree</a></p>";
-                  }
-                  echo "</td>";
+                   echo "<td><h2 class='u'>MESSAGING</h2>";
+                   echo "<p class='u'><a href='MessagingPage'>Broadcast A Message</a></p>";
+                   if (($_SESSION['security'] & 4)) {
+                       echo "<p class='u'><a href='/MessagesTree'>See Past Messages</a></p>";
+                   }
+                   echo "</td>";
                   $col = ($col + 1) % $totcol;
                   if ($col == 0) echo "</tr><tr>";
                }
@@ -312,10 +311,10 @@ if (($_SESSION['security'] & 8))
                      echo "<p class='u'><a href='TowCharges'>Tow Charging</a></p>";
                   if (($_SESSION['security'] & 64))
                      echo "<p class='u'><a href='maintenance/duplicates_index.php'>Manage duplicate memberships</a></p>";
-                  if (($_SESSION['security'] & 64))
-                     echo "<p class='u'><a href='manage-secret-code.php'>Manage secret code</a></p>";
+                   if (($_SESSION['security'] & 64))
+                      echo "<p class='u'><a href='manage-secret-code.php'>Manage secret code</a></p>";
 
-                  echo "</td>";
+                   echo "</td>";
                   $col = ($col + 1) % $totcol;
                   if ($col == 0) echo "</tr><tr>";
                }
@@ -333,7 +332,8 @@ if (($_SESSION['security'] & 64)) {
                if (($_SESSION['security'] & 64)) {
                   echo "<td><h2 class='u'>DIAGNOSTICS & RECOVERY</h2>";
                   echo "<p class='u'><a href='Recovery.php'>Get Local Browser Cache</a></p>";
-                  echo "<p class='u'><a href='maintenance/testemail.php'>Test Email</a></p>";
+                   echo "<p class='u'><a href='maintenance/testemail.php'>Test Email</a></p>";
+                   echo "<p class='u'><a href='/SentMessages'>All Messages</a></p>";
 
                   echo "</td>";
                   $col = ($col + 1) % $totcol;

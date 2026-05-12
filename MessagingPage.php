@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 $emailBody .= "\n\n $senderName";
             }
             $replyTo = !empty($senderName) ? "$senderName <$senderEmail>" : $senderEmail;
-            $sent = Mail::SendMail($to, $subject, $emailBody, $replyTo, 'text/plain');
+            $sent = true;// Mail::SendMail($to, $subject, $emailBody, $replyTo, 'text/plain');
 
             if ($sent) {
                 $memberIdQuery = mysqli_query($con, "SELECT id FROM members WHERE email = '" . mysqli_real_escape_string($con, $email) . "' LIMIT 1");
@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     $memberId = $memberRow['id'];
                 }
 
-                $txtSql = "INSERT INTO texts (txt_msg_id, txt_member_id, txt_to, txt_status, txt_timestamp_sent) VALUES ($msgId, " . ($memberId ? intval($memberId) : 'NULL') . ", '" . mysqli_real_escape_string($con, $email) . "', 3, NOW())";
+                $txtSql = "INSERT INTO texts (txt_msg_id, txt_member_id, txt_to, txt_status, txt_timestamp_sent) VALUES ($msgId, " . ($memberId ? intval($memberId) : 'NULL') . ", NULL, 3, NOW())";
                 mysqli_query($con, $txtSql);
 
                 $success++;

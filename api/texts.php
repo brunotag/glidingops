@@ -51,8 +51,7 @@ $columns = [
     2 => 'members.displayname',
     3 => 'members.email',
     4 => 'texts.txt_status',
-    5 => 'texts.txt_timestamp_create',
-    6 => 'messages.create_time'
+    5 => 'messages.create_time'
 ];
 
 $orderField = isset($columns[$orderColumn]) ? $columns[$orderColumn] : 'texts.txt_timestamp_create';
@@ -143,7 +142,6 @@ while ($row = mysqli_fetch_assoc($result)) {
         'email' => $row['email'] ?? '',
         'status' => $status,
         'status_label' => $statusLabels[$status] ?? 'Unknown',
-        'created' => $row['txt_timestamp_create'] ?? '',
         'msg_created' => $row['msg_create_time'] ?? ''
     ];
 }

@@ -103,7 +103,6 @@ function timeFormat($dt) {
             <th>Member</th>
             <th>Email</th>
             <th style="width:100px;">Status</th>
-            <th style="width:150px;">Created</th>
             <th style="width:150px;">Sent</th>
         </tr>
     </thead>
@@ -168,24 +167,6 @@ $(document).ready(function() {
                         else if (row.status === 1) statusClass = 'status-sent';
                         else if (row.status === 2) statusClass = 'status-error';
                         return '<span class="' + statusClass + '">' + data + '</span>';
-                    }
-                },
-                {
-                    data: 'created',
-                    title: 'Created',
-                    render: function(data) {
-                        if (!data) return '';
-                        try {
-                            var d = new Date(data.replace(' ', 'T'));
-                            if (isNaN(d.getTime())) return data;
-                            var day = ('0' + d.getDate()).slice(-2);
-                            var month = ('0' + (d.getMonth() + 1)).slice(-2);
-                            var year = d.getFullYear();
-                            var hours = ('0' + d.getHours()).slice(-2);
-                            var mins = ('0' + d.getMinutes()).slice(-2);
-                            var secs = ('0' + d.getSeconds()).slice(-2);
-                            return day + '/' + month + '/' + year + ' ' + hours + ':' + mins + ':' + secs;
-                        } catch(e) { return data; }
                     }
                 },
                 {
