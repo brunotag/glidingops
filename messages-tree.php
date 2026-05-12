@@ -170,11 +170,11 @@ body { background: #fff; font-size: 15px; }
         <span class="msg-badge broadcast">Twitter</span>
         <?php endif; ?>
         <span class="msg-time"><?php echo timeFmt($m['create_time']); ?></span>
-        <span class="msg-badge"><?php echo $count; ?> sending<?php echo $count !== 1 ? 's' : ''; ?></span>
+        <span class="msg-badge">sent to <?php echo $count; ?> person<?php echo $count !== 1 ? 's' : ''; ?></span>
     </div>
     <div class="msg-children">
         <?php if ($count === 0): ?>
-        <div class="sending"><span class="s-name" style="color:#999">No sendings recorded</span></div>
+        <div class="sending"><span class="s-name" style="color:#999">No one was sent this message</span></div>
         <?php else: ?>
         <?php foreach ($m['sendings'] as $s):
             $sc = sendStatusClass($s['status']);
