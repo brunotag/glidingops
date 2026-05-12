@@ -41,16 +41,16 @@ $todayDate = $now->format('Y-m-d');
 <div id="container">
   <div id="sidebar">
     <div id="date-section">
-      <div class="section-header">DATE</div>
+      <div class="section-header">
+        DATE
+        <label id="alt-color-label" style="display:none">
+          <input type="checkbox" id="alt-color-cb" /> Altitude colours
+        </label>
+      </div>
       <div id="date-controls">
         <input type="date" id="date-picker" />
         <button id="date-today-btn">Today</button>
       </div>
-    </div>
-    <div id="alt-color-area" class="hidden">
-      <label id="alt-color-label">
-        <input type="checkbox" id="alt-color-cb" /> Altitude colours
-      </label>
     </div>
     <div id="duties"></div>
     <div id="flying-section">

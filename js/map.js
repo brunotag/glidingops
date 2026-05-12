@@ -384,7 +384,7 @@ function setDate(raw) {
   currentDate = parsed;
   isViewingToday = (parsed === TODAY_DATE);
   document.getElementById('date-picker').value = parsed;
-  document.getElementById('flying-section').classList.toggle('hidden', !isViewingToday);
+  document.getElementById('flying-section').style.display = isViewingToday ? '' : 'none';
   document.getElementById('completed-header-label').textContent = isViewingToday ? 'COMPLETED TODAY' : 'FLIGHTS OF THE DAY';
   deselectAll();
   flights = [];
@@ -451,15 +451,15 @@ function handleFlightClick(seq) {
     }
   }
   showAltColorsUI(selectedFlights.length === 1);
-  document.getElementById('show-all-btn').classList.toggle('hidden', selectedFlights.length === 0);
-  document.getElementById('sidebar-show-all').classList.toggle('hidden', selectedFlights.length === 0);
+  document.getElementById('show-all-btn').style.display = selectedFlights.length > 0 ? '' : 'none';
+  document.getElementById('sidebar-show-all').style.display = selectedFlights.length > 0 ? '' : 'none';
   renderSidebar();
   renderMap(flights);
 }
 
 function showAltColorsUI(singleSelected) {
-  var el = document.getElementById('alt-color-area');
-  el.classList.toggle('hidden', !singleSelected);
+  var el = document.getElementById('alt-color-label');
+  el.style.display = singleSelected ? '' : 'none';
   if (singleSelected) {
     el.querySelector('#alt-color-cb').checked = useAltColors;
   } else {
@@ -470,9 +470,9 @@ function showAltColorsUI(singleSelected) {
 function deselectAll() {
   selectedFlights = [];
   useAltColors = false;
-  document.getElementById('show-all-btn').classList.add('hidden');
-  document.getElementById('sidebar-show-all').classList.add('hidden');
-  document.getElementById('alt-color-area').classList.add('hidden');
+  document.getElementById('show-all-btn').style.display = 'none';
+  document.getElementById('sidebar-show-all').style.display = 'none';
+  document.getElementById('alt-color-label').style.display = 'none';
   renderSidebar();
   renderMap(flights);
 }
@@ -561,7 +561,7 @@ function init() {
   if (DATE_PARAM) {
     setDate(DATE_PARAM);
   } else {
-    document.getElementById('flying-section').classList.remove('hidden');
+    document.getElementById('flying-section').style.display = '';
     fetchData();
   }
 

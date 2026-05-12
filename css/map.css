@@ -47,46 +47,25 @@ html, body {
   z-index: 2;
 }
 
-#alt-color-area {
-  padding: 4px 12px;
-  background: #0d1a30;
-  border-bottom: 1px solid #0f3460;
-  font-size: 12px;
-}
-#alt-color-area.hidden {
-  display: none;
-}
 #alt-color-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  float: right;
+  font-size: 10px;
+  font-weight: 500;
   color: #b4c7dc;
   cursor: pointer;
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+#alt-color-label.hidden {
+  display: none;
 }
 #alt-color-label input {
   accent-color: #e94560;
   cursor: pointer;
-}
-
-#duties {
-  padding: 4px 12px;
-  background: #1a1a2e;
-  border-bottom: 1px solid #0f3460;
-  font-size: 12px;
-}
-.duty-row {
-  display: flex;
-  gap: 8px;
-  padding: 2px 0;
-}
-.duty-type {
-  color: #b4c7dc;
-  font-weight: 600;
-}
-.duty-name {
-  color: #f0f4fa;
-  font-weight: 600;
+  margin: 0;
 }
 
 #date-section {
