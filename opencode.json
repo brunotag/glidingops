@@ -1,0 +1,18 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md", "docs/DEVELOP.md", "docs/ARCHITECTURE.md", "docs/SECURITY.md", "docs/DEAD_CODE.md", "docs/DATABASE.md", "docs/ROUTES.md", "docs/CODEBASE_MAP.md"],
+  "snapshot": true,
+  "autoupdate": true,
+  "permission": {
+    "edit": "ask",
+    "bash": "ask"
+  },
+  "lsp": {
+    "php": {
+      "disabled": true
+    }
+  },
+  "watcher": {
+    "ignore": ["log/*", "var/*", "vendor/*", "node_modules/*", ".git/*"]
+  }
+}

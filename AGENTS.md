@@ -57,3 +57,58 @@ See these documents for detailed info:
 
 All docs in `docs/` folder - see individual files for details:
 - README.md, ARCHITECTURE.md, DATABASE.md, FEATURES.md, ROUTES.md, SECURITY.md, MESSAGING.md, CODEBASE_MAP.md, WEB_AUTH.md, DEVELOP.md, DEAD_CODE.md, TODO.md, FUTURE_DEVELOPMENT_MAGIC_LINK.md
+
+## Dev URLs
+- **App:** http://glidingops.test (NOT https - self-signed cert issues)
+- **Login:** Username: [dev-creds] / Password: [dev-creds]
+
+## Local Logs (Read directly - NO vagrant ssh needed)
+- `log/app.log` - Debug log via `logMsg()`
+- `log/error.log` - PHP errors (fatal handler in `helpers/logging.php`)
+
+## Key Files
+- `helpers/api-base.php` - API error handling, `apiExit()`, `apiExitWithError()`
+- `helpers/logging.php` - `logMsg()`, `isLocal()`, fatal error handler
+- `config/database.php` - gliding and tracks DB config
+
+## Session Variables
+- `$_SESSION['memberid']`
+- `$_SESSION['security']` - bitmask (1=member, 6=admin)
+- `$_SESSION['org']`
+
+## Database Conventions
+- Primary key is `id` (NOT `member_id`) in members table
+- Membership status column is `status_name` (NOT `status`)
+- Connection from `config/database.php` => `['gliding']`
+- Always use `intval()` for integer values in SQL
+
+## API Development Rules
+1. **Call `session_start()` FIRST** before any output
+2. **Use `apiExit()` NOT `exit()`** - flushes output buffers
+3. **Use `apiExitWithError()` for errors** - returns JSON with error message
+4. **Use `header('Content-Type: application/json')** before any echo
+5. **Use `__DIR__ . '/../config/database.php'`** NOT `./config/database.php`
+6. **Always log with `logMsg()`** to track execution
+7. **Add route to `.htaccess`** - `RewriteRule ^api/NAME$ api/NAME.php [L,QSA]`
+
+## Route Order in .htaccess
+More specific routes must come BEFORE less specific ones.
+For example:
+- `TreasurerReportNew2` before `TreasurerReportNew`
+- `MyFlightsCSV` before `MyFlights`
+
+## Modernized Pages (v2b pattern)
+All new list pages use DataTables server-side AJAX:
+- `members-list-v2b.php`
+- `users-list-v2b.php`
+- `texts-list-v2b.php`
+
+## Testing APIs with PowerShell
+See `docs/WEB_AUTH.md` for PowerShell scripts to:
+- Login with session cookie
+- Test authenticated API endpoints
+
+## PHP Syntax Check (Vagrant)
+```bash
+cd C:\Users\bruno\dev\glidingops\lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
+```
