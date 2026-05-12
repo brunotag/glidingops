@@ -262,6 +262,34 @@ function renderSidebar() {
 
   flyingEl.innerHTML = FLYING_HEADER + flyingRows.join('');
   completedEl.innerHTML = completedRows.join('');
+  refreshOverlay();
+}
+
+function refreshOverlay() {
+  var overlay = document.getElementById('overlay');
+  if (!overlay.classList.contains('open')) return;
+  var content = document.getElementById('overlay-content');
+  var flying = document.getElementById('flying-section');
+  var completed = document.getElementById('completed-section');
+  content.innerHTML = (flying ? flying.outerHTML : '') + (completed ? completed.outerHTML : '');
+  content.querySelectorAll('.flight-wrapper').forEach(function(w) {
+    var seq = parseInt(w.getAttribute('data-seq'), 10);
+    w.addEventListener('click', function(e) {
+      e.stopPropagation();
+      handleOverlayFlightClick(seq);
+    });
+  });
+  var sa = content.querySelector('#sidebar-show-all');
+  if (sa) {
+    sa.style.display = selectedFlights.length > 0 ? '' : 'none';
+    sa.addEventListener('click', deselectAll);
+  }
+}
+
+function openOverlay() {
+  var overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  refreshOverlay();
 }
 
 function renderMap(dataFlights) {
@@ -385,6 +413,8 @@ function setDate(raw) {
   currentDate = parsed;
   isViewingToday = (parsed === TODAY_DATE);
   document.getElementById('date-picker').value = parsed;
+  var mobPicker = document.getElementById('date-picker-mob');
+  if (mobPicker) mobPicker.value = parsed;
   document.getElementById('flying-section').style.display = isViewingToday ? '' : 'none';
   document.getElementById('completed-header-label').textContent = isViewingToday ? 'COMPLETED TODAY' : 'FLIGHTS OF THE DAY';
   deselectAll();
@@ -454,6 +484,8 @@ function handleFlightClick(seq) {
   showAltColorsUI(selectedFlights.length === 1);
   document.getElementById('show-all-btn').style.display = selectedFlights.length > 0 ? '' : 'none';
   document.getElementById('sidebar-show-all').style.display = selectedFlights.length > 0 ? '' : 'none';
+  var mobSa = document.getElementById('show-all-mob');
+  if (mobSa) mobSa.style.display = selectedFlights.length > 0 ? '' : 'none';
   renderSidebar();
   renderMap(flights);
 }
@@ -474,24 +506,14 @@ function deselectAll() {
   document.getElementById('show-all-btn').style.display = 'none';
   document.getElementById('sidebar-show-all').style.display = 'none';
   document.getElementById('alt-color-label').style.display = 'none';
+  var mobSa = document.getElementById('show-all-mob');
+  if (mobSa) mobSa.style.display = 'none';
   renderSidebar();
   renderMap(flights);
 }
 
 function handleOverlayFlightClick(seq) {
-  closeOverlay();
   handleFlightClick(seq);
-}
-
-function openOverlay() {
-  var overlay = document.getElementById('overlay');
-  var content = document.getElementById('overlay-content');
-  content.innerHTML = document.getElementById('sidebar').innerHTML;
-  overlay.classList.add('open');
-  content.querySelectorAll('.flight-wrapper').forEach(function(w) {
-    var seq = parseInt(w.getAttribute('data-seq'), 10);
-    w.addEventListener('click', function() { handleOverlayFlightClick(seq); });
-  });
 }
 
 function closeOverlay() {
@@ -534,6 +556,8 @@ function init() {
 
   document.getElementById('show-all-btn').addEventListener('click', deselectAll);
   document.getElementById('sidebar-show-all').addEventListener('click', deselectAll);
+  var mobSa = document.getElementById('show-all-mob');
+  if (mobSa) mobSa.addEventListener('click', deselectAll);
 
   document.getElementById('overlay-toggle').addEventListener('click', openOverlay);
   document.getElementById('overlay-close').addEventListener('click', closeOverlay);
@@ -559,11 +583,49 @@ function init() {
     renderMap(flights);
   });
 
+  document.getElementById('overlay-slider').addEventListener('input', function() {
+    var val = this.value / 100;
+    darkenLayer.setStyle({ fillOpacity: val });
+    var dev = document.getElementById('dev-overlay');
+    if (dev) dev.value = this.value;
+    var mob = document.getElementById('overlay-slider-mob');
+    if (mob) mob.value = this.value;
+  });
+
+  var mobSlider = document.getElementById('overlay-slider-mob');
+  if (mobSlider) {
+    mobSlider.value = document.getElementById('overlay-slider').value;
+    mobSlider.addEventListener('input', function() {
+      var val = this.value / 100;
+      darkenLayer.setStyle({ fillOpacity: val });
+      document.getElementById('overlay-slider').value = this.value;
+      var dev = document.getElementById('dev-overlay');
+      if (dev) dev.value = this.value;
+    });
+  }
+
+  var mobPicker = document.getElementById('date-picker-mob');
+  if (mobPicker) {
+    mobPicker.value = TODAY_DATE;
+    mobPicker.addEventListener('change', function() {
+      document.getElementById('date-picker').value = this.value;
+      setDate(this.value);
+    });
+  }
+  var mobToday = document.getElementById('date-today-btn-mob');
+  if (mobToday) {
+    mobToday.addEventListener('click', function() {
+      document.getElementById('date-picker').value = TODAY_DATE;
+      document.getElementById('date-picker-mob').value = TODAY_DATE;
+      setDate(TODAY_DATE);
+    });
+  }
+
   if (IS_DEV) {
     document.getElementById('dev-overlay').addEventListener('input', function() {
       var val = this.value / 100;
       darkenLayer.setStyle({ fillOpacity: val });
-      document.getElementById('dev-overlay-val').textContent = val.toFixed(2);
+      document.getElementById('overlay-slider').value = this.value;
     });
     document.getElementById('dev-track').addEventListener('input', function() {
       var val = this.value / 100;

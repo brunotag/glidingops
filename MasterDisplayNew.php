@@ -49,6 +49,10 @@ $todayDate = $now->format('Y-m-d');
         <label id="alt-color-label" style="display:none">
           <input type="checkbox" id="alt-color-cb" /> Altitude colours
         </label>
+        <span id="overlay-control">
+          <input type="range" id="overlay-slider" min="0" max="50" value="25" />
+          <span id="overlay-icon">&#9680;</span>
+        </span>
       </div>
       <div id="date-controls">
         <input type="date" id="date-picker" />
@@ -89,7 +93,16 @@ $todayDate = $now->format('Y-m-d');
 <div id="overlay">
   <div id="overlay-header">
     <span>Flights</span>
+    <span id="overlay-slider-mob-wrap">
+      <input type="range" id="overlay-slider-mob" min="0" max="50" value="25" />
+      <span id="overlay-icon-mob">&#9680;</span>
+    </span>
+    <button id="show-all-mob" style="display:none">Show all</button>
     <button id="overlay-close">&times;</button>
+  </div>
+  <div id="overlay-date-row">
+    <input type="date" id="date-picker-mob" />
+    <button id="date-today-btn-mob">Today</button>
   </div>
   <div id="overlay-content"></div>
 </div>

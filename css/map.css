@@ -47,6 +47,25 @@ html, body {
   z-index: 2;
 }
 
+#overlay-control {
+  float: right;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+}
+#overlay-control input[type="range"] {
+  width: 70px;
+  height: 3px;
+  accent-color: #e94560;
+  cursor: pointer;
+}
+#overlay-icon {
+  font-size: 14px;
+  color: #b4c7dc;
+  line-height: 1;
+}
+
 #alt-color-label {
   float: right;
   font-size: 10px;
@@ -267,12 +286,13 @@ html, body {
   background: #e94560;
   color: #fff;
   border: none;
-  padding: 6px 14px;
+  padding: 4px 10px;
   border-radius: 4px;
-  font-size: 13px;
+  font-size: 11px;
+  font-weight: 700;
   cursor: pointer;
-  font-weight: 600;
-  transition: opacity 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
 }
 #show-all-btn.hidden {
   display: none;
@@ -373,6 +393,61 @@ html, body {
   color: #e8edf5;
   font-size: 13px;
   letter-spacing: 1px;
+  gap: 8px;
+}
+#overlay-slider-mob-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+#overlay-slider-mob {
+  width: 100px;
+  height: 3px;
+  accent-color: #e94560;
+  cursor: pointer;
+}
+#overlay-icon-mob {
+  font-size: 14px;
+  color: #b4c7dc;
+  line-height: 1;
+}
+#overlay-date-row {
+  display: flex;
+  gap: 6px;
+  padding: 6px 16px;
+  background: #1a1a2e;
+  border-bottom: 1px solid #0f3460;
+  align-items: center;
+}
+#overlay-date-row input[type="date"] {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #0f3460;
+  border-radius: 4px;
+  background: #16213e;
+  color: #f0f4fa;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 500;
+  min-height: 36px;
+}
+#overlay-date-row input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  cursor: pointer;
+}
+#overlay-date-row button {
+  padding: 6px 12px;
+  border: 1px solid #0f3460;
+  border-radius: 4px;
+  background: #e94560;
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  white-space: nowrap;
 }
 #overlay-close {
   background: none;
@@ -380,6 +455,24 @@ html, body {
   color: #e0e0e0;
   font-size: 24px;
   cursor: pointer;
+}
+#show-all-mob {
+  background: #e94560;
+  color: #fff;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+#show-all-mob.hidden {
+  display: none;
+}
+#show-all-mob:hover {
+  background: #d63851;
 }
 #overlay-content {
   padding: 0;
@@ -436,5 +529,9 @@ html, body {
   #show-all-btn {
     left: 12px;
     top: 12px;
+  }
+  #date-picker {
+    font-size: 16px;
+    min-height: 36px;
   }
 }
