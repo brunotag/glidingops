@@ -12,12 +12,12 @@
 - (none)
 
 ### Completed This Session
-- TreasurerReportNew.php, TreasurerReportNew2.php, TreasurerReportNew3.php (3 layouts)
-- Added Treasurer reports to home page (security bit 8)
-- `api/members-email.php` for member autocomplete
-- `apiMaybeResumeSession()` + `apiRequireAuth()` added to helpers/api-base.php
-- MessagingPage.php ex novo with two-panel layout, member search, mailing lists, preview modal, streaming progress, result modal
-- Restored old MessagingPage as MessagingPageOld.php (from commit f436d39)
+- MasterDisplayNew.php, css/map.css, js/map.js - New real-time map with Leaflet, OpenTopoMap, 24-color palette, altitude gradient coloring, multi-select flight toggle, double-click isolate, mobile overlay with date/brightness controls
+- Outlier detection for track points (>300 km/h)
+- Dark overlay pane for map (tunable via slider)
+- Dev tools panel (overlay + track opacity sliders)
+- /wgc-new route + homepage link
+- docs/FUTURE_DEVELOPMENT_MAP.md updated with full spec
 
 ### Next Steps
 1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)

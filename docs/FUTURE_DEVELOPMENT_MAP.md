@@ -324,7 +324,16 @@ Media query breakpoint: `@media (max-width: 768px)`
 RewriteRule ^wgc-new$ MasterDisplayNew.php?org=1 [L,QSA]
 ```
 
-Accessible at `/wgc-new`. The old `/wgc` still points to `MasterDisplay.php` until the new version is verified.
+Accessible at `/wgc-new`. The old `/wgc` still points to `MasterDisplay.php` until the old map is verified obsolete and can be deleted.
+
+## Cleanup
+
+After the new map is verified working in production:
+1. Delete `MasterDisplay.php`, `MasterDisplay.js` (inline), `mapiconmaker.js`
+2. Delete `FlyingNow.php` (replaced by the sidebar flying panel)
+3. Remove old routes from `.htaccess`: `wgc`, `ssb`, `cgc`, `agc`
+4. Update homepage `home.php` to remove old Real Time map link
+5. Delete `docs/FUTURE_DEVELOPMENT_MAP.md` (superseded by this doc)
 
 ---
 
