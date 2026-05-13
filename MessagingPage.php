@@ -3,7 +3,7 @@ session_start();
 $org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 
 if (!isset($_SESSION['security']) || !($_SESSION['security'] & 1)) {
-    header('Location: Login.php');
+    header('Location: /Login.php');
     exit;
 }
 

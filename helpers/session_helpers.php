@@ -1,7 +1,7 @@
 <?php 
   function require_security_level($security_level) {
     if(!isset($_SESSION['security'])){
-      header('Location: Login.php');
+      header('Location: /Login.php');
       die("Please logon");
     }
 

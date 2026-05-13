@@ -14,7 +14,7 @@ if (isset($_SESSION['security'])) {
     }
 } else {
     logMsg("AUTH FAIL - no session");
-    header('Location: Login.php');
+    header('Location: /Login.php');
     die("Please logon");
 }
 

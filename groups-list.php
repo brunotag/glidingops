@@ -5,7 +5,7 @@ if(isset($_SESSION['org'])) $org=$_SESSION['org'];
 if(isset($_SESSION['security'])){
  if (!($_SESSION['security'] & 4)) {die("Secruity level too low for this page");}
 }else{
- header('Location: Login.php');
+ header('Location: /Login.php');
  die("Please logon");
 }
 ?>

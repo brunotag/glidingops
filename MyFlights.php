@@ -9,7 +9,7 @@ if (!isset($_SESSION['security']) || $_SESSION['security'] < 1) {
 }
 if (!isset($_SESSION['memberid'])) {
     logMsg("AUTH FAIL - no memberid");
-    header('Location: Login.php');
+    header('Location: /Login.php');
     die("Please logon");
 }
 logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);

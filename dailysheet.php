@@ -13,7 +13,7 @@ else {
     initiateServiceUserSession(5, $org);
   }
   else {
-    header('Location: Login.php');
+    header('Location: /Login.php');
     die("Please logon");
   }
 }

@@ -83,7 +83,7 @@ if(isset($_SESSION['security']))
 }
 else
 {
- header('Location: Login.php');
+ header('Location: /Login.php');
  die("Please logon");
 }
 ?>
