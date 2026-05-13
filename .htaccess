@@ -17,6 +17,12 @@ RewriteRule api/v1/json/(.*)$ apiglidjsonv1.php?r=$1 [QSA,NC,L]
 # this is the laravel api
 RewriteRule   ^api/v2/(.*)    /lrv/public/api/v2/$1  [L]
 
+# DataTables API for flights report
+RewriteRule ^api/flights-report$ api/flights-report.php [L,QSA]
+
+# Member autocomplete search API
+RewriteRule ^api/member-search$ api/member-search.php [L,QSA]
+
 # DataTables API for members
 RewriteRule ^api/members$ api/members.php [L,QSA]
 
@@ -65,6 +71,7 @@ RewriteRule AircraftType aircrafttype.php [L]
 RewriteRule AllAircraft aircraft-list.php [L]
 RewriteRule Aircraft aircraft.php [L]
 RewriteRule AllMembers members-list.php [L]
+RewriteRule AllFlightsReportNew AllFlightsReportNew.php [L,QSA]
 RewriteRule BillingOptions billingoptions-list.php [L]
 RewriteRule BillingOption billingoptions.php [L]
 
