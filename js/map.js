@@ -266,8 +266,6 @@ function renderSidebar() {
 }
 
 function refreshOverlay() {
-  var overlay = document.getElementById('overlay');
-  if (!overlay.classList.contains('open')) return;
   var content = document.getElementById('overlay-content');
   var flying = document.getElementById('flying-section');
   var completed = document.getElementById('completed-section');
@@ -276,20 +274,14 @@ function refreshOverlay() {
     var seq = parseInt(w.getAttribute('data-seq'), 10);
     w.addEventListener('click', function(e) {
       e.stopPropagation();
-      handleOverlayFlightClick(seq);
+      handleFlightClick(seq);
     });
   });
   var sa = content.querySelector('#sidebar-show-all');
   if (sa) {
-    sa.style.display = selectedFlights.length > 0 ? '' : 'none';
+    sa.style.display = selectedFlights.length > 0 ? 'block' : 'none';
     sa.addEventListener('click', deselectAll);
   }
-}
-
-function openOverlay() {
-  var overlay = document.getElementById('overlay');
-  overlay.classList.add('open');
-  refreshOverlay();
 }
 
 function renderMap(dataFlights) {
@@ -482,10 +474,7 @@ function handleFlightClick(seq) {
     }
   }
   showAltColorsUI(selectedFlights.length === 1);
-  document.getElementById('show-all-btn').style.display = selectedFlights.length > 0 ? '' : 'none';
-  document.getElementById('sidebar-show-all').style.display = selectedFlights.length > 0 ? '' : 'none';
-  var mobSa = document.getElementById('show-all-mob');
-  if (mobSa) mobSa.style.display = selectedFlights.length > 0 ? '' : 'none';
+  document.getElementById('sidebar-show-all').style.display = selectedFlights.length > 0 ? 'block' : 'none';
   renderSidebar();
   renderMap(flights);
 }
@@ -503,21 +492,70 @@ function showAltColorsUI(singleSelected) {
 function deselectAll() {
   selectedFlights = [];
   useAltColors = false;
-  document.getElementById('show-all-btn').style.display = 'none';
   document.getElementById('sidebar-show-all').style.display = 'none';
   document.getElementById('alt-color-label').style.display = 'none';
-  var mobSa = document.getElementById('show-all-mob');
-  if (mobSa) mobSa.style.display = 'none';
   renderSidebar();
   renderMap(flights);
 }
 
-function handleOverlayFlightClick(seq) {
-  handleFlightClick(seq);
-}
+function initDivider() {
+  var divider = document.getElementById('divider-handle');
+  var overlay = document.getElementById('overlay');
+  var mapPanel = document.getElementById('map-panel');
+  var startY, startHeight;
 
-function closeOverlay() {
-  document.getElementById('overlay').classList.remove('open');
+  function onDragStart(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('input,button,textarea,select')) return;
+    startY = e.clientY || e.touches[0].clientY;
+    startHeight = overlay.offsetHeight;
+    document.body.style.cursor = 'row-resize';
+    document.body.style.userSelect = 'none';
+    document.addEventListener('mousemove', onDragMove);
+    document.addEventListener('mouseup', onDragEnd);
+    document.addEventListener('touchmove', onDragMove, { passive: false });
+    document.addEventListener('touchend', onDragEnd);
+    e.preventDefault();
+  }
+
+  function onDragMove(e) {
+    var clientY = e.clientY || e.touches[0].clientY;
+    var dy = startY - clientY;
+    var newHeight = startHeight + dy;
+    var panelHeight = mapPanel.getBoundingClientRect().height;
+    newHeight = Math.max(120, Math.min(panelHeight * 0.8, newHeight));
+    overlay.style.height = newHeight + 'px';
+    map._onResize();
+    e.preventDefault();
+  }
+
+  function onDragEnd() {
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    document.removeEventListener('mousemove', onDragMove);
+    document.removeEventListener('mouseup', onDragEnd);
+    document.removeEventListener('touchmove', onDragMove);
+    document.removeEventListener('touchend', onDragEnd);
+    try {
+      localStorage.setItem('mapBottomHeight', overlay.style.height);
+    } catch(e) {}
+  }
+
+  divider.addEventListener('mousedown', onDragStart);
+  divider.addEventListener('touchstart', onDragStart, { passive: false });
+
+  var header = document.getElementById('overlay-header');
+  if (header) {
+    header.style.cursor = 'row-resize';
+    header.addEventListener('mousedown', onDragStart);
+    header.addEventListener('touchstart', onDragStart, { passive: false });
+  }
+
+  try {
+    var saved = localStorage.getItem('mapBottomHeight');
+    if (saved) {
+      overlay.style.height = saved;
+    }
+  } catch(e) {}
 }
 
 function init() {
@@ -554,13 +592,7 @@ function init() {
     }
   });
 
-  document.getElementById('show-all-btn').addEventListener('click', deselectAll);
   document.getElementById('sidebar-show-all').addEventListener('click', deselectAll);
-  var mobSa = document.getElementById('show-all-mob');
-  if (mobSa) mobSa.addEventListener('click', deselectAll);
-
-  document.getElementById('overlay-toggle').addEventListener('click', openOverlay);
-  document.getElementById('overlay-close').addEventListener('click', closeOverlay);
 
   var datePicker = document.getElementById('date-picker');
   datePicker.value = TODAY_DATE;
@@ -620,6 +652,8 @@ function init() {
       setDate(TODAY_DATE);
     });
   }
+
+  initDivider();
 
   if (IS_DEV) {
     document.getElementById('dev-overlay').addEventListener('input', function() {

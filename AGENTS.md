@@ -44,7 +44,9 @@
 6. Always add new API routes to .htaccess
 7. Use ASCII only - no unicode or special characters in code
 
-**TESTING:** See `docs/WEB_AUTH.md` for PowerShell WebRequestSession patterns
+**TESTING:** 
+- Always verify CSS/JS changes by fetching the page with PowerShell WebRequestSession (see `docs/WEB_AUTH.md`). Do NOT rely purely on code reasoning — the browser is the ground truth.
+- Use `docs/WEB_AUTH.md` for PowerShell WebRequestSession patterns
 
 **BEFORE DELETING OLD FILES:** See `docs/DEAD_CODE.md`
 

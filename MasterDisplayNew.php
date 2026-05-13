@@ -67,12 +67,29 @@ $todayDate = $now->format('Y-m-d');
     <div id="completed-section">
       <div class="section-header">
         <span id="completed-header-label">COMPLETED TODAY</span>
-        <button id="sidebar-show-all" class="hidden">Show all</button>
+        <button id="sidebar-show-all">Show all</button>
       </div>
       <div id="completed-list"></div>
     </div>
   </div>
-  <div id="map"></div>
+  <div id="map-panel">
+    <div id="map"></div>
+    <div id="divider-handle"></div>
+    <div id="overlay">
+    <div id="overlay-header">
+      <span>Flights</span>
+      <span id="overlay-slider-mob-wrap">
+        <input type="range" id="overlay-slider-mob" min="0" max="50" value="25" />
+        <span id="overlay-icon-mob">&#9680;</span>
+      </span>
+    </div>
+      <div id="overlay-date-row">
+        <input type="date" id="date-picker-mob" />
+        <button id="date-today-btn-mob">Today</button>
+      </div>
+      <div id="overlay-content"></div>
+    </div>
+  </div>
 </div>
 
 <?php if ($isDev): ?>
@@ -88,26 +105,6 @@ $todayDate = $now->format('Y-m-d');
   </div>
 </div>
 <?php endif; ?>
-
-<div id="overlay-toggle" title="Toggle flights list">&#9776;</div>
-<div id="overlay">
-  <div id="overlay-header">
-    <span>Flights</span>
-    <span id="overlay-slider-mob-wrap">
-      <input type="range" id="overlay-slider-mob" min="0" max="50" value="25" />
-      <span id="overlay-icon-mob">&#9680;</span>
-    </span>
-    <button id="show-all-mob" style="display:none">Show all</button>
-    <button id="overlay-close">&times;</button>
-  </div>
-  <div id="overlay-date-row">
-    <input type="date" id="date-picker-mob" />
-    <button id="date-today-btn-mob">Today</button>
-  </div>
-  <div id="overlay-content"></div>
-</div>
-
-<button id="show-all-btn" class="hidden">Show All</button>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>

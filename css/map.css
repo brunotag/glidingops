@@ -29,9 +29,39 @@ html, body {
   z-index: 1;
 }
 
+#map-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+}
+
 #map {
   flex: 1;
-  height: 100vh;
+  min-height: 0;
+  background: #0d1117;
+}
+
+#divider-handle {
+  display: none;
+  height: 10px;
+  background: #0f3460;
+  cursor: row-resize;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+#divider-handle::after {
+  content: '';
+  width: 40px;
+  height: 3px;
+  border-radius: 2px;
+  background: #2a4a6a;
+}
+#divider-handle:hover::after {
+  background: #e94560;
 }
 
 .section-header {
@@ -120,8 +150,8 @@ html, body {
   padding: 4px 10px;
   border: 1px solid #0f3460;
   border-radius: 4px;
-  background: #1a1a2e;
-  color: #7dd8fc;
+  background: #e94560;
+  color: #fff;
   font-size: 12px;
   cursor: pointer;
   font-family: inherit;
@@ -129,7 +159,7 @@ html, body {
   white-space: nowrap;
 }
 #date-today-btn:hover {
-  background: #0f3460;
+  background: #d63851;
 }
 
 #flying-section, #completed-section {
@@ -278,26 +308,21 @@ html, body {
   flex-shrink: 0;
 }
 
-#show-all-btn {
-  position: fixed;
-  top: 12px;
-  left: 356px;
-  z-index: 1000;
-  background: #e94560;
-  color: #fff;
-  border: none;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-  white-space: nowrap;
-}
-#show-all-btn.hidden {
+#sidebar-show-all {
   display: none;
+  float: right;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  background: #e94560;
+  border: none;
+  padding: 3px 10px;
+  border-radius: 4px;
+  line-height: normal;
+  font-family: inherit;
 }
-#show-all-btn:hover {
+#sidebar-show-all:hover {
   background: #d63851;
 }
 
@@ -342,42 +367,11 @@ html, body {
   cursor: pointer;
 }
 
-#overlay-toggle {
-  display: none;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1001;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #e94560;
-  color: #fff;
-  font-size: 22px;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-  align-items: center;
-  justify-content: center;
-}
-
 #overlay {
   display: none;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  max-height: 60vh;
+  flex-shrink: 0;
   background: #16213e;
-  border-radius: 12px 12px 0 0;
-  z-index: 1002;
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
   overflow-y: auto;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
-}
-#overlay.open {
-  transform: translateY(0);
 }
 #overlay-header {
   display: flex;
@@ -385,7 +379,6 @@ html, body {
   align-items: center;
   padding: 12px 16px;
   background: #0f3460;
-  border-radius: 12px 12px 0 0;
   position: sticky;
   top: 0;
   z-index: 3;
@@ -449,86 +442,49 @@ html, body {
   font-weight: 600;
   white-space: nowrap;
 }
-#overlay-close {
-  background: none;
-  border: none;
-  color: #e0e0e0;
-  font-size: 24px;
-  cursor: pointer;
-}
-#show-all-mob {
-  background: #e94560;
-  color: #fff;
-  border: none;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-  white-space: nowrap;
-}
-#show-all-mob.hidden {
-  display: none;
-}
-#show-all-mob:hover {
-  background: #d63851;
-}
 #overlay-content {
   padding: 0;
 }
 
-#map {
-  flex: 1;
-  height: 100vh;
-}
-#map {
-  background: #0d1117;
+@media (max-width: 768px) {
+  #container {
+    flex-direction: column;
+  }
+  #sidebar {
+    display: none;
+  }
+  #divider-handle {
+    display: flex;
+  }
+  #overlay {
+    display: block;
+    height: 40vh;
+  }
+  #sidebar-show-all {
+    float: right;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    background: #e94560;
+    border: none;
+    padding: 3px 10px;
+    border-radius: 4px;
+    line-height: normal;
+    font-family: inherit;
+  }
+  #sidebar-show-all:hover {
+    background: #d63851;
+  }
 }
 
 @media (max-width: 768px) {
   #sidebar {
     display: none;
   }
-  #overlay-toggle {
-    display: flex;
-  }
   #overlay {
     display: block;
-  }
-#sidebar-show-all {
-  float: right;
-  font-size: 10px;
-  font-weight: 700;
-  color: #fff;
-  cursor: pointer;
-  background: #e94560;
-  border: none;
-  padding: 3px 10px;
-  border-radius: 4px;
-  line-height: normal;
-  font-family: inherit;
-}
-#sidebar-show-all:hover {
-  background: #d63851;
-}
-#sidebar-show-all.hidden {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  #sidebar {
-    display: none;
-  }
-  #overlay-toggle {
-    display: flex;
-  }
-  #overlay {
-    display: block;
-  }
-  #show-all-btn {
-    left: 12px;
-    top: 12px;
+    height: 40vh;
   }
   #date-picker {
     font-size: 16px;
