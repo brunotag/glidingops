@@ -11,6 +11,16 @@ if (isset($_SESSION['security'])) {
     header('Location: /Login.php');
    die("Please logon");
 }
+
+$effectiveSecurity = $_SESSION['security'];
+$asOverride = 0;
+if (isset($_GET['as']) && ($effectiveSecurity & 128)) {
+    $v = intval($_GET['as']);
+    if ($v >= 0 && $v <= 255) {
+        $effectiveSecurity = $v;
+        $asOverride = $v;
+    }
+}
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -134,6 +144,12 @@ if (isset($_SESSION['security'])) {
 
 <body>
    <?php include __DIR__ . '/helpers/dev_mode_banner.php' ?>
+   <?php if ($asOverride): ?>
+      <div style="background:#fff3cd;color:#856404;text-align:center;padding:6px;font-size:13px;font-weight:bold;">
+         Viewing as security level <?php echo $asOverride; ?>
+         &mdash; <a href="home" style="color:#856404;text-decoration:underline;">Clear override</a>
+      </div>
+   <?php endif; ?>
    <?php $inc = "./orgs/" . $org . "/heading2.txt";
    include $inc; ?>
     <div id='container'>
@@ -207,10 +223,10 @@ if (isset($_SESSION['security'])) {
                $col = ($col + 1) % $totcol;
                if ($col == 0) echo "</tr><tr>";
 
-               if (($_SESSION['security'] & 1)) {
-                   echo "<td><h2 class='u'>MESSAGING</h2>";
+                if (($effectiveSecurity & 1)) {
+                    echo "<td><h2 class='u'>MESSAGING</h2>";
                    echo "<p class='u'><a href='MessagingPage'>Broadcast A Message</a></p>";
-                   if (($_SESSION['security'] & 4)) {
+                   if (($effectiveSecurity & 4)) {
                        echo "<p class='u'><a href='/MessagesTree'>See Past Messages</a></p>";
                    }
                    echo "</td>";
@@ -218,75 +234,77 @@ if (isset($_SESSION['security'])) {
                   if ($col == 0) echo "</tr><tr>";
                }
 
-               if ($_SESSION['security'] >= 1) {
-                  echo "<td><h2 class='u'>DAILY OPS</h2>";
-                  if ($_SESSION['security'] >= 4)
-                     echo "<p class='u'><a href='DailySheet?org=" . $org . "'>New Daily Timesheet</a></p>";
-                  echo "<p class='u'><a href='DailyLogSheet.php?org=" . $org . "'>View Daily Timesheet</a></p>";
+               if ($effectiveSecurity >= 1) {
+                   echo "<td><h2 class='u'>DAILY OPS</h2>";
+                   if ($effectiveSecurity >= 4)
+                      echo "<p class='u'><a href='StartDay.php?org=" . $org . "'>New Daily Timesheet</a></p>";
+                   if ($effectiveSecurity >= 4)
+                      echo "<p class='u'><a href='/EditDailySheet?org=" . $org . "'>Edit Daily Timesheet</a></p>";
+                   echo "<p class='u'><a href='DailyLogSheet.php?org=" . $org . "'>View Daily Timesheet</a></p>";
 
-                  echo "</td>";
+                   echo "</td>";
                   $col = ($col + 1) % $totcol;
                   if ($col == 0) echo "</tr><tr>";
                }
 
-               if ($_SESSION['security'] >= 1) {
+               if ($effectiveSecurity >= 1) {
                   echo "<td><h2 class='u'>REPORTS</h2>";
-if (($_SESSION['security'] & 8))
+if (($effectiveSecurity & 8))
                      echo "<p class='u'><a href='Treasurer.php'>Treasurer Report</a></p>";
-                   if (($_SESSION['security'] & 8))
+                   if (($effectiveSecurity & 8))
                       echo "<p class='u'><a href='TreasurerReportNew'>Treasurer Report - Option 1 (Grouped by Member)</a></p>";
-                   if (($_SESSION['security'] & 8))
+                   if (($effectiveSecurity & 8))
                       echo "<p class='u'><a href='TreasurerReportNew2'>Treasurer Report - Option 2 (Table with Headers)</a></p>";
-                   if (($_SESSION['security'] & 8))
+                   if (($effectiveSecurity & 8))
                       echo "<p class='u'><a href='TreasurerReportNew3'>Treasurer Report - Option 3 (Flat)</a></p>";
                    if (($_SESSION['security'] & 1))
                       echo "<p class='u'><a href='/app/allFlightsReport'>All Flights Report</a></p>";
                    if (($_SESSION['security'] & 1))
                      echo "<p class='u'><a href='/AllFlightsReportNew'>All Flights Report (New)</a></p>";
-                  if (($_SESSION['security'] & 24))
+                  if (($effectiveSecurity & 24))
                      echo "<p class='u'><a href='/app/reports/membersRolesStatsReport'>Members roles Report</a></p>";
-                  if (($_SESSION['security'] & 32))
+                  if (($effectiveSecurity & 32))
                      echo "<p class='u'><a href='Engineer.php'>Engineer Report</a></p>";
-                  if (($_SESSION['security'] & 32))
+                  if (($effectiveSecurity & 32))
                      echo "<p class='u'><a href='last-flights-list.php?col=1&descsort=1'>Currency Report</a></p>";
                   echo "</td>";
                   $col = ($col + 1) % $totcol;
                   if ($col == 0) echo "</tr><tr>";
                }
 
-               if (($_SESSION['security'] & 120)) {
+               if (($effectiveSecurity & 120)) {
                   echo "<td><h2 class='u'>DATA MAINTENANCE</h2>";
-                  if (($_SESSION['security'] & 104))
+                  if (($effectiveSecurity & 104))
                      echo "<p class='u'><a href='AllAircraft'>Aircraft</a></p>";
-                  if (($_SESSION['security'] & 64))
+                  if (($effectiveSecurity & 64))
                      echo "<p class='u'><a href='AircraftTypes'>Aircraft Types</a></p>";
-                  if (($_SESSION['security'] & 128))
+                  if (($effectiveSecurity & 128))
                      echo "<p class='u'><a href='BillingOptions'>Charging Options</a></p>";
-                  if (($_SESSION['security'] & 64))
+                  if (($effectiveSecurity & 64))
                      echo "<p class='u'><a href='DutyTypes'>Duty Types</a></p>";
-                  if (($_SESSION['security'] & 64))
+                  if (($effectiveSecurity & 64))
                      echo "<p class='u'><a href='flights-list.php'>Flights Raw</a></p>";
-                  if (($_SESSION['security'] & 72))
+                  if (($effectiveSecurity & 72))
                      echo "<p class='u'><a href='IncentiveSchemes'>Incentive Schemes</a></p>";
-                  if (($_SESSION['security'] & 64))
+                  if (($effectiveSecurity & 64))
                      echo "<p class='u'><a href='membership_class-list.php'>Membership Classes</a></p>";
-                  if (($_SESSION['security'] & 64))
+                  if (($effectiveSecurity & 64))
                      echo "<p class='u'><a href='membership_status-list.php'>Membership Statuses</a></p>";
-                  if (($_SESSION['security'] & 72))
+                  if (($effectiveSecurity & 72))
                      echo "<p class='u'><a href='OtherCharges'>Other Charges</a></p>";
-                  if (($_SESSION['security'] & 64))
+                  if (($effectiveSecurity & 64))
                      echo "<p class='u'><a href='Roles'>Roles</a></p>";
-                  if (($_SESSION['security'] & 64))
+                  if (($effectiveSecurity & 64))
                      echo "<p class='u'><a href='AssignRoles'>Role Assigment</a></p>";
-                  if (($_SESSION['security'] & 64))
+                  if (($effectiveSecurity & 64))
                      echo "<p class='u'><a href='spots-list.php'>Spots</a></p>";
-                  if (($_SESSION['security'] & 72))
+                  if (($effectiveSecurity & 72))
                      echo "<p class='u'><a href='SubsToSchemes'>Subs to Incentives</a></p>";
-                  if (($_SESSION['security'] & 72))
+                  if (($effectiveSecurity & 72))
                      echo "<p class='u'><a href='TowCharges'>Tow Charging</a></p>";
-                  if (($_SESSION['security'] & 64))
+                  if (($effectiveSecurity & 64))
                      echo "<p class='u'><a href='maintenance/duplicates_index.php'>Manage duplicate memberships</a></p>";
-                   if (($_SESSION['security'] & 64))
+                   if (($effectiveSecurity & 64))
                       echo "<p class='u'><a href='manage-secret-code.php'>Manage secret code</a></p>";
 
                    echo "</td>";
@@ -294,7 +312,7 @@ if (($_SESSION['security'] & 8))
                   if ($col == 0) echo "</tr><tr>";
                }
 
-if (($_SESSION['security'] & 64)) {
+if (($effectiveSecurity & 64)) {
                    echo "<td><h2 class='u'>USERS</h2>";
                    echo "<p class='u'><a href='/Users'>Create User</a></p>";
                    echo "<p class='u'><a href='/UsersList'>View users</a></p>";
@@ -304,18 +322,20 @@ if (($_SESSION['security'] & 64)) {
                    if ($col == 0) echo "</tr><tr>";
                 }
 
-               if (($_SESSION['security'] & 64)) {
-                  echo "<td><h2 class='u'>DIAGNOSTICS & RECOVERY</h2>";
-                  echo "<p class='u'><a href='Recovery.php'>Get Local Browser Cache</a></p>";
-                   echo "<p class='u'><a href='maintenance/testemail.php'>Test Email</a></p>";
-                   echo "<p class='u'><a href='/SentMessages'>All Messages</a></p>";
+                if (($effectiveSecurity & 64)) {
+                   echo "<td><h2 class='u'>DIAGNOSTICS & RECOVERY</h2>";
+                   echo "<p class='u'><a href='Recovery.php'>Get Local Browser Cache</a></p>";
+                    echo "<p class='u'><a href='maintenance/testemail.php'>Test Email</a></p>";
+                    echo "<p class='u'><a href='/SentMessages'>All Messages</a></p>";
+                    if (($_SESSION['security'] & 128))
+                       echo "<p class='u'><a href='/ViewAs'>View Homepage As...</a></p>";
 
-                  echo "</td>";
+                   echo "</td>";
                   $col = ($col + 1) % $totcol;
                   if ($col == 0) echo "</tr><tr>";
                }
 
-               if (($_SESSION['security'] & 128)) {
+               if (($effectiveSecurity & 128)) {
                   echo "<td><h2 class='u'>SUPER ADMIN</h2>";
                   echo "<p class='u'><a href='Organisations'>Organisations</a></p>";
                   echo "</td>";

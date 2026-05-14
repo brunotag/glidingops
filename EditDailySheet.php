@@ -7,7 +7,6 @@ require_security_level(4);
 
 $org = 0;
 $errtext = '';
-$defaultLocation = '';
 $con_params = require('./config/database.php');
 $con_params = $con_params['gliding'];
 $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
@@ -19,40 +18,38 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             die("Error: You must supply an organisation number");
         }
     }
-    if (isset($_GET['location'])) {
-        $defaultLocation = $_GET['location'];
-    } else {
-        $q = "SELECT default_location FROM organisations WHERE id = " . $org;
-        $r = mysqli_query($con, $q);
-        if ($r && $r->num_rows > 0) {
-            $row = mysqli_fetch_array($r);
-            $defaultLocation = $row[0];
-        } else {
-            die("Invalid organisation number");
-        }
-    }
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $org = intval($_POST['org']);
     if ($org <= 0)
         die("No organisation specified");
-    $loc = trim($_POST['location']);
-    if (strlen($loc) > 0) {
-        header("Location: dailysheet.php?org=" . $org . "&location=" . urlencode($loc));
-        exit();
+
+    $selectedDate = trim($_POST['date']);
+
+    if (strlen($selectedDate) > 0) {
+        $q = "SELECT default_location FROM organisations WHERE id = " . $org;
+        $r = mysqli_query($con, $q);
+        if ($r && $r->num_rows > 0) {
+            $row = mysqli_fetch_array($r);
+            $location = $row[0];
+            header("Location: dailysheet.php?org=" . $org . "&location=" . urlencode($location) . "&ds=" . urlencode($selectedDate));
+            exit();
+        } else {
+            $errtext = "Could not find organisation default location";
+        }
     } else {
-        $errtext = "You must enter a location";
+        $errtext = "You must select a date";
     }
 }
 
 $dateTime = new DateTime("now", new DateTimeZone(orgTimezone($con, $org)));
-$dateStr = $dateTime->format('d-M-Y');
+$todayStr = $dateTime->format('Y-m-d');
 ?>
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>New Daily Timesheet</title>
+    <title>Edit Daily Timesheet</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style><?php $inc = "./orgs/" . $org . "/heading1.css";
     include $inc; ?></style>
@@ -85,7 +82,7 @@ $dateStr = $dateTime->format('d-M-Y');
             color: #000080;
             margin: 0 0 4px 0;
         }
-        .date-label {
+        .page-subtitle {
             font-size: 14px;
             color: #555;
             margin: 0 0 20px 0;
@@ -97,7 +94,7 @@ $dateStr = $dateTime->format('d-M-Y');
             color: #333;
             margin-bottom: 6px;
         }
-        .location-input {
+        .date-input {
             width: 100%;
             font-size: 18px;
             padding: 10px 12px;
@@ -105,7 +102,7 @@ $dateStr = $dateTime->format('d-M-Y');
             border-radius: 6px;
             transition: border-color 0.2s;
         }
-        .location-input:focus {
+        .date-input:focus {
             border-color: #000080;
             outline: none;
             box-shadow: 0 0 0 3px rgba(0, 0, 128, 0.1);
@@ -151,11 +148,11 @@ include $inc; ?>
 include $inc; ?>
 <div id="container">
     <div id="entry">
-        <p class="page-title">New Daily Timesheet</p>
-        <p class="date-label"><?php echo $dateStr; ?></p>
+        <p class="page-title">Edit Daily Timesheet</p>
+        <p class="page-subtitle">Select a date to view or edit its timesheet.</p>
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-            <label class="field-label" for="location">Enter Location:</label>
-            <input id="location" class="location-input" type="text" value="<?php echo htmlspecialchars($defaultLocation); ?>" name="location" placeholder="e.g. Greytown, Masterton, etc." autofocus>
+            <label class="field-label" for="date">Select Date:</label>
+            <input id="date" class="date-input" type="date" name="date" value="<?php echo $todayStr; ?>" autofocus>
             <?php if ($errtext): ?>
                 <p class="error-text"><?php echo $errtext; ?></p>
             <?php endif; ?>

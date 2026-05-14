@@ -32,8 +32,9 @@
 
 **BEFORE starting any task:**
 1. Read this AGENTS.md file (mandatory)
-2. Check logs: `Get-Content log/app.log -Tail 30` and `Get-Content log/error.log -Tail 30`
-3. Run `git status`
+2. Recall past context: `agentmemory_memory_recall query="glidingops"` or `agentmemory_memory_smart_search query="glidingops"`
+3. Check logs: `Get-Content log/app.log -Tail 30` and `Get-Content log/error.log -Tail 30`
+4. Run `git status`
 
 **BUILDING NEW FEATURES:**
 1. Build ex novo - do NOT adapt old code
