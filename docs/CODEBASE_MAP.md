@@ -293,7 +293,7 @@ $stmt->bind_param("i", $id);
 ## Quick File Reference
 
 ### Core Daily Ops
-- StartDay.php → DailySheet.php → DailyLogSheet.php → CompletedSheet.php
+- StartDay.php → EditDailySheet.php → DailySheet.php → DailyLogSheet.php → CompletedSheet.php
 
 ### Members & Users
 - members.php ↔ members-list.php
@@ -324,3 +324,6 @@ $stmt->bind_param("i", $id);
 - texts-list-v2b.php (sent messages DataTables view)
 - messages-list.php (display on home - legacy)
 - SendTxt.php (process queue)
+
+### Admin / Diagnostics
+- ViewAs.php (impersonate / view home as another role)

@@ -21,6 +21,13 @@
 - Fixed MessagingPage bug: txt_to column (varchar(20)) too short for email addresses — INSERT failed silently. Changed to store NULL instead.
 - Removed texts.txt_timestamp_create from SentMessages DataTables view (misleading due to on update CURRENT_TIMESTAMP)
 - docs updated: ROUTES.md, MESSAGING.md, DATABASE.md, FUTURE_DEVELOPMENT_MAP.md
+- StartDay.php simplified — removed date picker, always today, modernised card layout
+- EditDailySheet.php created — date picker only, auto-location from org default
+- DailyLogSheet.php modernised — card layout, striped table, menu bar, removed TOW HEIGHT, duration left-aligned
+- Homepage DAILY OPS links reworked: New Daily Timesheet → StartDay.php, added Edit Daily Timesheet link
+- ViewAs.php created — super admin impersonation via ?as= query param, user dropdown + level dropdown
+- home.php $effectiveSecurity override logic for 128+ users with yellow banner
+- docs updated: ROUTES.md, FEATURES.md, CODEBASE_MAP.md
 
 ### Next Steps
 1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)
@@ -35,6 +42,9 @@
 2. Recall past context: `agentmemory_memory_recall query="glidingops"` or `agentmemory_memory_smart_search query="glidingops"`
 3. Check logs: `Get-Content log/app.log -Tail 30` and `Get-Content log/error.log -Tail 30`
 4. Run `git status`
+
+**BEFORE CLOSING a session:**
+Run `agentmemory_memory_consolidate` to persist learned context across sessions.
 
 **BUILDING NEW FEATURES:**
 1. Build ex novo - do NOT adapt old code

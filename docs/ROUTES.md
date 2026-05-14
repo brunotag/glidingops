@@ -8,6 +8,8 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 
 | URL | Maps To | Purpose |
 |-----|---------|---------|
+| `/EditDailySheet` | EditDailySheet.php | Edit timesheet for a specific date |
+| `/ViewAs` | ViewAs.php | View homepage as another role (128+ only) |
 | `/home` | home.php | Main dashboard |
 | `/EditMyDetails` | members-new.php | Edit own details (member) |
 | `/AllMembers` | members-list-v2b.php | Member list (modern) |

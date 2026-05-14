@@ -86,15 +86,28 @@ function sendXMLtoServer() {
 
 ### StartDay.php
 
-### StartDay.php
-**Purpose:** Begin a flying day at a location
+**Purpose:** Begin a new daily timesheet. Simplified — only asks for location (always today's date).
 
 **Flow:**
-1. Select organization and date
-2. Choose launch location from dropdown (or use org default)
-3. Submit → redirects to DailySheet.php
+1. Enter location (pre-filled from org default)
+2. Submit → redirects to DailySheet.php?org=X&location=Y
 
 **Security:** Requires security level 4 (Daily Ops)
+
+---
+
+### EditDailySheet.php
+
+**Purpose:** Edit an existing timesheet for a specific date (no location needed).
+
+**Flow:**
+1. Select a date from date picker
+2. Looks up org's default_location from database
+3. Submit → redirects to DailySheet.php with date parameter
+
+**Security:** Requires security level 4 (Daily Ops)
+
+**Route:** `/EditDailySheet`
 
 ---
 
@@ -129,9 +142,10 @@ function sendXMLtoServer() {
 
 **Features:**
 - Date picker to view any day's flights
+- Card-layout form, striped hoverable table with dark header
 - Displays all flight details in table format
-- Read-only view (no editing)
-- Includes billing option per flight
+- Print-friendly (landscape, hides menu/form/print button)
+- HOME/BACK navigation menu
 
 **Security:** Requires security level 1 (Member)
 
