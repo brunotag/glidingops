@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@agentmemory/agentmemory": "latest"
+  },
+  "devDependencies": {
+    "opencode-ai": "latest"
+  }
+}

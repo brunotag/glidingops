@@ -1,0 +1,27 @@
+workers:
+  - name: iii-worker-manager
+    config:
+      port: 49134
+
+  - name: iii-http
+    config:
+      port: 3111
+  - name: iii-state
+    config:
+      adapter:
+        name: kv
+        config:
+          store_method: file_based
+          file_path: /app/data/state_store
+  - name: iii-queue
+    config:
+      queue_configs:
+        default:
+          max_retries: 5
+          concurrency: 5
+          type: standard
+      adapter:
+        name: builtin
+        config:
+          store_method: file_based
+          file_path: /app/data/queue_store

@@ -15,3 +15,4 @@ orgs/*/camera/*.sh
 .aider*
 log/
 *.sql.gz
+.env
