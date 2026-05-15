@@ -14,7 +14,7 @@ tracks/apiParticlejsonv1.php  (also root copy: apiParticlejsonv1.php)
     |
     ├──> particletrack.track  (primary ingest - raw Particle data)
     |
-    ├──> FORWARDS to [prod-host]/api/v1/json/*/createtrack
+    ├──> FORWARDS to [production-hostname]/api/v1/json/*/createtrack
     |       |
     |       v  apiglidjsonv1.php
     |       └──> gliding.tracks  (source='Particle')
@@ -258,7 +258,7 @@ Maps glider registrations to tracking device identifiers.
 - Runs at 6am daily (cron)
 - Reads `gliding.tracks` via `allTracksForOrgToday()`
 - Reconstructs flight times using altitude thresholds (>150ft = start, <150ft = land)
-- Emails summary to [ops-email]
+- Emails summary to club ops manager (address in _secrets.md)
 
 ---
 

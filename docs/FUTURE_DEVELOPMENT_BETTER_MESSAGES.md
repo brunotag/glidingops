@@ -127,14 +127,14 @@ Google Groups email addresses:
 
 ```php
 $mailing_lists = [
-    'WGC Committee'          => '[committee-email]',
-    'WGC Instructors Team'  => '[instructors-email]',
-    'WGC LPC Group'         => '[lpc-email]',
-    'WGC Members'            => '[members-email]',
-    'WGC Service Delivery'   => '[service-email]',
-    'WGC Winch Group'        => '[winch-email]',
-    'WWGC Cable Car'         => '[cablecar-email]',
-    'Official Observers'     => '[observers-email]',
+    'WGC Committee'          => '[see _secrets.md]',
+    'WGC Instructors Team'  => '[see _secrets.md]',
+    'WGC LPC Group'         => '[see _secrets.md]',
+    'WGC Members'            => '[see _secrets.md]',
+    'WGC Service Delivery'   => '[see _secrets.md]',
+    'WGC Winch Group'        => '[see _secrets.md]',
+    'WWGC Cable Car'         => '[see _secrets.md]',
+    'Official Observers'     => '[see _secrets.md]',
 ];
 ```
 

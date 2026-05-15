@@ -10,8 +10,8 @@ Use PowerShell's WebRequestSession to maintain cookies across requests.
 # Step 1: Get login page and capture session
 $login = Invoke-WebRequest -Uri 'http://glidingops.test/Login.php' -UseBasicParsing -SessionVariable 'webSession'
 
-# Step 2: Submit login form (username: [dev-creds], password: [dev-creds])
-$body = "user=[dev-creds]&pcode=[dev-creds]"
+# Step 2: Submit login form (credentials in _secrets.md)
+$body = "user=[dev-creds-see-_secrets.md]&pcode=[dev-creds-see-_secrets.md]"
 $loginResult = Invoke-WebRequest -Uri 'http://glidingops.test/checklogin.php' -WebSession $webSession -Method POST -Body $body -ContentType "application/x-www-form-urlencoded" -UseBasicParsing -MaximumRedirection 10
 
 # Step 3: Visit home to ensure session is established
@@ -25,8 +25,8 @@ Write-Host $page.Content
 ### Testing API Endpoints
 
 ```powershell
-# Login first
-$body = "user=[dev-creds]&pcode=[dev-creds]"
+# Login first (credentials in _secrets.md)
+$body = "user=[dev-creds-see-_secrets.md]&pcode=[dev-creds-see-_secrets.md]"
 $login = Invoke-WebRequest -Uri 'http://glidingops.test/checklogin.php' -Method POST -Body $body -ContentType "application/x-www-form-urlencoded" -UseBasicParsing -SessionVariable ws -MaximumRedirection 10
 
 # Test API with query parameter
@@ -56,7 +56,7 @@ $csv.Headers['Content-Type']          # Should be "text/csv"
 ### URLs
 
 - Dev environment: `http://glidingops.test` (NOT https - SSL issues with self-signed certs)
-- Test user: `[dev-creds]` / `[dev-creds]`
+- Test user credentials: `[see _secrets.md]`
 
 ---
 
@@ -130,4 +130,4 @@ fetch('/api/some-endpoint?search=term', {
 ```powershell
 # The browser-based approach is easiest - just open http://glidingops.test in a logged-in browser
 # For curl-based testing from vagrant:
-vagrant ssh -c "curl -s -H 'X-Session-Id: <session>' -H 'X-Member-Id: [member-id]' -H 'X-Org: 1' 'http://glidingops.test/api/members-email?search=smi'"
+vagrant ssh -c "curl -s -H 'X-Session-Id: <session>' -H 'X-Member-Id: [see _secrets.md]' -H 'X-Org: 1' 'http://glidingops.test/api/members-email?search=smi'"

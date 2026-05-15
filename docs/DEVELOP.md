@@ -2,7 +2,7 @@
 
 ## Log Locations
 
-- **Local debug log**: `C:\Users\bruno\dev\glidingops\log\app.log`
+- **Local debug log**: `C:\Users\[dev-username]\dev\glidingops\log\app.log`
 - **Local error log**: `C:\Users\bruno\dev\glidingops\log\error.log`
 - Read these directly with the `Read` tool - NO need for vagrant ssh
 
@@ -19,20 +19,20 @@ Ignore vagrant warning about homestead - actual PHP output follows.
 
 Create a script file `test_api.ps1`:
 ```powershell
-$loginResp = Invoke-WebRequest -Uri 'http://glidingops.test/checklogin.php' -Method POST -Body @{user='[dev-creds]'; pcode='[dev-creds]'} -SessionVariable ws
+$loginResp = Invoke-WebRequest -Uri 'http://glidingops.test/checklogin.php' -Method POST -Body @{user='[dev-creds-see-_secrets.md]'; pcode='[dev-creds-see-_secrets.md]'} -SessionVariable ws
 $apiResp = Invoke-WebRequest -Uri 'http://glidingops.test/api/members-email.php?search=bru' -WebSession $ws
 $apiResp.Content
 ```
 
 Run with:
 ```powershell
-powershell -File C:\Users\bruno\dev\glidingops\test_api.ps1
+powershell -File C:\Users\[dev-username]\dev\glidingops\test_api.ps1
 ```
 
 ### Check Error Log (PowerShell)
 
 ```powershell
-Get-Content C:\Users\bruno\dev\glidingops\log\error.log -Tail 20
+Get-Content C:\Users\[dev-username]\dev\glidingops\log\error.log -Tail 20
 ```
 
 ## Error Handling

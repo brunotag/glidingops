@@ -169,7 +169,7 @@ Each club (org) has its own customization folder in `/orgs/{id}/`:
 **Notes:**
 - GetSpotTask runs every 2 minutes, only during 8pm-11pm and midnight-7am
 - getFlarmTask runs EVERY MINUTE - could be optimized (excessive!)
-- DayTimes.php analyzes GPS tracks to reconstruct flight times, emails to [ops-email]
+- DayTimes.php analyzes GPS tracks to reconstruct flight times, email sent to club ops manager (address in _secrets.md)
 - gops-reporting is a separate PHP reporting application (not in main repo)
 
 ### Backup Cron Jobs (Daily at noon)

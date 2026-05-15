@@ -104,11 +104,11 @@ CREATE TABLE `bookings` (
 5. Copy this file to `lrv/storage/google-calendar-key.json` on the Vagrant box
 6. Share the WGC Bookings calendar with the service account email (found in the JSON as `client_email`)
 
-The calendar ID is `[calendar-id]`.
+The calendar ID is `[see _secrets.md]`.
 
 Storage:
 - Key file: `lrv/storage/google-calendar-key.json` (gitignored — add to `.gitignore`)
-- Calendar ID: in `lrv/.env` as `GOOGLE_CALENDAR_ID=[calendar-id]`
+- Calendar ID: in `lrv/.env` as `GOOGLE_CALENDAR_ID=[see _secrets.md]`
 - Both exposed via `config/site.php` for access from vanilla PHP
 
 ### Service Class
@@ -228,27 +228,27 @@ In `home.php`, add "Bookings (new - WIP)" link alongside the existing external b
 
 ---
 
-## Files to Create
+## Files Created
 
 | File | Purpose |
 |------|---------|
-| `lrv/database/migrations/YYYY_MM_DD_HHMMSS_create_bookings_table.php` | Drop legacy + create new bookings table |
+| `lrv/database/migrations/2026_05_15_000001_create_bookings_table.php` | Drop legacy + create new bookings table |
 | `lrv/app/Models/Booking.php` | Eloquent model |
 | `lrv/app/Services/GoogleCalendarService.php` | Google Calendar API wrapper |
 | `bookings.php` | Frontend page |
-| `lrv/storage/google-calendar-key.json` | Service account key (gitignored) |
+| `cleanup-bookings.php` | Cron script — hard-delete bookings older than 30 days |
+| `config/google-calendar.php` | Calendar ID + key path (gitignored via `config/*.php`) |
+| `config/google-calendar.php.sample` | Template for the above |
 
-## Files to Modify
+## Files Modified
 
 | File | Change |
 |------|--------|
-| `.htaccess` | Add `/Bookings` route |
-| `home.php` | Add "Bookings (new - WIP)" link |
-| `config/site.php` | Add Google Calendar config vars |
-| `lrv/.env` | Add `GOOGLE_CALENDAR_ID` |
-| `lrv/composer.json` | Add `google/apiclient` dependency |
-| `maintenance/duplicates_delete.php` | Update bookings FK references for new schema |
-| `.gitignore` | Add `lrv/storage/google-calendar-key.json` |
+| `.htaccess` | Added `RewriteRule ^Bookings$ bookings.php` |
+| `home.php` | Added "BOOKINGS (NEW - WIP)" link |
+| `lrv/composer.json` | Added `google/apiclient` dependency |
+| `maintenance/duplicates_delete.php` | Updated from old `bookings.member` to `bookings.member_id` |
+| `load_model.php` | Reverted to original (no changes needed) |
 
 ---
 
@@ -269,6 +269,12 @@ In `home.php`, add "Bookings (new - WIP)" link alongside the existing external b
 ## Auto Delete
 
 Old bookings (30 days) will be automatically deleted via cron job. Hard deletion, not soft deletion.
+
+## Technical Notes
+
+- **Google API PHP Client v1.1.5** — old library, works with service account JSON keys via `Google_Auth_AssertionCredentials` + PEM private key with password `[see _secrets.md]`. Generates deprecation warnings on PHP 8.x (harmless — interface mismatches for `ArrayAccess`, `Iterator`, `Countable`). Suppress in `php.ini` or ignore.
+- **`config/*.php` is gitignored** — `config/google-calendar.php` must be created manually on each deployment from `config/google-calendar.php.sample`
+- **Service account key** goes in `lrv/storage/google-calendar-key.json` (also gitignored via `lrv/storage` in root `.gitignore`)
 
 ## Open Questions
 
