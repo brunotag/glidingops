@@ -30,11 +30,10 @@ glidingops/
 - Audit log
 
 ### 2. tracks (GPS Tracking) - SEPARATE DATABASE
-- tracks table - live GPS points from Flarm devices
-- **tracksarchive table does NOT exist** (legacy idea)
-- Database name: "particletrack" (2,757,407 rows)
-- Tracked via spots table - maps glider registration to Spot device key
-- Connection configured separately in config/database.php
+- **Three databases** store tracking data (see [TRACKING.md](TRACKING.md) for full data flow):
+  - `gliding.tracks` — 376 MB, 2.7M rows (live GPS points, source='Particle'/'Flarm*'/'SPOT'/'bTraced')
+  - `tracks.tracksarchive` — 304 MB, 2.5M rows (archived historical tracks)
+  - `particletrack.*` (8 tables) — 253 MB, primary Particle ingestion point
 
 **Tracking Flow:**
 1. Flarm device sends data to external tracking server (particletrack)

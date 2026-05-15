@@ -357,19 +357,39 @@ id, create_time, data
 
 ## tracks Table (in gliding DB!)
 
-**Note:** There are TWO track-related things:
-1. `tracks` table in `gliding` database - 2,757,407 rows (live GPS data)
-2. Separate `particletrack` database - also exists
+**Note:** There are THREE databases storing tracking data (see [TRACKING.md](TRACKING.md) for full data flow):
 
-### tracks (in gliding DB)
-Live GPS points from tracking devices.
+### 1. `gliding.tracks` (gliding database, tracks table)
+Live GPS points from tracking devices. Active tracking data.
 ```
 id, org, user, create_time, trip_id
 glider, point_id, point_time, point_time_milli
 lattitude, longitude, altitude, accuracy
 ```
+**Size:** 376 MB, 2.7M rows — **94%** of the gliding database.
 
-**tracksarchive does NOT exist** - was planned but never implemented.
+### 2. `tracks.tracksarchive` (separate tracks database)
+Archived GPS tracking data. One table.
+```
+id, trip_id, glider, point_id, point_time, point_time_milli,
+lattitude, longitude, altitude, accuracy, speed, source
+```
+**Size:** 304 MB, 2.5M rows.
+
+### 3. `particletrack.*` (separate particletrack database)
+Raw tracking data from Particle devices. 8 tables, main one is `track`:
+| Table | Size | Rows |
+|-------|------|------|
+| track | 249 MB | 2.4M |
+| velocity | 2 MB | 15.7K |
+| position | 1.8 MB | 8.4K |
+| trip | 0.3 MB | 2.5K |
+| info | 0.2 MB | 1.7K |
+| aircraft | 0.05 MB | 155 |
+| vehicle | 0.03 MB | 11 |
+| aircraft_type | 0.02 MB | 34 |
+
+**Total tracking data across all 3 DBs:** ~955 MB.
 
 ---
 
@@ -382,3 +402,29 @@ These tables exist but have no active use:
 - `msguser`, `msg` - Internal messaging (defunct)
 - `vouchers`, `vouchertype` - Voucher system (never implemented)
 - `testy` - Test table left behind
+
+---
+
+## Table Sizes (Production — gliding DB)
+
+**Total DB:** 398 MB (211 MB data, 187 MB indexes). Queried from `information_schema` on 2026-05-15.
+
+| Table | Size | Rows | % of DB | Note |
+|-------|------|------|---------|------|
+| **tracks** | 376.11 MB | 2,746,909 | **94.47%** | Live GPS points — dominates the DB |
+| flights | 13.67 MB | 28,462 | 3.43% | Core flight records |
+| audit | 3.77 MB | 23,897 | 0.95% | Login/action log |
+| texts | 2.05 MB | 17,562 | 0.51% | Legacy SMS layer |
+| members | 0.97 MB | 3,311 | 0.24% | Pilot/member records |
+| messages | 0.33 MB | 1,790 | 0.08% | Broadcast messages |
+| bookings | 0.11 MB | 44 | 0.03% | |
+| users | 0.11 MB | 330 | 0.03% | System logins |
+| aircraft | 0.09 MB | 101 | 0.02% | |
+| role_member | 0.09 MB | 315 | 0.02% | |
+| duty | 0.08 MB | 417 | 0.02% | |
+| towcharges | 0.08 MB | 103 | 0.02% | |
+| spots | 0.08 MB | 12 | 0.02% | |
+| scheme_subs | 0.08 MB | 85 | 0.02% | Legacy |
+| Everything else | < 0.05 MB each | — | < 0.01% each | Lookup/reference tables |
+
+**Key takeaway:** `tracks` is **94%** of the database. Everything else is tiny by comparison.

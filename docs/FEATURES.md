@@ -574,57 +574,32 @@ Password reset request
 
 ## Tracking System Architecture
 
+See the dedicated **[TRACKING.md](TRACKING.md)** for full documentation. This section provides a summary.
+
 ### Overview
-Multiple tracking sources feed GPS data into the gliding database, displayed on MasterDisplay.
+Multiple tracking sources feed GPS data into three databases, displayed on the live map.
 
-### Tracking Data Flow
+### Data Flow Summary
 
 ```
-[Particle Device] 
-       ↓
-[tracks/apiParticlejsonv1.php] (receives from Particle hardware)
-       ↓
-[particletrack database] (primary store)
-       ↓ FORWARD ↓
-[[prod-host]/api/v1/json/*/createtrack] → [apiglidjsonv1.php]
-       ↓
-[gliding.tracks table] (2.7M rows)
-       ↓
-[ArchiveTracks.php] (cron - moves to tracks.tracksarchive, then deletes from gliding)
-       ↓
-[tracks database tracksarchive] (archived historical data)
-
-[Also forwards to: gliding.net.nz API for GNZ tracking]
+Particle/Flarm/SPOT/bTraced  -->  gliding.tracks  -->  todayxml.php  -->  MasterDisplay
+                                    |                     
+                                    +--> ArchiveTracks.php (after 3 days) --> tracks.tracksarchive
+                                    |                     
+                                    +--> particletrack.* (Particle primary ingestion)
 ```
 
-### Tracking Sources
+### Sources
 
-1. **Particle Devices** (primary)
-   - Hardware in gliders sends to `tracks/apiParticlejsonv1.php`
-   - Stores in `particletrack` database
-   - Forwards to gliding ops API
-   - Validates GPS points (geofence NZ, speed checks)
+1. **Particle Devices** (primary) - Hardware in gliders, received by `tracks/apiParticlejsonv1.php`, stored in `particletrack.*`, forwarded to `gliding.tracks`
+2. **Flarm/OGN** - `getFlarmTask.php` cron (every minute), writes to `gliding.tracks`
+3. **SPOT** - `GetSpotTask.php` cron (every 2 mins, 8pm-7am), writes to `gliding.tracks`
+4. **bTraced** - `btraced.php`, writes to `gliding.tracks`
 
-2. **Spot Devices** (legacy)
-   - `GetSpotTask.php` - cron job polls Spot API
-   - Queries Spot for today's flights
-   - Creates tracks with source 'SPOT'
+### Map Display
 
-3. **Flarm/OGN** (secondary)
-   - `getFlarmTask.php` - cron job
-   - Gets OGN (Open Glider Network) data
-   - Gets data from Gliding NZ API
-   - Creates tracks with source 'FlarmOGN' or 'FlarmGNZ'
-
-### Tracking Databases
-
-| Database | Purpose | Rows |
-|----------|---------|------|
-| gliding.tracks | Live/current GPS points | ~2.7M |
-| particletrack | Particle device primary store | (unknown) |
-| tracks.tracksarchive | Archived historical | (if exists) |
-
-### API Endpoints
+- **Current:** `MasterDisplayNew.php` (Leaflet + OpenTopoMap) via `/wgc-new`
+- **Legacy:** `MasterDisplay.php` (Google Maps) via `/wgc`, `/ssb`, `/cgc`, `/agc`
 
 ### todayxml.php
 **Purpose:** JSON feed for live tracking map
