@@ -11,6 +11,14 @@ require_once __DIR__ . '/load_model.php';
 require_once __DIR__ . '/helpers/logging.php';
 
 $memberId = isset($_SESSION['memberid']) ? (int)$_SESSION['memberid'] : 0;
+if ($memberId <= 0) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['success' => false, 'error' => 'No member account linked to your user']);
+        exit;
+    }
+    die('No member account linked to your user');
+}
 $isAdmin = isset($_SESSION['security']) && ($_SESSION['security'] & 64);
 
 $con_params = require('./config/database.php');
@@ -55,29 +63,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
 
-            $seq = $gcal->getNextSequence($date);
-            $memberQuery = mysqli_query($con, "SELECT displayname FROM members WHERE id = $memberId");
-            $memberRow = mysqli_fetch_array($memberQuery);
-            $dispName = $memberRow ? $memberRow['displayname'] : 'Unknown';
-
-            $summaryParts = [$dispName];
-            if (!empty($aircraftRego)) {
-                $summaryParts[] = $aircraftRego;
+            $member = \App\Models\Member::find($memberId);
+            if (!$member) {
+                echo json_encode(['success' => false, 'error' => 'Member not found']);
+                exit;
             }
-            if (!empty($intention)) {
-                $summaryParts[] = $intention;
-            }
-            if (!empty($notes)) {
-                $summaryParts[] = "($notes)";
-            }
-            $summary = implode(' - ', $summaryParts);
-
-            $description = '';
-            if (!empty($aircraftRego)) $description .= "glider: $aircraftRego\n";
-            if (!empty($intention)) $description .= "intentions: $intention\n";
-            if (!empty($notes)) $description .= "details: $notes\n";
-
-            $eventId = $gcal->createEvent($date, $seq, $summary, $description);
+            $dispName = $member->displayname ?: 'Unknown';
 
             $booking = new App\Models\Booking();
             $booking->org = $org;
@@ -86,8 +77,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $booking->intention = $intention;
             $booking->aircraft_rego = $aircraftRego;
             $booking->notes = $notes;
-            $booking->google_event_id = $eventId;
             $booking->save();
+
+            $seq = $gcal->getNextSequence($date);
+
+            $summaryParts = [$dispName];
+            if (!empty($aircraftRego)) $summaryParts[] = $aircraftRego;
+            if (!empty($intention)) $summaryParts[] = $intention;
+            if (!empty($notes)) $summaryParts[] = "($notes)";
+            $summary = implode(' - ', $summaryParts);
+
+            $description = '';
+            if (!empty($aircraftRego)) $description .= "glider: $aircraftRego\n";
+            if (!empty($intention)) $description .= "intentions: $intention\n";
+            if (!empty($notes)) $description .= "details: $notes\n";
+
+            try {
+                $eventId = $gcal->createEvent($date, $seq, $summary, $description);
+                $booking->google_event_id = $eventId;
+                $booking->save();
+            } catch (\Exception $e) {
+                $booking->delete();
+                logMsg("Booking create failed (Calendar error): " . $e->getMessage());
+                echo json_encode(['success' => false, 'error' => 'Failed to create calendar event: ' . $e->getMessage()]);
+                exit;
+            }
 
             logMsg("Booking created: id={$booking->id} date=$date member=$memberId");
             echo json_encode(['success' => true, 'booking_id' => $booking->id]);
@@ -266,8 +280,7 @@ unset($events);
         }
         .booking-row:last-of-type { border-bottom: none; border-radius: 0 0 6px 6px; }
         .booking-time {
-            font-weight: bold; color: #555; min-width: 50px;
-            font-family: monospace;
+            font-weight: bold; color: #555; min-width: 40px;
         }
         .booking-summary { flex: 1; color: #333; }
         .booking-actions { display: flex; gap: 6px; }
@@ -349,14 +362,15 @@ include __DIR__ . '/helpers/dev_mode_banner.php';
                     <div class="date-header"><?php echo htmlspecialchars($displayDate) ?></div>
                     <?php foreach ($events as $event): ?>
                         <?php
-                        $time = '';
+                        $seqNum = '';
                         if (!empty($event['start'])) {
                             $ts = strtotime($event['start']);
-                            $time = date('H:i', $ts);
+                            $mins = (int)date('H', $ts) * 60 + (int)date('i', $ts);
+                            $seqNum = '#' . (($mins - 9 * 60) + 1);
                         }
                         ?>
                         <div class="booking-row <?php echo $event['is_ours'] ? '' : 'not-ours' ?>"<?php if ($event['booking_id']): ?> data-booking-id="<?php echo $event['booking_id'] ?>"<?php endif; ?>>
-                            <span class="booking-time"><?php echo htmlspecialchars($time) ?></span>
+                            <span class="booking-time"><?php echo htmlspecialchars($seqNum) ?></span>
                             <span class="booking-summary"><?php echo htmlspecialchars($event['summary']) ?></span>
                             <?php if ($event['can_edit']): ?>
                                 <span class="booking-actions">

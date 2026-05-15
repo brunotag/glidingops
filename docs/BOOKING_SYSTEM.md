@@ -176,15 +176,15 @@ Show ALL future bookings, grouped by date, in chronological order. No past booki
 |  [+ Add Booking]                                  |
 |                                                    |
 |  15 May 2026                                       |
-|    09:00  John Smith     DG-1000    To Solo       [✏️][🗑️]
-|    09:01  (trial)        GMB        Trial Flight       ← Google Form, read-only
-|    09:02  Jane Doe       GNB        To Soaring    [✏️][🗑️]
+|    #1    John Smith     DG-1000    To Solo        [✏️][🗑️]
+|    #2    (trial)        GMB        Trial Flight        ← Google Form, read-only
+|    #3    Jane Doe       GNB        To Soaring     [✏️][🗑️]
 |                                                    |
 |  16 May 2026                                       |
-|    09:00  (trial)        DG-1000    Trial Flight       ← Google Form, read-only
+|    #1    (trial)        DG-1000    Trial Flight        ← Google Form, read-only
 |                                                    |
-|  18 May 2026 (weekend gap shown)                   |
-|    09:00  Bob Jones      DG-1000    Currency      [✏️][🗑️]
+|  18 May 2026                                       |
+|    #1    Bob Jones      DG-1000    Currency       [✏️][🗑️]
 +---------------------------------------------------+
 ```
 
