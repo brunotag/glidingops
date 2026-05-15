@@ -16,3 +16,5 @@ orgs/*/camera/*.sh
 log/
 *.sql.gz
 .env
+db/
+docs/_secrets.md

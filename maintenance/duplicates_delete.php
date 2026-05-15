@@ -71,9 +71,7 @@
 
         $con->query("UPDATE audit SET memberid = {$genuine_id} WHERE memberid={$id}");
 
-        $con->query("UPDATE bookings SET member = {$genuine_id} WHERE member={$id}");
-        $con->query("UPDATE bookings SET instructor = {$genuine_id} WHERE instructor={$id}");
-
+        $con->query("UPDATE bookings SET member_id = {$genuine_id} WHERE member_id={$id}");
         $con->query("UPDATE duty SET member = {$genuine_id} WHERE member={$id}");
 
         $con->query("UPDATE group_member SET gm_member_id = {$genuine_id} WHERE gm_member_id={$id}");

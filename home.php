@@ -205,9 +205,10 @@ if (isset($_GET['as']) && ($effectiveSecurity & 128)) {
                echo "</td>";
                $col = ($col + 1) % $totcol;
                if ($col == 0) echo "</tr><tr>";
-               //TODO: BOOKING - HARDCODED LINK
-               echo "<td><h2 class='u'><a href='https://glidegreytown.nz/latest/#booking' target='_blank'>BOOKINGS</a></h2>";
-               echo "</td>";
+                //TODO: BOOKING - HARDCODED LINK
+                echo "<td><h2 class='u'><a href='https://glidegreytown.nz/latest/#booking' target='_blank'>BOOKINGS (GOOGLE)</a></h2>";
+                echo "<p class='u'><a href='/Bookings'>BOOKINGS (NEW - WIP)</a></p>";
+                echo "</td>";
                $col = ($col + 1) % $totcol;
                if ($col == 0) echo "</tr><tr>";
 
