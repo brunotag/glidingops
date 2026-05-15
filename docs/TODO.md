@@ -134,7 +134,7 @@ The DailySheet already has some mobile optimizations (flatpickr, dropdown positi
 ## Documentation Gaps
 
 - No API documentation
-- No deployment instructions
+- [x] ~~No deployment instructions~~ → `docs/DEPLOY.md` created
 - No database backup procedures
 - No user manual
 
