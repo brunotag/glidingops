@@ -21,12 +21,15 @@ See [TRACKING.md](TRACKING.md) for full tracking system documentation.
 
 ## Backup Jobs
 
+See [DATABASE_BACKUP.md](DATABASE_BACKUP.md) for full backup documentation.
+
 | Schedule | Command | Purpose |
 |----------|---------|---------|
-| `0 12 * * *` | `mysqldump gliding > /media/mysqldump/gliding_$(date +\%Y\%m\%d).sql` | Backup gliding DB |
-| `0 12 * * *` | `mysqldump tracks > /media/mysqldump/tracks_$(date +\%Y\%m\%d).sql` | Backup tracks DB |
-| `0 12 * * *` | `mysqldump particletrack > /media/mysqldump/particletrack_$(date +\%Y\%m\%d).sql` | Backup particletrack DB |
-| `0 12 * * *` | `find /media/mysqldump -mtime +30 -delete` | Delete backups older than 30 days |
+| `0 12 * * *` | `mysqldump -uroot -p... gliding \| gzip > /media/mysqldump/gliding-$(date +\%Y\%m\%d).sql.gz` | Backup gliding DB |
+| `0 12 * * *` | `mysqldump -uroot -p... tracks \| gzip > /media/mysqldump/tracks-$(date +\%Y\%m\%d).sql.gz` | Backup tracks DB |
+| `0 12 * * *` | `mysqldump -uroot -p... particletrack \| gzip > /media/mysqldump/particletrack-$(date +\%Y\%m\%d).sql.gz` | Backup particletrack DB |
+| `30 12 * * *` | `rclone sync /media/mysqldump/ gdrive:` | Sync backups to Google Shared Drive |
+| `0 12 * * *` | `find /media/mysqldump -type f -mtime +30 -delete` | Delete backups older than 30 days |
 
 ## Booking System
 
