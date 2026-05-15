@@ -135,6 +135,30 @@ Both require SMTP daemon mode. Our initial approach used `nc` wrappers which cau
 2. Use Docker for MailCatcher: `docker run -p 1080:1080 -p 1025:1025 schickling/mailcatcher`
 3. Accept dev emails going to real addresses (with care)
 
+## Local Dev Setup After Backup Restore
+
+Restoring a production backup locally wipes the dev user `fgordon`. Recreate it:
+
+```bash
+# 1. Check what dev user exists
+vagrant ssh -c "mysql gliding -e \"SELECT id, usercode, member FROM users WHERE usercode LIKE '%gordon%';\""
+
+# 2. If missing, create the dev user
+#    (user/pass both "fgordon", MD5 hash from echo -n "fgordon" | md5sum)
+vagrant ssh -c "mysql gliding -e \"INSERT INTO users (name, usercode, password, org, securitylevel) VALUES ('Fred Gordon', 'fgordon', '1ff17bffa21715410a5970dc06cdb0f8', 1, 4);\""
+
+# 3. Find your member record
+vagrant ssh -c "mysql gliding -e \"SELECT id, displayname FROM members WHERE firstname LIKE '%Bruno%';\""
+
+# 4. Link the user to the member
+vagrant ssh -c "mysql gliding -e \"UPDATE users SET member = 5708 WHERE usercode = 'fgordon';\""
+
+# 5. Verify
+vagrant ssh -c "mysql gliding -e \"SELECT u.id, u.usercode, u.member, m.displayname FROM users u LEFT JOIN members m ON m.id = u.member WHERE u.usercode = 'fgordon';\""
+```
+
+The dev login credentials are in `docs/_secrets.md`.
+
 ## Code Style
 
 - Use ASCII characters only in source code - no unicode, em-dashes, smart quotes, etc.

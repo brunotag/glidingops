@@ -154,23 +154,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($action === 'delete') {
             $bookingId = isset($_POST['booking_id']) ? (int)$_POST['booking_id'] : 0;
-            $booking = App\Models\Booking::find($bookingId);
+            $googleEventId = isset($_POST['google_event_id']) ? trim($_POST['google_event_id']) : '';
 
-            if (!$booking || $booking->deleted) {
-                echo json_encode(['success' => false, 'error' => 'Booking not found']);
-                exit;
-            }
-            if (!$isAdmin && $booking->member_id !== $memberId) {
+            if ($bookingId) {
+                $booking = App\Models\Booking::find($bookingId);
+                if (!$booking || $booking->deleted) {
+                    echo json_encode(['success' => false, 'error' => 'Booking not found']);
+                    exit;
+                }
+                if (!$isAdmin && $booking->member_id !== $memberId) {
+                    echo json_encode(['success' => false, 'error' => 'Not authorised']);
+                    exit;
+                }
+                $gcal->deleteEvent($booking->google_event_id);
+                $booking->deleted = true;
+                $booking->save();
+                logMsg("Booking deleted: id=$bookingId");
+            } elseif ($googleEventId && $isAdmin) {
+                $gcal->deleteEvent($googleEventId);
+                logMsg("Booking deleted (calendar-only): event=$googleEventId");
+            } else {
                 echo json_encode(['success' => false, 'error' => 'Not authorised']);
                 exit;
             }
 
-            $gcal->deleteEvent($booking->google_event_id);
-
-            $booking->deleted = true;
-            $booking->save();
-
-            logMsg("Booking deleted: id=$bookingId");
             echo json_encode(['success' => true]);
             exit;
         }
@@ -228,8 +235,9 @@ foreach ($calendarEvents as $event) {
         'start' => $startStr,
         'is_ours' => $isOurs,
         'booking_id' => $booking ? $booking->id : null,
+        'event_id' => $eventId,
         'member_id' => $booking ? $booking->member_id : null,
-        'can_edit' => $isOurs && ($isAdmin || $booking->member_id === $memberId),
+        'can_edit' => $isAdmin || ($isOurs && $booking->member_id === $memberId),
     ];
 
     $seenEventIds[$eventId] = true;
@@ -309,6 +317,25 @@ unset($events);
             font-size: 24px; cursor: pointer; color: #999; border: none; background: none;
         }
         .modal-close:hover { color: #333; }
+        #loading-overlay {
+            display: none; position: fixed; z-index: 9999;
+            inset: 0; background: rgba(0,0,0,0.3);
+        }
+        #loading-overlay.show { display: block; }
+        #loading-overlay .loading-box {
+            position: absolute; left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            display: flex; align-items: center; gap: 12px;
+            background: #fff; padding: 20px 28px;
+            border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            font-size: 18px; color: #555; white-space: nowrap;
+        }
+        #loading-overlay .spinner {
+            width: 40px; height: 40px;
+            border: 4px solid #ddd; border-top: 4px solid #337ab7;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         .modal h3 { margin: 0 0 16px 0; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 4px; font-size: 13px; }
@@ -331,11 +358,9 @@ unset($events);
         .no-bookings { text-align: center; padding: 40px; color: #999; font-size: 16px; }
         #other-gilder-row { display: none; margin-top: 8px; }
         #other-gilder-row input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
-        <?php
-        $inc = "./orgs/" . $org . "/menu1.css";
-        if (file_exists($inc)) include $inc;
-        ?>
-    </style>
+    <?php $inc = "./orgs/" . $org . "/heading2.css"; if (file_exists($inc)) include $inc; ?>
+    <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
+</style>
 </head>
 <body>
 <?php
@@ -347,8 +372,11 @@ include __DIR__ . '/helpers/dev_mode_banner.php';
 ?>
 
 <div class="container">
-    <h2 style="margin-top:0;">BOOKINGS</h2>
-    <button class="add-btn" onclick="openCreateModal()">+ Add Booking</button>
+    <h2 style="margin-top:0;">Upcoming Bookings</h2>
+    <div style="margin-bottom: 20px; display: flex; gap: 8px;">
+        <button class="add-btn" onclick="openCreateModal()" style="margin-bottom:0">+ Add Booking</button>
+        <button class="add-btn" onclick="doRefresh()" style="margin-bottom:0">Refresh</button>
+    </div>
 
     <div id="booking-list">
         <?php if (empty($dateGroups)): ?>
@@ -365,8 +393,7 @@ include __DIR__ . '/helpers/dev_mode_banner.php';
                         $seqNum = '';
                         if (!empty($event['start'])) {
                             $ts = strtotime($event['start']);
-                            $mins = (int)date('H', $ts) * 60 + (int)date('i', $ts);
-                            $seqNum = '#' . (($mins - 9 * 60) + 1);
+                            $seqNum = '#' . ((int)date('i', $ts) + 1);
                         }
                         ?>
                         <div class="booking-row <?php echo $event['is_ours'] ? '' : 'not-ours' ?>"<?php if ($event['booking_id']): ?> data-booking-id="<?php echo $event['booking_id'] ?>"<?php endif; ?>>
@@ -374,8 +401,10 @@ include __DIR__ . '/helpers/dev_mode_banner.php';
                             <span class="booking-summary"><?php echo htmlspecialchars($event['summary']) ?></span>
                             <?php if ($event['can_edit']): ?>
                                 <span class="booking-actions">
+                                    <?php if ($event['booking_id']): ?>
                                     <button class="btn-edit" onclick="openEditModal(<?php echo $event['booking_id'] ?>)" title="Edit">&#9998;</button>
-                                    <button class="btn-delete" onclick="deleteBooking(<?php echo $event['booking_id'] ?>)" title="Delete">&#10005;</button>
+                                    <?php endif; ?>
+                                    <button class="btn-delete" onclick="deleteBooking('<?php echo $event['booking_id'] ?: $event['event_id'] ?>', <?php echo $event['booking_id'] ? 'true' : 'false' ?>)" title="Delete">&#10005;</button>
                                 </span>
                             <?php endif; ?>
                         </div>
@@ -395,20 +424,34 @@ include __DIR__ . '/helpers/dev_mode_banner.php';
             <input type="hidden" id="form-booking-id" value="0">
 
             <div class="form-group">
-                <label for="form-date">Date</label>
+                <label for="form-date">Date <span style="color:#d9534f">*</span></label>
                 <input type="text" id="form-date" class="flatpickr-input" placeholder="Select date" readonly="readonly">
             </div>
 
             <div class="form-group">
-                <label for="form-intention">Intentions</label>
-                <textarea id="form-intention" placeholder="What do you want to do?"></textarea>
+                <label>Intentions <span style="color:#d9534f">*</span></label>
+                <div class="radio-group" id="intention-radio-group">
+                    <label><input type="radio" name="intention" value="To Solo"> To Solo</label>
+                    <label><input type="radio" name="intention" value="To Soaring"> To Soaring</label>
+                    <label><input type="radio" name="intention" value="To XCP"> To XCP</label>
+                    <label><input type="radio" name="intention" value="BFR / ICR"> BFR / ICR</label>
+                    <label><input type="radio" name="intention" value="Currency"> Currency</label>
+                    <label><input type="radio" name="intention" value="PAX"> PAX</label>
+                    <label><input type="radio" name="intention" value="Fly Solo - Local"> Fly Solo - Local</label>
+                    <label><input type="radio" name="intention" value="Fly Solo - XC"> Fly Solo - XC</label>
+                    <label><input type="radio" name="intention" value="Fly Solo - Badge"> Fly Solo - Badge</label>
+                    <label><input type="radio" name="intention" value="__other__"> Other</label>
+                </div>
+                <div id="other-intention-row" style="display:none; margin-top:8px;">
+                    <input type="text" id="form-other-intention" placeholder="Describe your intention" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-size:14px; box-sizing:border-box;">
+                </div>
             </div>
 
             <div class="form-group">
-                <label>Glider</label>
+                <label>Glider <span style="color:#d9534f">*</span></label>
                 <div class="radio-group" id="glider-radio-group">
                     <label><input type="radio" name="glider" value="DG-1000"> DG-1000</label>
-                    <label><input type="radio" name="glider" value="GM"> GM</label>
+                    <label><input type="radio" name="glider" value="GMB"> GMB</label>
                     <label><input type="radio" name="glider" value="GNB"> GNB</label>
                     <label><input type="radio" name="glider" value="__other__"> Other</label>
                 </div>
@@ -432,6 +475,24 @@ include __DIR__ . '/helpers/dev_mode_banner.php';
     </div>
 </div>
 
+<div id="loading-overlay">
+    <div class="loading-box">
+        <div class="spinner"></div>
+        <span>Loading...</span>
+    </div>
+</div>
+
+<div class="modal" id="confirm-modal">
+    <div class="modal-content" style="max-width:420px">
+        <h3 id="confirm-title" style="margin:0 0 12px 0">Confirm</h3>
+        <p id="confirm-message" style="margin:0 0 20px 0; font-size:14px; color:#555"></p>
+        <div style="text-align:right">
+            <button class="btn-default" onclick="document.getElementById('confirm-modal').style.display='none'" style="padding:8px 20px; border:none; border-radius:4px; cursor:pointer; background:#ccc; margin-right:8px">Cancel</button>
+            <button id="confirm-yes-btn" class="btn-primary" style="padding:8px 20px; border:none; border-radius:4px; cursor:pointer; background:#d9534f; color:#fff">Delete</button>
+        </div>
+    </div>
+</div>
+
 <script>
 flatpickr("#form-date", {
     dateFormat: "Y-m-d",
@@ -439,25 +500,31 @@ flatpickr("#form-date", {
     defaultDate: "today",
 });
 
-document.querySelectorAll('input[name="glider"]').forEach(function(radio) {
-    radio.addEventListener('change', function() {
-        document.getElementById('other-gilder-row').style.display =
-            this.value === '__other__' ? 'block' : 'none';
+function wireRadioOther(name, otherId) {
+    document.querySelectorAll('input[name="' + name + '"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            document.getElementById(otherId).style.display =
+                this.value === '__other__' ? 'block' : 'none';
+        });
     });
-});
+}
+wireRadioOther('glider', 'other-gilder-row');
+wireRadioOther('intention', 'other-intention-row');
 
 var editBookings = {};
 
+function clearRadio(name) {
+    document.querySelectorAll('input[name="' + name + '"]').forEach(function(r) { r.checked = false; });
+}
 function openCreateModal() {
     document.getElementById('modal-title').textContent = 'New Booking';
     document.getElementById('form-action').value = 'create';
     document.getElementById('form-booking-id').value = '0';
     document.getElementById('form-date')._flatpickr.setDate(new Date());
-    document.getElementById('form-intention').value = '';
-    document.querySelector('input[name="glider"][value="DG-1000"]').checked = false;
-    document.querySelector('input[name="glider"][value="GM"]').checked = false;
-    document.querySelector('input[name="glider"][value="GNB"]').checked = false;
-    document.querySelector('input[name="glider"][value="__other__"]').checked = false;
+    clearRadio('intention');
+    clearRadio('glider');
+    document.getElementById('other-intention-row').style.display = 'none';
+    document.getElementById('form-other-intention').value = '';
     document.getElementById('other-gilder-row').style.display = 'none';
     document.getElementById('form-other-glider').value = '';
     document.getElementById('form-notes').value = '';
@@ -477,15 +544,27 @@ function openEditModal(bookingId) {
     fetch('/Bookings?action=get&id=' + bookingId)
         .then(function(r) { return r.json(); })
         .then(function(data) {
-            if (!data.success) { alert(data.error); return; }
+            if (!data.success) { showError(data.error); return; }
             var b = data.booking;
             document.getElementById('form-date')._flatpickr.setDate(b.booking_date);
-            document.getElementById('form-intention').value = b.intention || '';
             document.getElementById('form-notes').value = b.notes || '';
+            document.getElementById('form-error').style.display = 'none';
+
+            var intentionVal = b.intention || '';
+            var intRadio = document.querySelector('input[name="intention"][value="' + intentionVal + '"]');
+            if (intRadio) {
+                intRadio.checked = true;
+                document.getElementById('other-intention-row').style.display = 'none';
+            } else {
+                document.querySelector('input[name="intention"][value="__other__"]').checked = true;
+                document.getElementById('other-intention-row').style.display = 'block';
+                document.getElementById('form-other-intention').value = intentionVal;
+            }
+
             var rego = b.aircraft_rego || '';
-            var radio = document.querySelector('input[name="glider"][value="' + rego + '"]');
-            if (radio) {
-                radio.checked = true;
+            var gliderRadio = document.querySelector('input[name="glider"][value="' + rego + '"]');
+            if (gliderRadio) {
+                gliderRadio.checked = true;
                 document.getElementById('other-gilder-row').style.display = 'none';
             } else {
                 document.querySelector('input[name="glider"][value="__other__"]').checked = true;
@@ -505,9 +584,16 @@ function submitForm(e) {
     e.preventDefault();
     var action = document.getElementById('form-action').value;
     var date = document.getElementById('form-date').value;
-    var intention = document.getElementById('form-intention').value;
     var notes = document.getElementById('form-notes').value;
     var bookingId = document.getElementById('form-booking-id').value;
+
+    var intentionRadio = document.querySelector('input[name="intention"]:checked');
+    var intention = '';
+    if (intentionRadio) {
+        intention = intentionRadio.value === '__other__'
+            ? document.getElementById('form-other-intention').value
+            : intentionRadio.value;
+    }
 
     var gliderRadio = document.querySelector('input[name="glider"]:checked');
     var aircraftRego = '';
@@ -518,6 +604,8 @@ function submitForm(e) {
     }
 
     if (!date) { showError('Date is required'); return; }
+    if (!intention) { showError('Please select an intention'); return; }
+    if (!aircraftRego) { showError('Please select a glider'); return; }
 
     var formData = new FormData();
     formData.append('action', action);
@@ -529,6 +617,7 @@ function submitForm(e) {
         formData.append('booking_id', bookingId);
     }
 
+    showLoading('Saving...');
     document.getElementById('form-submit-btn').disabled = true;
     document.getElementById('form-submit-btn').textContent = 'Saving...';
 
@@ -550,12 +639,29 @@ function submitForm(e) {
         });
 }
 
-function deleteBooking(bookingId) {
-    if (!confirm('Are you sure you want to delete this booking?')) return;
+function deleteBooking(id, isDb) {
+    var msg = isDb
+        ? 'Are you sure you want to delete this booking?'
+        : 'Google Calendar bookings can not be undeleted. Are you sure you want to delete?';
+    document.getElementById('confirm-title').textContent = 'Delete Booking';
+    document.getElementById('confirm-message').textContent = msg;
+    document.getElementById('confirm-yes-btn').textContent = 'Delete';
+    document.getElementById('confirm-yes-btn').onclick = function() {
+        document.getElementById('confirm-modal').style.display = 'none';
+        doDelete(id, isDb);
+    };
+    document.getElementById('confirm-modal').style.display = 'block';
+}
 
+function doDelete(id, isDb) {
+    showLoading('Deleting...');
     var formData = new FormData();
     formData.append('action', 'delete');
-    formData.append('booking_id', bookingId);
+    if (isDb) {
+        formData.append('booking_id', id);
+    } else {
+        formData.append('google_event_id', id);
+    }
 
     fetch('/Bookings', { method: 'POST', body: formData })
         .then(function(r) { return r.json(); })
@@ -568,11 +674,23 @@ function deleteBooking(bookingId) {
         });
 }
 
+function showLoading(msg) {
+    document.getElementById('loading-overlay').className = 'show';
+    document.getElementById('loading-overlay').querySelector('.loading-box span').textContent = msg || 'Loading...';
+}
+
 function showError(msg) {
     var el = document.getElementById('form-error');
     el.textContent = msg;
     el.style.display = 'block';
 }
+
+function doRefresh() {
+    showLoading('Refreshing...');
+    location.reload();
+}
+
+
 </script>
 </body>
 </html>

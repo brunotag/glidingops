@@ -1,3 +1,7 @@
 {
-    "php.debug.ideKey": "vagrant"
+    "php.debug.ideKey": "vagrant",
+    "intelephense.files.maxSize": 5000000,
+    "intelephense.environment.includePaths": [
+        "lrv/vendor"
+    ]
 }

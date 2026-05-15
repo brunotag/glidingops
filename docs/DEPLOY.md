@@ -1,5 +1,13 @@
 # Deployment
 
+## SSH Access
+
+Hostname, IP, user, and password in `docs/_secrets.md` (Production SSH section).
+
+From **Linux/Mac/WSL**: `ssh root@<host-ip>`
+
+From **Windows (PuTTY)**: `plink -ssh -batch -pw '<password>' root@<host-ip> "<command>"`
+
 ## Gitignored Files
 
 These files are not in git and must be created manually on each deployment.

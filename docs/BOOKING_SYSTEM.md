@@ -28,7 +28,7 @@ Matches the Google Form minus voucher/trial:
 |-------|------|-------|
 | Date | date | The flying day |
 | Intentions | textarea | Simple free text — no radio buttons, not used for analytics |
-| Glider | radio + free text | Options: "DG-1000", "GM", "GNB", "Other" (reveals text input) |
+| Glider | radio + free text | Options: "DG-1000", "GMB", "GNB", "Other" (reveals text input) |
 | Notes | textarea | Optional free text |
 
 For logged-in members, `name` is derived from their member record.
