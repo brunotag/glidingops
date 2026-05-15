@@ -23,16 +23,18 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
     <style>
         <?php $inc = "./orgs/" . $org . "/heading2.css"; if (file_exists($inc)) include $inc; ?>
         <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
-        body { font-family: Arial, Helvetica, sans-serif; margin: 0; }
+        body { font-family: Arial, Helvetica, sans-serif; margin: 0; background: #f5f5f5; }
         h1, h2 { font-family: Calibri, Arial, Helvetica, sans-serif; }
-        .section { margin: 20px 12px; padding: 15px; border-radius: 8px; box-shadow: 5px 5px 10px #888; }
-        .flights-section { background-color: #e0e0f0; }
-        .summary-section { background-color: #f0f0e0; }
+        .section { margin: 20px 12px; padding: 20px; border-radius: 6px; background: #fff; border: 1px solid #ddd; }
+        .flights-section { }
         .table { margin-bottom: 0; }
-        .table th, .table td { vertical-align: middle; }
+        .table th { background: #e8e8e8; border-bottom: 2px solid #337ab7; }
+        .table-striped > tbody > tr:nth-of-type(odd) { background: #fff; }
+        .table-striped > tbody > tr:nth-of-type(even) { background: #eef4fb; }
+        .table th, .table td { vertical-align: middle; padding: 6px 8px; }
+
         .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .border-top { border-top: 2px solid #000; }
+        .border-top { border-top: 2px solid #337ab7; font-weight: bold; }
         .loader { text-align: center; padding: 50px; }
         .spinner { font-size: 24px; color: #337ab7; }
         @media print {
@@ -62,9 +64,8 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
         </div>
 
         <div id="content" style="display: none;">
-            <div id="flights-section" class="section flights-section"></div>
-            <div id="tows-section" class="section flights-section"></div>
-            <div id="summary-section" class="section summary-section"></div>
+            <div id="flights-section" class="section"></div>
+            <div id="summary-section" class="section"></div>
         </div>
     </div>
 
@@ -73,7 +74,6 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
         var billingOptions = {};
         var towlaunch, selflaunch, winchlaunch;
         var memberid = <?php echo intval($_SESSION['memberid']); ?>;
-        var istowy = false;
         var memberInstructor = false;
 
         function formatDuration(ms) {
@@ -139,13 +139,9 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
                 towlaunch = data.towlaunch;
                 selflaunch = data.selflaunch;
                 winchlaunch = data.winchlaunch;
-                istowy = data.istowy;
                 memberInstructor = data.memberInstructor;
 
                 renderFlights(data.flights);
-                if (istowy && data.tows.length > 0) {
-                    renderTows(data.tows);
-                }
                 renderSummary(data.flights);
             };
             xhr.onerror = function() {
@@ -160,7 +156,7 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
                 return;
             }
 
-            var html = '<div class="table-responsive"><table class="table table-bordered table-condensed"><thead><tr>' +
+            var html = '<div class="table-responsive"><table class="table table-bordered table-condensed table-striped"><thead><tr>' +
                 '<th>Date</th><th class="text-right">Glider</th><th class="text-right">Make/Model</th><th>Location</th>' +
                 '<th class="text-right">Duration</th><th class="text-right">Start</th><th class="text-right">Land</th>' +
                 '<th class="text-right">Tow Height</th><th class="text-right">Launch</th><th class="text-right">Type</th>' +
@@ -187,7 +183,7 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
                 var launch = getLaunchInfo(row.launchtype, row.height);
                 var comments = row.comments ? row.comments.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
 
-                html += '<tr class="' + (idx % 2 === 0 ? 'even' : 'odd') + '">';
+                html += '<tr>';
                 html += '<td>' + formatDate(row.localdate) + '</td>';
                 html += '<td class="text-right">' + (row.glider || '') + '</td>';
                 html += '<td class="text-right">' + (row.make_model || '') + '</td>';
@@ -207,23 +203,6 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
             document.getElementById('flights-section').innerHTML = html;
             
             window._flightSummary = { totMins, cntP, cntP1, cntP2, cntI, totMinsP, totMinsP1, totMinsP2, totMinsI };
-        }
-
-        function renderTows(tows) {
-            var html = '<h2>Tows</h2><div class="table-responsive"><table class="table table-bordered table-condensed">' +
-                '<thead><tr><th>Date</th><th class="text-right">Plane</th><th class="text-right">Glider</th><th class="text-right">Tow Height</th></tr></thead><tbody>';
-
-            tows.forEach(function(row, idx) {
-                html += '<tr class="' + (idx % 2 === 0 ? 'even' : 'odd') + '">';
-                html += '<td>' + formatDate(row.localdate) + '</td>';
-                html += '<td class="text-right">' + (row.rego_short || '') + '</td>';
-                html += '<td class="text-right">' + (row.glider || '') + '</td>';
-                html += '<td class="text-right">' + (row.height || '') + '</td>';
-                html += '</tr>';
-            });
-
-            html += '</tbody></table></div>';
-            document.getElementById('tows-section').innerHTML = html;
         }
 
         function renderSummary(flights) {
