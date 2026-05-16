@@ -48,7 +48,7 @@ $stmt2 = mysqli_prepare($con, "UPDATE magic_link_tokens SET used_at = NOW() WHER
 mysqli_stmt_bind_param($stmt2, 'i', $row['id']);
 mysqli_stmt_execute($stmt2);
 
-$stmt3 = mysqli_prepare($con, "SELECT id, usercode, member, org, securitylevel, name FROM users WHERE id = ?");
+$stmt3 = mysqli_prepare($con, "SELECT id, usercode, member, org, securitylevel, name, force_pw_reset FROM users WHERE id = ?");
 mysqli_stmt_bind_param($stmt3, 'i', $row['user_id']);
 mysqli_stmt_execute($stmt3);
 $userResult = mysqli_stmt_get_result($stmt3);
@@ -87,5 +87,10 @@ mysqli_stmt_execute($auditStmt);
 mysqli_close($con);
 
 $_SESSION['auth_via_magic_link'] = 1;
-header('Location: /PasswordChange');
+
+if ($user['force_pw_reset'] == 1) {
+    header('Location: /PasswordChange');
+} else {
+    header('Location: /home');
+}
 apiExit();

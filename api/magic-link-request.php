@@ -25,7 +25,7 @@ if (mysqli_connect_errno()) {
 }
 
 function sendMagicLink($con, $userId, $userName, $memberEmail, $usercode) {
-    $countStmt = mysqli_prepare($con, "SELECT COUNT(*) as cnt FROM magic_link_tokens WHERE user_id = ? AND used_at IS NULL");
+    $countStmt = mysqli_prepare($con, "SELECT COUNT(*) as cnt FROM magic_link_tokens WHERE user_id = ? AND used_at IS NULL AND created_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)");
     mysqli_stmt_bind_param($countStmt, 'i', $userId);
     mysqli_stmt_execute($countStmt);
     $countResult = mysqli_stmt_get_result($countStmt);
@@ -46,7 +46,7 @@ function sendMagicLink($con, $userId, $userName, $memberEmail, $usercode) {
     $host = $_SERVER['HTTP_HOST'];
     $link = "$scheme://$host/api/magic-link-verify?token=" . urlencode($token);
 
-    $message = "Hi $userName,\n\nClick the link below to log in to Gliding Ops:\n$link\n\nThis link expires in 15 minutes and can only be used once.\n\nIf you did not request this link, please ignore this email.";
+    $message = "Hi $userName,\n\nClick the link below to log in to Gliding Ops:\n$link\n\nYour username is: $usercode\n\nThis link expires in 15 minutes and can only be used once.\n\nIf you did not request this link, please ignore this email.";
 
     $recipients = [];
     if (!empty($memberEmail) && filter_var($memberEmail, FILTER_VALIDATE_EMAIL)) {

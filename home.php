@@ -150,6 +150,11 @@ if (isset($_GET['as']) && ($effectiveSecurity & 128)) {
          &mdash; <a href="home" style="color:#856404;text-decoration:underline;">Clear override</a>
       </div>
    <?php endif; ?>
+   <?php if (isset($_SESSION['auth_via_magic_link']) && $_SESSION['auth_via_magic_link'] == 1): ?>
+      <div style="background:#d9edf7;color:#31708f;text-align:center;padding:8px;font-size:13px;border-bottom:1px solid #bce8f1;">
+         Logged in via email link. Set a password for future logins &mdash; <a href="/PasswordChange" style="color:#245269;text-decoration:underline;">Change password</a>
+      </div>
+   <?php endif; ?>
    <?php $inc = "./orgs/" . $org . "/heading2.txt";
    include $inc; ?>
     <div id='container'>
