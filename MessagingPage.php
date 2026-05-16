@@ -2,7 +2,7 @@
 session_start();
 $org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 
-if (!isset($_SESSION['security']) || !($_SESSION['security'] & 1)) {
+if (!isset($_SESSION['security']) || !($_SESSION['security'] & 5)) {
     header('Location: /Login.php');
     exit;
 }
