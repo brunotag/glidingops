@@ -29,6 +29,7 @@ $dbOk = !mysqli_connect_errno();
 
 $dateTime = new DateTime('now');
 $dateStr = $dateTime->format('Y-m-d');
+require_once __DIR__ . '/helpers.php';
 
 // Rostered duties
 $rosterDuties = [];
@@ -53,7 +54,15 @@ if ($dbOk) {
 
     // Today's flights
     $todayFlights = [];
-    $q2 = "SELECT localdate, glider, pic, start, land FROM flights WHERE localdate = $dateStr AND org = $org AND deleted = 0 ORDER BY start DESC LIMIT 20";
+    $flightTypeGlider = getGlidingFlightType($con);
+    $q2 = "SELECT f.localdate, f.glider, f.pic, f.p2, f.start, f.land,
+                  m1.displayname as pic_name, m2.displayname as p2_name
+           FROM flights f
+           LEFT JOIN members m1 ON m1.id = f.pic
+           LEFT JOIN members m2 ON m2.id = f.p2
+           WHERE f.localdate = $dateStr AND f.org = $org AND f.deleted = 0
+             AND f.type = " . intval($flightTypeGlider) . " AND f.start > 0
+           ORDER BY f.seq ASC LIMIT 20";
     $r2 = mysqli_query($con, $q2);
     if ($r2) {
         while ($row = mysqli_fetch_array($r2)) {
@@ -64,7 +73,13 @@ if ($dbOk) {
     // Recent flights for this member
     if (isset($_SESSION['memberid']) && intval($_SESSION['memberid']) > 0) {
         $mid = intval($_SESSION['memberid']);
-        $q3 = "SELECT localdate, glider, start, land FROM flights WHERE (pic = $mid OR p2 = $mid) AND deleted = 0 AND org = $org ORDER BY localdate DESC, start DESC LIMIT 5";
+        $q3 = "SELECT f.localdate, f.glider, f.start, f.land, f.pic, f.p2,
+                      m1.displayname as pic_name, m2.displayname as p2_name
+               FROM flights f
+               LEFT JOIN members m1 ON m1.id = f.pic
+               LEFT JOIN members m2 ON m2.id = f.p2
+               WHERE (f.pic = $mid OR f.p2 = $mid) AND f.deleted = 0 AND f.org = $org
+               ORDER BY f.localdate DESC, f.start DESC LIMIT 5";
         $r3 = mysqli_query($con, $q3);
         if ($r3) {
             while ($row = mysqli_fetch_array($r3)) {
@@ -215,8 +230,9 @@ if ($dbOk) {
       <div class="row">
         <div class="col-sm-4">
           <div class="dashboard-card">
-            <div class="card-header">My Profile</div>
+            <div class="card-header">My Gliding</div>
             <div class="card-body">
+              <p style="margin:0 0 6px 0;font-size:13px;color:#888;font-weight:bold;">Last 5 flights:</p>
               <?php if (empty($recentFlights)): ?>
                 <p style="color:#888;font-size:13px;margin:4px 0;">No recent flights found.</p>
               <?php else: ?>
@@ -224,13 +240,22 @@ if ($dbOk) {
                   <?php
                     $dur = '';
                     if ($f['start'] && $f['land']) {
-                      $mins = floor(($f['land'] - $f['start']) / 60000);
-                      $dur = ' (' . $mins . ' min)';
+                      $totalMins = floor(($f['land'] - $f['start']) / 60000);
+                      $hours = floor($totalMins / 60);
+                      $mins = $totalMins % 60;
+                      $dur = ' (' . $hours . 'h ' . $mins . 'min)';
                     }
                     $ld = strval($f['localdate']);
                     $dispDate = strlen($ld) >= 8 ? substr($ld, 6, 2) . '/' . substr($ld, 4, 2) . '/' . substr($ld, 0, 4) : $ld;
+
+                    $otherPilot = '';
+                    if (intval($f['pic']) === $mid && !empty($f['p2_name'])) {
+                      $otherPilot = ', with ' . $f['p2_name'];
+                    } elseif (intval($f['p2']) === $mid && !empty($f['pic_name'])) {
+                      $otherPilot = ', with ' . $f['pic_name'];
+                    }
                   ?>
-                  <a href="/MyFlights"><?php echo $dispDate; ?> &mdash; <?php echo htmlspecialchars($f['glider']); ?><?php echo $dur; ?></a>
+                  <a href="/MyFlights"><?php echo $dispDate; ?> &mdash; <?php echo htmlspecialchars($f['glider']); ?><?php echo $dur; ?><?php echo htmlspecialchars($otherPilot); ?></a>
                 <?php endforeach; ?>
                 <a href="/MyFlights" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">View all flights &rarr;</a>
               <?php endif; ?>
@@ -250,11 +275,20 @@ if ($dbOk) {
                   <?php
                     $dur = '';
                     if ($f['start'] && $f['land']) {
-                      $mins = floor(($f['land'] - $f['start']) / 60000);
-                      $dur = ' (' . $mins . ' min)';
+                      $totalMins = floor(($f['land'] - $f['start']) / 60000);
+                      $hours = floor($totalMins / 60);
+                      $mins = $totalMins % 60;
+                      $dur = ' (' . $hours . 'h ' . $mins . 'min)';
+                    } else {
+                      $dur = ' (flying)';
+                    }
+
+                    $pilotLine = htmlspecialchars($f['glider']) . ' &mdash; ' . htmlspecialchars($f['pic_name'] ?? '?');
+                    if (!empty($f['p2_name'])) {
+                      $pilotLine .= ' with ' . htmlspecialchars($f['p2_name']);
                     }
                   ?>
-                  <a href="/DailyLogSheet.php?org=<?php echo $org; ?>"><?php echo htmlspecialchars($f['glider']); ?><?php echo $dur; ?></a>
+                  <a href="/DailyLogSheet.php?org=<?php echo $org; ?>"><?php echo $pilotLine; ?><?php echo $dur; ?></a>
                 <?php endforeach; ?>
               <?php endif; ?>
               <?php if ($org == 1): ?>
