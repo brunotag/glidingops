@@ -431,6 +431,7 @@ if ($dbOk) {
           <div class="nav-card">
             <div class="card-header">Super Admin</div>
             <div class="card-body">
+              <a href="/InviteUsers">Invite Users to Gliding Ops</a>
               <a href="/Organisations">Organisations</a>
             </div>
           </div>

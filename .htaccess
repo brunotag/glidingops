@@ -63,6 +63,7 @@ RewriteRule Users/([0-9]+) users-new.php?id=$1 [L,QSA]
 RewriteRule Users users-new.php [L,QSA]
 
 RewriteRule home home.php [L]
+RewriteRule InviteUsers invite-users.php [L,QSA]
 RewriteRule ViewAs ViewAs.php [L,QSA]
 RewriteRule AssignRoles role_member-list.php [L]
 RewriteRule AssignRole role_member.php [L]

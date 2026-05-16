@@ -17,11 +17,15 @@
 - Login.php completely rewritten: Bootstrap card layout, tabbed UI (Password + Email or Register), mobile-responsive
 - api/magic-link-request.php: New endpoint generates 64-char token, sends magic link email. Auto-creates user account if member email entered but no user exists. Rate-limited to 3 unused tokens per user.
 - api/magic-link-verify.php: New endpoint validates token (exists, unused, 15-min expiry), creates session, sets auth_via_magic_link flag, redirects to PasswordChange
-- PasswordChange.php + changepw.php: Skip old-password check when auth_via_magic_link is set, show explanatory banner
+- PasswordChange.php + changepw.php: Skip old-password check when auth_via_magic_link is set, show explanatory banner. PasswordChange.php modernised with Bootstrap card layout.
 - magic_link_tokens table created via Laravel migration
 - Forgotten.php deleted (replaced by magic link flow)
 - Register.php deleted (absorbed into Email or Register tab)
 - .htaccess updated with magic link routes
+- MessagingPage.php security changed from Level 1 to Level 5
+- home.php completely rewritten: Dashboard layout with 3 data widgets (My Gliding, Flying/Tracking, Latest Updates) + navigation cards in priority order. CSS column-width: 280px for responsive masonry. Color scheme unified (#063552 backgrounds, #f26120 text on dark, white hover).
+- MyFlights.php: Date column sortable (asc/desc) with arrow indicator
+- Color scheme overhaul across all CSS files: #000040, #000080, #0000FF replaced with #063552. Foreground on dark backgrounds changed to #f26120.
 - docs updated: SECURITY.md, DEPLOY.md, ROUTES.md, FEATURES.md, AGENTS.md
 - FUTURE_DEVELOPMENT_MAGIC_LINK.md removed (now reality)
 
