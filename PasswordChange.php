@@ -30,11 +30,16 @@ table {border-collapse: collapse;}
 <div id='container'>
 <div id='entry'>
 <h2>Change Password</h2>
+<?php if (isset($_SESSION['auth_via_magic_link']) && $_SESSION['auth_via_magic_link'] == 1): ?>
+  <p style="color:#063552;font-weight:bold;">You logged in via email link. Set a password below to enable password login in future.</p>
+<?php endif; ?>
 <form method='POST' action='changepw.php'>
 <table>
 <tr><td>Username:</td><td><?php echo $_SESSION['who']; ?></td><td></td></tr>
 <?PHP 
-    if(!isset($_SESSION['force_pw_reset']) || $_SESSION['force_pw_reset'] != 1) {
+    $skipOldPw = (isset($_SESSION['force_pw_reset']) && $_SESSION['force_pw_reset'] == 1)
+              || (isset($_SESSION['auth_via_magic_link']) && $_SESSION['auth_via_magic_link'] == 1);
+    if (!$skipOldPw) {
 ?>
     <tr><td>Enter Current Password:</td><td><input type='password' name='pcodeold' autofocus></td><td></td></tr>
 <?PHP 

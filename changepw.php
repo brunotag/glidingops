@@ -38,6 +38,8 @@ if (isset($_SESSION['security'])) {
   $canChangePassword = false;
   if (isset($_SESSION['force_pw_reset']) && $_SESSION['force_pw_reset'] == 1) {
     $canChangePassword = true;
+  } elseif (isset($_SESSION['auth_via_magic_link']) && $_SESSION['auth_via_magic_link'] == 1) {
+    $canChangePassword = true;
   } else {
     $mypasswordold = $_POST['pcodeold'];
     $mypasswordold = stripslashes($mypasswordold);
@@ -59,7 +61,10 @@ if (isset($_SESSION['security'])) {
       $r = mysqli_query($con, $sql);
       if (isset($_SESSION['force_pw_reset'])){
         unset($_SESSION['force_pw_reset']);
-      } 
+      }
+      if (isset($_SESSION['auth_via_magic_link'])){
+        unset($_SESSION['auth_via_magic_link']);
+      }
       header('Location: home');
     }
   } else {

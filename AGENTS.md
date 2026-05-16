@@ -12,28 +12,23 @@
 - (none)
 
 ### Completed This Session
-- MasterDisplayNew.php, css/map.css, js/map.js - New real-time map with Leaflet, OpenTopoMap, 24-color palette, altitude gradient coloring, multi-select flight toggle, double-click isolate, mobile overlay with date/brightness controls
-- Outlier detection for track points (>300 km/h)
-- Dark overlay pane for map (tunable via slider)
-- Dev tools panel (overlay + track opacity sliders)
-- /wgc-new route + homepage link
-- messages-tree.php - Treeview for sent messages with per-recipient expand/collapse, color-coded status (green/amber/red), Twitter badge, horizontal gradient indicators
-- Fixed MessagingPage bug: txt_to column (varchar(20)) too short for email addresses — INSERT failed silently. Changed to store NULL instead.
-- Removed texts.txt_timestamp_create from SentMessages DataTables view (misleading due to on update CURRENT_TIMESTAMP)
-- docs updated: ROUTES.md, MESSAGING.md, DATABASE.md, FUTURE_DEVELOPMENT_MAP.md
-- StartDay.php simplified — removed date picker, always today, modernised card layout
-- EditDailySheet.php created — date picker only, auto-location from org default
-- DailyLogSheet.php modernised — card layout, striped table, menu bar, removed TOW HEIGHT, duration left-aligned
-- Homepage DAILY OPS links reworked: New Daily Timesheet → StartDay.php, added Edit Daily Timesheet link
-- ViewAs.php created — super admin impersonation via ?as= query param, user dropdown + level dropdown
-- home.php $effectiveSecurity override logic for 128+ users with yellow banner
-- docs updated: ROUTES.md, FEATURES.md, CODEBASE_MAP.md
+- members-list-v2b.php + api/members.php: New "User" column with link to user account or "No"
+- users-list-v2b.php + api/users.php: New "Last Login" column sortable by most recent login timestamp
+- Login.php completely rewritten: Bootstrap card layout, tabbed UI (Password + Email or Register), mobile-responsive
+- api/magic-link-request.php: New endpoint generates 64-char token, sends magic link email. Auto-creates user account if member email entered but no user exists. Rate-limited to 3 unused tokens per user.
+- api/magic-link-verify.php: New endpoint validates token (exists, unused, 15-min expiry), creates session, sets auth_via_magic_link flag, redirects to PasswordChange
+- PasswordChange.php + changepw.php: Skip old-password check when auth_via_magic_link is set, show explanatory banner
+- magic_link_tokens table created via Laravel migration
+- Forgotten.php deleted (replaced by magic link flow)
+- Register.php deleted (absorbed into Email or Register tab)
+- .htaccess updated with magic link routes
+- docs updated: SECURITY.md, DEPLOY.md, ROUTES.md, FEATURES.md, AGENTS.md
+- FUTURE_DEVELOPMENT_MAGIC_LINK.md removed (now reality)
 
 ### Next Steps
 1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)
 2. Test messaging page end-to-end
 3. Delete old files after testing: texts-list.php, users-list.php, users.php, members-list.php, members.php, MessagingPageOld.php
-4. Magic link passwordless login (docs/FUTURE_DEVELOPMENT_MAGIC_LINK.md)
 
 ## How To Work In This Repo
 

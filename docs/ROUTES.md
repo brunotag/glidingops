@@ -52,7 +52,6 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/MessagingPage` | MessagingPage.php | Broadcast message |
 | `/MyFlights` | MyFlights.php | Member's flights |
 | `/FlyingNow` | FlyingNow.php | Current flights status |
-| `/RegisterMe` | Register.php | New member registration |
 | `/PasswordChange` | PasswordChange.php | Change password |
 | `/Organisations` | organisations-list.php | Org list (super admin) |
 | `/Organisation` | organisations.php | Add/edit org |

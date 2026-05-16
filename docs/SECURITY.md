@@ -2,14 +2,39 @@
 
 ## Authentication
 
-### Login Flow
-1. User visits `Login.php`
-2. Enters username (email) and password
-3. `checklogin.php` validates:
-   - Looks up user by `usercode` (email)
+### Login Page (Login.php)
+
+The login page has two tabs:
+
+#### Password Tab
+1. User enters username (`users.usercode`) and password
+2. POSTs to `checklogin.php` which:
+   - Looks up user by `usercode`
    - Compares MD5(password) against `users.password`
    - On success, creates session
-4. Session contains: userid, who, memberid, org, security, timezone, dispname
+3. If `force_pw_reset=1`, redirects to `PasswordChange.php`
+
+#### Email or Register Tab (Magic Link)
+1. User enters the email address they used when joining the club
+2. AJAX POST to `api/magic-link-request.php`
+3. Server looks up user by `usercode` or `members.email` (via JOIN)
+4. If no user found, checks `members.email` for a member without a user account
+   - Auto-creates a `users` record with `force_pw_reset=1` and a random password
+5. Generates a 64-char hex token, stores in `magic_link_tokens` table
+6. Emails a link: `https://gops.wwgc.co.nz/api/magic-link-verify?token=XXXX`
+7. Token rate-limited to max 3 unused per user
+8. Always returns `{"success":true}` (don't reveal if email exists)
+
+#### Magic Link Verify Flow (`api/magic-link-verify.php`)
+1. Validates token exists, not used (`used_at IS NULL`), not expired (15 min)
+2. Marks token as `used_at = NOW()`
+3. Creates session (same vars as password login)
+4. Sets `$_SESSION['auth_via_magic_link'] = 1`
+5. Redirects to `/PasswordChange` to allow setting a password
+6. On error, redirects to `Login.php?error=invalid_link|link_used|link_expired`
+
+#### Password Change via Magic Link
+After magic link login, `PasswordChange.php` skips the old-password field (checks `auth_via_magic_link` flag). User sets a new password directly. On success, `auth_via_magic_link` is unset and user is redirected to home.
 
 ### Session Variables
 ```php

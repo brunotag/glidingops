@@ -59,6 +59,19 @@ if (!isset($_SESSION['memberid'])) {
 }
 ```
 
+## Schema Changes (Laravel Migrations)
+
+All database schema changes MUST use Laravel migrations in `lrv/`:
+
+```bash
+cd C:\Users\bruno\dev\glidingops\lrv
+vagrant ssh -c "cd /home/vagrant/code/lrv && php artisan make:migration <snake_case_name>"
+# Edit the generated file in lrv/database/migrations/
+vagrant ssh -c "cd /home/vagrant/code/lrv && php artisan migrate"
+```
+
+Never use raw SQL for schema changes. This ensures the migration history is tracked and reproducible.
+
 ## Database Query Rules
 
 **ALWAYS verify schema before writing queries:**

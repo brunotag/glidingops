@@ -516,22 +516,21 @@ Test email sending
 ## Authentication & Registration
 
 ### Login.php
-Login form - checks against users table
+Login form with two tabs:
+- **Password** - username + password via `checklogin.php`
+- **Email or Register** - enter member email, receives magic link. Auto-creates user account if member exists without one.
 
 ### checklogin.php
 Validates credentials (MD5 password hash), sets session
 
-### Register.php
-Self-service registration for new members
-- Enter email
-- If email matches existing member, creates user account
-- Sends password via email
+### api/magic-link-request.php
+Generates 64-char hex token, stores in `magic_link_tokens`, emails login link. Looks up by `usercode` or `members.email`. Auto-creates user account for members without one. Returns `{"success":true}` always (no email leakage).
+
+### api/magic-link-verify.php
+Validates token (exists, unused, under 15 min), marks used, creates session, redirects to `/PasswordChange` to set a password.
 
 ### changepw.php
-Password change form
-
-### Forgotten.php
-Password reset request
+Password change form. Skips old-password check when `auth_via_magic_link` session flag is set (magic link login).
 
 ---
 
