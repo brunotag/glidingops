@@ -58,7 +58,8 @@ $columns = [
     4 => 'organisations.name',
     5 => 'users.securitylevel',
     6 => 'members.displayname',
-    7 => 'users.force_pw_reset'
+    7 => 'users.force_pw_reset',
+    8 => 'last_logins.last_login'
 ];
 
 $orderField = isset($columns[$orderColumn]) ? $columns[$orderColumn] : 'users.name';
@@ -130,10 +131,17 @@ $dataQuery = "SELECT
     organisations.name as org_name,
     users.securitylevel,
     members.displayname as member_name,
-    users.force_pw_reset
+    users.force_pw_reset,
+    last_logins.last_login
 FROM users
 LEFT JOIN organisations ON organisations.id = users.org
 LEFT JOIN members ON members.id = users.member
+LEFT JOIN (
+    SELECT userid, MAX(eventtime) as last_login
+    FROM audit
+    WHERE description = 'Login'
+    GROUP BY userid
+) last_logins ON last_logins.userid = users.id
 $whereClause
 ORDER BY $orderField " . strtoupper($orderDir) . "
 LIMIT ? OFFSET ?";
@@ -157,6 +165,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         'securitylevel' => $row['securitylevel'],
         'member' => $row['member_name'] ?? '',
         'force_pw_reset' => $row['force_pw_reset'],
+        'last_login' => $row['last_login'],
         'edit_url' => '/Users/' . $row['id']
     ];
 }

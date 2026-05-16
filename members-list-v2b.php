@@ -206,6 +206,7 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
             <th>Status</th>
             <th>Email</th>
             <th>Mobile</th>
+            <th>User</th>
         </thead>
     <tbody>
         <tr><td colspan="10">Loading...</td></tr>
@@ -306,7 +307,20 @@ function buildDataTable() {
                 { data: 'class' },
                 { data: 'status' },
                 { data: 'email' },
-                { data: 'phone_mobile' }
+                { data: 'phone_mobile' },
+                {
+                    data: 'user_id',
+                    title: 'User',
+                    render: function(data) {
+                        if (data) {
+                            return '<a href="/Users/' + data + '" class="btn btn-success btn-xs" style="display:flex;align-items:center;justify-content:center;width:100%;height:40px;box-sizing:border-box;">Yes</a>';
+                        }
+                        return '<span style="color:#999;">No</span>';
+                    },
+                    orderable: true,
+                    searchable: false,
+                    width: '80px'
+                }
             ],
             order: [[2, 'asc']],
             lengthMenu: [[25, 50, 100], ['25', '50', '100']],

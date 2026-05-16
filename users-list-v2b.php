@@ -147,9 +147,10 @@ $organisation = App\Models\Organisation::find($org);
     <th>Security Level</th>
     <th>Member</th>
     <th>Force PW Reset</th>
+    <th>Last Login</th>
 </thead>
 <tbody>
-    <tr><td colspan="8">Loading...</td></tr>
+    <tr><td colspan="9">Loading...</td></tr>
 </tbody>
 </table>
 
@@ -208,7 +209,17 @@ function buildDataTable() {
                 { data: 'member' },
                 { data: 'force_pw_reset', render: function(data) {
                     return data == 1 ? 'Yes' : 'No';
-                }}
+                }},
+                {
+                    data: 'last_login',
+                    title: 'Last Login',
+                    render: function(data) {
+                        if (!data) return '<span style="color:#999;">Never</span>';
+                        var d = new Date(data.replace(' ', 'T') + 'Z');
+                        if (isNaN(d.getTime())) return data;
+                        return d.toLocaleString();
+                    }
+                }
             ],
             order: [[2, 'asc']],
             lengthMenu: [[25, 50, 100], ['25', '50', '100']],

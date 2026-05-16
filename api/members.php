@@ -88,7 +88,8 @@ $columns = [
     5 => 'membership_class.class',
     6 => 'membership_status.status_name',
     7 => 'members.email',
-    8 => 'members.phone_mobile'
+    8 => 'members.phone_mobile',
+    9 => 'users.id'
 ];
 
 $orderField = isset($columns[$orderColumn]) ? $columns[$orderColumn] : 'members.surname';
@@ -193,10 +194,12 @@ $dataQuery = "SELECT
     membership_class.class as class_name,
     membership_status.status_name as status_name,
     members.email,
-    members.phone_mobile
+    members.phone_mobile,
+    users.id as user_id
 FROM members 
 LEFT JOIN membership_class ON membership_class.id = members.class
 LEFT JOIN membership_status ON membership_status.id = members.status
+LEFT JOIN users ON users.member = members.id
 $whereClause
 ORDER BY $orderField " . strtoupper($orderDir) . "
 LIMIT ? OFFSET ?";
@@ -227,7 +230,8 @@ while ($row = mysqli_fetch_assoc($result)) {
         'email' => $row['email'],
         'phone_mobile' => $row['phone_mobile'],
         'photo_url' => $photoUrl,
-        'edit_url' => '/MemberNew?id=' . $row['id']
+        'edit_url' => '/MemberNew?id=' . $row['id'],
+        'user_id' => $row['user_id']
     ];
 }
 
