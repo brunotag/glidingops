@@ -147,6 +147,7 @@ h1 { color: #063552; font-size: 20px; border-bottom: 2px solid #f26120; padding-
 <div class="container">
 <h1>Sending Invitations</h1>
 <?php
+    echo str_repeat(' ', 4096) . "\n";
     flush();
 
     $selectedG1Set = [];
@@ -361,7 +362,7 @@ mysqli_close($con);
       <strong>Send <span class="selected-count" id="selectedCount"><?php echo $grandTotal; ?></span> invitation emails to selected recipients?</strong>
     </p>
     <input type="hidden" name="confirm" value="1">
-    <button type="submit" class="btn btn-warning btn-lg" onclick="this.disabled=true;this.innerText='Sending...'">
+    <button type="submit" class="btn btn-warning btn-lg" id="sendBtn">
       Send Selected Invitations
     </button>
   </div>
@@ -391,11 +392,14 @@ var chks = document.querySelectorAll('.g1-chk, .g2-chk');
 for (var i = 0; i < chks.length; i++) { chks[i].addEventListener('change', updateCount); }
 
 document.getElementById('inviteForm').addEventListener('submit', function(e) {
-    var g1 = document.querySelectorAll('.g1-chk:checked').length;
-    var g2 = document.querySelectorAll('.g2-chk:checked').length;
-    if (g1 + g2 === 0) {
-        if (!confirm('No recipients selected. Submit anyway?')) { e.preventDefault(); }
+    var g1c = document.querySelectorAll('.g1-chk:checked').length;
+    var g2c = document.querySelectorAll('.g2-chk:checked').length;
+    if (g1c + g2c === 0) {
+        if (!confirm('No recipients selected. Submit anyway?')) { e.preventDefault(); return; }
     }
+    var btn = document.getElementById('sendBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
 });
 </script>
 </body>

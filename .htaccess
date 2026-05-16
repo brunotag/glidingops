@@ -42,6 +42,9 @@ RewriteRule ^api/myflights$ api/myflights-data.php [L,QSA]
 RewriteRule ^api/magic-link-request$ api/magic-link-request.php [L,QSA]
 RewriteRule ^api/magic-link-verify$ api/magic-link-verify.php [L,QSA]
 
+# JS debug API
+RewriteRule ^api/js-debug$ api/js-debug.php [L,QSA]
+
 # Texts/Messages API
 RewriteRule ^api/texts$ api/texts.php [L,QSA]
 RewriteRule texts-list texts-list-v2b.php [L,QSA]
@@ -57,13 +60,15 @@ RewriteRule MembersListOld members-list.php [L]
 RewriteRule MemberNew members-new.php [L,QSA]
 RewriteRule EditMyDetails members-new.php [L,QSA]
 
+# Invite Users (must come BEFORE Users rules to avoid collision)
+RewriteRule InviteUsers invite-users.php [L,QSA]
+
 # New users list and create/edit
 RewriteRule UsersList users-list-v2b.php [L,QSA]
 RewriteRule Users/([0-9]+) users-new.php?id=$1 [L,QSA]
 RewriteRule Users users-new.php [L,QSA]
 
 RewriteRule home home.php [L]
-RewriteRule InviteUsers invite-users.php [L,QSA]
 RewriteRule ViewAs ViewAs.php [L,QSA]
 RewriteRule AssignRoles role_member-list.php [L]
 RewriteRule AssignRole role_member.php [L]
