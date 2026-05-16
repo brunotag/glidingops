@@ -61,14 +61,14 @@ $levels = [
         body {margin: 0;font-family: Arial, Helvetica, sans-serif;background: #f0f0ff;}
         #container {max-width: 600px;margin: 0 auto;padding: 20px;}
         #entry {background: #fff;border-radius: 8px;padding: 24px;box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
-        .page-title {font-size: 18px;font-weight: bold;color: #000080;margin: 0 0 4px 0;}
+        .page-title {font-size: 18px;font-weight: bold;color: #063552;margin: 0 0 4px 0;}
         .page-subtitle {font-size: 14px;color: #555;margin: 0 0 20px 0;}
         .field-label {display: block;font-size: 13px;font-weight: bold;color: #333;margin-bottom: 6px;}
         .or-divider {text-align: center;font-size: 13px;color: #999;margin: 16px 0;font-weight: bold;}
         select {width: 100%;font-size: 16px;padding: 10px 12px;border: 2px solid #ccc;border-radius: 6px;background: #fff;transition: border-color 0.2s;}
-        select:focus {border-color: #000080;outline: none;box-shadow: 0 0 0 3px rgba(0,0,128,0.1);}
-        .open-btn {width: 100%;padding: 12px;font-size: 16px;font-weight: bold;color: #fff;background: #000080;border: none;border-radius: 6px;cursor: pointer;margin-top: 16px;transition: background 0.2s;}
-        .open-btn:hover {background: #0000b0;}
+        select:focus {border-color: #063552;outline: none;box-shadow: 0 0 0 3px rgba(6,53,82,0.1);}
+        .open-btn {width: 100%;padding: 12px;font-size: 16px;font-weight: bold;color: #f26120;background: #063552;border: none;border-radius: 6px;cursor: pointer;margin-top: 16px;transition: background 0.2s;}
+        .open-btn:hover {background: #052040;}
         .back-link {display: inline-block;margin-top: 16px;font-size: 13px;color: #0000c0;text-decoration: none;}
         .back-link:hover {text-decoration: underline;}
     </style>

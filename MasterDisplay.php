@@ -175,9 +175,9 @@ $global_settings = $global_settings['globalSettings'];
     }
 
     .legend7 {
-      background-color: #000080;
+      background-color: #063552;
       width: 30px;
-      color: black;
+      color: #f26120;
       text-align: center;
       font-size: 18px;
     }
@@ -239,9 +239,9 @@ $global_settings = $global_settings['globalSettings'];
     }
 
     .slegend7 {
-      background-color: #000080;
+      background-color: #063552;
       width: 15px;
-      color: black;
+      color: #f26120;
       text-align: center;
       font-size: 18px;
     }
@@ -343,7 +343,7 @@ $global_settings = $global_settings['globalSettings'];
     var MapLat = <?php echo $mapLat; ?>;
     var MapLon = <?php echo $mapLon; ?>;
     var toRadians = (3.14159265358979 / 180.0);
-    var tripColours = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#00ffff", "#800000", "#008000", "#000080"];
+    var tripColours = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#00ffff", "#800000", "#008000", "#063552"];
     var gOrg = <?php echo $org; ?>;
     var gDate = undefined;
     <?php

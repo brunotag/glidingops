@@ -50,12 +50,12 @@ body {margin: 0;font-family: Arial, Helvetica, sans-serif;background: #f0f0ff;}
 #inform table {border-collapse: collapse;}
 #inform td {padding: 4px 8px 4px 0;}
 #fmdate {font-size: 16px;padding: 6px 10px;border: 2px solid #ccc;border-radius: 6px;}
-#fmdate:focus {border-color: #000080;outline: none;box-shadow: 0 0 0 3px rgba(0,0,128,0.1);}
-input[type=submit] {font-size: 14px;font-weight: bold;padding: 8px 20px;color: #fff;background: #000080;border: none;border-radius: 6px;cursor: pointer;}
-input[type=submit]:hover {background: #0000b0;}
-h1 {font-size: 18px;color: #000080;margin: 16px 0 8px 0;}
+#fmdate:focus {border-color: #063552;outline: none;box-shadow: 0 0 0 3px rgba(6,53,82,0.1);}
+input[type=submit] {font-size: 14px;font-weight: bold;padding: 8px 20px;color: #f26120;background: #063552;border: none;border-radius: 6px;cursor: pointer;}
+input[type=submit]:hover {background: #052040;}
+h1 {font-size: 18px;color: #063552;margin: 16px 0 8px 0;}
 table.flights {width: 100%;border-collapse: collapse;font-size: 13px;background: #fff;border-radius: 8px;overflow: hidden;box-shadow: 0 1px 4px rgba(0,0,0,0.08);}
-table.flights th {background: #000080;color: #fff;padding: 8px 6px;text-align: left;font-size: 12px;white-space: nowrap;}
+table.flights th {background: #063552;color: #f26120;padding: 8px 6px;text-align: left;font-size: 12px;white-space: nowrap;}
 table.flights td {padding: 6px;border-bottom: 1px solid #e0e0e0;white-space: nowrap;}
 table.flights tr:nth-child(even) {background: #f8f8ff;}
 table.flights tr:hover {background: #e8e8ff;}
@@ -71,7 +71,7 @@ table.flights tr:hover {background: #e8e8ff;}
     body {background: #fff;}
     #content {max-width: 100%;padding: 0;}
     table.flights {box-shadow: none;}
-    table.flights th {background: #000080 !important;color: #fff !important;}
+    table.flights th {background: #063552 !important;color: #f26120 !important;}
     @page {size: landscape;margin: 12mm;}
 }
 </style>

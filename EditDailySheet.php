@@ -79,7 +79,7 @@ $todayStr = $dateTime->format('Y-m-d');
         .page-title {
             font-size: 18px;
             font-weight: bold;
-            color: #000080;
+            color: #063552;
             margin: 0 0 4px 0;
         }
         .page-subtitle {
@@ -103,7 +103,7 @@ $todayStr = $dateTime->format('Y-m-d');
             transition: border-color 0.2s;
         }
         .date-input:focus {
-            border-color: #000080;
+            border-color: #063552;
             outline: none;
             box-shadow: 0 0 0 3px rgba(0, 0, 128, 0.1);
         }
@@ -112,8 +112,8 @@ $todayStr = $dateTime->format('Y-m-d');
             padding: 12px;
             font-size: 16px;
             font-weight: bold;
-            color: #fff;
-            background: #000080;
+            color: #f26120;
+            background: #063552;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -121,7 +121,7 @@ $todayStr = $dateTime->format('Y-m-d');
             transition: background 0.2s;
         }
         .submit-btn:hover {
-            background: #0000b0;
+            background: #052040;
         }
         .error-text {
             color: #c00;

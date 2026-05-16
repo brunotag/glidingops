@@ -20,7 +20,7 @@ html {height: 100%; margin: 0; padding: 0;}
 body {height: 100%; margin: 0; padding: 0;font-family: Arial, Helvetica, sans-serif; }
 #maparea {float: right;height:75%; width: 70%;}
 #map-canvas{ height: 100%; margin: 20px; padding: 0;box-shadow: 10px 10px 5px #888888;}
-#head {background-color:#000040;}
+#head {background-color:#063552;}
 p.headp1 {font-family: Calibri, Arial, Helvetica, sans-serif; margin:0;color:white;font-size:50px}
 p.headp2 {font-family: Calibri, Arial, Helvetica, sans-serif; margin:0;color:white;font-size:20px}
 td.tdhead1 {padding-left:0px;}

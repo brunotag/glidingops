@@ -76,7 +76,7 @@ if (isset($_GET['as']) && ($effectiveSecurity & 128)) {
       }
 
       a:hover {
-         color: #0000FF;
+          color: #063552;
       }
 
       p.u {
@@ -137,7 +137,7 @@ if (isset($_GET['as']) && ($effectiveSecurity & 128)) {
 
       .s1 {
          font-weight: bold;
-         color: #000080
+          color: #063552
       }
    </style>
 </head>

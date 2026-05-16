@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET")
 <meta http-equiv="refresh" content="30">
 <link rel="stylesheet" type="text/css" href="heading1.css">
 <style>
-h2.rev{background-color:#000040;color:white;}
+h2.rev{background-color:#063552;color:#f26120;}
 body {margin: 0px;font-family: Arial, Helvetica, sans-serif;}
 table {border-collapse: collapse;}
 tr.tr1 {height:20px;}

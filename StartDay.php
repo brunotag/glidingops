@@ -82,7 +82,7 @@ $dateStr = $dateTime->format('d-M-Y');
         .page-title {
             font-size: 18px;
             font-weight: bold;
-            color: #000080;
+            color: #063552;
             margin: 0 0 4px 0;
         }
         .date-label {
@@ -106,7 +106,7 @@ $dateStr = $dateTime->format('d-M-Y');
             transition: border-color 0.2s;
         }
         .location-input:focus {
-            border-color: #000080;
+            border-color: #063552;
             outline: none;
             box-shadow: 0 0 0 3px rgba(0, 0, 128, 0.1);
         }
@@ -115,8 +115,8 @@ $dateStr = $dateTime->format('d-M-Y');
             padding: 12px;
             font-size: 16px;
             font-weight: bold;
-            color: #fff;
-            background: #000080;
+            color: #f26120;
+            background: #063552;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -124,7 +124,7 @@ $dateStr = $dateTime->format('d-M-Y');
             transition: background 0.2s;
         }
         .submit-btn:hover {
-            background: #0000b0;
+            background: #052040;
         }
         .error-text {
             color: #c00;
