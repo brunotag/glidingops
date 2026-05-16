@@ -133,10 +133,10 @@
 
           <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="<?php echo $showMagicLinkTab ? '' : 'active'; ?>">
-              <a href="#password-tab" role="tab" data-toggle="tab">Password</a>
+              <a href="#password-tab" role="tab" data-toggle="tab">Use Password</a>
             </li>
             <li role="presentation" class="<?php echo $showMagicLinkTab ? 'active' : ''; ?>">
-              <a href="#magiclink-tab" role="tab" data-toggle="tab">Email or Register</a>
+              <a href="#magiclink-tab" role="tab" data-toggle="tab">Use Email Link or Register</a>
             </li>
           </ul>
 
@@ -160,7 +160,9 @@
             <!-- Magic Link Tab -->
             <div role="tabpanel" class="tab-pane <?php echo $showMagicLinkTab ? 'active' : ''; ?>" id="magiclink-tab">
               <p style="font-size:13px;color:#666;margin-bottom:15px;">
-                Enter the email address you used when joining the club. If you already have an account, a login link will be sent. If not, an account will be created and you will be prompted to set a password on first login.
+                If you are a new member , enter the email address you used when joining the club: an account will be created and you will be prompted to set a password on first login. 
+                <br/><br/>
+                If you already have an account, enter your email address and a login link will be sent.
               </p>
               <form id="magic-link-form">
                 <div class="form-group">
