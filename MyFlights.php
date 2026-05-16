@@ -141,6 +141,7 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
                 winchlaunch = data.winchlaunch;
                 memberInstructor = data.memberInstructor;
 
+                window._allFlights = data.flights;
                 renderFlights(data.flights);
                 renderSummary(data.flights);
             };
@@ -150,14 +151,32 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
             xhr.send();
         }
 
+        window._toggleDateSort = function() {
+            dateSortOrder = dateSortOrder === 'asc' ? 'desc' : 'asc';
+            if (window._allFlights) {
+                renderFlights(window._allFlights);
+                renderSummary(window._allFlights);
+            }
+        };
+
+        var dateSortOrder = 'desc';
+
+        function sortByDate(a, b) {
+            if (dateSortOrder === 'asc') return a.localdate - b.localdate;
+            return b.localdate - a.localdate;
+        }
+
         function renderFlights(flights) {
             if (!flights || flights.length === 0) {
                 document.getElementById('flights-section').innerHTML = '<p>No flights found.</p>';
                 return;
             }
 
+            flights.sort(sortByDate);
+
+            var sortArrow = dateSortOrder === 'asc' ? ' &#9650;' : ' &#9660;';
             var html = '<div class="table-responsive"><table class="table table-bordered table-condensed table-striped"><thead><tr>' +
-                '<th>Date</th><th class="text-right">Glider</th><th class="text-right">Make/Model</th><th>Location</th>' +
+                '<th style="cursor:pointer;" onclick="window._toggleDateSort()">Date' + sortArrow + '</th><th class="text-right">Glider</th><th class="text-right">Make/Model</th><th>Location</th>' +
                 '<th class="text-right">Duration</th><th class="text-right">Start</th><th class="text-right">Land</th>' +
                 '<th class="text-right">Tow Height</th><th class="text-right">Launch</th><th class="text-right">Type</th>' +
                 '<th>Comments</th><th>Charging</th></tr></thead><tbody>';
