@@ -112,6 +112,9 @@ if ($dbOk) {
     body { margin: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f0f0ff; }
     #container { margin: 5px; border: 0px; }
 
+    .widget-grid { column-width: 280px; column-gap: 20px; }
+    .widget-grid > * { break-inside: avoid-column; margin-bottom: 20px; }
+
     .dashboard-card {
       background: #fff;
       border-radius: 8px;
@@ -146,7 +149,6 @@ if ($dbOk) {
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
       overflow: hidden;
       margin-bottom: 20px;
-      transition: box-shadow 0.2s, transform 0.2s;
     }
     .nav-card:hover {
       box-shadow: 0 3px 12px rgba(0,0,0,0.12);
@@ -181,18 +183,10 @@ if ($dbOk) {
       color: #31708f;
     }
 
-    .stat-number { font-size: 28px; font-weight: bold; color: #063552; display: block; }
-    .stat-label { font-size: 12px; color: #888; }
-
     a { text-decoration: none; }
     a:link { color: #333; }
     a:visited { color: #333; }
     a:hover { color: #063552; }
-
-    .data-row { display: flex; gap: 20px; }
-    .data-row .dashboard-card { flex: 1; }
-
-    .msg-preview { color: #888; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
   </style>
 </head>
 <body>
@@ -227,241 +221,221 @@ if ($dbOk) {
         </div>
       <?php endif; ?>
 
-      <!-- Data widgets row -->
-      <div class="row">
-        <div class="col-sm-4">
-          <div class="dashboard-card">
-            <div class="card-header">My Gliding</div>
-            <div class="card-body">
-              <p style="margin:0 0 6px 0;font-size:13px;color:#888;font-weight:bold;">Last 5 flights:</p>
-              <?php if (empty($recentFlights)): ?>
-                <p style="color:#888;font-size:13px;margin:4px 0;">No recent flights found.</p>
-              <?php else: ?>
-                <?php foreach ($recentFlights as $f): ?>
-                  <?php
-                    $dur = '';
-                    if ($f['start'] && $f['land']) {
-                      $totalMins = floor(($f['land'] - $f['start']) / 60000);
-                      $hours = floor($totalMins / 60);
-                      $mins = $totalMins % 60;
-                      $dur = ' (' . $hours . 'h ' . $mins . 'min)';
-                    }
-                    $ld = strval($f['localdate']);
-                    $dispDate = strlen($ld) >= 8 ? substr($ld, 6, 2) . '/' . substr($ld, 4, 2) . '/' . substr($ld, 0, 4) : $ld;
+      <div class="widget-grid">
 
-                    $otherPilot = '';
-                    if (intval($f['pic']) === $mid && !empty($f['p2_name'])) {
-                      $otherPilot = ', with ' . $f['p2_name'];
-                    } elseif (intval($f['p2']) === $mid && !empty($f['pic_name'])) {
-                      $otherPilot = ', with ' . $f['pic_name'];
-                    }
-                  ?>
-                  <a href="/MyFlights"><?php echo $dispDate; ?> &mdash; <?php echo htmlspecialchars($f['glider']); ?><?php echo $dur; ?><?php echo htmlspecialchars($otherPilot); ?></a>
-                <?php endforeach; ?>
-                <a href="/MyFlights" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">View all flights &rarr;</a>
-              <?php endif; ?>
-              <a href="/EditMyDetails" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">My Details &rarr;</a>
-            </div>
+        <div class="dashboard-card wide">
+          <div class="card-header">Latest Updates</div>
+          <div class="card-body" style="padding:0;">
+            <iframe id="twitter-frame" style="width:100%;height:400px;border:0px;display:block;" src="/messages-list.php?org=1" title="Updates feed"></iframe>
           </div>
         </div>
 
-        <div class="col-sm-4">
-          <div class="dashboard-card">
-            <div class="card-header">Flying / Tracking</div>
-            <div class="card-body">
-              <?php if (empty($todayFlights)): ?>
-                <p style="color:#888;font-size:13px;margin:4px 0;">No flights logged today.</p>
-              <?php else: ?>
-                <?php foreach ($todayFlights as $f): ?>
-                  <?php
-                    $dur = '';
-                    if ($f['start'] && $f['land']) {
-                      $totalMins = floor(($f['land'] - $f['start']) / 60000);
-                      $hours = floor($totalMins / 60);
-                      $mins = $totalMins % 60;
-                      $dur = ' (' . $hours . 'h ' . $mins . 'min)';
-                    } else {
-                      $dur = ' (flying)';
-                    }
+        <div class="dashboard-card wide">
+          <div class="card-header">My Gliding</div>
+          <div class="card-body">
+            <p style="margin:0 0 6px 0;font-size:13px;color:#888;font-weight:bold;">Last 5 flights:</p>
+            <?php if (empty($recentFlights)): ?>
+              <p style="color:#888;font-size:13px;margin:4px 0;">No recent flights found.</p>
+            <?php else: ?>
+              <?php foreach ($recentFlights as $f): ?>
+                <?php
+                  $dur = '';
+                  if ($f['start'] && $f['land']) {
+                    $totalMins = floor(($f['land'] - $f['start']) / 60000);
+                    $hours = floor($totalMins / 60);
+                    $mins = $totalMins % 60;
+                    $dur = ' (' . $hours . 'h ' . $mins . 'min)';
+                  }
+                  $ld = strval($f['localdate']);
+                  $dispDate = strlen($ld) >= 8 ? substr($ld, 6, 2) . '/' . substr($ld, 4, 2) . '/' . substr($ld, 0, 4) : $ld;
 
-                    $pilotLine = htmlspecialchars($f['glider']) . ' &mdash; ' . htmlspecialchars($f['pic_name'] ?? '?');
-                    if (!empty($f['p2_name'])) {
-                      $pilotLine .= ' with ' . htmlspecialchars($f['p2_name']);
-                    }
-                  ?>
-                  <a href="/DailyLogSheet.php?org=<?php echo $org; ?>"><?php echo $pilotLine; ?><?php echo $dur; ?></a>
-                <?php endforeach; ?>
-              <?php endif; ?>
-              <?php if ($org == 1): ?>
-                <a href="/wgc-new" target="_blank" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">Real Time Map &rarr;</a>
-                <div style="margin-top:6px;display:flex;align-items:center;">
-                  <input type="date" id="map-date" style="font-size:13px;padding:2px 4px;border:1px solid #ccc;border-radius:3px;">
-                  <a href="#" id="see-past-flights" style="color:#063552;font-weight:bold;margin-left:6px;white-space:nowrap;">See Past Flights &rarr;</a>
-                </div>
-              <?php elseif ($org == 2): ?>
-                <a href="/ssb" target="_blank" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">Real Time Map &rarr;</a>
-              <?php elseif ($org == 3): ?>
-                <a href="/cgc" target="_blank" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">Real Time Map &rarr;</a>
-              <?php elseif ($org == 4): ?>
-                <a href="/agc" target="_blank" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">Real Time Map &rarr;</a>
-              <?php endif; ?>
-            </div>
+                  $otherPilot = '';
+                  if (intval($f['pic']) === $mid && !empty($f['p2_name'])) {
+                    $otherPilot = ', with ' . $f['p2_name'];
+                  } elseif (intval($f['p2']) === $mid && !empty($f['pic_name'])) {
+                    $otherPilot = ', with ' . $f['pic_name'];
+                  }
+                ?>
+                <span style="display:block;padding:7px 0;color:#333;border-bottom:1px solid #f0f0f0;"><?php echo $dispDate; ?> &mdash; <?php echo htmlspecialchars($f['glider']); ?><?php echo $dur; ?><?php echo htmlspecialchars($otherPilot); ?></span>
+              <?php endforeach; ?>
+              <a href="/MyFlights" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">View all flights &rarr;</a>
+            <?php endif; ?>
+            <a href="/EditMyDetails" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">My Details &rarr;</a>
           </div>
         </div>
 
-        <div class="col-sm-4">
-          <div class="dashboard-card">
-            <div class="card-header">
-              Latest Updates
-            </div>
-            <div class="card-body" style="padding:0;">
-              <iframe id="twitter-frame" style="width:100%;height:300px;border:0px;display:block;" src="/messages-list.php?org=1" title="Updates feed"></iframe>
-            </div>
+        <div class="dashboard-card wide">
+          <div class="card-header">Flying / Tracking</div>
+          <div class="card-body">
+            <?php if (empty($todayFlights)): ?>
+              <p style="color:#888;font-size:13px;margin:4px 0;">No flights logged today.</p>
+            <?php else: ?>
+              <?php foreach ($todayFlights as $f): ?>
+                <?php
+                  $dur = '';
+                  if ($f['start'] && $f['land']) {
+                    $totalMins = floor(($f['land'] - $f['start']) / 60000);
+                    $hours = floor($totalMins / 60);
+                    $mins = $totalMins % 60;
+                    $dur = ' (' . $hours . 'h ' . $mins . 'min)';
+                  } else {
+                    $dur = ' (flying)';
+                  }
+                  $pilotLine = htmlspecialchars($f['glider']) . ' &mdash; ' . htmlspecialchars($f['pic_name'] ?? '?');
+                  if (!empty($f['p2_name'])) {
+                    $pilotLine .= ' with ' . htmlspecialchars($f['p2_name']);
+                  }
+                ?>
+                <span style="display:block;padding:5px 0;color:#333;border-bottom:1px solid #f0f0f0;"><?php echo $pilotLine; ?><?php echo $dur; ?></span>
+              <?php endforeach; ?>
+            <?php endif; ?>
+            <?php if ($org == 1): ?>
+              <a href="/wgc-new" target="_blank" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">Real Time Map &rarr;</a>
+              <div style="margin-top:6px;display:flex;align-items:center;">
+                <input type="date" id="map-date" style="font-size:13px;padding:2px 4px;border:1px solid #ccc;border-radius:3px;">
+                <a href="#" id="see-past-flights" style="color:#063552;font-weight:bold;margin-left:6px;white-space:nowrap;">See Past Flights &rarr;</a>
+              </div>
+            <?php elseif ($org == 2): ?>
+              <a href="/ssb" target="_blank" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">Real Time Map &rarr;</a>
+            <?php elseif ($org == 3): ?>
+              <a href="/cgc" target="_blank" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">Real Time Map &rarr;</a>
+            <?php elseif ($org == 4): ?>
+              <a href="/agc" target="_blank" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">Real Time Map &rarr;</a>
+            <?php endif; ?>
           </div>
         </div>
-      </div>
 
-      <!-- Navigation cards row -->
-      <div class="row">
-
+        <!-- 4. Daily Ops -->
         <?php if ($effectiveSecurity >= 4): ?>
-          <div class="col-sm-6 col-md-4">
-            <div class="nav-card">
-              <div class="card-header">Daily Ops</div>
-              <div class="card-body">
-                <a href="/StartDay.php?org=<?php echo $org; ?>">New Daily Timesheet</a>
-                <a href="/EditDailySheet?org=<?php echo $org; ?>">Edit Daily Timesheet</a>
-                <a href="/DailyLogSheet.php?org=<?php echo $org; ?>">View Daily Timesheet</a>
-              </div>
+          <div class="nav-card">
+            <div class="card-header">Daily Ops</div>
+            <div class="card-body">
+              <a href="/StartDay.php?org=<?php echo $org; ?>">New Daily Timesheet</a>
+              <a href="/EditDailySheet?org=<?php echo $org; ?>">Edit Daily Timesheet</a>
+              <a href="/DailyLogSheet.php?org=<?php echo $org; ?>">View Daily Timesheet</a>
             </div>
           </div>
         <?php endif; ?>
 
+        <!-- 5. Rosters & Bookings -->
         <?php if ($effectiveSecurity >= 1): ?>
-          <div class="col-sm-6 col-md-4">
-            <div class="nav-card">
-              <div class="card-header">Rosters &amp; Bookings</div>
-              <div class="card-body">
-                <a href="https://glidegreytown.nz/latest/#booking" target="_blank">Bookings (Google)</a>
-                <a href="/Bookings">Bookings (new)</a>
-                <a href="https://docs.google.com/spreadsheets/d/1bXYn5oiQfIt6CEzK0Gc33L9HDUBd9A_HEQcDrOHxt1s/edit?usp=sharing" target="_blank">Rosters (Google Sheet)</a>
-              </div>
+          <div class="nav-card">
+            <div class="card-header">Rosters &amp; Bookings</div>
+            <div class="card-body">
+              <a href="https://glidegreytown.nz/latest/#booking" target="_blank">Bookings (Google)</a>
+              <a href="/Bookings">Bookings (new)</a>
+              <a href="https://docs.google.com/spreadsheets/d/1bXYn5oiQfIt6CEzK0Gc33L9HDUBd9A_HEQcDrOHxt1s/edit?usp=sharing" target="_blank">Rosters (Google Sheet)</a>
             </div>
           </div>
         <?php endif; ?>
 
+        <!-- 6. Messaging -->
         <?php if ($effectiveSecurity >= 5): ?>
-          <div class="col-sm-6 col-md-4">
-            <div class="nav-card">
-              <div class="card-header">Messaging</div>
-              <div class="card-body">
-                <a href="/MessagingPage">Broadcast a Message</a>
-                <a href="/MessagesTree">See Past Messages</a>
-              </div>
+          <div class="nav-card">
+            <div class="card-header">Messaging</div>
+            <div class="card-body">
+              <a href="/MessagingPage">Broadcast a Message</a>
+              <a href="/MessagesTree">See Past Messages</a>
             </div>
           </div>
         <?php endif; ?>
 
+        <!-- 7. Members & Users -->
         <?php if ($effectiveSecurity >= 1): ?>
-          <div class="col-sm-6 col-md-4">
-            <div class="nav-card">
-              <div class="card-header">Members &amp; Users</div>
-              <div class="card-body">
-                <a href="/AllMembers">View Members</a>
-                <?php if ($effectiveSecurity & 64): ?>
-                  <a href="/UsersList">View Users</a>
-                  <a href="/Users">Create User</a>
-                <?php endif; ?>
-                <?php if ($effectiveSecurity & 24): ?>
-                  <a href="/app/reports/membersRolesStatsReport">Members Roles Report</a>
-                <?php endif; ?>
-              </div>
+          <div class="nav-card">
+            <div class="card-header">Members &amp; Users</div>
+            <div class="card-body">
+              <a href="/AllMembers">View Members</a>
+              <?php if ($effectiveSecurity & 64): ?>
+                <a href="/UsersList">View Users</a>
+                <a href="/Users">Create User</a>
+              <?php endif; ?>
+              <?php if ($effectiveSecurity & 24): ?>
+                <a href="/app/reports/membersRolesStatsReport">Members Roles Report</a>
+              <?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
 
+        <!-- 8. Reports -->
         <?php if ($effectiveSecurity >= 1): ?>
-          <div class="col-sm-6 col-md-4">
-            <div class="nav-card">
-              <div class="card-header">Reports</div>
-              <div class="card-body">
-                <?php if ($effectiveSecurity & 8): ?>
-                  <a href="/Treasurer.php">Treasurer Report</a>
-                  <a href="/TreasurerReportNew">Treasurer Report - Option 1</a>
-                  <a href="/TreasurerReportNew2">Treasurer Report - Option 2</a>
-                  <a href="/TreasurerReportNew3">Treasurer Report - Option 3</a>
-                <?php endif; ?>
-                <?php if ($_SESSION['security'] & 1): ?>
-                  <a href="/app/allFlightsReport">All Flights Report</a>
-                  <a href="/AllFlightsReportNew">All Flights Report (New)</a>
-                <?php endif; ?>
-                <?php if ($effectiveSecurity & 32): ?>
-                  <a href="/Engineer.php">Engineer Report</a>
-                  <a href="/last-flights-list.php?col=1&descsort=1">Currency Report</a>
-                <?php endif; ?>
-              </div>
+          <div class="nav-card">
+            <div class="card-header">Reports</div>
+            <div class="card-body">
+              <?php if ($effectiveSecurity & 8): ?>
+                <a href="/Treasurer.php">Treasurer Report</a>
+                <a href="/TreasurerReportNew">Treasurer Report - Option 1</a>
+                <a href="/TreasurerReportNew2">Treasurer Report - Option 2</a>
+                <a href="/TreasurerReportNew3">Treasurer Report - Option 3</a>
+              <?php endif; ?>
+              <?php if ($_SESSION['security'] & 1): ?>
+                <a href="/app/allFlightsReport">All Flights Report</a>
+                <a href="/AllFlightsReportNew">All Flights Report (New)</a>
+              <?php endif; ?>
+              <?php if ($effectiveSecurity & 32): ?>
+                <a href="/Engineer.php">Engineer Report</a>
+                <a href="/last-flights-list.php?col=1&descsort=1">Currency Report</a>
+              <?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
 
+        <!-- 9. Data Maintenance -->
         <?php if ($effectiveSecurity & 120): ?>
-          <div class="col-sm-6 col-md-4">
-            <div class="nav-card">
-              <div class="card-header">Data Maintenance</div>
-              <div class="card-body">
-                <?php if ($effectiveSecurity & 104): ?>
-                  <a href="/AllAircraft">Aircraft</a>
-                <?php endif; ?>
-                <?php if ($effectiveSecurity & 64): ?>
-                  <a href="/AircraftTypes">Aircraft Types</a>
-                  <a href="/DutyTypes">Duty Types</a>
-                  <a href="/flights-list.php">Flights Raw</a>
-                  <a href="/membership_class-list.php">Membership Classes</a>
-                  <a href="/membership_status-list.php">Membership Statuses</a>
-                  <a href="/Roles">Roles</a>
-                  <a href="/AssignRoles">Role Assignment</a>
-                  <a href="/spots-list.php">Spots</a>
-                  <a href="/maintenance/duplicates_index.php">Manage Duplicate Memberships</a>
-                  <a href="/manage-secret-code.php">Manage Secret Code</a>
-                <?php endif; ?>
-                <?php if ($effectiveSecurity & 72): ?>
-                  <a href="/IncentiveSchemes">Incentive Schemes</a>
-                  <a href="/OtherCharges">Other Charges</a>
-                  <a href="/SubsToSchemes">Subs to Incentives</a>
-                  <a href="/TowCharges">Tow Charging</a>
-                <?php endif; ?>
-              </div>
+          <div class="nav-card">
+            <div class="card-header">Data Maintenance</div>
+            <div class="card-body">
+              <?php if ($effectiveSecurity & 104): ?>
+                <a href="/AllAircraft">Aircraft</a>
+              <?php endif; ?>
+              <?php if ($effectiveSecurity & 64): ?>
+                <a href="/AircraftTypes">Aircraft Types</a>
+                <a href="/DutyTypes">Duty Types</a>
+                <a href="/flights-list.php">Flights Raw</a>
+                <a href="/membership_class-list.php">Membership Classes</a>
+                <a href="/membership_status-list.php">Membership Statuses</a>
+                <a href="/Roles">Roles</a>
+                <a href="/AssignRoles">Role Assignment</a>
+                <a href="/spots-list.php">Spots</a>
+                <a href="/maintenance/duplicates_index.php">Manage Duplicate Memberships</a>
+                <a href="/manage-secret-code.php">Manage Secret Code</a>
+              <?php endif; ?>
+              <?php if ($effectiveSecurity & 72): ?>
+                <a href="/IncentiveSchemes">Incentive Schemes</a>
+                <a href="/OtherCharges">Other Charges</a>
+                <a href="/SubsToSchemes">Subs to Incentives</a>
+                <a href="/TowCharges">Tow Charging</a>
+              <?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
 
+        <!-- 10. Diagnostics & Recovery -->
         <?php if ($effectiveSecurity & 64): ?>
-          <div class="col-sm-6 col-md-4">
-            <div class="nav-card">
-              <div class="card-header">Diagnostics & Recovery</div>
-              <div class="card-body">
-                <a href="/Recovery.php">Get Local Browser Cache</a>
-                <a href="/maintenance/testemail.php">Test Email</a>
-                <a href="/SentMessages">All Messages</a>
-                <a href="/Audits">Audit Log</a>
-                <?php if ($_SESSION['security'] & 128): ?>
-                  <a href="/ViewAs">View Homepage As...</a>
-                <?php endif; ?>
-              </div>
+          <div class="nav-card">
+            <div class="card-header">Diagnostics &amp; Recovery</div>
+            <div class="card-body">
+              <a href="/Recovery.php">Get Local Browser Cache</a>
+              <a href="/maintenance/testemail.php">Test Email</a>
+              <a href="/SentMessages">All Messages</a>
+              <a href="/Audits">Audit Log</a>
+              <?php if ($_SESSION['security'] & 128): ?>
+                <a href="/ViewAs">View Homepage As...</a>
+              <?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
 
+        <!-- 11. Super Admin -->
         <?php if ($effectiveSecurity & 128): ?>
-          <div class="col-sm-6 col-md-4">
-            <div class="nav-card">
-              <div class="card-header">Super Admin</div>
-              <div class="card-body">
-                <a href="/Organisations">Organisations</a>
-              </div>
+          <div class="nav-card">
+            <div class="card-header">Super Admin</div>
+            <div class="card-body">
+              <a href="/Organisations">Organisations</a>
             </div>
           </div>
         <?php endif; ?>
+
       </div>
 
       <!-- Git hash -->
@@ -477,16 +451,7 @@ if ($dbOk) {
 
   <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
   <script>
-  $(document).ready(function() {
-    $('#see-past-flights').click(function(e) {
-      e.preventDefault();
-      var dateVal = $('#map-date').val();
-      if (!dateVal) {
-        dateVal = new Date().toISOString().substr(0, 10);
-      }
-      window.open('/wgc-new?org=1&date=' + dateVal, '_blank');
-    });
-  });
+  // Clean slate — no JS layout needed, CSS columns handle everything
   </script>
 
   <style>
@@ -496,3 +461,5 @@ if ($dbOk) {
 </body>
 </html>
 <?php if ($dbOk) mysqli_close($con); ?>
+
+
