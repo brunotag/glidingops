@@ -29,6 +29,7 @@ $dbOk = !mysqli_connect_errno();
 
 $dateTime = new DateTime('now');
 $dateStr = $dateTime->format('Y-m-d');
+$localDateInt = intval($dateTime->format('Ymd'));
 require_once __DIR__ . '/helpers.php';
 
 // Rostered duties
@@ -60,7 +61,7 @@ if ($dbOk) {
            FROM flights f
            LEFT JOIN members m1 ON m1.id = f.pic
            LEFT JOIN members m2 ON m2.id = f.p2
-           WHERE f.localdate = $dateStr AND f.org = $org AND f.deleted = 0
+           WHERE f.localdate = $localDateInt AND f.org = $org AND f.deleted = 0
              AND f.type = " . intval($flightTypeGlider) . " AND f.start > 0
            ORDER BY f.seq ASC LIMIT 20";
     $r2 = mysqli_query($con, $q2);
