@@ -15,7 +15,7 @@ if (isset($_SESSION['security'])) {
 }
 
 $today = date('Y-m-d');
-$thirtyDaysAgo = date('Y-m-d', strtotime('-30 days'));
+$firstOfMonth = date('Y-m-01');
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -149,7 +149,7 @@ $thirtyDaysAgo = date('Y-m-d', strtotime('-30 days'));
 <div class="controls-bar">
     <div class="filter-group">
         <label for="fromdate">From:</label>
-        <input type="date" id="fromdate" value="<?php echo $thirtyDaysAgo; ?>" />
+        <input type="date" id="fromdate" value="<?php echo $firstOfMonth; ?>" />
     </div>
     <div class="filter-group">
         <label for="todate">To:</label>
@@ -388,8 +388,8 @@ $(document).on('click', function(e) {
 
 $('#reset-filters').on('click', function() {
     var today = '<?php echo $today; ?>';
-    var thirtyAgo = '<?php echo $thirtyDaysAgo; ?>';
-    document.getElementById('fromdate').value = thirtyAgo;
+    var firstOfMonth = '<?php echo $firstOfMonth; ?>';
+    document.getElementById('fromdate').value = firstOfMonth;
     document.getElementById('todate').value = today;
     document.getElementById('filter-member').value = '';
     document.getElementById('member-search').value = '';

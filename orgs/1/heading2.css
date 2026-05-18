@@ -1,19 +1,14 @@
 #head {background-color:#063552;}
-table.t1 {width: 100%;border-collapse:collapse;}
-a.wt{color: #f26120;}
-a.wt:link{color: #f26120;}
-a.wt:visited {color: #f26120;}
-a.wt:hover {color: #fff;}
-p.headp1 {font-family: Calibri, Arial, Helvetica, sans-serif; margin:0;color: #f26120;font-size:50px}
-p.headp2 {font-family: Calibri, Arial, Helvetica, sans-serif; margin:0;color: #f26120;font-size:20px}
-td.tdhead1 {padding-left:0px; text-align: left; vertical-align: bottom;}
-td.head3 {color: #f26120;border-style: none;font-size:14px;font-family: Arial, Helvetica, sans-serif;text-align: right;vertical-align: top;}
-td.head4 {width: 30px;border-style: none;}
-#head a {text-decoration: none; color: #f26120;}
-#head a:link{text-decoration: none; color: #f26120;}
-#head a:visited {text-decoration: none; color: #f26120;}
-#head a:hover {text-decoration: none; color: #fff;}
-
-
-
-
+.head-inner {display:flex; justify-content:space-between; align-items:center; padding:5px 12px; flex-wrap:wrap; gap:4px;}
+.head-brand {display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;}
+.head-title {font-family:Calibri,Arial,Helvetica,sans-serif; color:#f26120; font-size:20px; font-weight:bold;}
+.head-sub {font-family:Calibri,Arial,Helvetica,sans-serif; color:#f26120; font-size:13px;}
+.head-user {color:#f26120; font-size:12px; font-family:Arial,Helvetica,sans-serif; text-align:right; white-space:nowrap;}
+.head-user a {color:#f26120; text-decoration:none; margin-left:8px;}
+.head-user a:link{color:#f26120;}
+.head-user a:visited{color:#f26120;}
+.head-user a:hover{color:#fff;}
+#head a {text-decoration:none; color:#f26120;}
+#head a:link{color:#f26120;}
+#head a:visited{color:#f26120;}
+#head a:hover{color:#fff;}

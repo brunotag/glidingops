@@ -1,9 +1,7 @@
-#menu {background-color:#063552;height:30px;}
-#menu ul {margin: 0;padding-left: 5px;padding-top:5px;list-style-type: none;}
-#menu li {margin: 0;float:left;padding-left: 5px;width: 80px;}
-#menu a {text-decoration: none; color: #f26120;}
-#menu a:link{text-decoration: none; color: #f26120;}
-#menu a:visited {text-decoration: none; color: #f26120;}
-#menu a:hover {text-decoration: none; color: #fff;}
-
-
+#menu {background-color:#063552; padding:2px 12px 5px; border-top:1px solid rgba(255,255,255,0.1);}
+#menu ul {margin:0; padding:0; list-style:none; display:flex; gap:16px;}
+#menu li {margin:0;}
+#menu a {color:#f26120; text-decoration:none; font-size:12px; font-family:Arial,Helvetica,sans-serif;}
+#menu a:link{color:#f26120;}
+#menu a:visited{color:#f26120;}
+#menu a:hover{color:#fff;}

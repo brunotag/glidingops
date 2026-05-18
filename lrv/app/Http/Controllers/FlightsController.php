@@ -29,8 +29,9 @@ class FlightsController extends Controller
         $dateTimeZone = new DateTimeZone($_SESSION['timezone']);
         $dateTime = new DateTime('now', $dateTimeZone);
         $dateStr = $dateTime->format('Y-m-d');
+        $firstOfMonth = $dateTime->format('Y-m-01');
 
-        $strDateFrom  = $request->input("fromdate", $dateStr);
+        $strDateFrom  = $request->input("fromdate", $firstOfMonth);
         $strDateTo    = $request->input("todate", $dateStr);
 
         $dateStart2 = substr($strDateFrom,0,4) . substr($strDateFrom,5,2) . substr($strDateFrom,8,2);
@@ -78,8 +79,9 @@ class FlightsController extends Controller
         $dateTimeZone = new DateTimeZone($_SESSION['timezone']);
         $dateTime = new DateTime('now', $dateTimeZone);
         $dateStr = $dateTime->format('Y-m-d');
+        $firstOfMonth = $dateTime->format('Y-m-01');
 
-        $strDateFrom  = $request->input("fromdate", $dateStr);
+        $strDateFrom  = $request->input("fromdate", $firstOfMonth);
         $strDateTo    = $request->input("todate", $dateStr);
 
         $dateStart2 = substr($strDateFrom,0,4) . substr($strDateFrom,5,2) . substr($strDateFrom,8,2);
