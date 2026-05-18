@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html>
 <body>
@@ -11,24 +12,19 @@ body {
 
 }
 .imgdiv{
-  float:left;
-  width:25%;
-  max-width:60px;
+  flex-shrink:0;
+  width:45px;
+  height:45px;
 }
 .paragraph{
-  display: block;
-  margin-left: 2px;
-  margin-right: 2px;
-  width:100%;
-}
-.paragraph p{
-  margin-top:33px;
+  clear:both;
+  margin:8px 2px 0 2px;
 }
 
 .avator {
   border-radius:100px;
-  max-width:45px;
-  margin-right: 15px;
+  width:45px;
+  height:45px;
 }
 
 .tweet-wrap {
@@ -41,17 +37,23 @@ body {
   border-bottom: 1px solid #e6ecf0;
   border-top: 1px solid #e6ecf0;
   color: #203A5E;
+  position:relative;
 }
+.tweet-wrap:not(.seen) { border-left:4px solid #063552; background:#f4f8fc; }
+.new-badge { display:inline; background:#063552; color:#f26120; font-size:9px; font-weight:bold; padding:1px 6px; border-radius:3px; margin-left:6px; text-transform:uppercase; vertical-align:middle; }
+.tweet-wrap.seen .new-badge { display:none; }
 
 .tweet-header {
-  display: block;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   width:100%;
   min-height:40px;
   font-size:18px;
 }
 .tweet-header-info {
-  float:left;
-  width:75%;
+  flex:1;
+  min-width:0;
   font-weight:bold;
 }
 .tweet-header-info span {
@@ -120,15 +122,15 @@ if (mysqli_connect_errno()) {
     echo "<p>Unable to connect to database</p>";
 }
 $conn = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-$query = "SELECT create_time, msg FROM gliding.messages WHERE is_broadcast AND org = ".$org." ORDER BY create_time desc LIMIT 20";
+$query = "SELECT id, create_time, msg FROM gliding.messages WHERE is_broadcast AND org = ".$org." ORDER BY create_time desc LIMIT 10";
 $result = mysqli_query($conn, $query);
 while ($row = mysqli_fetch_array($result))
 {
-    $dateobj = date_create($row[0]);
+    $dateobj = date_create($row[1]);
     $dateobj->setTimezone(new DateTimeZone('Pacific/Auckland'));
     $date = date_format($dateobj,"d M Y - H:ia");
         
-    echo "<div class=\"tweet-wrap\">";
+    echo "<div class=\"tweet-wrap\" data-msg-id=\"" . intval($row[0]) . "\">";
     echo "  <div class=\"tweet-header\">";
     echo "    <div class=\"imgdiv\">";
     echo "      <img src=\""."./orgs/" . $org . "/twitter_icon.jpg"."\" alt=\"\" class=\"avator\">";
@@ -138,17 +140,31 @@ while ($row = mysqli_fetch_array($result))
     echo file_get_contents("./orgs/" . $org . "/twitter_name.txt");
     echo "       </div>";
     echo "       <div class=\"datetimediv\">";
-    echo "          <span>".$date."</span>";
+    echo "          <span>".$date."</span><b class=\"new-badge\">NEW</b>";
     echo "       </div>";                 
     echo "    </div>";
     echo "  </div>";
     echo "    <div class=\"paragraph\">";    
-    echo "       <p> ".$row[1]." </p>";
+    echo "       <p> ".$row[2]." </p>";
     echo "    </div>";     
     echo "</div>  ";
 }
 $conn = null;
 ?>
 
+<script>
+(function() {
+  var maxSeen = parseInt(localStorage.getItem('gops_broadcast_seen_max') || '0', 10);
+  var currentMax = 0;
+  document.querySelectorAll('.tweet-wrap[data-msg-id]').forEach(function(el) {
+    var id = parseInt(el.getAttribute('data-msg-id'), 10);
+    if (id > currentMax) currentMax = id;
+    if (id <= maxSeen) el.classList.add('seen');
+  });
+  if (currentMax > maxSeen) {
+    localStorage.setItem('gops_broadcast_seen_max', currentMax.toString());
+  }
+})();
+</script>
 </body>
 </html>

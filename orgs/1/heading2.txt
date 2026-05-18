@@ -6,8 +6,8 @@
     </div>
     <div class='head-user'>
       <?php echo htmlspecialchars($_SESSION['dispname']);?> as <?php echo htmlspecialchars($_SESSION['who']);?>
-      <a href='SignOut.php'>Sign Out</a>
-      <a href='PasswordChange'>Change PW</a>
+      <a href='/SignOut.php'>Sign Out</a>
+      <a href='/PasswordChange'>Change PW</a>
     </div>
   </div>
 </div>

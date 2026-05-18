@@ -97,6 +97,16 @@ if ($dbOk) {
             $recentMessages[] = $row;
         }
     }
+
+    // Broadcast messages for inline widget
+    $broadcastMessages = [];
+    $q5 = "SELECT id, create_time, msg FROM messages WHERE is_broadcast = 1 AND org = $org ORDER BY create_time DESC LIMIT 10";
+    $r5 = mysqli_query($con, $q5);
+    if ($r5) {
+        while ($row = mysqli_fetch_array($r5)) {
+            $broadcastMessages[] = $row;
+        }
+    }
 }
 ?>
 <!DOCTYPE HTML>
@@ -187,6 +197,14 @@ if ($dbOk) {
     a:link { color: #333; }
     a:visited { color: #333; }
     a:hover { color: #063552; }
+
+    .msg-item { background:#fff; margin:8px; padding:12px 14px; border-radius:3px; border:1px solid #e6ecf0; color:#203A5E; position:relative; }
+    .msg-item:not(.seen) { border-left:4px solid #063552; }
+    .msg-item .msg-meta { font-size:13px; color:#657786; margin-bottom:6px; }
+    .msg-item .msg-meta .new-badge { display:inline; background:#063552; color:#f26120; font-size:10px; font-weight:bold; padding:2px 7px; border-radius:3px; margin-left:8px; text-transform:uppercase; vertical-align:middle; }
+    .msg-item.seen .msg-meta .new-badge { display:none; }
+    .msg-item .msg-text { font-size:14px; color:#203A5E; line-height:1.4; }
+    .msg-empty { color:#888; font-size:13px; padding:14px 16px; }
   </style>
 </head>
 <body>
@@ -225,8 +243,25 @@ if ($dbOk) {
 
         <div class="dashboard-card wide">
           <div class="card-header">Latest Updates</div>
-          <div class="card-body" style="padding:0;">
-            <iframe id="twitter-frame" style="width:100%;height:400px;border:0px;display:block;" src="/messages-list.php?org=1" title="Updates feed"></iframe>
+          <div class="card-body" style="padding:0;max-height:420px;overflow-y:auto;background:#F1F1EF;">
+            <?php if (empty($broadcastMessages)): ?>
+              <p class="msg-empty">No recent broadcasts.</p>
+            <?php else: ?>
+              <?php foreach ($broadcastMessages as $bm): ?>
+                <?php
+                  $bmDate = new DateTime($bm['create_time']);
+                  if ($strTZ) $bmDate->setTimezone(new DateTimeZone($strTZ));
+                  $bmDateStr = $bmDate->format('d M Y - H:i');
+                ?>
+                <div class="msg-item" data-msg-id="<?php echo intval($bm['id']); ?>">
+                  <div class="msg-meta">
+                    <?php echo htmlspecialchars($bmDateStr); ?>
+                    <span class="new-badge">NEW</span>
+                  </div>
+                  <div class="msg-text"><?php echo htmlspecialchars($bm['msg']); ?></div>
+                </div>
+              <?php endforeach; ?>
+            <?php endif; ?>
           </div>
         </div>
 
@@ -450,7 +485,18 @@ if ($dbOk) {
 
   <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
   <script>
-  // Clean slate — no JS layout needed, CSS columns handle everything
+  (function() {
+    var maxSeen = parseInt(localStorage.getItem('gops_broadcast_seen_max') || '0', 10);
+    var currentMax = 0;
+    document.querySelectorAll('.msg-item[data-msg-id]').forEach(function(el) {
+      var id = parseInt(el.getAttribute('data-msg-id'), 10);
+      if (id > currentMax) currentMax = id;
+      if (id <= maxSeen) el.classList.add('seen');
+    });
+    if (currentMax > maxSeen) {
+      localStorage.setItem('gops_broadcast_seen_max', currentMax.toString());
+    }
+  })();
   </script>
 
   <style>
