@@ -107,6 +107,16 @@ if ($dbOk) {
             $broadcastMessages[] = $row;
         }
     }
+
+    // Duplicate members count
+    $duplicateCount = 0;
+    if ($effectiveSecurity & 64) {
+        $q6 = "SELECT COUNT(*) AS cnt FROM (SELECT firstname, surname FROM members WHERE org = $org GROUP BY firstname, surname HAVING COUNT(*) > 1) AS dups";
+        $r6 = mysqli_query($con, $q6);
+        if ($r6 && $row = mysqli_fetch_array($r6)) {
+            $duplicateCount = intval($row['cnt']);
+        }
+    }
 }
 ?>
 <!DOCTYPE HTML>
@@ -205,6 +215,7 @@ if ($dbOk) {
     .msg-item.seen .msg-meta .new-badge { display:none; }
     .msg-item .msg-text { font-size:14px; color:#203A5E; line-height:1.4; }
     .msg-empty { color:#888; font-size:13px; padding:14px 16px; }
+    .dup-badge { display:inline-block; background:#063552; color:#f26120; font-size:10px; font-weight:bold; padding:1px 7px; border-radius:8px; margin-left:5px; vertical-align:middle; }
   </style>
 </head>
 <body>
@@ -384,6 +395,7 @@ if ($dbOk) {
               <?php if ($effectiveSecurity & 64): ?>
                 <a href="/UsersList">View Users</a>
                 <a href="/Users">Create User</a>
+                <a href="/maintenance/duplicates_index.php">Manage Duplicate Memberships<?php if ($duplicateCount > 0): ?> <span class="dup-badge"><?php echo $duplicateCount; ?></span><?php endif; ?></a>
               <?php endif; ?>
               <?php if ($effectiveSecurity & 24): ?>
                 <a href="/app/reports/membersRolesStatsReport">Members Roles Report</a>
@@ -430,7 +442,6 @@ if ($dbOk) {
                 <a href="/Roles">Roles</a>
                 <a href="/AssignRoles">Role Assignment</a>
                 <a href="/spots-list.php">Spots</a>
-                <a href="/maintenance/duplicates_index.php">Manage Duplicate Memberships</a>
                 <a href="/manage-secret-code.php">Manage Secret Code</a>
               <?php endif; ?>
               <?php if ($effectiveSecurity & 72): ?>

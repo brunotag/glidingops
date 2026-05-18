@@ -21,20 +21,23 @@ if (isset($_SESSION['security'])) {
 $requestedId = isset($_GET['id']) ? intval($_GET['id']) : null;
 $currentMemberId = isset($_SESSION['memberid']) ? intval($_SESSION['memberid']) : 0;
 $securityLevel = isset($_SESSION['security']) ? $_SESSION['security'] : 0;
+$isCreateNew = $requestedId === null && strpos($_SERVER['REQUEST_URI'], 'MemberNew') !== false;
 
-if ($requestedId !== null && $requestedId !== $currentMemberId) {
+if (!$isCreateNew && $requestedId !== null && $requestedId !== $currentMemberId) {
     if (!($securityLevel & 6)) {
         die("You can only edit your own details");
     }
 }
 
-if ($requestedId !== null) {
+if ($isCreateNew) {
+    $memberId = null;
+} elseif ($requestedId !== null) {
     $memberId = $requestedId;
 } else {
     $memberId = $currentMemberId;
 }
 $isEdit = $memberId !== null && $memberId > 0;
-$isMyDetails = $requestedId === null && $memberId === $currentMemberId;
+$isMyDetails = !$isCreateNew && $requestedId === null && $memberId === $currentMemberId;
 
 // Load data using direct queries (like other pages)
 $con_params = require('./config/database.php');
@@ -114,8 +117,7 @@ mysqli_close($con);
         .checkbox { margin-left: 0; }
         .help-block { font-size: 12px; color: #666; }
         .panel { margin-bottom: 15px; }
-        .error-msg { color: #a94442; font-size: 12px; }
-        .success-msg { color: #3c763d; font-size: 14px; margin-bottom: 15px; }
+        #message-area .alert { margin-bottom: 15px; }
     </style>
     <?php $inc = "./orgs/" . $org . "/heading2.css"; if (file_exists($inc)) { echo '<style>'; include $inc; echo '</style>'; } ?>
     <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) { echo '<style>'; include $inc; echo '</style>'; } ?>
@@ -394,16 +396,17 @@ $(document).ready(function() {
             success: function(data) {
                 console.log('AJAX success:', data);
                 if (data.success) {
-                    $('#message-area').html('<div class="success-msg">' + data.message + '</div>');
-                    $('html, body').scrollTop(0);
+                    $('#message-area').html('<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button>' + data.message + '</div>');
                 } else {
                     console.log('Showing error:', data.message);
-                    $('#message-area').html('<div class="error-msg">' + (data.message || 'Error saving member') + '</div>');
+                    $('#message-area').html('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button>' + (data.message || 'Error saving member') + '</div>');
                 }
+                $('html, body').scrollTop(0);
             },
             error: function(xhr, status, error) {
                 console.log('AJAX error:', status, error);
-                $('#message-area').html('<div class="error-msg">Failed to save member</div>');
+                $('#message-area').html('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button>Failed to save member</div>');
+                $('html, body').scrollTop(0);
             }
         });
     });

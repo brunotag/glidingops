@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     logMsg("POST DB connected OK");
     logMsg("POST RECEIVED");
-    $memberId = isset($_POST['id']) ? intval($_POST['id']) : null;
+    $memberId = (!empty($_POST['id']) && intval($_POST['id']) > 0) ? intval($_POST['id']) : null;
     logMsg("memberId from POST=" . $memberId);
     $isEdit = $memberId !== null;
     $currentMemberId = isset($_SESSION['memberid']) ? intval($_SESSION['memberid']) : 0;
@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Get optional fields
     $dateOfBirth = isset($_POST['date_of_birth']) && !empty($_POST['date_of_birth']) ? $_POST['date_of_birth'] : null;
-    $gnzNumber = isset($_POST['gnz_number']) ? trim($_POST['gnz_number']) : '';
+    $gnzNumber = isset($_POST['gnz_number']) && $_POST['gnz_number'] !== '' ? trim($_POST['gnz_number']) : '0';
     $phoneMobile = isset($_POST['phone_mobile']) ? trim($_POST['phone_mobile']) : '';
     $email = isset($_POST['email']) ? trim($_POST['email']) : '';
     $medicalExpire = isset($_POST['medical_expire']) && !empty($_POST['medical_expire']) ? $_POST['medical_expire'] : null;
