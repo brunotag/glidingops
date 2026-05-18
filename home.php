@@ -363,8 +363,8 @@ if ($dbOk) {
             <div class="card-header">Reports</div>
             <div class="card-body">
               <?php if ($effectiveSecurity & 8): ?>
-                <a href="/Treasurer.php">Treasurer Report</a>
-                <a href="/TreasurerReportNew3">Treasurer Report (New)</a>
+                <a href="/TreasurerReportNew3">Treasurer Report</a>
+                <a href="/TreasurerReportNew4">Treasurer Report (New)</a>
               <?php endif; ?>
               <?php if ($_SESSION['security'] & 1): ?>
                 <a href="/app/allFlightsReport">All Flights Report</a>
