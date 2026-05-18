@@ -44,9 +44,12 @@ class GoogleCalendarService
 
     public function getEventsForDateRange($startDate, $endDate)
     {
+        $tz = new \DateTimeZone('Pacific/Auckland');
+        $timeMin = (new \DateTime($startDate . ' 00:00:00', $tz))->format('Y-m-d\TH:i:sP');
+        $timeMax = (new \DateTime($endDate . ' 23:59:59', $tz))->format('Y-m-d\TH:i:sP');
         $optParams = [
-            'timeMin' => $startDate . 'T00:00:00+12:00',
-            'timeMax' => $endDate . 'T23:59:59+12:00',
+            'timeMin' => $timeMin,
+            'timeMax' => $timeMax,
             'singleEvents' => true,
             'orderBy' => 'startTime',
         ];

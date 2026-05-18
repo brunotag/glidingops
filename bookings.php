@@ -9,6 +9,7 @@ if (!isset($_SESSION['security']) || !($_SESSION['security'] & 1)) {
 
 require_once __DIR__ . '/load_model.php';
 require_once __DIR__ . '/helpers/logging.php';
+require_once __DIR__ . '/helpers/timehelpers.php';
 
 $memberId = isset($_SESSION['memberid']) ? (int)$_SESSION['memberid'] : 0;
 if ($memberId <= 0) {
@@ -20,6 +21,8 @@ if ($memberId <= 0) {
     die('No member account linked to your user');
 }
 $isAdmin = isset($_SESSION['security']) && ($_SESSION['security'] & 64);
+$tzName = orgTimezone(null, $org);
+$tz = new DateTimeZone($tzName);
 
 $con_params = require('./config/database.php');
 $con_params = $con_params['gliding'];
@@ -192,8 +195,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$today = date('Y-m-d');
-$endDate = date('Y-m-d', strtotime('+90 days'));
+$now = new DateTime('now', $tz);
+$today = $now->format('Y-m-d');
+$endDate = (clone $now)->modify('+90 days')->format('Y-m-d');
 
 $calendarEvents = [];
 $ourBookings = [];
@@ -288,7 +292,7 @@ unset($events);
         }
         .booking-row:last-of-type { border-bottom: none; border-radius: 0 0 6px 6px; }
         .booking-time {
-            font-weight: bold; color: #555; min-width: 40px;
+            font-weight: bold; color: #555; min-width: 55px;
         }
         .booking-summary { flex: 1; color: #333; }
         .booking-actions { display: flex; gap: 6px; }
@@ -384,20 +388,23 @@ include __DIR__ . '/helpers/dev_mode_banner.php';
         <?php else: ?>
             <?php foreach ($dateGroups as $dateKey => $events): ?>
                 <?php
-                $displayDate = date('l j F Y', strtotime($dateKey));
+                $dt = new DateTime($dateKey, new DateTimeZone('UTC'));
+                $dt->setTimezone($tz);
+                $displayDate = $dt->format('l j F Y');
                 ?>
                 <div class="date-group">
                     <div class="date-header"><?php echo htmlspecialchars($displayDate) ?></div>
                     <?php foreach ($events as $event): ?>
                         <?php
-                        $seqNum = '';
+                        $timeStr = '';
                         if (!empty($event['start'])) {
-                            $ts = strtotime($event['start']);
-                            $seqNum = '#' . ((int)date('i', $ts) + 1);
+                            $dt = new DateTime($event['start']);
+                            $dt->setTimezone($tz);
+                            $timeStr = $dt->format('g:ia');
                         }
                         ?>
                         <div class="booking-row <?php echo $event['is_ours'] ? '' : 'not-ours' ?>"<?php if ($event['booking_id']): ?> data-booking-id="<?php echo $event['booking_id'] ?>"<?php endif; ?>>
-                            <span class="booking-time"><?php echo htmlspecialchars($seqNum) ?></span>
+                            <span class="booking-time"><?php echo htmlspecialchars($timeStr) ?></span>
                             <span class="booking-summary"><?php echo htmlspecialchars($event['summary']) ?></span>
                             <?php if ($event['can_edit']): ?>
                                 <span class="booking-actions">
