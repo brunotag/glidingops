@@ -477,6 +477,7 @@ if ($dbOk) {
             <div class="card-body">
               <a href="/InviteUsers">Invite Users to Gliding Ops</a>
               <a href="/Organisations">Organisations</a>
+              <a href="/maintenance/duplicates_suggestions.php">Suggested Duplicates</a>
             </div>
           </div>
         <?php endif; ?>
