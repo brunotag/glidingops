@@ -291,11 +291,12 @@ function buildDataTable() {
                 {
                     data: 'photo_url',
                     title: 'Photo',
-                    render: function(data) {
+                    render: function(data, type, full) {
                         if (!data) {
-                            return '<span style="color:#999;font-size:12px;">no photo</span>';
+                            return '<img width="60" src="/img/noprofile.png" alt="no photo" style="border-radius:3px;">';
                         }
-                        return '<img width="60" src="' + data + '" alt="photo" style="cursor:pointer;" onerror="$(this).replaceWith(\'<span style=color:#999;font-size:12px;>no photo</span>\')" onclick="var src=$(this).attr(\'src\');var name=src.replace(\'img/members/\',\'\').replace(\'.jpg\',\'\');$(\'#modalPhoto\').attr(\'src\',src);$(\'#photoModalLabel\').text(name);$(\'#photoModal\').modal(\'show\');">';
+                        var name = (full.displayname || '').replace(/'/g, "\\'");
+                        return '<img width="60" src="' + data + '" alt="photo" style="cursor:pointer;border-radius:3px;" onerror="$(this).attr(\'src\',\'/img/noprofile.png\')" onclick="$(\'#modalPhoto\').attr(\'src\',\'' + data + '\');$(\'#photoModalLabel\').text(\'' + name + '\');$(\'#photoModal\').modal(\'show\');">';
                     },
                     orderable: false,
                     searchable: false,

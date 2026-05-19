@@ -215,9 +215,7 @@ $result = mysqli_stmt_get_result($stmt);
 
 $data = [];
 while ($row = mysqli_fetch_assoc($result)) {
-    // Generate photo URL - photos stored as img/members/{displayname}.jpg
-    $photoName = str_replace("'", "_", $row['displayname']);
-    $photoUrl = 'img/members/' . $photoName . '.jpg';
+    $photoUrl = $row['id'] ? '/img/members/' . $row['id'] . '.jpg' : null;
     
     $data[] = [
         'id' => $row['id'],

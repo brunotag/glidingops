@@ -145,9 +145,12 @@ mysqli_close($con);
 
     <div id="message-area"></div>
 
-    <form id="member-form" method="post">
+    <form id="member-form" method="post" enctype="multipart/form-data">
         <input type="hidden" name="id" id="member-id" value="<?php echo $memberId; ?>">
-        
+
+        <div class="row">
+        <div class="col-md-9">
+
         <div class="panel panel-default">
             <div class="panel-heading"><strong>Member Details</strong></div>
             <div class="panel-body">
@@ -259,7 +262,29 @@ mysqli_close($con);
                 </div>
             </div>
         </div>
-        
+
+        </div><!-- col-md-9 -->
+        <div class="col-md-3">
+
+        <div class="panel panel-default">
+            <div class="panel-heading"><strong>Photo</strong></div>
+            <div class="panel-body" style="text-align:center;">
+                <?php if ($isEdit): ?>
+                <div style="margin:0 auto 10px auto;max-width:160px;max-height:160px;border:1px solid #ddd;border-radius:4px;overflow:hidden;">
+                    <img id="current-photo" src="/img/members/<?php echo $memberId; ?>.jpg" onerror="this.src='/img/noprofile.png'" style="width:100%;height:auto;">
+                </div>
+                <?php endif; ?>
+                <label class="btn btn-primary btn-sm" style="cursor:pointer;">
+                    Choose File <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="var f=this.files[0];this.nextElementSibling.textContent=f?f.name:'No file chosen'">
+                    <span style="font-weight:normal;margin-left:4px;"></span>
+                </label>
+                <p class="help-block" style="font-size:11px;">JPEG, PNG or WebP. Max 2MB.</p>
+            </div>
+        </div>
+
+        </div><!-- col-md-3 -->
+        </div><!-- row -->
+
         <div class="panel panel-default">
             <div class="panel-heading"><strong>Address</strong></div>
             <div class="panel-body">
@@ -386,25 +411,31 @@ $(document).ready(function() {
     $('#member-form').on('submit', function(e) {
         e.preventDefault();
 
-        var formData = $(this).serialize();
+        var formData = new FormData(this);
 
         $.ajax({
             url: '/api/member-form.php',
             method: 'POST',
             data: formData,
+            processData: false,
+            contentType: false,
             dataType: 'json',
             success: function(data) {
-                console.log('AJAX success:', data);
                 if (data.success) {
                     $('#message-area').html('<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button>' + data.message + '</div>');
+                    if (data.photo_url) {
+                        var img = $('#current-photo');
+                        if (img.length) {
+                            img.attr('src', data.photo_url + '?t=' + Date.now());
+                            img.closest('div').show();
+                        }
+                    }
                 } else {
-                    console.log('Showing error:', data.message);
                     $('#message-area').html('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button>' + (data.message || 'Error saving member') + '</div>');
                 }
                 $('html, body').scrollTop(0);
             },
             error: function(xhr, status, error) {
-                console.log('AJAX error:', status, error);
                 $('#message-area').html('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button>Failed to save member</div>');
                 $('html, body').scrollTop(0);
             }

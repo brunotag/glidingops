@@ -331,12 +331,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
+        // Handle photo upload
+        $photoUrl = null;
+        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            $maxSize = 2 * 1024 * 1024;
+            $file = $_FILES['photo'];
+
+            if ($file['size'] <= $maxSize && in_array($file['type'], $allowedTypes)) {
+                $srcImage = null;
+                switch ($file['type']) {
+                    case 'image/jpeg': $srcImage = @imagecreatefromjpeg($file['tmp_name']); break;
+                    case 'image/png':  $srcImage = @imagecreatefrompng($file['tmp_name']); break;
+                    case 'image/webp': $srcImage = @imagecreatefromwebp($file['tmp_name']); break;
+                }
+
+                if ($srcImage) {
+                    $w = imagesx($srcImage);
+                    $h = imagesy($srcImage);
+                    $maxDim = 400;
+                    if ($w > $maxDim || $h > $maxDim) {
+                        $ratio = $w / $h;
+                        if ($w > $h) {
+                            $newW = $maxDim;
+                            $newH = intval($maxDim / $ratio);
+                        } else {
+                            $newH = $maxDim;
+                            $newW = intval($maxDim * $ratio);
+                        }
+                        $dstImage = imagecreatetruecolor($newW, $newH);
+                        imagecopyresampled($dstImage, $srcImage, 0, 0, 0, 0, $newW, $newH, $w, $h);
+                        imagedestroy($srcImage);
+                        $srcImage = $dstImage;
+                    }
+
+                    $destPath = __DIR__ . '/../img/members/' . $newId . '.jpg';
+                    imagejpeg($srcImage, $destPath, 80);
+                    imagedestroy($srcImage);
+                    $photoUrl = 'img/members/' . $newId . '.jpg';
+                    logMsg("Photo saved to $destPath");
+                }
+            } else {
+                logMsg("Photo rejected: type=" . $file['type'] . " size=" . $file['size']);
+            }
+        }
+
         header('Content-Type: application/json');
         logMsg("ABOUT TO ECHO JSON RESPONSE");
         echo json_encode([
             'success' => true,
             'message' => $isEdit ? 'Member updated successfully' : 'Member created successfully',
-            'member_id' => $newId
+            'member_id' => $newId,
+            'photo_url' => $photoUrl
         ]);
         logMsg("JSON RESPONSE SENT");
     } else {
