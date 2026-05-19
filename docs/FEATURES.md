@@ -283,7 +283,7 @@ Fields:
 - Sort by any column
 - Pagination with page size selector (10/25/50/100)
 - Export to CSV
-- Photo display (60px, clickable modal)
+- Photo display (60px, clickable modal, falls back to noprofile.png)
 - Actions column with Edit button
 - "Create New" button links to members-new.php
 - Vertical alignment for all table cells
@@ -303,7 +303,10 @@ Fields:
 - Auto-suggest displayname from Firstname + Surname
 - Default class = Flying, default status = Active
 - enable_email always true (no checkbox needed)
-- Photo upload to /media/members/<org>/
+- Photo upload: JPEG/PNG/WebP, max 2MB, GD resize to 400px max (falls back to original if GD unavailable)
+- Photo stored as `img/members/{member_id}.jpg` (keyed by member ID, not displayname)
+- `img/noprofile.png` shown as fallback when no photo exists
+- Photo in header: 24px rounded thumbnail next to username on all pages (via `orgs/*/heading2.txt`)
 - Address fields: mem_addr1-4, mem_city, mem_country, mem_postcode
 - Emergency contact: emerg_addr1-3, emerg_phone
 - Role assignment via checkboxes

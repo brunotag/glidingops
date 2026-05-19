@@ -37,6 +37,23 @@ See [DATABASE_BACKUP.md](DATABASE_BACKUP.md) for full backup documentation.
 |----------|---------|---------|
 | `0 3 * * *` | `php /path/to/cleanup-bookings.php` | Hard-delete soft-deleted bookings older than 30 days |
 
+## Removed Jobs
+
+| Schedule | Command | Purpose | Removal Reason |
+|----------|---------|---------|---------------|
+| `0 * * * *` | `gdrive download ... --path /var/www/html/img/members` | Sync member photos from Google Drive (displayname-based) | Replaced by web upload - photos now stored as `{member_id}.jpg` |
+
+## Unknown / Undocumented Jobs
+
+These jobs were found on production but their purpose is not fully confirmed:
+
+| Schedule | Command | Likely Purpose | Confidence |
+|----------|---------|----------------|------------|
+| `0 12 * * *` | `sudo /opt/disk-alert.sh` | Disk space alert | Medium — script not in repo |
+| `*/30 * * * *` | `sudo curl https://ted1481.softr.app/` | Keep Softr app awake (uptime ping) | High — simple curl keepalive |
+| `0 * * * *` | `cd /home/sftpwebcam/data/ && sudo ./delete-old-files.sh` | Delete old webcam timelapse files | Medium — script not in repo |
+| `#*/5 * * * *` | `git -C /var/www/html pull origin master` | Auto-deploy (commented out) | High — standard auto-pull, currently disabled |
+
 ## Notes
 
 - All paths are relative to the web root (`/var/www/html` or equivalent)

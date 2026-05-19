@@ -23,11 +23,12 @@
 - Register.php deleted (absorbed into Email or Register tab)
 - .htaccess updated with magic link routes
 - MessagingPage.php security changed from Level 1 to Level 5
-- home.php completely rewritten: Dashboard layout with 3 data widgets (My Gliding, Flying/Tracking, Latest Updates) + navigation cards in priority order. CSS column-width: 280px for responsive masonry. Color scheme unified (#063552 backgrounds, #f26120 text on dark, white hover).
+- home.php: Dashboard layout with 3 data widgets + nav cards in CSS Grid (dense packing, 550px/275px widths), latest updates capped at 340px/4 messages, reordered Data Maintenance last
 - MyFlights.php: Date column sortable (asc/desc) with arrow indicator
 - Color scheme overhaul across all CSS files: #000040, #000080, #0000FF replaced with #063552. Foreground on dark backgrounds changed to #f26120.
 - docs updated: SECURITY.md, DEPLOY.md, ROUTES.md, FEATURES.md, AGENTS.md
 - FUTURE_DEVELOPMENT_MAGIC_LINK.md removed (now reality)
+- **Photo system**: photos stored as `img/members/{member_id}.jpg` (was `{displayname}.jpg`). Upload via member form with GD resize (max 400px, JPEG q80, graceful fallback). Header photo next to username on all pages. noprofile.png fallback. 62 photos migrated on production. Google Drive sync cron removed.
 
 ### Next Steps
 1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)

@@ -52,3 +52,12 @@ The magic link flow involves these changes out of git:
 | `Forgotten.php` | **Deleted** (replaced by magic link) |
 | `Register.php` | **Deleted** (absorbed into Email or Register tab) |
 | `magic_link_tokens` table | Created by `php artisan migrate` |
+
+## Member Photos Migration
+
+Photos were migrated from `img/members/{displayname}.jpg` to `img/members/{member_id}.jpg`:
+
+1. Migration script (`maintenance/migrate-photos.php`) ran on production
+2. Google Drive cron sync removed (was overwriting photos hourly)
+3. `img/noprofile.png` used as fallback when no photo exists
+4. GD extension installed on production for photo resize (max 400px, JPEG q80)
