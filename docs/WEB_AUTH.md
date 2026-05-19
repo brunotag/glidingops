@@ -95,6 +95,21 @@ $con_params = require(__DIR__ . '/../config/database.php');
 
 NOT `./config/database.php` - the `./` path is relative to the script location when accessed via web server, which may not be correct.
 
+### Non-Breaking API Changes
+
+API endpoints are consumed by **external scripts** registered in `docs/DEPENDENCIES.md`.
+Any change to an API endpoint must be backward-compatible:
+
+1. **Never remove fields** from a JSON response.
+2. **Never rename fields** — add new fields alongside old ones if renaming is necessary.
+3. **New fields must be additive** — existing consumers must not break when new fields appear.
+4. **Response structure must remain stable** — top-level keys must not change.
+5. **Pagination semantics** (`start`, `length`, `recordsTotal`, `recordsFiltered`) must stay consistent.
+6. **Date/time formats** must remain consistent.
+7. **Communicate any API change** to the maintainers of consuming scripts before deploying.
+
+See `docs/DEPENDENCIES.md` for the full dependency registry and field-level contracts.
+
 ---
 
 ## API Header Auth for JavaScript Fetch

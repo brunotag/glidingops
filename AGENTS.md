@@ -107,6 +107,7 @@ All docs in `docs/` folder - see individual files for details:
 5. **Use `__DIR__ . '/../config/database.php'`** NOT `./config/database.php`
 6. **Always log with `logMsg()`** to track execution
 7. **Add route to `.htaccess`** - `RewriteRule ^api/NAME$ api/NAME.php [L,QSA]`
+8. **Never make breaking API changes** — external scripts (see `docs/DEPENDENCIES.md`) consume API endpoints. Fields must not be removed or renamed. New fields must be additive and optional.
 
 ## Route Order in .htaccess
 More specific routes must come BEFORE less specific ones.
