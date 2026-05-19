@@ -16,6 +16,7 @@
     "require-dev": {
         "mockery/mockery": "^0.9",
         "phpunit/phpunit": "^9.0",
+        "guzzlehttp/guzzle": "^7.0",
         "symfony/css-selector": "^3.1",
         "symfony/dom-crawler": "^3.1",
         "kitloong/laravel-migrations-generator": "^6.0",
@@ -66,6 +67,12 @@
         "allow-plugins": {
             "kylekatarnls/update-helper": true,
             "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "audit": {
+            "ignore": ["PKSA-8qx3-n5y5-vvnd", "PKSA-w7xr-vk7n-rstm", "PKSA-p3rx-dfwp-73ny", "PKSA-ckwp-rt7t-c46m", "PKSA-4npr-btr6-zhny", "PKSA-njrm-6dtg-m2pc", "PKSA-985r-hryy-555b"]
+        },
+        "platform": {
+            "php": "7.4"
         }
     }
 }

@@ -144,7 +144,7 @@ The DailySheet already has some mobile optimizations (flatpickr, dropdown positi
 
 1. **Mixed PHP/Laravel** - Two systems, poorly integrated
 2. **Inconsistent patterns** - Every page slightly different
-3. **No tests** - No test suite
+3. ~~**No tests** - No test suite~~ → **DONE** - Tests created in `tests/` (PHPUnit + GuzzleHttp, 35 tests, 5 test classes)
 4. **Old libraries** - jQuery 1.x, Bootstrap 3.x
 
 ---

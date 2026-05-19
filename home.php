@@ -437,10 +437,8 @@ if ($dbOk) {
           <div class="nav-card">
             <div class="card-header">Diagnostics &amp; Recovery</div>
             <div class="card-body">
-              <a href="/Recovery.php">Get Local Browser Cache</a>
               <a href="/maintenance/testemail.php">Test Email</a>
               <a href="/SentMessages">All Messages</a>
-              <a href="/Audits">Audit Log</a>
               <?php if ($_SESSION['security'] & 128): ?>
                 <a href="/ViewAs">View Homepage As...</a>
               <?php endif; ?>

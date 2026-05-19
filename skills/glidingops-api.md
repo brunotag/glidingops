@@ -7,7 +7,7 @@ description: Glidingops API development - PHP syntax checks, API error handling,
 
 ## PHP Syntax Check (Vagrant)
 ```bash
-cd C:\Users\bruno\dev\glidingops\lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
+cd lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
 ```
 Ignore the vagrant warning about homestead - actual PHP output follows.
 

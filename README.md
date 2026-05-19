@@ -52,7 +52,7 @@ Two config locations needed:
 
 ### Log Locations (Local Dev)
 
-- `C:\Users\bruno\dev\glidingops\log\app.log`
-- `C:\Users\bruno\dev\glidingops\log\error.log`
+- `log/app.log`
+- `log/error.log`
 
 Read directly with `Read` tool - NO vagrant ssh needed.

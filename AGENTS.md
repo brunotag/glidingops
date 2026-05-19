@@ -58,6 +58,7 @@ Run `agentmemory_memory_consolidate` to persist learned context across sessions.
 **TESTING:** 
 - Always verify CSS/JS changes by fetching the page with PowerShell WebRequestSession (see `docs/WEB_AUTH.md`). Do NOT rely purely on code reasoning — the browser is the ground truth.
 - Use `docs/WEB_AUTH.md` for PowerShell WebRequestSession patterns
+- Run PHPUnit test suite: `cd lrv; vagrant ssh -c "cd /home/vagrant/code && ./lrv/vendor/bin/phpunit"` (see `docs/TESTING.md` for full details)
 
 **BEFORE DELETING OLD FILES:** See `docs/DEAD_CODE.md`
 
@@ -72,7 +73,7 @@ See these documents for detailed info:
 ## Documentation Index
 
 All docs in `docs/` folder - see individual files for details:
-- README.md, ARCHITECTURE.md, DATABASE.md, FEATURES.md, ROUTES.md, SECURITY.md, MESSAGING.md, CODEBASE_MAP.md, WEB_AUTH.md, DEVELOP.md, DEAD_CODE.md, TODO.md, FUTURE_DEVELOPMENT_MAGIC_LINK.md
+- README.md, ARCHITECTURE.md, DATABASE.md, FEATURES.md, ROUTES.md, SECURITY.md, MESSAGING.md, CODEBASE_MAP.md, WEB_AUTH.md, TESTING.md, DEVELOP.md, DEAD_CODE.md, TODO.md
 
 ## Dev URLs
 - **App:** http://glidingops.test (NOT https - self-signed cert issues)
@@ -126,5 +127,18 @@ See `docs/WEB_AUTH.md` for PowerShell scripts to:
 
 ## PHP Syntax Check (Vagrant)
 ```bash
-cd C:\Users\bruno\dev\glidingops\lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
+cd lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
 ```
+
+## Running Tests
+```bash
+cd lrv; vagrant ssh -c "cd /home/vagrant/code && ./lrv/vendor/bin/phpunit"
+```
+```
+
+Test suite in `tests/` using PHPUnit + GuzzleHttp:
+- `HomePageTest` — CSS Grid, widgets, height/limit, DOM structure
+- `PhotoUploadTest` — Upload photo with GD resize, reject non-image
+- `MemberListPhotoTest` — Photo URLs are ID-based, not displayname-based
+- `HeaderPhotoTest` — Header photo on home, AllMembers, MyFlights, noprofile fallback
+- `NavigationTest` — 45+ internal links return 200, specific expected links present

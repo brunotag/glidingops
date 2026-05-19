@@ -2,16 +2,24 @@
 
 ## Log Locations
 
-- **Local debug log**: `C:\Users\[dev-username]\dev\glidingops\log\app.log`
-- **Local error log**: `C:\Users\bruno\dev\glidingops\log\error.log`
+- **Local debug log**: `log/app.log`
+- **Local error log**: `log/error.log`
 - Read these directly with the `Read` tool - NO need for vagrant ssh
 
 ## PHP Syntax Check (Vagrant)
 
 ```bash
-cd C:\Users\bruno\dev\glidingops\lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
+cd lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
 ```
 Ignore vagrant warning about homestead - actual PHP output follows.
+
+## Running Tests
+
+The project uses PHPUnit + GuzzleHttp for end-to-end tests (see [TESTING.md](TESTING.md) for full details).
+
+```bash
+cd lrv; vagrant ssh -c "cd /home/vagrant/code && ./lrv/vendor/bin/phpunit"
+```
 
 ## Testing APIs with PowerShell
 
@@ -25,14 +33,14 @@ $apiResp.Content
 ```
 
 Run with:
-```powershell
-powershell -File C:\Users\[dev-username]\dev\glidingops\test_api.ps1
-```
+ ```powershell
+ powershell -File test_api.ps1
+ ```
 
 ### Check Error Log (PowerShell)
 
 ```powershell
-Get-Content C:\Users\[dev-username]\dev\glidingops\log\error.log -Tail 20
+Get-Content log/error.log -Tail 20
 ```
 
 ## Error Handling
@@ -64,7 +72,7 @@ if (!isset($_SESSION['memberid'])) {
 All database schema changes MUST use Laravel migrations in `lrv/`:
 
 ```bash
-cd C:\Users\bruno\dev\glidingops\lrv
+cd lrv
 vagrant ssh -c "cd /home/vagrant/code/lrv && php artisan make:migration <snake_case_name>"
 # Edit the generated file in lrv/database/migrations/
 vagrant ssh -c "cd /home/vagrant/code/lrv && php artisan migrate"

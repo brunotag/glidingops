@@ -111,12 +111,12 @@ Check: `$_SESSION['security'] & LEVEL` (non-zero = has access)
 ## PHP Syntax Check (Vagrant)
 
 ```bash
-cd C:\Users\bruno\dev\glidingops\lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
+cd lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
 ```
 
 ## Error Logging
 
-- Local debug log: `C:\Users\bruno\dev\glidingops\log\app.log`
-- Local error log: `C:\Users\bruno\dev\glidingops\log\error.log`
+- Local debug log: `log/app.log`
+- Local error log: `log/error.log`
 - helpers/logging.php registers fatal error handler
 - API errors go to error.log with JSON response

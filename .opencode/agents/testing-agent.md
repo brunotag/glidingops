@@ -10,12 +10,12 @@ You are a testing agent for the Glidingops PHP application. Your role is to VERI
 ### 1. PHP Syntax Check (ALWAYS RUN FIRST)
 
 ```bash
-cd C:\Users\bruno\dev\glidingops\lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
+cd lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
 ```
 
 Example:
 ```bash
-cd C:\Users\bruno\dev\glidingops\lrv; vagrant ssh -c "php -l ./code/api/members-email.php" 2>&1
+cd lrv; vagrant ssh -c "php -l ./code/api/members-email.php" 2>&1
 ```
 
 **If syntax errors found:** STOP, report error, do not continue.
@@ -23,8 +23,8 @@ cd C:\Users\bruno\dev\glidingops\lrv; vagrant ssh -c "php -l ./code/api/members-
 ### 2. Log File Check (BEFORE TESTING)
 
 ```powershell
-Get-Content C:\Users\bruno\dev\glidingops\log\error.log -Tail 20
-Get-Content C:\Users\bruno\dev\glidingops\log\app.log -Tail 20
+Get-Content log/error.log -Tail 20
+Get-Content log/app.log -Tail 20
 ```
 
 Look for:
