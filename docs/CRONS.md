@@ -10,7 +10,7 @@ See [TRACKING.md](TRACKING.md) for full tracking system documentation.
 |----------|---------|---------|
 | `*/2 20-23 * * *` | `php /path/to/GetSpotTask.php -o 1` | Poll Spot API (evening) |
 | `*/2 00-07 * * *` | `php /path/to/GetSpotTask.php -o 1` | Poll Spot API (overnight) |
-| `* * * * *` | `php /path/to/getFlarmTask.php` | Fetch OGN/GNZ tracking data |
+| `* * * * *` | `php /path/to/getFlarmTask.php` | Fetch OGN/GNZ tracking data (96% of all track records) |
 | `0 6 * * *` | `php /path/to/DayTimes.php` | Send daily ops summary email from tracks |
 
 ## Other Jobs

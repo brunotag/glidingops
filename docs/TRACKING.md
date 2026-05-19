@@ -81,6 +81,19 @@ The live tracking table in the main gliding database. All sources write here.
 
 **Source values:** `Particle`, `FlarmOGN`, `FlarmGNZ`, `SPOT`, `bTraced`
 
+#### Source Distribution (Last 2 Years — 1,481,211 records)
+
+| Source | Records | % | Status |
+|--------|---------|---|--------|
+| `FlarmGNZ` | 1,428,458 | 96.44% | Active — polled every minute by `getFlarmTask.php` |
+| `FlarmOGN` | 52,314 | 3.53% | Active — OGN live beacon data |
+| `SPOT` | 439 | 0.03% | Rarely triggers (evening/overnight only) |
+| `Particle` | 0 | 0% | **Dead** — no data in 2 years |
+| `bTraced` | 0 | 0% | **Dead** — no data in 2 years |
+| `NZSPOT` | 0 | 0% | **Dead** — no data in 2 years |
+
+Over 96% of tracking data comes from FlarmGNZ (Gliding NZ historical API). The onboard Particle trackers and bTraced mobile app have not transmitted any data in over 2 years — the cron-based polling is the effective tracking system.
+
 ### `particletrack.*` (253 MB, 8 tables)
 Primary ingestion point for Particle hardware. Data is received, stored, validated (geofence, speed), then forwarded.
 
