@@ -25,6 +25,8 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
         <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
         body { font-family: Arial, Helvetica, sans-serif; margin: 0; background: #f5f5f5; }
         h1, h2 { font-family: Calibri, Arial, Helvetica, sans-serif; }
+        .header-row { padding: 0 12px; }
+        #flights-section { margin: 8px 0; padding: 0 12px; }
         .section { margin: 20px 12px; padding: 20px; border-radius: 6px; background: #fff; border: 1px solid #ddd; }
         .flights-section { }
         .table { margin-bottom: 0; }
@@ -34,13 +36,61 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
         .table th, .table td { vertical-align: middle; padding: 6px 8px; }
 
         .text-right { text-align: right; }
+        .show-mobile { display: none; }
         .border-top { border-top: 2px solid #337ab7; font-weight: bold; }
+        .summary-pill {
+            display:inline-block; background:#e8e8e8; color:#222; border-radius:10px;
+            padding:2px 10px; font-size:12px; white-space:nowrap; border:1px solid #ccc; margin-right:3px;
+        }
+        .summary-pill:last-child { margin-right:0; }
+        .btn-outline {
+            display:inline-block; padding:5px 12px; font-size:12px; border:1px solid #bbb;
+            border-radius:4px; background:#fff; color:#555; text-decoration:none; cursor:pointer;
+        }
+        .btn-outline:hover { background:#f0f0f0; border-color:#999; color:#333; text-decoration:none; }
+        h1 { font-size:22px; font-weight:600; color:#222; }
         .loader { text-align: center; padding: 50px; }
         .spinner { font-size: 24px; color: #337ab7; }
         @media print {
             .no-print { display: none; }
             .section { box-shadow: none; break-inside: avoid; }
             @page { size: landscape; }
+        }
+        @media (max-width: 767px) {
+            #flights-section .table thead { display: none; }
+            #flights-section .table { display: block; }
+            #flights-section .table tbody { display: flex; flex-wrap: wrap; gap: 8px; }
+            #flights-section .table tr {
+                width: calc(50% - 4px);
+                border: 1px solid #ddd; border-radius: 6px;
+                padding: 6px 10px; background: #fff; box-sizing: border-box; overflow: hidden;
+            }
+            #flights-section .table > tbody > tr > td {
+                display: block; border: none; padding: 2px 2px 2px 40%;
+                text-align: left !important; font-size: 13px; position: relative;
+                line-height: 1.3; overflow-wrap: break-word; word-break: break-word;
+            }
+            #flights-section .table td::before {
+                content: attr(data-label); position: absolute; left: 2px;
+                font-weight: 600; color: #555; white-space: nowrap;
+            }
+            #flights-section .table td[data-empty="1"] { display: none; }
+            #flights-section .hide-mobile { display: none !important; }
+            #flights-section .show-mobile { display: block !important; }
+            #flights-section .text-right { text-align: left !important; }
+            #flights-section { margin: 0 8px; padding: 0; }
+            .btn-outline { padding: 6px 10px; font-size: 13px; }
+            .header-row .text-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+            #summary-inline { margin: 0; }
+            .header-row { flex-direction: row; align-items: flex-start !important; padding: 0 8px; }
+            .header-row > div:first-child { flex: 1; min-width:0; }
+            .header-row > div:last-child { flex-shrink:0; }
+            #page-title { margin-bottom: 0 !important; font-size: 18px; }
+        }
+        @media (max-width: 440px) {
+            #flights-section .table tbody { display: flex; flex-direction: column; gap: 10px; }
+            #flights-section .table tr { width: 100%; }
+            #flights-section .table > tbody > tr > td:last-child { padding-bottom: 10px; }
         }
     </style>
 </head>
@@ -49,13 +99,14 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
     <?php $inc = "./orgs/" . $org . "/menu1.txt"; if (file_exists($inc)) include $inc; ?>
 
     <div class="container-fluid">
-        <div class="row" style="display: flex; align-items: center;">
-            <div class="col-xs-6">
-                <h1 id="page-title" style="margin: 0;">Loading...</h1>
+        <div class="row header-row" style="display: flex; align-items: center;">
+            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;flex:1;min-width:0;">
+                <h1 id="page-title" style="margin: 0;white-space:nowrap;">Loading...</h1>
+                <div id="summary-inline"></div>
             </div>
-            <div class="col-xs-6 text-right no-print">
-                <a href="MyFlightsCSV" class="btn btn-primary">Export CSV</a>
-                <button class="btn btn-primary" onclick="window.print()">Print</button>
+            <div class="text-right no-print" style="flex-shrink:0;">
+                <a href="MyFlightsCSV" class="btn-outline">Export CSV</a>
+                <button class="btn-outline" onclick="window.print()">Print</button>
             </div>
         </div>
 
@@ -64,8 +115,9 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
         </div>
 
         <div id="content" style="display: none;">
-            <div id="flights-section" class="section"></div>
-            <div id="summary-section" class="section"></div>
+            <div class="row">
+                <div id="flights-section"></div>
+            </div>
         </div>
     </div>
 
@@ -91,7 +143,7 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
             if (!timestamp) return '';
             var date = new Date(Math.floor(timestamp / 1000) * 1000);
             date.setHours(date.getHours() + 12);
-            return date.toISOString().substr(11, 8);
+            return date.toISOString().substr(11, 5);
         }
 
         function getLaunchInfo(launchtype, height) {
@@ -201,20 +253,28 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
 
                 var launch = getLaunchInfo(row.launchtype, row.height);
                 var comments = row.comments ? row.comments.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+                var startStr = formatTime(row.start);
+                var landStr = formatTime(row.land);
+                var timeCombined = (startStr || landStr) ? (startStr + ' - ' + landStr + ' (' + duration + ')') : '';
+                var gliderCombined = (row.glider || '') + (row.make_model ? ' (' + row.make_model + ')' : '');
+
+                function e(v) { return (v || '').toString().trim() === ''; }
 
                 html += '<tr>';
-                html += '<td>' + formatDate(row.localdate) + '</td>';
-                html += '<td class="text-right">' + (row.glider || '') + '</td>';
-                html += '<td class="text-right">' + (row.make_model || '') + '</td>';
-                html += '<td>' + (row.location || '') + '</td>';
-                html += '<td class="text-right">' + duration + '</td>';
-                html += '<td class="text-right">' + formatTime(row.start) + '</td>';
-                html += '<td class="text-right">' + formatTime(row.land) + '</td>';
-                html += '<td class="text-right">' + launch.label + '</td>';
-                html += '<td class="text-right">' + launch.code + '</td>';
-                html += '<td class="text-right">' + type + '</td>';
-                html += '<td>' + comments + '</td>';
-                html += '<td>' + (billingOptions[row.billing_option] || '') + '</td>';
+                html += '<td data-label="Date"' + (e(formatDate(row.localdate)) ? ' data-empty="1"' : '') + '>' + formatDate(row.localdate) + '</td>';
+                html += '<td data-label="Glider" class="text-right hide-mobile"' + (e(row.glider) ? ' data-empty="1"' : '') + '>' + (row.glider || '') + '</td>';
+                html += '<td data-label="Make/Model" class="text-right hide-mobile"' + (e(row.make_model) ? ' data-empty="1"' : '') + '>' + (row.make_model || '') + '</td>';
+                html += '<td data-label="Glider" class="text-right show-mobile"' + (e(gliderCombined) ? ' data-empty="1"' : '') + '>' + gliderCombined + '</td>';
+                html += '<td data-label="Location"' + (e(row.location) ? ' data-empty="1"' : '') + '>' + (row.location || '') + '</td>';
+                html += '<td data-label="Duration" class="text-right hide-mobile"' + (e(duration) ? ' data-empty="1"' : '') + '>' + duration + '</td>';
+                html += '<td data-label="Start" class="text-right hide-mobile"' + (e(startStr) ? ' data-empty="1"' : '') + '>' + startStr + '</td>';
+                html += '<td data-label="Land" class="text-right hide-mobile"' + (e(landStr) ? ' data-empty="1"' : '') + '>' + landStr + '</td>';
+                html += '<td data-label="Time" class="text-right show-mobile"' + (e(timeCombined) ? ' data-empty="1"' : '') + '>' + timeCombined + '</td>';
+                html += '<td data-label="Tow Height" class="text-right"' + (!/^\d+$/.test(launch.label) ? ' data-empty="1"' : '') + '>' + launch.label + '</td>';
+                html += '<td data-label="Launch" class="text-right"' + (e(launch.code) ? ' data-empty="1"' : '') + '>' + launch.code + '</td>';
+                html += '<td data-label="Type" class="text-right"' + (e(type) ? ' data-empty="1"' : '') + '>' + type + '</td>';
+                html += '<td data-label="Comments"' + (e(comments) ? ' data-empty="1"' : '') + '>' + comments + '</td>';
+                html += '<td data-label="Charging"' + (e(billingOptions[row.billing_option]) ? ' data-empty="1"' : '') + '>' + (billingOptions[row.billing_option] || '') + '</td>';
                 html += '</tr>';
             });
 
@@ -226,14 +286,22 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
 
         function renderSummary(flights) {
             var s = window._flightSummary || { cntP:0, cntP1:0, cntP2:0, cntI:0, totMins:0 };
-            var html = '<h2>Flights Summary</h2><table class="table table-bordered table-condensed" style="max-width:300px;">' +
-                '<tr><td>I</td><td class="text-right">' + s.cntI + '</td><td class="text-right">' + formatDuration(s.totMinsI*60000) + '</td></tr>' +
-                '<tr><td>P</td><td class="text-right">' + s.cntP + '</td><td class="text-right">' + formatDuration(s.totMinsP*60000) + '</td></tr>' +
-                '<tr><td>P1</td><td class="text-right">' + s.cntP1 + '</td><td class="text-right">' + formatDuration(s.totMinsP1*60000) + '</td></tr>' +
-                '<tr><td>P2</td><td class="text-right">' + s.cntP2 + '</td><td class="text-right">' + formatDuration(s.totMinsP2*60000) + '</td></tr>' +
-                '<tr><td class="border-top">TOTAL</td><td class="text-right border-top">' + (s.cntP+s.cntP1+s.cntP2) + '</td><td class="text-right border-top">' + formatDuration(s.totMins*60000) + '</td></tr>' +
-                '</table>';
-            document.getElementById('summary-section').innerHTML = html;
+            function p(label, cnt, ms) {
+                var h = Math.floor(ms / 3600000);
+                var m = Math.round((ms % 3600000) / 60000);
+                var prefix = label === 'Total' ? '' : 'as ';
+                return prefix + label + ', ' + cnt + ' flight' + (cnt !== 1 ? 's' : '') + ', ' + h + ' h ' + m + ' m';
+            }
+            var parts = [];
+            if (s.cntI) parts.push(p('I', s.cntI, s.totMinsI*60000));
+            if (s.cntP) parts.push(p('P', s.cntP, s.totMinsP*60000));
+            if (s.cntP1) parts.push(p('P1', s.cntP1, s.totMinsP1*60000));
+            if (s.cntP2) parts.push(p('P2', s.cntP2, s.totMinsP2*60000));
+            var total = s.cntP + s.cntP1 + s.cntP2;
+            var totalTime = s.totMinsP + s.totMinsP1 + s.totMinsP2;
+            if (total) parts.push(p('Total', total, totalTime*60000));
+            var html = parts.map(function(p) { return '<span class="summary-pill">' + p + '</span>'; }).join('');
+            document.getElementById('summary-inline').innerHTML = html;
         }
 
         render();
