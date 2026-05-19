@@ -100,7 +100,7 @@ if ($dbOk) {
 
     // Broadcast messages for inline widget
     $broadcastMessages = [];
-    $q5 = "SELECT id, create_time, msg FROM messages WHERE is_broadcast = 1 AND org = $org ORDER BY create_time DESC LIMIT 10";
+    $q5 = "SELECT id, create_time, msg FROM messages WHERE is_broadcast = 1 AND org = $org ORDER BY create_time DESC LIMIT 4";
     $r5 = mysqli_query($con, $q5);
     if ($r5) {
         while ($row = mysqli_fetch_array($r5)) {
@@ -132,15 +132,23 @@ if ($dbOk) {
     body { margin: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f0f0ff; }
     #container { margin: 5px; border: 0px; }
 
-    .widget-grid { column-width: 280px; column-gap: 20px; }
-    .widget-grid > * { break-inside: avoid-column; margin-bottom: 20px; }
+    .widget-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(275px, 1fr));
+      gap: 20px;
+      grid-auto-flow: dense;
+      align-items: start;
+    }
+    .widget-grid > .wide { grid-column: span 2; }
+    @media (max-width: 580px) {
+      .widget-grid > .wide { grid-column: span 1; }
+    }
 
     .dashboard-card {
       background: #fff;
       border-radius: 8px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
       overflow: hidden;
-      margin-bottom: 20px;
     }
     .dashboard-card .card-header {
       background: #063552;
@@ -168,7 +176,6 @@ if ($dbOk) {
       border-radius: 8px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
       overflow: hidden;
-      margin-bottom: 20px;
     }
     .nav-card:hover {
       box-shadow: 0 3px 12px rgba(0,0,0,0.12);
@@ -254,7 +261,7 @@ if ($dbOk) {
 
         <div class="dashboard-card wide">
           <div class="card-header">Latest Updates</div>
-          <div class="card-body" style="padding:0;max-height:420px;overflow-y:auto;background:#F1F1EF;">
+          <div class="card-body" style="padding:0;height:340px;overflow-y:auto;background:#F1F1EF;">
             <?php if (empty($broadcastMessages)): ?>
               <p class="msg-empty">No recent broadcasts.</p>
             <?php else: ?>
@@ -279,7 +286,7 @@ if ($dbOk) {
         <div class="dashboard-card wide">
           <div class="card-header">My Gliding</div>
           <div class="card-body">
-            <p style="margin:0 0 6px 0;font-size:13px;color:#888;font-weight:bold;">Last 5 flights:</p>
+            <p style="margin:0 0 6px 0;font-size:13px;color:#888;font-weight:bold;"><?php echo htmlspecialchars($_SESSION['dispname'] ?? 'Your'); ?>'s last 5 flights:</p>
             <?php if (empty($recentFlights)): ?>
               <p style="color:#888;font-size:13px;margin:4px 0;">No recent flights found.</p>
             <?php else: ?>
@@ -304,9 +311,9 @@ if ($dbOk) {
                 ?>
                 <span style="display:block;padding:7px 0;color:#333;border-bottom:1px solid #f0f0f0;"><?php echo $dispDate; ?> &mdash; <?php echo htmlspecialchars($f['glider']); ?><?php echo $dur; ?><?php echo htmlspecialchars($otherPilot); ?></span>
               <?php endforeach; ?>
-              <a href="/MyFlights" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">View all flights &rarr;</a>
+              <a href="/MyFlights" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">View all your flights &rarr;</a>
             <?php endif; ?>
-            <a href="/EditMyDetails" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">My Details &rarr;</a>
+            <a href="/EditMyDetails" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">Edit Your Details &rarr;</a>
           </div>
         </div>
 
@@ -425,35 +432,6 @@ if ($dbOk) {
           </div>
         <?php endif; ?>
 
-        <!-- 9. Data Maintenance -->
-        <?php if ($effectiveSecurity & 120): ?>
-          <div class="nav-card">
-            <div class="card-header">Data Maintenance</div>
-            <div class="card-body">
-              <?php if ($effectiveSecurity & 104): ?>
-                <a href="/AllAircraft">Aircraft</a>
-              <?php endif; ?>
-              <?php if ($effectiveSecurity & 64): ?>
-                <a href="/AircraftTypes">Aircraft Types</a>
-                <a href="/DutyTypes">Duty Types</a>
-                <a href="/flights-list.php">Flights Raw</a>
-                <a href="/membership_class-list.php">Membership Classes</a>
-                <a href="/membership_status-list.php">Membership Statuses</a>
-                <a href="/Roles">Roles</a>
-                <a href="/AssignRoles">Role Assignment</a>
-                <a href="/spots-list.php">Spots</a>
-                <a href="/manage-secret-code.php">Manage Secret Code</a>
-              <?php endif; ?>
-              <?php if ($effectiveSecurity & 72): ?>
-                <a href="/IncentiveSchemes">Incentive Schemes</a>
-                <a href="/OtherCharges">Other Charges</a>
-                <a href="/SubsToSchemes">Subs to Incentives</a>
-                <a href="/TowCharges">Tow Charging</a>
-              <?php endif; ?>
-            </div>
-          </div>
-        <?php endif; ?>
-
         <!-- 10. Diagnostics & Recovery -->
         <?php if ($effectiveSecurity & 64): ?>
           <div class="nav-card">
@@ -478,6 +456,35 @@ if ($dbOk) {
               <a href="/InviteUsers">Invite Users to Gliding Ops</a>
               <a href="/Organisations">Organisations</a>
               <a href="/maintenance/duplicates_suggestions.php">Suggested Duplicates</a>
+            </div>
+          </div>
+        <?php endif; ?>
+
+        <!-- 12. Data Maintenance -->
+        <?php if ($effectiveSecurity & 120): ?>
+          <div class="nav-card">
+            <div class="card-header">Data Maintenance</div>
+            <div class="card-body">
+              <?php if ($effectiveSecurity & 104): ?>
+                <a href="/AllAircraft">Aircraft</a>
+              <?php endif; ?>
+              <?php if ($effectiveSecurity & 64): ?>
+                <a href="/AircraftTypes">Aircraft Types</a>
+                <a href="/DutyTypes">Duty Types</a>
+                <a href="/flights-list.php">Flights Raw</a>
+                <a href="/membership_class-list.php">Membership Classes</a>
+                <a href="/membership_status-list.php">Membership Statuses</a>
+                <a href="/Roles">Roles</a>
+                <a href="/AssignRoles">Role Assignment</a>
+                <a href="/spots-list.php">Spots</a>
+                <a href="/manage-secret-code.php">Manage Secret Code</a>
+              <?php endif; ?>
+              <?php if ($effectiveSecurity & 72): ?>
+                <a href="/IncentiveSchemes">Incentive Schemes</a>
+                <a href="/OtherCharges">Other Charges</a>
+                <a href="/SubsToSchemes">Subs to Incentives</a>
+                <a href="/TowCharges">Tow Charging</a>
+              <?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
