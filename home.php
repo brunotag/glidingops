@@ -360,12 +360,12 @@ if ($dbOk) {
 
         <!-- 4. Daily Ops -->
         <?php if ($effectiveSecurity >= 4): ?>
-          <div class="nav-card">
+<div class="nav-card">
             <div class="card-header">Daily Ops</div>
             <div class="card-body">
-              <a href="/StartDay.php?org=<?php echo $org; ?>">New Daily Timesheet</a>
+              <a href="/StartDay?org=<?php echo $org; ?>">New Daily Timesheet</a>
               <a href="/EditDailySheet?org=<?php echo $org; ?>">Edit Daily Timesheet</a>
-              <a href="/DailyLogSheet.php?org=<?php echo $org; ?>">View Daily Timesheet</a>
+              <a href="/DailyLogSheet?org=<?php echo $org; ?>">View Daily Timesheet</a>
             </div>
           </div>
         <?php endif; ?>
@@ -423,10 +423,10 @@ if ($dbOk) {
               <?php if ($_SESSION['security'] & 1): ?>
                 <a href="/app/allFlightsReport">All Flights Report</a>
                 <a href="/AllFlightsReportNew">All Flights Report (New)</a>
-              <?php endif; ?>
+<?php endif; ?>
               <?php if ($effectiveSecurity & 32): ?>
-                <a href="/Engineer.php">Engineer Report</a>
-                <a href="/last-flights-list.php?col=1&descsort=1">Currency Report</a>
+                <a href="/Engineer">Engineer Report</a>
+                <a href="/last-flights-list?col=1&descsort=1">Currency Report</a>
               <?php endif; ?>
             </div>
           </div>

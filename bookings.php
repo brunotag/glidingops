@@ -277,7 +277,8 @@ unset($events);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <style>
-        body { background: #f5f5f5; }
+        body { background: #f5f5f5; font-family: Arial, Helvetica, sans-serif; margin: 0; }
+        h1 { font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 22px; font-weight: 600; color: #222; }
         .container { max-width: 800px; margin: 0 auto; padding: 20px; }
         .date-group { margin-bottom: 24px; }
         .date-header {
@@ -304,12 +305,24 @@ unset($events);
         .booking-actions .btn-edit { color: #337ab7; }
         .booking-actions .btn-delete { color: #d9534f; }
         .not-ours { opacity: 0.7; font-style: italic; }
-        .add-btn {
-            display: inline-block; margin-bottom: 20px;
-            padding: 10px 20px; background: #337ab7; color: #fff;
-            border: none; border-radius: 4px; font-size: 14px; cursor: pointer;
+        .btn-outline {
+            display: inline-block;
+            padding: 5px 12px;
+            font-size: 12px;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            background: #fff;
+            color: #555;
+            text-decoration: none;
+            cursor: pointer;
         }
-        .add-btn:hover { background: #286090; }
+
+        .btn-outline:hover {
+            background: #f0f0f0;
+            border-color: #999;
+            color: #333;
+            text-decoration: none;
+        }
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0;
             width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
         .modal-content {
@@ -362,6 +375,11 @@ unset($events);
         .no-bookings { text-align: center; padding: 40px; color: #999; font-size: 16px; }
         #other-gilder-row { display: none; margin-top: 8px; }
         #other-gilder-row input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
+
+        .header-row { padding: 0 12px; }
+        .text-right { text-align: right; }
+        .no-print { }
+        @media print { .no-print { display: none; } }
     <?php $inc = "./orgs/" . $org . "/heading2.css"; if (file_exists($inc)) include $inc; ?>
     <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
 </style>
@@ -376,10 +394,12 @@ include __DIR__ . '/helpers/dev_mode_banner.php';
 ?>
 
 <div class="container">
-    <h2 style="margin-top:0;">Upcoming Bookings</h2>
-    <div style="margin-bottom: 20px; display: flex; gap: 8px;">
-        <button class="add-btn" onclick="openCreateModal()" style="margin-bottom:0">+ Add Booking</button>
-        <button class="add-btn" onclick="doRefresh()" style="margin-bottom:0">Refresh</button>
+    <div class="header-row" style="display: flex; align-items: center; margin-bottom: 20px;">
+        <h1 id="page-title" style="margin: 0; white-space: nowrap; flex: 1;">Upcoming Bookings</h1>
+        <div class="text-right no-print" style="flex-shrink: 0; display: flex; gap: 8px;">
+            <button class="btn-outline" onclick="openCreateModal()">+ Add Booking</button>
+            <button class="btn-outline" onclick="doRefresh()">Refresh</button>
+        </div>
     </div>
 
     <div id="booking-list">

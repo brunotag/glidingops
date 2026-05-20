@@ -29,6 +29,9 @@
 - docs updated: SECURITY.md, DEPLOY.md, ROUTES.md, FEATURES.md, AGENTS.md
 - FUTURE_DEVELOPMENT_MAGIC_LINK.md removed (now reality)
 - **Photo system**: photos stored as `img/members/{member_id}.jpg` (was `{displayname}.jpg`). Upload via member form with GD resize (max 400px, JPEG q80, graceful fallback). Header photo next to username on all pages. noprofile.png fallback. 62 photos migrated on production. Google Drive sync cron removed.
+- MyFlights.php CSS refactored: removed unused styles (.section, .flights-section, .border-top), reorganized with comment headers, multi-line formatting.
+- bookings.php: Title + buttons restyled to match MyFlights (h1, .btn-outline, header-row layout)
+- DailyLogSheet.php: Full look & feel overhaul matching MyFlights. Added Location column per flight. Renamed headers (Towplane→Launch, removed Vector, Tow Pilot→W. Drv). Mobile cards now show/hide empty fields via data-empty. Fixed card clipping (overflow:hidden, min-height:100vh, min-width:0 on flex items).
 
 ### Next Steps
 1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)
@@ -104,10 +107,12 @@ All docs in `docs/` folder - see individual files for details:
 2. **Use `apiExit()` NOT `exit()`** - flushes output buffers
 3. **Use `apiExitWithError()` for errors** - returns JSON with error message
 4. **Use `header('Content-Type: application/json')** before any echo
-5. **Use `__DIR__ . '/../config/database.php'`** NOT `./config/database.php`
-6. **Always log with `logMsg()`** to track execution
-7. **Add route to `.htaccess`** - `RewriteRule ^api/NAME$ api/NAME.php [L,QSA]`
-8. **Never make breaking API changes** — external scripts (see `docs/DEPENDENCIES.md`) consume API endpoints. Fields must not be removed or renamed. New fields must be additive and optional.
+5. **Echo JSON BEFORE calling apiExit()** - pattern: `header(...); echo json_encode([...]); apiExit($con);`
+6. **Use `__DIR__ . '/../config/database.php'`** NOT `./config/database.php`
+7. **Always log with `logMsg()`** to track execution
+8. **Add route to `.htaccess`** - `RewriteRule ^api/NAME$ api/NAME.php [L,QSA]`
+9. **Never make breaking API changes** — external scripts (see `docs/DEPENDENCIES.md`) consume API endpoints. Fields must not be removed or renamed. New fields must be additive and optional.
+10. **Include helpers.php** if using helper functions like `getTowLaunchType()`, `getGlidingFlightType()`
 
 ## Route Order in .htaccess
 More specific routes must come BEFORE less specific ones.

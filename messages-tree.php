@@ -90,13 +90,13 @@ function sendStatusClass($status) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Messages Sent</title>
+<title>Sent Messages</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <style>
 body { background: #fff; font-size: 15px; }
 .padding-container { padding: 15px; }
 .title-row { display: flex; align-items: center; margin-bottom: 10px; }
-.title-row h2 { margin: 0 15px 0 0; }
+.title-row h1 { margin: 0 15px 0 0; font-size:22px; font-weight:600; color:#222; }
 .msg { margin-bottom: 3px; border-radius: 4px; overflow: hidden; border: 1px solid #e0e0e0; }
 .msg.green { background: linear-gradient(to right, rgba(92,184,92,0.35), rgba(92,184,92,0) 80%); }
 .msg.amber { background: linear-gradient(to right, rgba(240,173,78,0.35), rgba(240,173,78,0) 80%); }
@@ -150,7 +150,7 @@ body { background: #fff; font-size: 15px; }
 
 <div class="padding-container">
 <div class="title-row">
-    <h2>Messages Sent</h2>
+    <h1 id="page-title" style="margin:0">Sent Messages</h1>
     <a href="/SentMessages" class="btn btn-default btn-sm">Table View</a>
 </div>
 

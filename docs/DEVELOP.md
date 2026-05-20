@@ -56,6 +56,19 @@ All API endpoints (`api/*.php`) MUST:
 - Use `apiExit($con)` instead of `exit` to flush output buffers
 - Log all requests: `logMsg("START method=" . $_SERVER['REQUEST_METHOD'])`
 
+### 11. API Must Include All Front-End Fields
+When a front-end page renders data from an API, every field it references must be in the API response.
+The SQL may SELECT a column but if it's not mapped in the PHP response array, it won't reach the client.
+Always check both the SQL query AND the response array (`$flights[] = [...]`).
+
+```php
+// WRONG: selects location but doesn't include it
+$flights[] = ['seq' => $row['seq'], 'glider' => $row['glider']];
+
+// RIGHT:
+$flights[] = ['seq' => $row['seq'], 'glider' => $row['glider'], 'location' => $row['location']];
+```
+
 ```php
 <?php
 require_once __DIR__ . '/../helpers/api-base.php';
@@ -185,3 +198,41 @@ The dev login credentials are in `docs/_secrets.md`.
 - Use ASCII characters only in source code - no unicode, em-dashes, smart quotes, etc.
 - Keep strings simple to avoid encoding issues
 - This applies to PHP, JavaScript, CSS, and any other code files
+
+---
+
+## API Development Gotchas
+
+When creating new API endpoints:
+
+### 1. API Response Pattern
+The `apiExit()` function takes a database connection, NOT data. You must echo JSON manually:
+
+```php
+header('Content-Type: application/json');
+echo json_encode(['success' => true, 'data' => $data]);
+apiExit($con);  // Pass $con or null to close DB connection
+```
+
+**WRONG:**
+```php
+apiExit(['success' => true, 'data' => $data]);  // This breaks!
+```
+
+### 2. Routes Must Be Added to .htaccess
+New API endpoints don't auto-route. Add manually:
+```apache
+RewriteRule ^api/daily-flights$ api/daily-flights.php [L,QSA]
+```
+
+### 3. Include Required Helpers
+Some API functions need helpers.php for database functions:
+```php
+require_once __DIR__ . '/../helpers.php';
+```
+
+### 4. Session/Credentials
+Browser JavaScript must send session cookie:
+- Use `fetch('/api/endpoint', { credentials: 'same-origin' })`
+- Or `xhr.withCredentials = true` for XMLHttpRequest
+- Without this, API returns "Not logged in"

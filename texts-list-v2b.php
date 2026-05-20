@@ -32,7 +32,7 @@ function timeFormat($dt) {
 <html>
 <meta name="viewport" content="width=device-width">
 <head>
-    <title>Messages Sent</title>
+    <title>Sent Messages</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
@@ -68,7 +68,8 @@ function timeFormat($dt) {
         .table > thead > tr > th { border-bottom: 2px solid #ddd; }
         td { vertical-align: middle; }
         .title-row { display: flex; align-items: center; margin-bottom: 10px; }
-        .title-row h2 { margin: 0 15px 0 0; }
+        .title-row h1 { margin: 0 15px 0 0; font-size:22px; font-weight:600; color:#222; }
+        #page-title { font-size:22px; font-weight:600; color:#222; margin: 0; }
     </style>
     <style>
     <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
@@ -83,7 +84,7 @@ function timeFormat($dt) {
 
 <div class="padding-container">
 <div class="title-row">
-    <h2>Messages Sent</h2>
+    <h1 id="page-title" style="margin:0">Sent Messages</h1>
     <a href="/texts-list-old" class="btn btn-default btn-sm">Old Version</a>
 </div>
 

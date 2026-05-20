@@ -28,12 +28,19 @@ At `@media (max-width: 767px)`, the table elements are forced to `display: block
 #my-section .table tr {
     width: calc(50% - 4px);
     border: 1px solid #ddd; border-radius: 6px;
-    padding: 6px 10px; background: #fff; box-sizing: border-box; overflow: hidden;
+    padding: 6px 10px; background: #fff; box-sizing: border-box;
+    min-width: 0;
 }
+
+/* Do NOT use overflow:hidden on tr - it clips card content vertically
+   (especially the last card's bottom fields like Comments).
+   overflow:hidden also prevents flex items from shrinking properly.
+   Use min-width:0 instead for flex shrink behavior. */
 #my-section .table > tbody > tr > td {
     display: block; border: none; padding: 2px 2px 2px 40%;
     text-align: left !important; font-size: 13px; position: relative;
     line-height: 1.3; overflow-wrap: break-word; word-break: break-word;
+    min-width: 0;
 }
 #my-section .table td::before {
     content: attr(data-label); position: absolute; left: 2px;
@@ -64,9 +71,21 @@ A flexbox `tbody` with `flex-wrap: wrap` arranges cards in a grid. To switch bet
 
 The 440px breakpoint must come AFTER the 767px block so it overrides correctly.
 
-### 4. Hiding Empty Fields
+### 4. Body Height
 
-Add a `data-empty="1"` attribute when the value is empty:
+Add `min-height: 100vh` to body to ensure the page fills the viewport. Without this, the last card's content can be clipped if the body is shorter than the window:
+
+```css
+body { min-height: 100vh; }
+```
+
+### 5. No table-responsive Wrapper
+
+Do NOT wrap the table in `<div class="table-responsive">`. The `table-responsive` wrapper has `overflow-x: auto` which can interfere with the flex card layout on mobile. Render the `<table>` directly without the wrapper.
+
+### 6. Hiding Empty Fields
+
+Add a `data-empty="1"` attribute when the value is empty. This prevents empty fields from taking up space in mobile cards, which is critical when many columns are shown:
 
 ```js
 function e(v) { return (v || '').toString().trim() === ''; }
@@ -81,7 +100,7 @@ CSS hides these in card mode:
 
 This only affects mobile since the selector is inside the 767px media query.
 
-### 5. Desktop-vs-Mobile Fields
+### 7. Desktop-vs-Mobile Fields
 
 Some columns are only meaningful on desktop (e.g. separate Start/Land/Duration). Use `hide-mobile` and `show-mobile` classes:
 
@@ -98,7 +117,7 @@ html += '<td data-label="Duration" class="text-right hide-mobile">...</td>';
 html += '<td data-label="Time" class="text-right show-mobile">10:30 - 11:15 (00:45)</td>';
 ```
 
-### 6. Summary as Inline Pills
+### 8. Summary as Inline Pills
 
 Move summary data out of the table and into inline pills next to the title:
 
@@ -121,7 +140,7 @@ Rendered by JS as styled pills:
 .summary-pill:last-child { margin-right:0; }
 ```
 
-### 7. Consistent Alignment
+### 9. Consistent Alignment
 
 Wrap both the header row and the table section in `.row` divs so they share the same left/right margins. Apply matching `padding` to each:
 

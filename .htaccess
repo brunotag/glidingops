@@ -38,6 +38,9 @@ RewriteRule ^api/user-form$ api/user-form.php [L,QSA]
 # MyFlights data API
 RewriteRule ^api/myflights$ api/myflights-data.php [L,QSA]
 
+# Daily flights API
+RewriteRule ^api/daily-flights$ api/daily-flights.php [L,QSA]
+
 # Magic link login API
 RewriteRule ^api/magic-link-request$ api/magic-link-request.php [L,QSA]
 RewriteRule ^api/magic-link-verify$ api/magic-link-verify.php [L,QSA]
@@ -87,6 +90,9 @@ RewriteRule BillingOptions billingoptions-list.php [L]
 RewriteRule BillingOption billingoptions.php [L]
 
 RewriteRule EditDailySheet EditDailySheet.php [L,QSA]
+RewriteRule DailyLogSheet DailyLogSheet.php [L,QSA]
+RewriteRule StartDay StartDay.php [L,QSA]
+RewriteRule last-flights-list last-flights-list.php [L,QSA]
 RewriteCond %{REQUEST_FILENAME} !\.(jpg|gif|js|css)$
 RewriteRule ^DailySheet$ dailysheet.php [L]
 
@@ -119,6 +125,7 @@ RewriteRule TreasurerReportNew3 TreasurerReportNew3.php [L,QSA]
 RewriteRule TreasurerReportNew3.csv TreasurerReportNew3.php [L,QSA]
 RewriteRule GlideAccounts.csv Treasurer2.php [L,QSA]
 RewriteRule Engineering.csv Engineer2.php [L]
+RewriteRule Engineer Engineer.php [L,QSA]
 RewriteRule OlcFile.igc igcgenerate.php [L]
 RewriteRule PasswordChange PasswordChange.php [L]
 RewriteRule agc MasterDisplay.php?org=4 [L,QSA]
