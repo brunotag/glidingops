@@ -400,12 +400,16 @@ include __DIR__ . '/helpers/dev_mode_banner.php';
                         if (!empty($event['start'])) {
                             $dt = new DateTime($event['start']);
                             $dt->setTimezone($tz);
-                            $timeStr = $dt->format('g:ia');
+                            $timeStr = $dt->format('i') + 1;
                         }
+                        ?>
+                        <?php
+                        $summary = $event['summary'];
+                        $summaryFormatted = preg_replace('/ - /', "</br>", htmlspecialchars($summary));
                         ?>
                         <div class="booking-row <?php echo $event['is_ours'] ? '' : 'not-ours' ?>"<?php if ($event['booking_id']): ?> data-booking-id="<?php echo $event['booking_id'] ?>"<?php endif; ?>>
                             <span class="booking-time"><?php echo htmlspecialchars($timeStr) ?></span>
-                            <span class="booking-summary"><?php echo htmlspecialchars($event['summary']) ?></span>
+                            <span class="booking-summary"><?php echo $summaryFormatted; ?></span>
                             <?php if ($event['can_edit']): ?>
                                 <span class="booking-actions">
                                     <?php if ($event['booking_id']): ?>
