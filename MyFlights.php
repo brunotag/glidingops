@@ -21,76 +21,248 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
     <title>My Flights</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
     <style>
+        /* Org-specific styles */
         <?php $inc = "./orgs/" . $org . "/heading2.css"; if (file_exists($inc)) include $inc; ?>
         <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
-        body { font-family: Arial, Helvetica, sans-serif; margin: 0; background: #f5f5f5; }
-        h1, h2 { font-family: Calibri, Arial, Helvetica, sans-serif; }
-        .header-row { padding: 0 12px; }
-        #flights-section { margin: 8px 0; padding: 0 12px; }
-        .section { margin: 20px 12px; padding: 20px; border-radius: 6px; background: #fff; border: 1px solid #ddd; }
-        .flights-section { }
-        .table { margin-bottom: 0; }
-        .table th { background: #e8e8e8; border-bottom: 2px solid #337ab7; }
-        .table-striped > tbody > tr:nth-of-type(odd) { background: #fff; }
-        .table-striped > tbody > tr:nth-of-type(even) { background: #eef4fb; }
-        .table th, .table td { vertical-align: middle; padding: 6px 8px; }
 
-        .text-right { text-align: right; }
-        .show-mobile { display: none; }
-        .border-top { border-top: 2px solid #337ab7; font-weight: bold; }
+        /* Base styles */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            background: #f5f5f5;
+        }
+
+        h1, h2 {
+            font-family: Calibri, Arial, Helvetica, sans-serif;
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        /* Layout */
+        .header-row {
+            padding: 0 12px;
+        }
+
+        #flights-section {
+            margin: 8px 0;
+            padding: 0 12px;
+        }
+
+        /* Table styling */
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background: #e8e8e8;
+            border-bottom: 2px solid #337ab7;
+        }
+
+        .table-striped > tbody > tr:nth-of-type(odd) {
+            background: #fff;
+        }
+
+        .table-striped > tbody > tr:nth-of-type(even) {
+            background: #eef4fb;
+        }
+
+        .table th,
+        .table td {
+            vertical-align: middle;
+            padding: 6px 8px;
+        }
+
+        /* Utility classes */
+        .text-right {
+            text-align: right;
+        }
+
+        .show-mobile {
+            display: none;
+        }
+
+        /* Summary pills - flight counts */
         .summary-pill {
-            display:inline-block; background:#e8e8e8; color:#222; border-radius:10px;
-            padding:2px 10px; font-size:12px; white-space:nowrap; border:1px solid #ccc; margin-right:3px;
+            display: inline-block;
+            background: #e8e8e8;
+            color: #222;
+            border-radius: 10px;
+            padding: 2px 10px;
+            font-size: 12px;
+            white-space: nowrap;
+            border: 1px solid #ccc;
+            margin-right: 3px;
         }
-        .summary-pill:last-child { margin-right:0; }
+
+        .summary-pill:last-child {
+            margin-right: 0;
+        }
+
+        /* Action buttons */
         .btn-outline {
-            display:inline-block; padding:5px 12px; font-size:12px; border:1px solid #bbb;
-            border-radius:4px; background:#fff; color:#555; text-decoration:none; cursor:pointer;
+            display: inline-block;
+            padding: 5px 12px;
+            font-size: 12px;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            background: #fff;
+            color: #555;
+            text-decoration: none;
+            cursor: pointer;
         }
-        .btn-outline:hover { background:#f0f0f0; border-color:#999; color:#333; text-decoration:none; }
-        h1 { font-size:22px; font-weight:600; color:#222; }
-        .loader { text-align: center; padding: 50px; }
-        .spinner { font-size: 24px; color: #337ab7; }
+
+        .btn-outline:hover {
+            background: #f0f0f0;
+            border-color: #999;
+            color: #333;
+            text-decoration: none;
+        }
+
+        /* Loading indicator */
+        .loader {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .spinner {
+            font-size: 24px;
+            color: #337ab7;
+        }
+
+        /* Print styles */
         @media print {
-            .no-print { display: none; }
-            .section { box-shadow: none; break-inside: avoid; }
-            @page { size: landscape; }
+            .no-print {
+                display: none;
+            }
+            @page {
+                size: landscape;
+            }
         }
+
+        /* Tablet and mobile responsive */
         @media (max-width: 767px) {
-            #flights-section .table thead { display: none; }
-            #flights-section .table { display: block; }
-            #flights-section .table tbody { display: flex; flex-wrap: wrap; gap: 8px; }
+            #flights-section .table thead {
+                display: none;
+            }
+
+            #flights-section .table {
+                display: block;
+            }
+
+            #flights-section .table tbody {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
             #flights-section .table tr {
                 width: calc(50% - 4px);
-                border: 1px solid #ddd; border-radius: 6px;
-                padding: 6px 10px; background: #fff; box-sizing: border-box; overflow: hidden;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                padding: 6px 10px;
+                background: #fff;
+                box-sizing: border-box;
+                overflow: hidden;
             }
+
             #flights-section .table > tbody > tr > td {
-                display: block; border: none; padding: 2px 2px 2px 40%;
-                text-align: left !important; font-size: 13px; position: relative;
-                line-height: 1.3; overflow-wrap: break-word; word-break: break-word;
+                display: block;
+                border: none;
+                padding: 2px 2px 2px 40%;
+                text-align: left !important;
+                font-size: 13px;
+                position: relative;
+                line-height: 1.3;
+                overflow-wrap: break-word;
+                word-break: break-word;
             }
+
             #flights-section .table td::before {
-                content: attr(data-label); position: absolute; left: 2px;
-                font-weight: 600; color: #555; white-space: nowrap;
+                content: attr(data-label);
+                position: absolute;
+                left: 2px;
+                font-weight: 600;
+                color: #555;
+                white-space: nowrap;
             }
-            #flights-section .table td[data-empty="1"] { display: none; }
-            #flights-section .hide-mobile { display: none !important; }
-            #flights-section .show-mobile { display: block !important; }
-            #flights-section .text-right { text-align: left !important; }
-            #flights-section { margin: 0 8px; padding: 0; }
-            .btn-outline { padding: 6px 10px; font-size: 13px; }
-            .header-row .text-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-            #summary-inline { margin: 0; }
-            .header-row { flex-direction: row; align-items: flex-start !important; padding: 0 8px; }
-            .header-row > div:first-child { flex: 1; min-width:0; }
-            .header-row > div:last-child { flex-shrink:0; }
-            #page-title { margin-bottom: 0 !important; font-size: 18px; }
+
+            #flights-section .table td[data-empty="1"] {
+                display: none;
+            }
+
+            #flights-section .hide-mobile {
+                display: none !important;
+            }
+
+            #flights-section .show-mobile {
+                display: block !important;
+            }
+
+            #flights-section .text-right {
+                text-align: left !important;
+            }
+
+            #flights-section {
+                margin: 0 8px;
+                padding: 0;
+            }
+
+            .btn-outline {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+
+            .header-row .text-right {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 4px;
+            }
+
+            #summary-inline {
+                margin: 0;
+            }
+
+            .header-row {
+                flex-direction: row;
+                align-items: flex-start !important;
+                padding: 0 8px;
+            }
+
+            .header-row > div:first-child {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .header-row > div:last-child {
+                flex-shrink: 0;
+            }
+
+            #page-title {
+                margin-bottom: 0 !important;
+                font-size: 18px;
+            }
         }
+
+        /* Small mobile responsive */
         @media (max-width: 440px) {
-            #flights-section .table tbody { display: flex; flex-direction: column; gap: 10px; }
-            #flights-section .table tr { width: 100%; }
-            #flights-section .table > tbody > tr > td:last-child { padding-bottom: 10px; }
+            #flights-section .table tbody {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            #flights-section .table tr {
+                width: 100%;
+            }
+
+            #flights-section .table > tbody > tr > td:last-child {
+                padding-bottom: 10px;
+            }
         }
     </style>
 </head>
