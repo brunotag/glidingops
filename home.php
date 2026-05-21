@@ -3,6 +3,7 @@
 if (isset($_SESSION['org'])) $org = $_SESSION['org']; ?>
 <?php
 include './helpers/timehelpers.php';
+require_once __DIR__ . '/helpers/logging.php';
 if (isset($_SESSION['security'])) {
    if (!($_SESSION['security'] & 1)) {
       die("Secruity level too low for this page");
@@ -422,7 +423,8 @@ if ($dbOk) {
               <?php endif; ?>
               <?php if ($_SESSION['security'] & 1): ?>
                 <a href="/app/allFlightsReport">All Flights Report</a>
-                <a href="/AllFlightsReportNew">All Flights Report (New)</a>
+<?php $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i', $_SERVER['HTTP_USER_AGENT'] ?? ''); ?>
+                <span style="display:block; white-space:nowrap;"><a href="<?php echo $isMobile ? '/AllFlightsMobile' : '/AllFlightsReportNew'; ?>" style="display:inline;">All Flights Report (New)</a><?php if (isLocal()): ?> <a href="/AllFlightsMobile" style="display:inline;color:#d00;">[dev] mobile</a><?php endif; ?></span>
 <?php endif; ?>
               <?php if ($effectiveSecurity & 32): ?>
                 <a href="/Engineer">Engineer Report</a>
