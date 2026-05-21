@@ -3,37 +3,32 @@ function renderMonthlyFlights(data) {
     var ctx = document.getElementById('chart-monthly').getContext('2d');
     if (window._chartMonthly) { window._chartMonthly.destroy(); }
 
-    var labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    var mainData = [];
-    var compData = [];
+    var mainArr = buildSeasonArray(data.main.monthly);
+    var compArr = data.compare ? buildSeasonArray(data.compare.monthly) : null;
 
-    for (var i = 1; i <= 12; i++) {
-        var m = data.main.monthly.find(function(r) { return parseInt(r.yearmonth.slice(-2), 10) === i; });
-        mainData.push(m ? m.total : 0);
-        if (data.compare) {
-            var c = data.compare.monthly.find(function(r) { return parseInt(r.yearmonth.slice(-2), 10) === i; });
-            compData.push(c ? c.total : 0);
-        }
-    }
+    var mainData = mainArr.map(function(r) { return r ? r.total : 0; });
+    var compData = compArr ? compArr.map(function(r) { return r ? r.total : 0; }) : [];
 
     var datasets = [
-        { label: String(data.main.year), data: mainData, backgroundColor: '#063552', borderRadius: 4 }
+        { label: data.main.label, data: mainData, backgroundColor: '#063552', borderRadius: 4 }
     ];
-    if (data.compare) {
-        datasets.push({ label: String(data.compare.year), data: compData, backgroundColor: '#f26120', borderRadius: 4 });
+    if (compArr) {
+        datasets.push({ label: data.compare.label, data: compData, backgroundColor: '#f26120', borderRadius: 4 });
     }
 
     window._chartMonthly = new Chart(ctx, {
         type: 'bar',
-        data: { labels: labels, datasets: datasets },
+        data: { labels: seasonLabels, datasets: datasets },
         options: {
             responsive: true,
             maintainAspectRatio: true,
-            plugins: { legend: { display: !!data.compare } },
+            plugins: { legend: { display: !!compArr } },
             scales: {
                 y: { beginAtZero: true, ticks: { stepSize: 1 } }
             }
         }
     });
+    hideHiddenLegend(window._chartMonthly);
+    setupSeasonToggles(window._chartMonthly, 'toggles-monthly', data.main.label, data.compare ? data.compare.label : null, 1);
 }
 </script>

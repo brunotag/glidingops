@@ -425,7 +425,6 @@ if ($dbOk) {
                 <a href="/app/allFlightsReport">All Flights Report</a>
 <?php $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i', $_SERVER['HTTP_USER_AGENT'] ?? ''); ?>
                 <span style="display:block; white-space:nowrap;"><a href="<?php echo $isMobile ? '/AllFlightsMobile' : '/AllFlightsReportNew'; ?>" style="display:inline;">All Flights Report (New)</a><?php if (isLocal()): ?> <a href="/AllFlightsMobile" style="display:inline;color:#d00;">[dev] mobile</a><?php endif; ?></span>
-                <a href="/Analytics">Analytics Dashboard</a>
 <?php endif; ?>
               <?php if ($effectiveSecurity & 32): ?>
                 <a href="/Engineer">Engineer Report</a>
@@ -442,6 +441,7 @@ if ($dbOk) {
             <div class="card-body">
               <a href="/maintenance/testemail.php">Test Email</a>
               <a href="/SentMessages">All Messages</a>
+              <a href="/Analytics">Analytics Dashboard</a>
               <?php if ($_SESSION['security'] & 128): ?>
                 <a href="/ViewAs">View Homepage As...</a>
               <?php endif; ?>

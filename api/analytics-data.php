@@ -18,6 +18,7 @@ if (!isset($_SESSION['security']) || $_SESSION['security'] < 1) {
 logMsg("AUTH OK - memberid=" . ($_SESSION['memberid'] ?? 'none'));
 
 $org = isset($_SESSION['org']) ? intval($_SESSION['org']) : 0;
+$mode = isset($_GET['mode']) ? $_GET['mode'] : 'season';
 $year = isset($_GET['year']) ? intval($_GET['year']) : intval(date('Y'));
 $compare = isset($_GET['compare']) ? intval($_GET['compare']) : 0;
 
@@ -33,10 +34,22 @@ if (mysqli_connect_errno()) {
     apiExit($con);
 }
 
-function getYearData($con, $org, $year) {
-    $startDate = $year * 10000 + 101;
-    $endDate = $year * 10000 + 1231;
+function seasonRange($seasonYear) {
+    $start = $seasonYear * 10000 + 601;
+    $end = ($seasonYear + 1) * 10000 + 531;
+    return [$start, $end];
+}
 
+function ytdRange($seasonYear) {
+    $now = getdate();
+    $currentMonth = $now['mon'];
+    $start = $seasonYear * 10000 + 601;
+    $endSeasonYear = ($currentMonth >= 6) ? $seasonYear : $seasonYear + 1;
+    $end = $endSeasonYear * 10000 + $currentMonth * 100 + 31;
+    return [$start, $end];
+}
+
+function getData($con, $org, $startDate, $endDate) {
     $orgWhere = $org > 0 ? "org = $org" : "1=1";
 
     $monthly = [];
@@ -46,6 +59,8 @@ function getYearData($con, $org, $year) {
               SUM(CASE WHEN p2 IS NULL OR p2 = 0 THEN 1 ELSE 0 END) AS solo,
               SUM(CASE WHEN p2 IS NOT NULL AND p2 > 0 THEN 1 ELSE 0 END) AS dual_flights,
               SUM(CASE WHEN (land - start) > 3600000 THEN 1 ELSE 0 END) AS long_flights,
+              SUM(CASE WHEN (land - start) BETWEEN 1800000 AND 3600000 THEN 1 ELSE 0 END) AS mid_flights,
+              SUM(CASE WHEN (land - start) < 1800000 THEN 1 ELSE 0 END) AS short_flights,
               AVG((land - start) / 60000) AS avg_duration
             FROM flights
             WHERE $orgWhere AND type = 1 AND deleted = 0
@@ -59,65 +74,68 @@ function getYearData($con, $org, $year) {
             $row['solo'] = intval($row['solo']);
             $row['dual_flights'] = intval($row['dual_flights']);
             $row['long_flights'] = intval($row['long_flights']);
+            $row['mid_flights'] = intval($row['mid_flights']);
+            $row['short_flights'] = intval($row['short_flights']);
             $row['avg_duration'] = round(floatval($row['avg_duration']), 1);
             $row['yearmonth'] = strval($row['yearmonth']);
             $monthly[] = $row;
         }
     }
 
-    $launchTypes = [];
-    $sql = "SELECT launchtype, COUNT(*) AS count
-            FROM flights
-            WHERE $orgWhere AND type = 1 AND deleted = 0
-              AND localdate >= $startDate AND localdate <= $endDate
-            GROUP BY launchtype";
-    $r = mysqli_query($con, $sql);
-    if ($r) {
-        while ($row = mysqli_fetch_assoc($r)) {
-            $launchTypes[] = [
-                'launchtype' => intval($row['launchtype']),
-                'count' => intval($row['count'])
-            ];
-        }
-    }
-
-    $topAircraft = [];
-    $sql = "SELECT glider, COUNT(*) AS flights
-            FROM flights
-            WHERE $orgWhere AND type = 1 AND deleted = 0
-              AND localdate >= $startDate AND localdate <= $endDate
-              AND glider IS NOT NULL AND glider != ''
-            GROUP BY glider
-            ORDER BY flights DESC
-            LIMIT 10";
-    $r = mysqli_query($con, $sql);
-    if ($r) {
-        while ($row = mysqli_fetch_assoc($r)) {
-            $topAircraft[] = [
-                'glider' => $row['glider'],
-                'flights' => intval($row['flights'])
-            ];
-        }
-    }
-
     $totalFlights = 0;
+    $totalSolo = 0;
+    $totalDual = 0;
+    $totalLong = 0;
+    $totalMid = 0;
+    $totalShort = 0;
     foreach ($monthly as $m) {
         $totalFlights += $m['total'];
+        $totalSolo += $m['solo'];
+        $totalDual += $m['dual_flights'];
+        $totalLong += $m['long_flights'];
+        $totalMid += $m['mid_flights'];
+        $totalShort += $m['short_flights'];
     }
+    $avgDuration = $totalFlights > 0 ? round(($totalSolo * 0 + $totalDual * 0) /* placeholder */, 1) : 0;
 
     return [
-        'year' => $year,
-        'total_flights' => $totalFlights,
         'monthly' => $monthly,
-        'launch_types' => $launchTypes,
-        'top_aircraft' => $topAircraft
+        'totals' => [
+            'flights' => $totalFlights,
+            'solo' => $totalSolo,
+            'dual' => $totalDual,
+            'long' => $totalLong,
+            'mid' => $totalMid,
+            'short' => $totalShort
+        ]
     ];
 }
 
 $data = [];
-$data['main'] = getYearData($con, $org, $year);
-if ($compare > 0 && $compare !== $year) {
-    $data['compare'] = getYearData($con, $org, $compare);
+
+if ($mode === 'ytd') {
+    list($start, $end) = ytdRange($year);
+    $data['main'] = getData($con, $org, $start, $end);
+    $data['main']['label'] = $year . ' YTD';
+    $data['main']['type'] = 'ytd';
+
+    $compareYear = ($compare > 0 && $compare !== $year) ? $compare : ($year - 1);
+    list($prevStart, $prevEnd) = ytdRange($compareYear);
+    $data['compare'] = getData($con, $org, $prevStart, $prevEnd);
+    $data['compare']['label'] = $compareYear . ' YTD';
+    $data['compare']['type'] = 'ytd';
+} else {
+    list($start, $end) = seasonRange($year);
+    $data['main'] = getData($con, $org, $start, $end);
+    $data['main']['label'] = $year . '/' . ($year + 1) . ' Season';
+    $data['main']['type'] = 'season';
+
+    if ($compare > 0 && $compare !== $year) {
+        list($cStart, $cEnd) = seasonRange($compare);
+        $data['compare'] = getData($con, $org, $cStart, $cEnd);
+        $data['compare']['label'] = $compare . '/' . ($compare + 1) . ' Season';
+        $data['compare']['type'] = 'season';
+    }
 }
 
 require_once __DIR__ . '/../helpers.php';

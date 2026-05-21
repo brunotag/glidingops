@@ -3,27 +3,22 @@ function renderSoloDual(data) {
     var ctx = document.getElementById('chart-solo-dual').getContext('2d');
     if (window._chartSoloDual) { window._chartSoloDual.destroy(); }
 
-    var labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    var soloMain = [], dualMain = [];
-    var soloComp = [], dualComp = [];
+    var mainArr = buildSeasonArray(data.main.monthly);
+    var compArr = data.compare ? buildSeasonArray(data.compare.monthly) : null;
 
-    for (var i = 1; i <= 12; i++) {
-        var m = data.main.monthly.find(function(r) { return parseInt(r.yearmonth.slice(-2), 10) === i; });
-        soloMain.push(m ? m.solo : 0);
-        dualMain.push(m ? m.dual_flights : 0);
-        if (data.compare) {
-            var c = data.compare.monthly.find(function(r) { return parseInt(r.yearmonth.slice(-2), 10) === i; });
-            soloComp.push(c ? c.solo : 0);
-            dualComp.push(c ? c.dual_flights : 0);
-        }
-    }
+    function extract(arr, field) { return arr.map(function(r) { return r ? r[field] : 0; }); }
+
+    var soloMain = extract(mainArr, 'solo');
+    var dualMain = extract(mainArr, 'dual_flights');
 
     var datasets = [];
-    if (data.compare) {
-        datasets.push({ label: 'Solo ' + data.main.year, data: soloMain, backgroundColor: '#063552' });
-        datasets.push({ label: 'Dual ' + data.main.year, data: dualMain, backgroundColor: '#4a90d9' });
-        datasets.push({ label: 'Solo ' + data.compare.year, data: soloComp, backgroundColor: '#f26120' });
-        datasets.push({ label: 'Dual ' + data.compare.year, data: dualComp, backgroundColor: '#f5a623' });
+    if (compArr) {
+        var soloComp = extract(compArr, 'solo');
+        var dualComp = extract(compArr, 'dual_flights');
+        datasets.push({ label: 'Solo ' + data.main.label, data: soloMain, backgroundColor: '#063552', stack: 'main' });
+        datasets.push({ label: 'Dual ' + data.main.label, data: dualMain, backgroundColor: '#4a90d9', stack: 'main' });
+        datasets.push({ label: 'Solo ' + data.compare.label, data: soloComp, backgroundColor: '#f26120', stack: 'compare' });
+        datasets.push({ label: 'Dual ' + data.compare.label, data: dualComp, backgroundColor: '#f5a623', stack: 'compare' });
     } else {
         datasets.push({ label: 'Solo', data: soloMain, backgroundColor: '#063552' });
         datasets.push({ label: 'Dual', data: dualMain, backgroundColor: '#4a90d9' });
@@ -31,15 +26,17 @@ function renderSoloDual(data) {
 
     window._chartSoloDual = new Chart(ctx, {
         type: 'bar',
-        data: { labels: labels, datasets: datasets },
+        data: { labels: seasonLabels, datasets: datasets },
         options: {
             responsive: true,
             maintainAspectRatio: true,
             scales: {
-                x: { stacked: true },
                 y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } }
             }
         }
     });
+    hideHiddenLegend(window._chartSoloDual);
+    setupSeasonToggles(window._chartSoloDual, 'toggles-solo-dual', data.main.label, data.compare ? data.compare.label : null, 2);
+    setupCategoryToggles(window._chartSoloDual, 'cat-toggles-solo-dual', ['Solo', 'Dual']);
 }
 </script>
