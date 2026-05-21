@@ -32,6 +32,8 @@
 - MyFlights.php CSS refactored: removed unused styles (.section, .flights-section, .border-top), reorganized with comment headers, multi-line formatting.
 - bookings.php: Title + buttons restyled to match MyFlights (h1, .btn-outline, header-row layout)
 - DailyLogSheet.php: Full look & feel overhaul matching MyFlights. Added Location column per flight. Renamed headers (Towplane→Launch, removed Vector, Tow Pilot→W. Drv). Mobile cards now show/hide empty fields via data-empty. Fixed card clipping (overflow:hidden, min-height:100vh, min-width:0 on flex items).
+- AllFlightsReportMobile.php: Mobile-friendly All Flights page (card pattern on mobile, table on desktop). Route `AllFlightsMobile` added to .htaccess. "Web Version" button links back to desktop page.
+- home.php: "All Flights Report (New)" link routes to mobile version on mobile (user-agent detection), desktop version on desktop. `[dev] mobile` link stays on same line via span + display:inline override.
 
 ### Next Steps
 1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)

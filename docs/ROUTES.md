@@ -25,6 +25,8 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/AircraftType` | aircrafttype.php | Add/edit type |
 | `/DailySheet` | dailysheet.php | Flight entry |
 | `/AllFlights` | flights-list.php | Flight list |
+| `/AllFlightsMobile` | AllFlightsReportMobile.php | All flights (mobile-friendly cards) |
+| `/AllFlightsReportNew` | AllFlightsReportNew.php | All flights (DataTables desktop) |
 | `/FlightTypes` | flighttypes-list.php | Flight types |
 | `/FlightType` | flighttypes.php | Add/edit type |
 | `/LaunchTypes` | launchtypes-list.php | Launch types |
