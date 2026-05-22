@@ -23,6 +23,9 @@ RewriteRule ^api/flights-report$ api/flights-report.php [L,QSA]
 # Analytics data API
 RewriteRule ^api/analytics-data$ api/analytics-data.php [L,QSA]
 
+# Analytics season trends API
+RewriteRule ^api/analytics-trends$ api/analytics-trends.php [L,QSA]
+
 # Member autocomplete search API
 RewriteRule ^api/member-search$ api/member-search.php [L,QSA]
 
@@ -91,6 +94,7 @@ RewriteRule AllMembers members-list.php [L]
 RewriteRule AllFlightsMobile AllFlightsReportMobile.php [L,QSA]
 RewriteRule AllFlightsReportNew AllFlightsReportNew.php [L,QSA]
 RewriteRule Analytics analytics-dashboard.php [L,QSA]
+RewriteRule SeasonTrends analytics-season-trends.php [L,QSA]
 RewriteRule BillingOptions billingoptions-list.php [L]
 RewriteRule BillingOption billingoptions.php [L]
 

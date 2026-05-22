@@ -434,6 +434,19 @@ if ($dbOk) {
           </div>
         <?php endif; ?>
 
+        <!-- 9. Analytics -->
+        <?php if ($effectiveSecurity >= 1): ?>
+          <div class="nav-card">
+            <div class="card-header">Analytics</div>
+            <div class="card-body">
+              <a href="/SeasonTrends">Trends Across Seasons</a>
+              <?php if ($effectiveSecurity & 64): ?>
+                <a href="/Analytics">Compare Two Seasons / YTD</a>
+              <?php endif; ?>
+            </div>
+          </div>
+        <?php endif; ?>
+
         <!-- 10. Diagnostics & Recovery -->
         <?php if ($effectiveSecurity & 64): ?>
           <div class="nav-card">
@@ -441,7 +454,6 @@ if ($dbOk) {
             <div class="card-body">
               <a href="/maintenance/testemail.php">Test Email</a>
               <a href="/SentMessages">All Messages</a>
-              <a href="/Analytics">Analytics Dashboard</a>
               <?php if ($_SESSION['security'] & 128): ?>
                 <a href="/ViewAs">View Homepage As...</a>
               <?php endif; ?>

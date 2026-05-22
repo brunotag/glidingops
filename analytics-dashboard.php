@@ -90,6 +90,7 @@ $defaultSeason = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
             </span>
             <button id="load-btn" class="btn-outline">Load</button>
             <span style="flex:1;"></span>
+            <a href="/SeasonTrends" class="btn-outline" style="text-decoration:none;">Season Analysis</a>
             <button class="btn-outline" onclick="window.print()">Print</button>
         </div>
 
