@@ -144,6 +144,10 @@ RewriteRule ^Bookings$ bookings.php [L,QSA]
 RewriteRule wgc-new MasterDisplayNew.php?org=1 [L,QSA]
 RewriteRule wgc MasterDisplay.php?org=1 [L,QSA]
 
+# Legal pages (no auth required)
+RewriteRule ^privacy$ privacy.php [L,QSA]
+RewriteRule ^data-deletion$ data-deletion.php [L,QSA]
+
 # OAuth login routes
 RewriteRule ^oauth-login$ oauth-login.php [L,QSA]
 RewriteRule ^oauth-callback$ oauth-callback.php [L,QSA]
