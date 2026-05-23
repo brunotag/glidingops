@@ -99,7 +99,7 @@ unset(
 
 if (!empty($pending_photo_url) && !empty($user['member'])) {
     require_once __DIR__ . '/helpers/oauth-photo-helper.php';
-    $existingPhoto = dirname(__DIR__) . '/img/members/' . intval($user['member']) . '.jpg';
+    $existingPhoto = __DIR__ . '/img/members/' . intval($user['member']) . '.jpg';
     if (!file_exists($existingPhoto)) {
         saveSocialPhoto($pending_photo_url, $user['member']);
     } else {

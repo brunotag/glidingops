@@ -282,7 +282,7 @@ if ($user['force_pw_reset'] ?? 0 > 0) {
 }
 
 if ($first_social_login && !empty($photo_url) && !empty($_SESSION['memberid'])) {
-    $existingPhoto = dirname(__DIR__) . '/img/members/' . intval($_SESSION['memberid']) . '.jpg';
+    $existingPhoto = __DIR__ . '/img/members/' . intval($_SESSION['memberid']) . '.jpg';
     if (!file_exists($existingPhoto)) {
         saveSocialPhoto($photo_url, $_SESSION['memberid']);
     } else {
