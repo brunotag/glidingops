@@ -255,7 +255,7 @@
     elseif ($errorType === 'server_error') $errorMsg = 'A server error occurred. Please try again.';
     elseif ($errorType === 'oauth_state_mismatch') $errorMsg = 'Security check failed. Please try signing in again.';
     elseif ($errorType === 'oauth_token_exchange') $errorMsg = 'Could not complete sign-in with the provider. Please try again.';
-    elseif ($errorType === 'oauth_email_not_found') $errorMsg = 'No account found with the email from your social login. Use the Email Link tab below to register, or try a different sign-in method.';
+    elseif ($errorType === 'oauth_email_not_found') $errorMsg = 'Facebook did not return your email address. Use the Email or Register tab below to sign in with your member email instead, or try Google.';
     elseif ($errorType === 'oauth_provider_error') $errorMsg = 'The social sign-in provider returned an error. Please try again.';
     elseif ($errorType === 'oauth_not_configured') $errorMsg = 'This sign-in method is not yet configured. Please use another method.';
     $showMagicLinkTab = $errorType !== '';

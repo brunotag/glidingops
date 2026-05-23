@@ -42,8 +42,9 @@
           $email = $_SESSION['oauth_pending_email'] ?? '';
           $provider = $_SESSION['oauth_pending_provider'] ?? '';
           $provider_id = $_SESSION['oauth_pending_provider_id'] ?? '';
+          $no_email = isset($_GET['no_email']);
 
-          if (empty($email) || empty($provider)) {
+          if (empty($provider) || (empty($email) && !$no_email)) {
               echo '<div class="alert alert-warning">No pending account link request. <a href="Login.php">Back to login</a></div>';
               echo '</div></div></div></div></body></html>';
               exit;
@@ -65,6 +66,12 @@
           }
           ?>
 
+          <?php if ($no_email): ?>
+          <p class="info-text">
+            You signed in with <strong class="provider-badge <?php echo $provider; ?>"><?php echo ucfirst($provider); ?></strong>,
+            but Facebook did not return your email address. Enter your existing Gliding Ops username below to link your account.
+          </p>
+          <?php else: ?>
           <p class="info-text">
             You signed in with <strong class="provider-badge <?php echo $provider; ?>"><?php echo ucfirst($provider); ?></strong>
             using the email <strong><?php echo htmlspecialchars($email); ?></strong>.
@@ -73,6 +80,7 @@
           <p class="info-text">
             No existing account was found with the email <strong><?php echo htmlspecialchars($email); ?></strong>. You can link it to your existing account below.
           </p>
+          <?php endif; ?>
 
           <div class="panel panel-default">
             <div class="panel-heading"><strong>Option 1:</strong> Link to an existing account</div>

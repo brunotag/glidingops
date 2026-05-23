@@ -153,10 +153,28 @@ switch ($provider) {
         break;
 }
 
-if (empty($email) || empty($provider_id)) {
-    logMsg("OAuth $provider: no email or provider_id returned");
+if (empty($provider_id)) {
+    logMsg("OAuth $provider: no provider_id returned");
     mysqli_close($con);
     header('Location: Login.php?error=oauth_email_not_found');
+    exit;
+}
+
+if (empty($email) && $provider === 'facebook') {
+    logMsg("OAuth facebook: no email returned, redirecting to link page");
+    $_SESSION['oauth_pending_email'] = '';
+    $_SESSION['oauth_pending_provider'] = $provider;
+    $_SESSION['oauth_pending_provider_id'] = $provider_id;
+    mysqli_close($con);
+    header('Location: oauth-link.php?no_email=1');
+    exit;
+}
+
+if (empty($email)) {
+    logMsg("OAuth $provider: no email returned");
+    $providerName = ucfirst($provider);
+    mysqli_close($con);
+    header("Location: Login.php?error=oauth_email_not_found&provider=$providerName");
     exit;
 }
 
