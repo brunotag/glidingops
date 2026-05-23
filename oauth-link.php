@@ -71,7 +71,7 @@
           </p>
 
           <p class="info-text">
-            No existing account was found with this email. You can:
+            No existing account was found with the email <strong><?php echo htmlspecialchars($email); ?></strong>. You can link it to your existing account below.
           </p>
 
           <div class="panel panel-default">

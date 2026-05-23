@@ -184,6 +184,19 @@ if (!$user) {
 }
 
 if (!$user) {
+    $stmt = mysqli_prepare($con, "SELECT u.id, u.usercode, u.member, u.org, u.securitylevel, u.name
+                                   FROM users u
+                                   JOIN members m ON m.id = u.member
+                                   WHERE m.email = ?
+                                   LIMIT 1");
+    mysqli_stmt_bind_param($stmt, 's', $email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+}
+
+if (!$user) {
     logMsg("OAuth $provider: no user found for email=$email provider_id=$provider_id");
     $_SESSION['oauth_pending_email'] = $email;
     $_SESSION['oauth_pending_provider'] = $provider;
