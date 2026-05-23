@@ -12,36 +12,16 @@
 - (none)
 
 ### Completed This Session
-- members-list-v2b.php + api/members.php: New "User" column with link to user account or "No"
-- users-list-v2b.php + api/users.php: New "Last Login" column sortable by most recent login timestamp
-- Login.php completely rewritten: Bootstrap card layout, tabbed UI (Password + Email or Register), mobile-responsive
-- api/magic-link-request.php: New endpoint generates 64-char token, sends magic link email. Auto-creates user account if member email entered but no user exists. Rate-limited to 3 unused tokens per user.
-- api/magic-link-verify.php: New endpoint validates token (exists, unused, 15-min expiry), creates session, sets auth_via_magic_link flag, redirects to PasswordChange
-- PasswordChange.php + changepw.php: Skip old-password check when auth_via_magic_link is set, show explanatory banner. PasswordChange.php modernised with Bootstrap card layout.
-- magic_link_tokens table created via Laravel migration
-- Forgotten.php deleted (replaced by magic link flow)
-- Register.php deleted (absorbed into Email or Register tab)
-- .htaccess updated with magic link routes
-- MessagingPage.php security changed from Level 1 to Level 5
-- home.php: Dashboard layout with 3 data widgets + nav cards in CSS Grid (dense packing, 550px/275px widths), latest updates capped at 340px/4 messages, reordered Data Maintenance last
-- MyFlights.php: Date column sortable (asc/desc) with arrow indicator
-- Color scheme overhaul across all CSS files: #000040, #000080, #0000FF replaced with #063552. Foreground on dark backgrounds changed to #f26120.
-- docs updated: SECURITY.md, DEPLOY.md, ROUTES.md, FEATURES.md, AGENTS.md
-- FUTURE_DEVELOPMENT_MAGIC_LINK.md removed (now reality)
-- **Photo system**: photos stored as `img/members/{member_id}.jpg` (was `{displayname}.jpg`). Upload via member form with GD resize (max 400px, JPEG q80, graceful fallback). Header photo next to username on all pages. noprofile.png fallback. 62 photos migrated on production. Google Drive sync cron removed.
-- MyFlights.php CSS refactored: removed unused styles (.section, .flights-section, .border-top), reorganized with comment headers, multi-line formatting.
-- bookings.php: Title + buttons restyled to match MyFlights (h1, .btn-outline, header-row layout)
-- DailyLogSheet.php: Full look & feel overhaul matching MyFlights. Added Location column per flight. Renamed headers (Towplane→Launch, removed Vector, Tow Pilot→W. Drv). Mobile cards now show/hide empty fields via data-empty. Fixed card clipping (overflow:hidden, min-height:100vh, min-width:0 on flex items).
-- AllFlightsReportMobile.php: Mobile-friendly All Flights page (card pattern on mobile, table on desktop). Route `AllFlightsMobile` added to .htaccess. "Web Version" button links back to desktop page.
-  - home.php: "All Flights Report (New)" link routes to mobile version on mobile (user-agent detection), desktop version on desktop. `[dev] mobile` link stays on same line via span + display:inline override.
-  - **Social Login (OAuth 2.0)**: Google, Facebook Sign In buttons on Login.php. New files: `oauth-login.php`, `oauth-callback.php`, `oauth-link.php`, `oauth-link-action.php`. `user_providers` table via migration. `config/oauth.php` (gitignored) + `config/oauth.php.sample`. FUTURE_DEVELOPMENT_OAUTH_LOGIN.md removed (now reality). Apple Sign In removed (requires paid Apple Developer account).
-- **Login.php brand redesign**: WWGC GOPS text logo replaced HomeLogo.jpg, dark blue body bg (#063552), orange accents (#f26120), social buttons moved to top with brand-colored icons, .btn-primary orange bold text on dark blue, mobile-responsive tabs (flex side-by-side), heading subtext white, minilogo restored top-right.
+- **Facebook no-email fix**: Facebook `/me` doesn't return `email` (permission not approved). Redirect to `oauth-link.php?no_email=1` for manual username entry instead of failing.
+- **Social photo auto-fetch**: `helpers/oauth-photo-helper.php` + `oauth-photo.php`. On first social login, auto-saves Google/Facebook profile photo if user has none, or redirects to comparison page if user has an existing photo. GD resize max 400px JPEG q80. `oauth-link-action.php` also handles photos for manual link flow. `.htaccess` route `/OAuthPhoto`.
+- **Bug fix**: `dirname(__DIR__)` in root-level files goes one level too high. Changed to `__DIR__` for photo paths.
+- **Deploy**: Prod code at `/var/www/html/` requires explicit `git pull` after push.
+- **Local backup tool**: `tmp/unlink-social-production.ps1` — plinks to prod, runs MySQL via heredoc to list/delete `user_providers` entries (gitignored).
 
 ### Next Steps
-1. Configure OAuth provider credentials in `config/oauth.php` (Google Cloud, Meta Dev, Apple Developer consoles)
-2. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)
-3. Test messaging page end-to-end
-4. Delete old files after testing: texts-list.php, users-list.php, users.php, members-list.php, members.php, MessagingPageOld.php
+1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)
+2. Test messaging page end-to-end
+3. Delete old files after testing: texts-list.php, users-list.php, users.php, members-list.php, members.php, MessagingPageOld.php
 
 ## How To Work In This Repo
 
