@@ -33,12 +33,14 @@
 - bookings.php: Title + buttons restyled to match MyFlights (h1, .btn-outline, header-row layout)
 - DailyLogSheet.php: Full look & feel overhaul matching MyFlights. Added Location column per flight. Renamed headers (Towplane→Launch, removed Vector, Tow Pilot→W. Drv). Mobile cards now show/hide empty fields via data-empty. Fixed card clipping (overflow:hidden, min-height:100vh, min-width:0 on flex items).
 - AllFlightsReportMobile.php: Mobile-friendly All Flights page (card pattern on mobile, table on desktop). Route `AllFlightsMobile` added to .htaccess. "Web Version" button links back to desktop page.
-- home.php: "All Flights Report (New)" link routes to mobile version on mobile (user-agent detection), desktop version on desktop. `[dev] mobile` link stays on same line via span + display:inline override.
+ - home.php: "All Flights Report (New)" link routes to mobile version on mobile (user-agent detection), desktop version on desktop. `[dev] mobile` link stays on same line via span + display:inline override.
+ - **Social Login (OAuth 2.0)**: Google, Facebook Sign In buttons on Login.php. New files: `oauth-login.php`, `oauth-callback.php`, `oauth-link.php`, `oauth-link-action.php`. `user_providers` table via migration. `config/oauth.php` (gitignored) + `config/oauth.php.sample`. FUTURE_DEVELOPMENT_OAUTH_LOGIN.md removed (now reality). Apple Sign In removed (requires paid Apple Developer account).
 
 ### Next Steps
-1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)
-2. Test messaging page end-to-end
-3. Delete old files after testing: texts-list.php, users-list.php, users.php, members-list.php, members.php, MessagingPageOld.php
+1. Configure OAuth provider credentials in `config/oauth.php` (Google Cloud, Meta Dev, Apple Developer consoles)
+2. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)
+3. Test messaging page end-to-end
+4. Delete old files after testing: texts-list.php, users-list.php, users.php, members-list.php, members.php, MessagingPageOld.php
 
 ## How To Work In This Repo
 

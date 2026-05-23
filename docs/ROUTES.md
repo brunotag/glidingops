@@ -86,6 +86,10 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/SentMessages` | texts-list-v2b.php | Sent messages table view |
 | `/MessagesTree` | messages-tree.php | Sent messages treeview |
 | `/MessagesTreeOld` | messages-tree.php | (alias) |
+| `/oauth-login` | oauth-login.php | Initiate OAuth sign-in with Google/Facebook |
+| `/oauth-callback` | oauth-callback.php | OAuth provider callback (token exchange, session create) |
+| `/oauth-link` | oauth-link.php | Link social account to existing user |
+| `/oauth-link-action` | oauth-link-action.php | Process account linking form submission |
 
 ## Security Routes
 

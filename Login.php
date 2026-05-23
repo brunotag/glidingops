@@ -104,6 +104,59 @@
       margin-top: 5px;
     }
     .has-error .invalid-feedback { display: block; }
+
+    .social-login-section {
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid #e0e0e0;
+    }
+    .social-divider {
+      text-align: center;
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 15px;
+      position: relative;
+    }
+    .social-divider span {
+      background: #f8f8fa;
+      padding: 0 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .social-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .btn-oauth {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 18px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: Arial, Helvetica, sans-serif;
+      text-decoration: none;
+      border: 1px solid #ddd;
+      transition: opacity 0.15s;
+    }
+    .btn-oauth:hover { opacity: 0.88; text-decoration: none; }
+    .btn-google { background: #fff; color: #444; }
+    .btn-google:hover { background: #f5f5f5; color: #444; }
+    .btn-facebook { background: #1877F2; color: #fff; border-color: #1877F2; }
+    .btn-facebook:hover { background: #166fe5; color: #fff; }
+    .oauth-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      margin-right: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 50%;
+    }
+
   </style>
 </head>
 <body>
@@ -120,6 +173,11 @@
     elseif ($errorType === 'link_used') $errorMsg = 'This link has already been used. Please request a new one.';
     elseif ($errorType === 'link_expired') $errorMsg = 'This link has expired. Please request a new one.';
     elseif ($errorType === 'server_error') $errorMsg = 'A server error occurred. Please try again.';
+    elseif ($errorType === 'oauth_state_mismatch') $errorMsg = 'Security check failed. Please try signing in again.';
+    elseif ($errorType === 'oauth_token_exchange') $errorMsg = 'Could not complete sign-in with the provider. Please try again.';
+    elseif ($errorType === 'oauth_email_not_found') $errorMsg = 'No account found with the email from your social login. Use the Email Link tab below to register, or try a different sign-in method.';
+    elseif ($errorType === 'oauth_provider_error') $errorMsg = 'The social sign-in provider returned an error. Please try again.';
+    elseif ($errorType === 'oauth_not_configured') $errorMsg = 'This sign-in method is not yet configured. Please use another method.';
     $showMagicLinkTab = $errorType !== '';
     ?>
     <div class="row">
@@ -181,6 +239,20 @@
               <div id="magic-link-error" class="alert alert-danger" style="display:none;margin-top:15px;">
                 Something went wrong. Please try again.
               </div>
+            </div>
+          </div>
+
+          <!-- Social Login Buttons -->
+          <div class="social-login-section">
+            <p class="social-divider"><span>or sign in with</span></p>
+            <div class="social-buttons">
+              <a href="oauth-login?provider=google" class="btn btn-oauth btn-google">
+                <span class="oauth-icon">G</span> Sign in with Google
+              </a>
+              <a href="oauth-login?provider=facebook" class="btn btn-oauth btn-facebook">
+                <span class="oauth-icon">f</span> Sign in with Facebook
+              </a>
+
             </div>
           </div>
 

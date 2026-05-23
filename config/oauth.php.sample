@@ -1,0 +1,23 @@
+<?php
+return [
+    'redirect_base' => 'https://gops.wwgc.co.nz',
+
+    'google' => [
+        'client_id' => '',
+        'client_secret' => '',
+        'scope' => 'openid email profile',
+        'auth_url' => 'https://accounts.google.com/o/oauth2/v2/auth',
+        'token_url' => 'https://oauth2.googleapis.com/token',
+        'userinfo_url' => 'https://www.googleapis.com/oauth2/v2/userinfo',
+    ],
+
+    'facebook' => [
+        'app_id' => '',
+        'app_secret' => '',
+        'scope' => 'email public_profile',
+        'auth_url' => 'https://www.facebook.com/v19.0/dialog/oauth',
+        'token_url' => 'https://graph.facebook.com/v19.0/oauth/access_token',
+        'userinfo_url' => 'https://graph.facebook.com/me?fields=id,name,email',
+    ],
+
+];

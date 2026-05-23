@@ -519,9 +519,10 @@ Test email sending
 ## Authentication & Registration
 
 ### Login.php
-Login form with two tabs:
+Login form with two tabs plus social login buttons:
 - **Password** - username + password via `checklogin.php`
 - **Email or Register** - enter member email, receives magic link. Auto-creates user account if member exists without one.
+- **Social login** - Google and Facebook buttons below the tabs. Initiates OAuth 2.0 flow.
 
 ### checklogin.php
 Validates credentials (MD5 password hash), sets session
@@ -534,6 +535,18 @@ Validates token (exists, unused, under 15 min), marks used, creates session, red
 
 ### changepw.php
 Password change form. Skips old-password check when `auth_via_magic_link` session flag is set (magic link login).
+
+### Social Login (OAuth 2.0)
+Google and Facebook Sign In buttons on Login.php. Flow:
+1. User clicks provider button -> `oauth-login.php` generates CSRF state, redirects to provider consent screen
+2. Provider redirects to `oauth-callback.php` with auth code
+3. Server exchanges code for access token, fetches email from provider via their userinfo API
+4. Looks up `users.usercode` matching the email, or checks `user_providers` for existing link
+5. Creates session (same vars as password login), inserts `user_providers` row, audits login
+6. If email not found, redirects to `oauth-link.php` to link to existing account or register
+
+**Database:** `user_providers` table maps `(provider, provider_id)` to `users.id`
+**Config:** `config/oauth.php` (gitignored) — copy from `config/oauth.php.sample`
 
 ---
 

@@ -143,6 +143,13 @@ RewriteRule ssb MasterDisplay.php?org=2 [L,QSA]
 RewriteRule ^Bookings$ bookings.php [L,QSA]
 RewriteRule wgc-new MasterDisplayNew.php?org=1 [L,QSA]
 RewriteRule wgc MasterDisplay.php?org=1 [L,QSA]
+
+# OAuth login routes
+RewriteRule ^oauth-login$ oauth-login.php [L,QSA]
+RewriteRule ^oauth-callback$ oauth-callback.php [L,QSA]
+RewriteRule ^oauth-link$ oauth-link.php [L,QSA]
+RewriteRule ^oauth-link-action$ oauth-link-action.php [L,QSA]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
