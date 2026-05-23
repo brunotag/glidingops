@@ -519,10 +519,11 @@ Test email sending
 ## Authentication & Registration
 
 ### Login.php
-Login form with two tabs plus social login buttons:
-- **Password** - username + password via `checklogin.php`
-- **Email or Register** - enter member email, receives magic link. Auto-creates user account if member exists without one.
-- **Social login** - Google and Facebook buttons below the tabs. Initiates OAuth 2.0 flow.
+Login page with brand-themed design (#063552 dark blue, #f26120 orange): 
+- **Social login buttons** at top (Google with 4-color G icon, Facebook blue f icon, both on white pill buttons)
+- **Password tab** - username + password via `checklogin.php`, "Forgot password? Use email link instead" link below button
+- **Email or Register tab** - enter member email, receives magic link. Auto-creates user account if member exists without one.
+- WWGC GOPS text logo left, minilogo right in the heading bar. Mobile responsive (tabs flex side by side, smaller text).
 
 ### checklogin.php
 Validates credentials (MD5 password hash), sets session

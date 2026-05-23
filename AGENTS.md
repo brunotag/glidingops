@@ -33,8 +33,9 @@
 - bookings.php: Title + buttons restyled to match MyFlights (h1, .btn-outline, header-row layout)
 - DailyLogSheet.php: Full look & feel overhaul matching MyFlights. Added Location column per flight. Renamed headers (Towplane→Launch, removed Vector, Tow Pilot→W. Drv). Mobile cards now show/hide empty fields via data-empty. Fixed card clipping (overflow:hidden, min-height:100vh, min-width:0 on flex items).
 - AllFlightsReportMobile.php: Mobile-friendly All Flights page (card pattern on mobile, table on desktop). Route `AllFlightsMobile` added to .htaccess. "Web Version" button links back to desktop page.
- - home.php: "All Flights Report (New)" link routes to mobile version on mobile (user-agent detection), desktop version on desktop. `[dev] mobile` link stays on same line via span + display:inline override.
- - **Social Login (OAuth 2.0)**: Google, Facebook Sign In buttons on Login.php. New files: `oauth-login.php`, `oauth-callback.php`, `oauth-link.php`, `oauth-link-action.php`. `user_providers` table via migration. `config/oauth.php` (gitignored) + `config/oauth.php.sample`. FUTURE_DEVELOPMENT_OAUTH_LOGIN.md removed (now reality). Apple Sign In removed (requires paid Apple Developer account).
+  - home.php: "All Flights Report (New)" link routes to mobile version on mobile (user-agent detection), desktop version on desktop. `[dev] mobile` link stays on same line via span + display:inline override.
+  - **Social Login (OAuth 2.0)**: Google, Facebook Sign In buttons on Login.php. New files: `oauth-login.php`, `oauth-callback.php`, `oauth-link.php`, `oauth-link-action.php`. `user_providers` table via migration. `config/oauth.php` (gitignored) + `config/oauth.php.sample`. FUTURE_DEVELOPMENT_OAUTH_LOGIN.md removed (now reality). Apple Sign In removed (requires paid Apple Developer account).
+- **Login.php brand redesign**: WWGC GOPS text logo replaced HomeLogo.jpg, dark blue body bg (#063552), orange accents (#f26120), social buttons moved to top with brand-colored icons, .btn-primary orange bold text on dark blue, mobile-responsive tabs (flex side-by-side), heading subtext white, minilogo restored top-right.
 
 ### Next Steps
 1. Configure OAuth provider credentials in `config/oauth.php` (Google Cloud, Meta Dev, Apple Developer consoles)
