@@ -146,7 +146,7 @@ textarea:focus { outline: none; border-color: #4a90d9; }
 .search-group button { padding: 10px 16px; background: #4a90d9; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
 .search-group button:hover { background: #357abd; }
 .search-group button:disabled { background: #ccc; cursor: not-allowed; }
-#searchResults { position: absolute; background: white; border: 1px solid #ddd; border-radius: 4px; max-height: 200px; overflow-y: auto; z-index: 100; width: calc(100% - 50px); display: none; }
+#searchResults { position: absolute; top: 100%; left: 0; background: white; border: 1px solid #ddd; border-radius: 4px; max-height: 200px; overflow-y: auto; z-index: 100; width: 100%; display: none; }
 #searchResults div { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
 #searchResults div:hover { background: #f0f0f0; }
 #searchResults div:last-child { border-bottom: none; }
@@ -238,13 +238,6 @@ Open smtp4dev: <a href='http://localhost:1080' target='_blank'>http://localhost:
 <label><input type="checkbox" id="fakeTwitter"> Also post to "Fake Twitter"</label>
 </div>
 
-<div class="search-wrapper">
-<div class="search-group">
-<input type="text" id="memberSearch" placeholder="Search members by name..." autocomplete="off">
-<div id="searchResults"></div>
-</div>
-</div>
-
 <div class="mailing-lists">
 <h3>Mailing Lists</h3>
 <div class="mailing-buttons">
@@ -263,6 +256,13 @@ foreach ($mailing_lists as $name => $email):
 ?>
 <button type="button" class="mailing-btn" data-email="<?=htmlspecialchars($email)?>" title="<?=htmlspecialchars($email)?>"><?=htmlspecialchars($name)?></button>
 <?php endforeach; ?>
+</div>
+</div>
+
+<div class="search-wrapper">
+<div class="search-group">
+<input type="text" id="memberSearch" placeholder="Search members by name..." autocomplete="off">
+<div id="searchResults"></div>
 </div>
 </div>
 </div>
