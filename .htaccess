@@ -153,6 +153,7 @@ RewriteRule ^oauth-login$ oauth-login.php [L,QSA]
 RewriteRule ^oauth-callback$ oauth-callback.php [L,QSA]
 RewriteRule ^oauth-link$ oauth-link.php [L,QSA]
 RewriteRule ^oauth-link-action$ oauth-link-action.php [L,QSA]
+RewriteRule ^oauth-photo$ oauth-photo.php [L,QSA]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

@@ -87,11 +87,29 @@ if ($_SESSION['org'] != 0) {
     }
 }
 
+$pending_photo_url = $_SESSION['oauth_pending_photo_url'] ?? '';
+$pending_provider_for_photo = $pending_provider;
+
 unset(
     $_SESSION['oauth_pending_email'],
     $_SESSION['oauth_pending_provider'],
-    $_SESSION['oauth_pending_provider_id']
+    $_SESSION['oauth_pending_provider_id'],
+    $_SESSION['oauth_pending_photo_url']
 );
+
+if (!empty($pending_photo_url) && !empty($user['member'])) {
+    require_once __DIR__ . '/helpers/oauth-photo-helper.php';
+    $existingPhoto = dirname(__DIR__) . '/img/members/' . intval($user['member']) . '.jpg';
+    if (!file_exists($existingPhoto)) {
+        saveSocialPhoto($pending_photo_url, $user['member']);
+    } else {
+        $_SESSION['social_photo_url'] = $pending_photo_url;
+        $_SESSION['social_photo_provider'] = $pending_provider_for_photo;
+        mysqli_close($con);
+        header('Location: oauth-photo.php?linked=1');
+        exit;
+    }
+}
 
 mysqli_close($con);
 header('Location: oauth-link.php?success=linked');

@@ -2,6 +2,7 @@
 session_start();
 
 require_once __DIR__ . '/helpers/logging.php';
+require_once __DIR__ . '/helpers/oauth-photo-helper.php';
 
 $error = $_GET['error'] ?? '';
 $state = $_GET['state'] ?? '';
@@ -135,7 +136,7 @@ switch ($provider) {
             exit;
         }
 
-        $userinfo_url = $config['userinfo_url'] . '&access_token=' . urlencode($access_token);
+        $userinfo_url = 'https://graph.facebook.com/me?fields=id,name,email,picture.type(large)&access_token=' . urlencode($access_token);
         $userinfo = @file_get_contents($userinfo_url, false, stream_context_create([
             'http' => ['timeout' => 10],
         ]));
@@ -153,6 +154,8 @@ switch ($provider) {
         break;
 }
 
+$photo_url = getSocialPhotoUrl($provider, $user_data);
+
 if (empty($provider_id)) {
     logMsg("OAuth $provider: no provider_id returned");
     mysqli_close($con);
@@ -165,6 +168,7 @@ if (empty($email) && $provider === 'facebook') {
     $_SESSION['oauth_pending_email'] = '';
     $_SESSION['oauth_pending_provider'] = $provider;
     $_SESSION['oauth_pending_provider_id'] = $provider_id;
+    $_SESSION['oauth_pending_photo_url'] = $photo_url;
     mysqli_close($con);
     header('Location: oauth-link.php?no_email=1');
     exit;
@@ -219,6 +223,7 @@ if (!$user) {
     $_SESSION['oauth_pending_email'] = $email;
     $_SESSION['oauth_pending_provider'] = $provider;
     $_SESSION['oauth_pending_provider_id'] = $provider_id;
+    $_SESSION['oauth_pending_photo_url'] = $photo_url;
     mysqli_close($con);
     header('Location: oauth-link.php');
     exit;
@@ -244,7 +249,15 @@ if ($_SESSION['org'] != 0) {
 
 $now = date('Y-m-d H:i:s');
 
+$first_social_login = false;
 if (!empty($provider_id)) {
+    $stmt = mysqli_prepare($con, "SELECT id FROM user_providers WHERE user_id = ? AND provider = ? LIMIT 1");
+    mysqli_stmt_bind_param($stmt, 'is', $user['id'], $provider);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_store_result($stmt);
+    $first_social_login = mysqli_stmt_num_rows($stmt) === 0;
+    mysqli_stmt_close($stmt);
+
     $stmt = mysqli_prepare($con, "INSERT INTO user_providers (user_id, provider, provider_id, created_at, last_login)
                                    VALUES (?, ?, ?, ?, ?)
                                    ON DUPLICATE KEY UPDATE last_login = VALUES(last_login)");
@@ -266,6 +279,19 @@ if ($user['force_pw_reset'] ?? 0 > 0) {
     mysqli_close($con);
     header('Location: PasswordChange');
     exit;
+}
+
+if ($first_social_login && !empty($photo_url) && !empty($_SESSION['memberid'])) {
+    $existingPhoto = dirname(__DIR__) . '/img/members/' . intval($_SESSION['memberid']) . '.jpg';
+    if (!file_exists($existingPhoto)) {
+        saveSocialPhoto($photo_url, $_SESSION['memberid']);
+    } else {
+        $_SESSION['social_photo_url'] = $photo_url;
+        $_SESSION['social_photo_provider'] = $provider;
+        mysqli_close($con);
+        header('Location: oauth-photo.php');
+        exit;
+    }
 }
 
 mysqli_close($con);
