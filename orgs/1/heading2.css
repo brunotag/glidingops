@@ -2,7 +2,7 @@
 .head-inner {display:flex; justify-content:space-between; align-items:center; padding:5px 12px; flex-wrap:wrap; gap:4px;}
 .head-brand {display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;}
 .head-title {font-family:Calibri,Arial,Helvetica,sans-serif; color:#f26120; font-size:20px; font-weight:bold;}
-.head-sub {font-family:Calibri,Arial,Helvetica,sans-serif; color:#f26120; font-size:13px;}
+.head-sub {font-family:Calibri,Arial,Helvetica,sans-serif; color:#fff; font-size:13px;}
 .head-user {color:#f26120; font-size:12px; font-family:Arial,Helvetica,sans-serif; text-align:right; white-space:nowrap;}
 .head-user a {color:#f26120; text-decoration:none; margin-left:8px;}
 .head-user a:link{color:#f26120;}

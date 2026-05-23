@@ -12,7 +12,7 @@
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background-color: #f0f0ff;
+      background-color: #063552;
     }
     #heading {
       background-color: #063552;
@@ -21,46 +21,55 @@
       overflow: hidden;
     }
     #heading-logo { float: left; }
-    #heading-right { float: right; }
+    #heading-logo .brand-text { display: inline-block; padding: 4px 0 0 16px; font-size: 60px; font-weight: 900; font-family: 'Arial Narrow', Arial, sans-serif; letter-spacing: -2px; line-height: 1; }
+    #heading-logo .brand-text .wwgc { color: #f26120; }
+    #heading-logo .brand-text .gops { color: #fff; font-weight: 300; letter-spacing: 0; margin-left: 6px; }
+    #heading-right { float: right; padding-right: 15px; }
+    @media (max-width: 768px) {
+      #heading-logo .brand-text { font-size: 44px; padding: 12px 0 0 12px; letter-spacing: -1px; }
+      #heading-logo .brand-text .gops { margin-left: 4px; }
+      #heading-right img { height: 60px !important; }
+      .nav-tabs { display: flex; white-space: nowrap; }
+      .nav-tabs > li { float: none; flex: 1; }
+      .nav-tabs > li > a { padding: 8px 6px; font-size: 12px; text-align: center; }
+    }
     .login-card {
       background: #fff;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
       padding: 30px;
-      margin-top: 20px;
+      margin-top: 30px;
       margin-bottom: 20px;
     }
     .login-card h3 {
       margin-top: 0;
       margin-bottom: 20px;
       color: #063552;
+      font-weight: 700;
     }
     .alert-container { margin-bottom: 15px; }
     .alert-container .alert { margin-bottom: 10px; }
     .sidebar-card {
-      background: #fff;
+      background: rgba(255,255,255,0.95);
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
       padding: 20px;
-      margin-top: 20px;
+      margin-top: 30px;
       margin-bottom: 20px;
     }
     .sidebar-card h4 {
       margin-top: 0;
       color: #063552;
+      font-weight: 700;
     }
-    .nav-tabs {
-      border-bottom: none;
-    }
-    .nav-tabs > li {
-      margin-bottom: 0;
-    }
+    .nav-tabs { border-bottom: none; }
+    .nav-tabs > li { margin-bottom: 0; }
     .nav-tabs > li > a {
       margin-right: 0;
       border: 1px solid transparent;
       border-bottom: none;
       border-radius: 6px 6px 0 0;
-      color: #063552;
+      color: #666;
       background: #e8e8f0;
     }
     .nav-tabs > li.active > a,
@@ -75,6 +84,7 @@
     .nav-tabs > li > a:hover {
       background: #dcdce8;
       border-color: transparent;
+      color: #063552;
     }
     .tab-content {
       border: 1px solid #ddd;
@@ -85,8 +95,8 @@
       background: #f8f8fa;
     }
     .form-group label {
-      font-weight: normal;
-      color: #555;
+      font-weight: 600;
+      color: #063552;
     }
     .twitter-frame {
       border: 0;
@@ -106,9 +116,7 @@
     .has-error .invalid-feedback { display: block; }
 
     .social-login-section {
-      margin-top: 25px;
-      padding-top: 20px;
-      border-top: 1px solid #e0e0e0;
+      margin-bottom: 20px;
     }
     .social-divider {
       text-align: center;
@@ -117,18 +125,37 @@
       margin-bottom: 15px;
       position: relative;
     }
-    .social-divider span {
-      background: #f8f8fa;
-      padding: 0 12px;
-      position: relative;
-      z-index: 1;
-    }
     .social-buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       justify-content: center;
     }
+    .tab-section {
+      border-top: 2px solid #f26120;
+      padding-top: 20px;
+    }
+    .tab-section .or-divider {
+      text-align: center;
+      font-size: 12px;
+      color: #063552;
+      margin-bottom: 16px;
+    }
+    .btn-primary {
+      background-color: #063552;
+      border-color: #042a40;
+      color: #f26120;
+      font-weight: 700;
+    }
+    .btn-primary:hover,
+    .btn-primary:focus,
+    .btn-primary:active {
+      background-color: #0a4a70;
+      border-color: #063552;
+      color: #f26120;
+      font-weight: 700;
+    }
+    .btn-primary:active { box-shadow: inset 0 3px 5px rgba(0,0,0,0.125); }
     .btn-oauth {
       display: inline-flex;
       align-items: center;
@@ -141,10 +168,63 @@
       transition: opacity 0.15s;
     }
     .btn-oauth:hover { opacity: 0.88; text-decoration: none; }
-    .btn-google { background: #fff; color: #444; }
-    .btn-google:hover { background: #f5f5f5; color: #444; }
-    .btn-facebook { background: #1877F2; color: #fff; border-color: #1877F2; }
-    .btn-facebook:hover { background: #166fe5; color: #fff; }
+    .btn-google {
+      background: #fff;
+      color: #444;
+      border-color: #dadce0;
+      font-weight: 500;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+    .btn-google:hover {
+      background: #f8faff;
+      color: #444;
+      border-color: #c6c9cc;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    }
+    .oauth-icon-google {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      border-radius: 50%;
+      color: #fff;
+      background: conic-gradient(from -45deg, #4285F4 0 25%, #EA4335 25% 50%, #FBBC05 50% 75%, #34A853 75% 100%);
+      line-height: 20px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .btn-facebook {
+      background: #fff;
+      color: #444;
+      border-color: #dadce0;
+      font-weight: 500;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+    .btn-facebook:hover {
+      background: #f8faff;
+      color: #444;
+      border-color: #c6c9cc;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    }
+    .oauth-icon-facebook {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      border-radius: 50%;
+      color: #fff;
+      background: #1877F2;
+      line-height: 20px;
+    }
     .oauth-icon {
       display: inline-flex;
       align-items: center;
@@ -161,8 +241,8 @@
 </head>
 <body>
   <div id='heading'>
-    <div id='heading-logo'><img src='HomeLogo.jpg'></div>
-    <div id='heading-right'><img src='minilogo.jpg'></div>
+    <div id='heading-logo'><span class="brand-text"><span class="wwgc">WWGC</span><span class="gops">GOPS</span></span></div>
+    <div id='heading-right'><img src='minilogo.jpg' style="height:76px;"></div>
   </div>
 
   <div class="container">
@@ -189,70 +269,74 @@
             <div class="alert alert-danger"><?php echo $errorMsg; ?></div>
           <?php endif; ?>
 
-          <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="<?php echo $showMagicLinkTab ? '' : 'active'; ?>">
-              <a href="#password-tab" role="tab" data-toggle="tab">Use Password</a>
-            </li>
-            <li role="presentation" class="<?php echo $showMagicLinkTab ? 'active' : ''; ?>">
-              <a href="#magiclink-tab" role="tab" data-toggle="tab">Use Email Link or Register</a>
-            </li>
-          </ul>
-
-          <div class="tab-content">
-            <!-- Password Tab -->
-            <div role="tabpanel" class="tab-pane <?php echo $showMagicLinkTab ? '' : 'active'; ?>" id="password-tab">
-              <form method='POST' action='checklogin.php'>
-                <div class="form-group">
-                  <label for="user">Username</label>
-                  <input type='text' class="form-control" name='user' id="user" placeholder="Enter username" autofocus>
-                </div>
-                <div class="form-group">
-                  <label for="pcode">Password</label>
-                  <input type='password' class="form-control" name='pcode' id="pcode" placeholder="Password">
-                </div>
-                <button type="submit" class="btn btn-primary">Login</button>
-                <a href="#" id="switch-to-magiclink" style="margin-left:15px;font-size:small;">Forgot password? Use email link instead</a>
-              </form>
-            </div>
-
-            <!-- Magic Link Tab -->
-            <div role="tabpanel" class="tab-pane <?php echo $showMagicLinkTab ? 'active' : ''; ?>" id="magiclink-tab">
-              <p style="font-size:13px;color:#666;margin-bottom:15px;">
-                If you are a new member , enter the email address you used when joining the club: an account will be created and you will be prompted to set a password on first login. 
-                <br/><br/>
-                If you already have an account, enter your email address and a login link will be sent.
-              </p>
-              <form id="magic-link-form">
-                <div class="form-group">
-                  <label for="magic-email">Email address</label>
-                  <input type='text' class="form-control" name='email' id="magic-email" placeholder="Enter your email address">
-                  <div class="invalid-feedback">Please enter your email address</div>
-                </div>
-                <button type="submit" class="btn btn-primary" id="send-link-btn">Send Login Link</button>
-                <div id="magic-link-spinner" style="display:none;margin-left:10px;display:none;">
-                  <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Sending...
-                </div>
-              </form>
-              <div id="magic-link-alert" class="alert alert-success" style="display:none;margin-top:15px;">
-                If an account exists for this email, a login link has been sent. Check your inbox (and spam folder).
-              </div>
-              <div id="magic-link-error" class="alert alert-danger" style="display:none;margin-top:15px;">
-                Something went wrong. Please try again.
-              </div>
+          <!-- Social Login Buttons -->
+          <div class="social-login-section">
+            <div class="social-buttons">
+              <a href="oauth-login?provider=google" class="btn btn-oauth btn-google">
+                <span class="oauth-icon-google">G</span> Sign in with Google
+              </a>
+              <a href="oauth-login?provider=facebook" class="btn btn-oauth btn-facebook">
+                <span class="oauth-icon-facebook">f</span> Sign in with Facebook
+              </a>
             </div>
           </div>
 
-          <!-- Social Login Buttons -->
-          <div class="social-login-section">
-            <p class="social-divider"><span>or sign in with</span></p>
-            <div class="social-buttons">
-              <a href="oauth-login?provider=google" class="btn btn-oauth btn-google">
-                <span class="oauth-icon">G</span> Sign in with Google
-              </a>
-              <a href="oauth-login?provider=facebook" class="btn btn-oauth btn-facebook">
-                <span class="oauth-icon">f</span> Sign in with Facebook
-              </a>
+          <div class="tab-section">
+            <p class="or-divider">or use your password or email link</p>
 
+            <ul class="nav nav-tabs" role="tablist">
+              <li role="presentation" class="<?php echo $showMagicLinkTab ? '' : 'active'; ?>">
+                <a href="#password-tab" role="tab" data-toggle="tab">Use Password</a>
+              </li>
+              <li role="presentation" class="<?php echo $showMagicLinkTab ? 'active' : ''; ?>">
+                <a href="#magiclink-tab" role="tab" data-toggle="tab">Use Email Link or Register</a>
+              </li>
+            </ul>
+
+            <div class="tab-content">
+              <!-- Password Tab -->
+              <div role="tabpanel" class="tab-pane <?php echo $showMagicLinkTab ? '' : 'active'; ?>" id="password-tab">
+                <form method='POST' action='checklogin.php'>
+                  <div class="form-group">
+                    <label for="user">Username</label>
+                    <input type='text' class="form-control" name='user' id="user" placeholder="Enter username" autofocus>
+                  </div>
+                  <div class="form-group">
+                    <label for="pcode">Password</label>
+                    <input type='password' class="form-control" name='pcode' id="pcode" placeholder="Password">
+                  </div>
+                  <button type="submit" class="btn btn-primary">Login</button>
+                  <div style="margin-top:8px;">
+                    <a href="#" id="switch-to-magiclink" style="font-size:small;">Forgot password? Use email link instead</a>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Magic Link Tab -->
+              <div role="tabpanel" class="tab-pane <?php echo $showMagicLinkTab ? 'active' : ''; ?>" id="magiclink-tab">
+                <p style="font-size:13px;color:#666;margin-bottom:15px;">
+                  If you are a new member , enter the email address you used when joining the club: an account will be created and you will be prompted to set a password on first login. 
+                  <br/><br/>
+                  If you already have an account, enter your email address and a login link will be sent.
+                </p>
+                <form id="magic-link-form">
+                  <div class="form-group">
+                    <label for="magic-email">Email address</label>
+                    <input type='text' class="form-control" name='email' id="magic-email" placeholder="Enter your email address">
+                    <div class="invalid-feedback">Please enter your email address</div>
+                  </div>
+                  <button type="submit" class="btn btn-primary" id="send-link-btn">Send Login Link</button>
+                  <div id="magic-link-spinner" style="display:none;margin-left:10px;display:none;">
+                    <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Sending...
+                  </div>
+                </form>
+                <div id="magic-link-alert" class="alert alert-success" style="display:none;margin-top:15px;">
+                  If an account exists for this email, a login link has been sent. Check your inbox (and spam folder).
+                </div>
+                <div id="magic-link-error" class="alert alert-danger" style="display:none;margin-top:15px;">
+                  Something went wrong. Please try again.
+                </div>
+              </div>
             </div>
           </div>
 
