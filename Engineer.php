@@ -1,6 +1,21 @@
 <?php session_start(); ?>
 
 <?php
+if(isset($_SESSION['security']))
+{
+ if (!($_SESSION['security'] & 32))
+ {
+  die("Secruity level too low for this page");
+ }
+}
+else
+{
+ header('Location: /Login.php');
+ die("Please logon");
+}
+?>
+
+<?php
   $con_params = require('./config/database.php');
   $con_params = $con_params['gliding'];
 ?>
@@ -91,20 +106,6 @@ body { min-height: 100vh; }
 </style>
 </head>
 <body onload='s()'>
-<?php
-if(isset($_SESSION['security']))
-{
- if (!($_SESSION['security'] & 32))
- {
-  die("Secruity level too low for this page");
- }
-}
-else
-{
- header('Location: /Login.php');
- die("Please logon");
-}
-?>
 <div id='divhdr'>
 <form id='inform' method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
 <h2>Engineers Report</h2>

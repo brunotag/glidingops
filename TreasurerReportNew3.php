@@ -2,6 +2,18 @@
 <?php $org=0; if(isset($_SESSION['org'])) $org=$_SESSION['org'];?>
 <?php include 'helpers.php'; ?>
 <?php
+if(isset($_SESSION['security']))
+{
+ if (!($_SESSION['security'] & 8))
+     die("Security level too low for this page");
+}
+else
+{
+ header('Location: /Login.php');
+ die("Please logon");
+}
+?>
+<?php
 if (isset($_POST['export']))
 {
     header('Content-Type: text/csv');
@@ -253,18 +265,6 @@ function printit(){window.print();}
 </script>
 </head>
 <body>
-<?php
-if(isset($_SESSION['security']))
-{
- if (!($_SESSION['security'] & 8))
-     die("Security level too low for this page");
-}
-else
-{
- header('Location: /Login.php');
- die("Please logon");
-}
-?>
 <?php $inc = "./orgs/" . $org . "/heading2.txt"; include $inc; ?>
 <?php $inc = "./orgs/" . $org . "/menu1.txt"; include $inc; ?>
 <div id='main-content'>
