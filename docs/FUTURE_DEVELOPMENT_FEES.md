@@ -1,5 +1,7 @@
 # Fees Reference
 
+**STATUS: REFERENCE** — Pure fee schedule document. Used as source for `helpers/billing-calc.php`.
+
 **Source:** `tmp/Fees-10-Nov-2025.pdf` — Schedule of Fees effective 10 November 2025
 **Note:** All prices include GST. Some fees are not refundable. Fees are subject to change.
 
@@ -156,21 +158,23 @@ In the event of an accident causing damage to a club glider, the PIC will be exp
 
 ## Implications for Billing Code
 
-This fee schedule is the **ground truth** for what members should be charged. The current billing code (`accountrules.php`, `CalcTowCharge`, `CalcGliderCharge`, etc.) needs to be audited against these rates.
+This fee schedule was used as the **ground truth** for building `helpers/billing-calc.php` and `billing-report.php`. The old `accountrules.php` functions are no longer used by the main report.
 
-### Key Questions for Future Work
+### Implemented ✅
 
-1. **Glider rates** - $2.25/min for most club gliders, $1.50/min for Youth (except GNB). Does the code handle per-aircraft and per-member-class rates correctly?
-2. **Winch launches** - $39 first, $25 relaunch. Youth pay the same. Is this reflected?
-3. **GNB Syndicate** - $0.60/min special rate. Is there a mechanism for syndicate member pricing?
-4. **Membership tiers** - Quarterly vs annual billing. Does the system support the payment schedule?
-5. **GNZ levy** - Separate line item billed in November. Is this tracked separately?
-6. **Launch fees** - $25 for power/self-launch and aerotow from Papawai. These differ from standard winch pricing.
-7. **Youth cutoff** - Age 25 and under on 31 Oct each year. Is this check implemented anywhere?
+1. **Glider rates** - $2.25/min for all club gliders, $1.50/min for Youth on GGR/GPJ/GMB (full rate on GNB). Handled in `calcGliderCharge()`.
+2. **Winch launches** - $39 first launch of day per billing member, $25 relaunch. Youth pay the same. Handled in `calcLaunchCharge()`.
+3. **Launch fees** - $25 for self-launch/power. Aerotow flagged as competition (tow billed separately). Handled in `calcLaunchCharge()`.
 
-### What Needs Building
+### Still Future 🔮
 
-- A billing engine that applies the correct rate based on: member class, aircraft, launch type, and date
-- Per-aircraft rate overrides (GNB syndicate)
+4. **GNB Syndicate** - $0.60/min special rate. No syndicate member mechanism exists yet.
+5. **Membership tiers** - Quarterly/annual tracking as informational panel. No invoicing built.
+6. **GNZ levy** - Separate line item billed in November. Not tracked.
+7. **Youth cutoff** - Age 25 and under on 31 Oct each year. Not checked anywhere.
+
+### What Still Needs Building
+
+- Per-aircraft rate overrides (GNB syndicate $0.60/min)
 - Quarterly instalment tracking for subscriptions
 - Separate GNZ affiliation fee billing cycle (November)

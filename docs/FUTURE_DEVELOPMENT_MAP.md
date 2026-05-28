@@ -1,6 +1,8 @@
 # Improved Real-Time Map
 
-## Overview
+**STATUS: IMPLEMENTED** — `MasterDisplayNew.php` at `/wgc-new`, `css/map.css` (493 lines), `js/map.js` (699 lines). Leaflet + OpenTopoMap with sidebar, dual color mode, mobile layout, localStorage persistence.
+
+This doc describes the current implementation. Sections below are reference, not future work.
 
 Replace the current Google Maps-based real-time map with a modern, free alternative using Leaflet + OpenTopoMap. Add an interactive sidebar with clickable flights, a dual color mode, and a mobile-responsive layout.
 
@@ -326,14 +328,13 @@ RewriteRule ^wgc-new$ MasterDisplayNew.php?org=1 [L,QSA]
 
 Accessible at `/wgc-new`. The old `/wgc` still points to `MasterDisplay.php` until the old map is verified obsolete and can be deleted.
 
-## Cleanup
+## Remaining Cleanup (After Production Verification)
 
 After the new map is verified working in production:
 1. Delete `MasterDisplay.php`, `MasterDisplay.js` (inline), `mapiconmaker.js`
 2. Delete `FlyingNow.php` (replaced by the sidebar flying panel)
 3. Remove old routes from `.htaccess`: `wgc`, `ssb`, `cgc`, `agc`
 4. Update homepage `home.php` to remove old Real Time map link
-5. Delete `docs/FUTURE_DEVELOPMENT_MAP.md` (superseded by this doc)
 
 ---
 

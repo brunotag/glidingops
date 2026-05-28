@@ -1,14 +1,24 @@
 # Email Testing on Local Dev
 
+**STATUS: PARTIALLY IMPLEMENTED** — A Python SMTP logger on port 1025 captures emails to `~/emails.log`. See `DEVELOP.md` (Email Testing in Dev section) for the current setup.
+
 ## The Problem
 
 On localhost (local dev machine), there's no real email server. When `mail()` is called, PHP's `mail()` function returns `true` because the local MTA accepted the message, but the email goes into a black hole - no actual delivery happens.
 
-**Current behavior:** No indication to the user that emails aren't actually being sent.
+## Current Solution (Implemented)
 
-## Options for Email Testing
+A Python `smtpd.SMTPServer` logger runs on port 1025 in the Vagrant box:
+- PHP `mail()` routes through `ssmtp` to `127.0.0.1:1025`
+- Python logger captures each email to `~/emails.log`
+- Starts automatically in `after.sh` on `vagrant provision`
+- View: `cat ~/emails.log` or `tail -f ~/emails.log`
 
-### Option 1: Dry-Run / Test Mode (Recommended)
+**What's missing:** No web UI. Viewing captured emails requires SSH into vagrant and reading a log file.
+
+## Future Enhancements (Not Implemented)
+
+### Option 1: Dry-Run / Test Mode
 
 Add a checkbox on the messaging page: "Test mode - don't actually send"
 
@@ -18,12 +28,7 @@ Add a checkbox on the messaging page: "Test mode - don't actually send"
 - Show all recipients as "would be sent" in the result
 - No actual email is sent
 
-**Pros:** Simple to implement, clear UX, doesn't require any infrastructure setup
-**Cons:** Doesn't test real email delivery
-
----
-
-### Option 2: MailCatcher / Mailhog
+### Option 2: MailCatcher / MailHog
 
 Install a local SMTP server that captures all outgoing emails and provides a web UI.
 
@@ -31,74 +36,17 @@ Install a local SMTP server that captures all outgoing emails and provides a web
 - MailHog: `docker run -p 1025:1025 -p 8025:8025 mailhog/mailhog`
 - Or MailCatcher: `gem install mailcatcher`
 
-**Configure PHP to use it:**
-```php
-// In php.ini or .htaccess
-sendmail_path = /usr/local/bin/mailcatcher --host 127.0.0.1 --port 1025
-```
-
 **Access:** Open `http://localhost:8025` to see captured emails in a web UI.
-
-**Pros:** Real email testing with full SMTP flow, web UI to view emails
-**Cons:** Requires Docker or additional tools installed, more setup
-
----
 
 ### Option 3: Dev Warning Banner
 
 Detect localhost/dev environment and show a prominent warning:
 > "⚠️ DEVELOPMENT SERVER - Emails are not actually being sent"
 
-**Implementation:**
-```php
-function isDevServer() {
-    return $_SERVER['HTTP_HOST'] === 'glidingops.test'
-        || $_SERVER['REMOTE_ADDR'] === '127.0.0.1'
-        || strpos($_SERVER['HTTP_HOST'], 'localhost') !== false;
-}
-```
+### Option 4: Add Web UI to Python Logger
 
-**Pros:** Clear indication, no infrastructure needed
-**Cons:** Warning might be ignored, doesn't enable actual email testing
+The simplest enhancement to the current solution — add an HTTP endpoint to the existing Python SMTP logger to display captured emails in a browser.
 
----
+## Recommended Next Step
 
-### Option 4: Log Emails to File
-
-In dev mode, instead of calling `mail()`, append email content to a log file:
-```
-log/email-dev.log
-```
-
-**Format:**
-```
-[2026-05-11 15:30:45]
-To: john@example.com
-Subject: WWGC Msg | Mon 11 May 3:30 PM
----
-Message body here
----
-```
-
-**Pros:** Simple, no extra tools, persistent record
-**Cons:** No web UI, harder to click links in emails, no HTML rendering
-
----
-
-## Recommended Approach
-
-**Implement Option 1 (Dry-Run Mode)** as the simplest first step:
-
-1. Add checkbox: "Test mode (don't send)"
-2. When checked, skip `Mail::SendMail()` but complete all other steps
-3. Show preview of what would have been sent in the result modal
-
-**Future enhancement:** Add Option 2 (MailCatcher) for more realistic testing when needed.
-
----
-
-## Files to Modify
-
-- `MessagingPage.php` — Add test mode checkbox, modify send flow
-- `helpers/mail.php` — Potentially add a `SendMailDryRun()` method that just logs
-- Possibly add config flag in `config/database.php` or environment check
+Add a web UI to the existing Python SMTP logger — minimal code, gives the same benefit as MailCatcher without Docker dependencies.

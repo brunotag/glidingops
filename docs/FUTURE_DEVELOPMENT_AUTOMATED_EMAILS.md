@@ -1,5 +1,7 @@
 # Automated Daily Recap Emails
 
+**STATUS: NOT IMPLEMENTED** — Still future work. None of the 4 phases have been started.
+
 ## Overview
 
 Replace the current ad-hoc email system with a proper daily recap sent automatically to every member who flew that day. Currently, `CompletedSheet.php` can send flight summaries when a day is manually finalised, and `DayTimes.php` sends a GPS-based summary to a single ops manager at 6AM. Neither sends a proper recap to all members.

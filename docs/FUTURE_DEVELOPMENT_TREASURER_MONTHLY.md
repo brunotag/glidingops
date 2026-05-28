@@ -1,5 +1,9 @@
 # Treasurer Monthly Billing Report
 
+**STATUS: IMPLEMENTED** — `billing-report.php` at `/BillingReport` with CSV at `/BillingReport.csv`. See `tests/BillingReportTest.php` (41 tests). The old `Treasurer.php` has been deleted.
+
+This document remains as a reference for the implementation decisions. All sections below describe the current codebase.
+
 ## Overview
 
 A new Treasurer report page that calculates real charges for each member's flights in a given month, following the Nov 2025 Schedule of Fees (`docs/FUTURE_DEVELOPMENT_FEES.md`).
@@ -14,9 +18,9 @@ A new Treasurer report page that calculates real charges for each member's fligh
 
 | Export | `/BillingReport.csv` → `billing-report.php` |
 
-## DB Rate Updates Required
+## DB Rate Updates Applied
 
-The database has outdated rates that must match the Fee PDF before the report is usable.
+Database rates have been updated to match the Fee PDF:
 
 ### Glider rates (`aircraft` table)
 

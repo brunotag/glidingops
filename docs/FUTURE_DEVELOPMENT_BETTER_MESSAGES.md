@@ -1,5 +1,9 @@
 # Better Messaging System
 
+**STATUS: PARTIALLY IMPLEMENTED** — New `MessagingPage.php` (628 lines) at `/MessagingPage` with member search, preview modal, streaming progress. `api/members-email.php` (51 lines) for autocomplete. Old `MessagingPageOld.php` deleted.
+
+**Remaining:** Fix mailing list email addresses in `MessagingPage.php` (soar.co.nz placeholders), end-to-end testing. See `AGENTS.md` "Next Steps".
+
 ## Problem
 
 Current MessagingPage.php issues:
@@ -142,13 +146,14 @@ $mailing_lists = [
 
 ---
 
-## Files to Create/Modify
+## Files Created/Modified
 
-| File | Action | Purpose |
-|------|--------|---------|
-| `MessagingPage.php` | Rewrite ex novo | New UI, JS for progress, AJAX send with streaming |
-| `helpers/mail.php` | Modify | Add `SendMailToRecipients()` returning success/failed |
-| `api/members-email.php` | Create | Autocomplete member search by name |
+| File | Action | Status |
+|------|--------|--------|
+| `MessagingPage.php` | Rewritten ex novo | ✅ Done — 628 lines, streaming AJAX send with progress |
+| `helpers/mail.php` | Modified | ✅ Has `SendMailToRecipients()` returning success/failed |
+| `api/members-email.php` | Created | ✅ Done — autocomplete member search by name |
+| `MessagingPageOld.php` | Deleted | ✅ Replaced by new page |
 
 ---
 
@@ -260,7 +265,7 @@ safety@club.org ✓ Sent
 
 ---
 
-## Testing Checklist
+## Testing Checklist (Pending)
 
 - [ ] Search member "John" → returns matching members with emails
 - [ ] Add member to recipients → appears in list with [x]
