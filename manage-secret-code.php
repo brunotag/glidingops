@@ -28,21 +28,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 ?>
 <!DOCTYPE HTML>
 <html>
-<meta name="viewport" content="width=device-width">
-<meta name="viewport" content="initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
     <style>
         <?php $inc = "./orgs/" . $org . "/heading2.css"; include $inc; ?>
     </style>
     <style>
     <?php $inc = "./orgs/" . $org . "/menu1.css"; include $inc; ?></style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="styletable1.css">
     <script>function goBack() {window.history.back()}</script>
 </head>
 <body>
     <?php $inc = "./orgs/" . $org . "/heading2.txt"; include $inc; ?>
     <?php $inc = "./orgs/" . $org . "/menu1.txt"; include $inc; ?>
-    <div style="padding:5px">
+    <div class="container-fluid" style="padding:15px;">
         <form action="/manage-secret-code.php" method="POST" onsubmit="return confirm('Resetting the secret code might have unintented consequences. Are you sure you want to proceed?');">
             <input type="submit" value="Regenerate Secret Code"></input>
         </form>

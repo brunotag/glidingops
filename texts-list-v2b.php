@@ -30,14 +30,14 @@ function timeFormat($dt) {
 ?>
 <!DOCTYPE HTML>
 <html>
-<meta name="viewport" content="width=device-width">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
     <title>Sent Messages</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
     <style>
-        body { padding: 0; }
+        body { padding: 0; min-height: 100vh; }
         .padding-container { padding: 15px; }
         .controls-bar {
             display: flex;
@@ -70,6 +70,48 @@ function timeFormat($dt) {
         .title-row { display: flex; align-items: center; margin-bottom: 10px; }
         .title-row h1 { margin: 0 15px 0 0; font-size:22px; font-weight:600; color:#222; }
         #page-title { font-size:22px; font-weight:600; color:#222; margin: 0; }
+    </style>
+    <style>
+/* --- MOBILE CARD PATTERN (texts-table) --- */
+body { min-height: 100vh; }
+
+@media (max-width: 767px) {
+    #texts-table.table thead { display: none; }
+    #texts-table.table { display: block; }
+    #texts-table.table tbody { display: flex; flex-wrap: wrap; gap: 6px; }
+    #texts-table.table tr {
+        width: calc(50% - 3px);
+        min-width: 240px; flex: 1 1 auto;
+        border: 1px solid #ddd; border-radius: 6px;
+        padding: 5px 8px; background: #fff; box-sizing: border-box;
+    }
+    #texts-table.table > tbody > tr > td {
+        display: block; border: none; padding: 2px 2px 2px 44%;
+        text-align: left !important; font-size: 13px; position: relative;
+        line-height: 1.35; overflow-wrap: break-word; word-break: break-word;
+    }
+    #texts-table.table td::before {
+        content: attr(data-label); position: absolute; left: 4px;
+        width: calc(44% - 12px); overflow: hidden; text-overflow: ellipsis;
+        white-space: nowrap; font-weight: 600; font-size: 12px; color: #555;
+        line-height: 1.35;
+    }
+    #texts-table.table td[data-empty="1"] { display: none; }
+    #texts-table.table .text-right { text-align: left !important; }
+    #texts-table.table .hide-mobile { display: none !important; }
+    #texts-table.table .show-mobile { display: block !important; }
+    .padding-container { padding: 8px; }
+    .title-row { flex-wrap: wrap; gap: 5px; margin-bottom: 5px; }
+    .title-row h1 { font-size: 18px; margin-bottom: 0; }
+    .controls-bar { padding: 6px 8px; gap: 6px; margin-bottom: 8px; font-size: 12px; }
+    #record-count { font-size: 11px; }
+}
+
+@media (max-width: 580px) {
+    #texts-table.table tbody { flex-direction: column; gap: 8px; }
+    #texts-table.table tr { width: 100%; min-width: 0; }
+    #texts-table.table > tbody > tr > td:last-child { padding-bottom: 8px; }
+}
     </style>
     <style>
     <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
@@ -206,6 +248,16 @@ $(document).ready(function() {
             searching: false,
             lengthChange: false,
             dom: '<"top"f>t<"bottom"ip>',
+            createdRow: function(row, data, dataIndex) {
+                var headers = $('#texts-table thead th');
+                $(row).children('td').each(function(i) {
+                    var label = $(headers[i]).text().trim();
+                    $(this).attr('data-label', label);
+                    if ($(this).text().trim() === '' && !$(this).find('img').length) {
+                        $(this).attr('data-empty', '1');
+                    }
+                });
+            },
             initComplete: function(settings, json) {
                 var pagination = $('#texts-table_wrapper .dataTables_paginate');
                 if (pagination.length) {

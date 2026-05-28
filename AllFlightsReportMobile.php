@@ -118,39 +118,23 @@ $firstOfMonth = date('Y-m-01');
         @media (max-width: 767px) {
             #flights-section .table thead { display: none; }
             #flights-section .table { display: block; }
-            #flights-section .table tbody {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 8px;
-            }
+            #flights-section .table tbody { display: flex; flex-wrap: wrap; gap: 6px; }
             #flights-section .table tr {
-                width: calc(50% - 4px);
-                border: 1px solid #ddd;
-                border-radius: 6px;
-                padding: 6px 10px;
-                background: #fff;
-                box-sizing: border-box;
-                min-width: 0;
+                width: calc(50% - 3px);
+                min-width: 240px; flex: 1 1 auto;
+                border: 1px solid #ddd; border-radius: 6px;
+                padding: 5px 8px; background: #fff; box-sizing: border-box;
             }
             #flights-section .table > tbody > tr > td {
-                display: block;
-                border: none;
-                padding: 2px 2px 2px 40%;
-                text-align: left !important;
-                font-size: 13px;
-                position: relative;
-                line-height: 1.3;
-                overflow-wrap: break-word;
-                word-break: break-word;
-                min-width: 0;
+                display: block; border: none; padding: 2px 2px 2px 44%;
+                text-align: left !important; font-size: 13px; position: relative;
+                line-height: 1.35; overflow-wrap: break-word; word-break: break-word;
             }
             #flights-section .table td::before {
-                content: attr(data-label);
-                position: absolute;
-                left: 2px;
-                font-weight: 600;
-                color: #555;
-                white-space: nowrap;
+                content: attr(data-label); position: absolute; left: 4px;
+                width: calc(44% - 12px); overflow: hidden; text-overflow: ellipsis;
+                white-space: nowrap; font-weight: 600; font-size: 12px; color: #555;
+                line-height: 1.35;
             }
             #flights-section .table td[data-empty="1"] { display: none; }
             #flights-section .hide-mobile { display: none !important; }
@@ -165,10 +149,10 @@ $firstOfMonth = date('Y-m-01');
             .header-row .member-wrap input { width: 110px; }
         }
 
-        @media (max-width: 440px) {
-            #flights-section .table tbody { display: flex; flex-direction: column; gap: 10px; }
-            #flights-section .table tr { width: 100%; }
-            #flights-section .table > tbody > tr > td:last-child { padding-bottom: 10px; }
+        @media (max-width: 580px) {
+            #flights-section .table tbody { flex-direction: column; gap: 8px; }
+            #flights-section .table tr { width: 100%; min-width: 0; }
+            #flights-section .table > tbody > tr > td:last-child { padding-bottom: 8px; }
         }
     </style>
 </head>

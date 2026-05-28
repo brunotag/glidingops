@@ -159,7 +159,7 @@ SQL;
         <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
     </style>
     <style>
-        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background-color: #fafafa; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background-color: #fafafa; min-height: 100vh; }
         .padding-container { padding: 15px; }
         .title-row { display: flex; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
         .title-row h2 { margin: 0 15px 0 0; }
@@ -211,6 +211,49 @@ SQL;
             .no-print { display: none; }
             @page { size: landscape; }
         }
+    </style>
+    <style>
+/* --- MOBILE CARD PATTERN (flights-table) --- */
+body { min-height: 100vh; }
+
+@media (max-width: 767px) {
+    #flights-table.table thead { display: none; }
+    #flights-table.table { display: block; }
+    #flights-table.table tbody { display: flex; flex-wrap: wrap; gap: 6px; }
+    #flights-table.table tr {
+        width: calc(50% - 3px);
+        min-width: 240px; flex: 1 1 auto;
+        border: 1px solid #ddd; border-radius: 6px;
+        padding: 5px 8px; background: #fff; box-sizing: border-box;
+    }
+    #flights-table.table > tbody > tr > td {
+        display: block; border: none; padding: 2px 2px 2px 44%;
+        text-align: left !important; font-size: 13px; position: relative;
+        line-height: 1.35; overflow-wrap: break-word; word-break: break-word;
+    }
+    #flights-table.table td::before {
+        content: attr(data-label); position: absolute; left: 4px;
+        width: calc(44% - 12px); overflow: hidden; text-overflow: ellipsis;
+        white-space: nowrap; font-weight: 600; font-size: 12px; color: #555;
+        line-height: 1.35;
+    }
+    #flights-table.table td[data-empty="1"] { display: none; }
+    #flights-table.table .text-right { text-align: left !important; }
+    #flights-table.table .hide-mobile { display: none !important; }
+    #flights-table.table .show-mobile { display: block !important; }
+    .padding-container { padding: 8px; }
+    .title-row { flex-wrap: wrap; gap: 5px; margin-bottom: 5px; }
+    .title-row h2 { font-size: 16px; margin-bottom: 0; }
+    .controls-bar { padding: 6px 8px; gap: 6px; margin-bottom: 8px; font-size: 12px; }
+    .controls-bar .filter-group label { font-size: 11px; }
+    .controls-bar select { font-size: 12px; }
+}
+
+@media (max-width: 580px) {
+    #flights-table.table tbody { flex-direction: column; gap: 8px; }
+    #flights-table.table tr { width: 100%; min-width: 0; }
+    #flights-table.table > tbody > tr > td:last-child { padding-bottom: 8px; }
+}
     </style>
     <script>
     function printit(){ window.print(); }
@@ -530,7 +573,17 @@ $(document).ready(function() {
             lengthMenu: [[25, 50, 100, 200], [25, 50, 100, 200]],
             paging: true,
             info: true,
-            stateSave: false
+            stateSave: false,
+            createdRow: function(row, data, dataIndex) {
+                var headers = $('#flights-table thead th');
+                $(row).children('td').each(function(i) {
+                    var label = $(headers[i]).text().trim();
+                    $(this).attr('data-label', label);
+                    if ($(this).text().trim() === '' && !$(this).find('img').length) {
+                        $(this).attr('data-empty', '1');
+                    }
+                });
+            }
         });
     }
 });

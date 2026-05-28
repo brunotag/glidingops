@@ -11,8 +11,7 @@ if(isset($_SESSION['security'])){
 ?>
 <!DOCTYPE HTML>
 <html>
-<meta name="viewport" content="width=device-width">
-<meta name="viewport" content="initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
 <title>Gliding - Currency</title>
 <style>
@@ -20,8 +19,27 @@ if(isset($_SESSION['security'])){
 </style>
 <style>
 <?php $inc = "./orgs/" . $org . "/menu1.css"; include $inc; ?></style>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="styletable1.css">
 <script>function goBack() {window.history.back()}</script>
+<style>
+body { min-height: 100vh; }
+@media (max-width: 767px) {
+    #list-section table thead { display: none; }
+    #list-section table { display: block; }
+    #list-section table tbody { display: flex; flex-wrap: wrap; gap: 8px; }
+    #list-section table tr { width: calc(50% - 3px); min-width: 240px; flex: 1 1 auto; border: 1px solid #ddd; border-radius: 6px; padding: 5px 8px; background: #fff; box-sizing: border-box; }
+    #list-section table > tbody > tr > td { display: block; border: none; padding: 2px 2px 2px 44%; text-align: left !important; font-size: 13px; position: relative; line-height: 1.35; overflow-wrap: break-word; word-break: break-word; }
+    #list-section table td::before { content: attr(data-label); position: absolute; left: 4px; width: calc(44% - 12px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; font-size: 12px; color: #555; line-height: 1.35; }
+    #list-section table td[data-empty="1"] { display: none; }
+    #list-section table .text-right { text-align: left !important; }
+}
+@media (max-width: 580px) {
+    #list-section table tbody { flex-direction: column; gap: 8px; }
+    #list-section table tr { width: 100%; min-width: 0; }
+    #list-section table > tbody > tr > td:last-child { padding-bottom: 8px; }
+}
+</style>
 </head>
 <body>
 <?php $inc = "./orgs/" . $org . "/heading2.txt"; include $inc; ?>
@@ -43,6 +61,7 @@ $diagtext="";
 <p>If you can't find a member, ensure they are marked as "Active" (If not, please go to Membership and fix that :)</p>
 <p>If you can see members you shouldn't see, then please to to Membership and mark them as "Passive / Retired".</p>
 <div id="div2">
+<div id="list-section">
 <table><tr>
 <?php
 $colsort = 0;
@@ -129,17 +148,17 @@ $diagtext.= "SQL=".$sql;
 $r = mysqli_query($con,$sql);
 $rownum = 0;
 
-$renderDateCell = function($column){
-    echo "<td>";
-    if ($column!=0 && $column!=null){
+$renderDateCell = function($column, $label){
+    $empty = (!$column || $column == 0); echo "<td data-label='$label'" . ($empty ? " data-empty='1'" : "") . ">";
+    if (!$empty){
         $date=new DateTime($column); 
         echo $date->format('D d/m/Y');
     }
     echo "</td>";
 };
 
-$renderBoolCell = function($column){
-    echo "<td>";
+$renderBoolCell = function($column, $label){
+    echo "<td data-label='$label'>";
     if ($column>0){
         echo "Yes";
     }else {
@@ -152,18 +171,19 @@ while ($row = mysqli_fetch_array($r))
 {
  $rownum = $rownum + 1;
   echo "<tr class='";if (($rownum % 2) == 0)echo "even";else echo "odd";  echo "'>";
-    echo "<td class='right'>";echo $row[0];echo "</td>";
-    $renderDateCell($row[1]);
-    $renderDateCell($row[2]);
-    $renderDateCell($row[3]);
-    $renderDateCell($row[4]);
-    $renderBoolCell($row[5]);
+    echo "<td class='right' data-label='MEMBER'" . ((!isset($row[0]) || $row[0] === '') ? " data-empty='1'" : "") . ">";echo $row[0];echo "</td>";
+    $renderDateCell($row[1], "LAST FLIGHT");
+    $renderDateCell($row[2], "LAST SOLO");
+    $renderDateCell($row[3], "LAST AS P2");
+    $renderDateCell($row[4], "LAST AS P1 WITH OTHER P2");
+    $renderBoolCell($row[5], "HAS FLOWN IN THE PAST 90 DAYS");
   echo "</tr>";
 }
 
 
 ?>
 </table>
+</div>
 </div>
 </div>
 <?php if($DEBUG>0) echo "<p>".$diagtext."</p>";?>

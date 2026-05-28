@@ -7,8 +7,7 @@
 
 <!DOCTYPE HTML>
 <html>
-<meta name="viewport" content="width=device-width">
-<meta name="viewport" content="initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
 <style>
 @media print {
@@ -71,6 +70,25 @@ if (strGlider.length != 0)
 }
 }
 </script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<style>
+body { min-height: 100vh; }
+@media (max-width: 767px) {
+    #list-section table thead { display: none; }
+    #list-section table { display: block; }
+    #list-section table tbody { display: flex; flex-wrap: wrap; gap: 8px; }
+    #list-section table tr { width: calc(50% - 3px); min-width: 240px; flex: 1 1 auto; border: 1px solid #ddd; border-radius: 6px; padding: 5px 8px; background: #fff; box-sizing: border-box; }
+    #list-section table > tbody > tr > td { display: block; border: none; padding: 2px 2px 2px 44%; text-align: left !important; font-size: 13px; position: relative; line-height: 1.35; overflow-wrap: break-word; word-break: break-word; }
+    #list-section table td::before { content: attr(data-label); position: absolute; left: 4px; width: calc(44% - 12px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; font-size: 12px; color: #555; line-height: 1.35; }
+    #list-section table td[data-empty="1"] { display: none; }
+    #list-section table .text-right { text-align: left !important; }
+}
+@media (max-width: 580px) {
+    #list-section table tbody { flex-direction: column; gap: 8px; }
+    #list-section table tr { width: 100%; min-width: 0; }
+    #list-section table > tbody > tr > td:last-child { padding-bottom: 8px; }
+}
+</style>
 </head>
 <body onload='s()'>
 <?php
@@ -137,6 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 
   echo "<h2>Flight Data For " .$_POST['glider'] . "</h2>";
   
+  echo "<div id='list-section'>";
   echo "<table><tr><th>DATE</th><th>FLIGHT DURATION</th><th>LAUNCH TYPE</th></tr>";
   $totalcnt = 0;
   $totaltime = 0;
@@ -146,8 +165,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   {
   	  $totalcnt = $totalcnt+1;
           $strdate=$row[0];
-          echo "<td>";
-          echo substr($strdate,6,2) . "/" . substr($strdate,4,2) . "/" . substr($strdate,0,4);
+          $dateEmpty = (!isset($row[0]) || $row[0] === '' || $row[0] === '00000000'); echo "<td data-label='DATE'" . ($dateEmpty ? " data-empty='1'" : "") . ">";
+          if (!$dateEmpty) { echo substr($strdate,6,2) . "/" . substr($strdate,4,2) . "/" . substr($strdate,0,4); }
 	  echo "</td>";
           $duration = intval($row[1] / 1000);
           $hours = intval($duration / 3600);
@@ -155,12 +174,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
           $totMins = (($hours*60) + $mins);
           $totaltime = $totaltime + $totMins;
 
-  	  $timeval = sprintf("%02d:%02d",$hours,$mins);
-          echo "<td class='right'>";
+    	  $timeval = sprintf("%02d:%02d",$hours,$mins);
+          echo "<td class='right' data-label='FLIGHT DURATION'>";
 	  echo $timeval;
           
           echo "</td>";
-          echo "<td>" . $row[2] . "</td>";
+          echo "<td data-label='LAUNCH TYPE'" . ((!isset($row[2]) || $row[2] === '') ? " data-empty='1'" : "") . ">" . $row[2] . "</td>";
           echo "</tr>";
   }
   echo "<tr><td>Total</td>";
@@ -173,6 +192,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   echo $totalcnt;
   echo "</td></tr>";
   echo "</table>";
+  echo "</div>";
   
   echo "<button onclick='printit()' id='print-button'>Print Report</button>";
 

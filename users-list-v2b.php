@@ -22,13 +22,13 @@ $organisation = App\Models\Organisation::find($org);
 ?>
 <!DOCTYPE HTML>
 <html>
-<meta name="viewport" content="width=device-width">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
     <title>Users List (v2b - DataTables)</title>
     <?php include 'jsLibraies.php'; ?>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap.min.css">
     <style>
-        body { padding: 0; }
+        body { padding: 0; min-height: 100vh; }
         h2 { margin-bottom: 10px; margin-right: 20px; }
         .title-row { display: flex; align-items: center; margin-bottom: 10px; }
         .nav-links { margin-bottom: 15px; }
@@ -97,6 +97,53 @@ $organisation = App\Models\Organisation::find($org);
         .padding-container {
             padding: 15px;
         }
+    </style>
+    <style>
+/* --- MOBILE CARD PATTERN (users-table) --- */
+body { min-height: 100vh; }
+
+@media (max-width: 767px) {
+    #users-table.table thead { display: none; }
+    #users-table.table { display: block; }
+    #users-table.table tbody { display: flex; flex-wrap: wrap; gap: 6px; }
+    #users-table.table tr {
+        width: calc(50% - 3px);
+        min-width: 240px; flex: 1 1 auto;
+        border: 1px solid #ddd; border-radius: 6px;
+        padding: 5px 8px; background: #fff; box-sizing: border-box;
+    }
+    #users-table.table > tbody > tr > td {
+        display: block; border: none; padding: 2px 2px 2px 44%;
+        text-align: left !important; font-size: 13px; position: relative;
+        line-height: 1.35; overflow-wrap: break-word; word-break: break-word;
+    }
+    #users-table.table td::before {
+        content: attr(data-label); position: absolute; left: 4px;
+        width: calc(44% - 12px); overflow: hidden; text-overflow: ellipsis;
+        white-space: nowrap; font-weight: 600; font-size: 12px; color: #555;
+        line-height: 1.35;
+    }
+    #users-table.table td[data-empty="1"] { display: none; }
+    #users-table.table td[data-label="Actions"] a.btn { height: auto !important; padding: 1px 6px; font-size: 12px; line-height: 1.2; }
+    #users-table.table .text-right { text-align: left !important; }
+    #users-table.table .hide-mobile { display: none !important; }
+    #users-table.table .show-mobile { display: block !important; }
+
+    .title-row { flex-wrap: wrap; gap: 5px; margin-bottom: 5px; }
+    .title-row h2 { font-size: 16px; margin-bottom: 0; }
+    .title-row .btn { font-size: 11px; padding: 2px 6px; }
+    .controls-bar { padding: 6px 8px; gap: 6px; margin-bottom: 8px; font-size: 12px; }
+    .controls-bar .filter-group label { font-size: 11px; }
+    .controls-bar input, .controls-bar select { font-size: 12px; }
+    #record-count { font-size: 11px; }
+    .padding-container { padding: 8px; }
+}
+
+@media (max-width: 580px) {
+    #users-table.table tbody { flex-direction: column; gap: 8px; }
+    #users-table.table tr { width: 100%; min-width: 0; }
+    #users-table.table > tbody > tr > td:last-child { padding-bottom: 8px; }
+}
     </style>
     <style>
     <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
@@ -238,6 +285,16 @@ function buildDataTable() {
             searching: false,
             lengthChange: false,
             dom: '<"top"f>t<"bottom"ip>',
+            createdRow: function(row, data, dataIndex) {
+                var headers = $('#users-table thead th');
+                $(row).children('td').each(function(i) {
+                    var label = $(headers[i]).text().trim();
+                    $(this).attr('data-label', label);
+                    if ($(this).text().trim() === '' && !$(this).find('img').length) {
+                        $(this).attr('data-empty', '1');
+                    }
+                });
+            },
             initComplete: function(settings, json) {
                 var pagination = $('#users-table_wrapper .dataTables_paginate');
                 if (pagination.length) {

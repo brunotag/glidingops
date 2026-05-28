@@ -149,9 +149,9 @@ SQL;
 ?>
 <!DOCTYPE HTML>
 <html>
-<meta name="viewport" content="width=device-width">
-<meta name="viewport" content="initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <style><?php $inc = "./orgs/" . $org . "/heading2.css"; include $inc; ?></style>
 <style><?php $inc = "./orgs/" . $org . "/menu1.css"; include $inc; ?></style>
 <style>
@@ -210,6 +210,24 @@ body {margin: 0px;font-family: Arial, Helvetica, sans-serif; background-color: #
 #main-content {padding: 20px; max-width: 1400px; margin: 0 auto;}
 </style>
 <script>function goBack() {window.history.back()}</script>
+<style>
+body { min-height: 100vh; }
+@media (max-width: 767px) {
+    .report-table thead { display: none; }
+    .report-table { display: block; }
+    .report-table tbody { display: flex; flex-wrap: wrap; gap: 8px; }
+    .report-table tr { width: calc(50% - 3px); min-width: 240px; flex: 1 1 auto; border: 1px solid #ddd; border-radius: 6px; padding: 5px 8px; background: #fff; box-sizing: border-box; }
+    .report-table > tbody > tr > td { display: block; border: none; padding: 2px 2px 2px 44%; text-align: left !important; font-size: 13px; position: relative; line-height: 1.35; overflow-wrap: break-word; word-break: break-word; }
+    .report-table td::before { content: attr(data-label); position: absolute; left: 4px; width: calc(44% - 12px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; font-size: 12px; color: #555; line-height: 1.35; }
+    .report-table td[data-empty="1"] { display: none; }
+    .report-table .text-right { text-align: left !important; }
+}
+@media (max-width: 580px) {
+    .report-table tbody { flex-direction: column; gap: 8px; }
+    .report-table tr { width: 100%; min-width: 0; }
+    .report-table > tbody > tr > td:last-child { padding-bottom: 8px; }
+}
+</style>
 <script>
 <?php
 $dateTimeZone = new DateTimeZone($_SESSION['timezone']);
@@ -481,17 +499,17 @@ SQL;
         foreach ($allFlights as $row)
         {
             echo "<tr>";
-            echo "<td>" . htmlspecialchars($row['surname']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['firstname']) . "</td>";
-            echo "<td>" . $row['date'] . "</td>";
-            echo "<td>" . htmlspecialchars($row['location']) . "</td>";
-            echo "<td class='right'>" . htmlspecialchars($row['glider']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['pic']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['p2']) . "</td>";
-            echo "<td class='right'>" . $row['duration'] . "</td>";
-            echo "<td>" . $row['launch'] . "</td>";
-            echo "<td>" . htmlspecialchars($row['type']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['notes']) . "</td>";
+            echo "<td data-label='SURNAME'" . ((!isset($row['surname']) || $row['surname'] === '') ? " data-empty='1'" : "") . ">" . htmlspecialchars($row['surname']) . "</td>";
+            echo "<td data-label='FIRST NAME'" . ((!isset($row['firstname']) || $row['firstname'] === '') ? " data-empty='1'" : "") . ">" . htmlspecialchars($row['firstname']) . "</td>";
+            echo "<td data-label='DATE'" . ((!isset($row['date']) || $row['date'] === '') ? " data-empty='1'" : "") . ">" . $row['date'] . "</td>";
+            echo "<td data-label='LOCATION'" . ((!isset($row['location']) || $row['location'] === '') ? " data-empty='1'" : "") . ">" . htmlspecialchars($row['location']) . "</td>";
+            echo "<td class='right' data-label='GLIDER'" . ((!isset($row['glider']) || $row['glider'] === '') ? " data-empty='1'" : "") . ">" . htmlspecialchars($row['glider']) . "</td>";
+            echo "<td data-label='PIC'" . ((!isset($row['pic']) || $row['pic'] === '') ? " data-empty='1'" : "") . ">" . htmlspecialchars($row['pic']) . "</td>";
+            echo "<td data-label='P2'" . ((!isset($row['p2']) || $row['p2'] === '') ? " data-empty='1'" : "") . ">" . htmlspecialchars($row['p2']) . "</td>";
+            echo "<td class='right' data-label='DURATION'" . ((!isset($row['duration']) || $row['duration'] === '') ? " data-empty='1'" : "") . ">" . $row['duration'] . "</td>";
+            echo "<td data-label='LAUNCH'" . ((!isset($row['launch']) || $row['launch'] === '') ? " data-empty='1'" : "") . ">" . $row['launch'] . "</td>";
+            echo "<td data-label='TYPE'" . ((!isset($row['type']) || $row['type'] === '') ? " data-empty='1'" : "") . ">" . htmlspecialchars($row['type']) . "</td>";
+            echo "<td data-label='NOTES'" . ((!isset($row['notes']) || $row['notes'] === '') ? " data-empty='1'" : "") . ">" . htmlspecialchars($row['notes']) . "</td>";
             echo "</tr>";
         }
         echo "</table>";

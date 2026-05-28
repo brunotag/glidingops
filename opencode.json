@@ -4,8 +4,9 @@
   "snapshot": true,
   "autoupdate": true,
   "permission": {
-    "edit": "ask",
-    "bash": "ask"
+    "edit": "allow",
+    "bash": "allow",
+    "delete": "ask"
   },
   "lsp": {
     "php": {
@@ -13,13 +14,23 @@
     }
   },
   "watcher": {
-    "ignore": ["log/*", "var/*", "vendor/*", "node_modules/*", ".git/*"]
+    "ignore": ["log/*", "var/*", "vendor/*", "node_modules/*", ".git/*", ".opencode/.domshell_token"]
   },
   "mcp": {
     "agentmemory": {
       "type": "local",
       "command": ["npx", "-y", "@agentmemory/mcp", "--tools", "all", "--force-proxy"],
       "enabled": true
+    },
+    "domshell": {
+      "type": "remote",
+      "url": "http://localhost:3001/mcp?token={env:DOMSHELL_TOKEN}",
+      "oauth": false,
+      "enabled": true
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "command": ["npx", "-y", "chrome-devtools-mcp@latest"]
     }
   }
 }

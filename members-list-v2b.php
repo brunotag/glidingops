@@ -33,14 +33,14 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
 ?>
 <!DOCTYPE HTML>
 <html>
-<meta name="viewport" content="width=device-width">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
     <title>Members List (v2b - DataTables Search)</title>
     <?php include 'jsLibraies.php'; ?>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
     <style>
-        body { padding: 0; }
+        body { padding: 0; min-height: 100vh; }
         h2 { margin-bottom: 10px; margin-right: 20px; }
         .title-row { display: flex; align-items: center; margin-bottom: 10px; }
         .nav-links { margin-bottom: 15px; }
@@ -66,10 +66,21 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
             align-items: center;
             gap: 5px;
         }
-        .controls-bar .filter-group label { 
-            font-weight: bold; 
+        .controls-bar .filter-group label {
+            font-weight: bold;
             font-size: 12px;
             white-space: nowrap;
+        }
+        .controls-bar .filter-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        .controls-bar .filter-actions .search-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         .controls-bar .selectpicker { 
             max-width: 180px; 
@@ -127,6 +138,55 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
         }
     </style>
     <style>
+/* --- MOBILE CARD PATTERN (members-table) --- */
+body { min-height: 100vh; }
+
+@media (max-width: 767px) {
+    #members-table.table thead { display: none; }
+    #members-table.table { display: block; }
+    #members-table.table tbody { display: flex; flex-wrap: wrap; gap: 6px; }
+    #members-table.table tr {
+        width: calc(50% - 3px);
+        min-width: 240px; flex: 1 1 auto;
+        border: 1px solid #ddd; border-radius: 6px;
+        padding: 5px 8px; background: #fff; box-sizing: border-box;
+    }
+    #members-table.table > tbody > tr > td {
+        display: block; border: none; padding: 2px 2px 2px 44%;
+        text-align: left !important; font-size: 13px; position: relative;
+        line-height: 1.35; overflow-wrap: break-word; word-break: break-word;
+    }
+    #members-table.table td::before {
+        content: attr(data-label); position: absolute; left: 4px;
+        width: calc(44% - 12px); overflow: hidden; text-overflow: ellipsis;
+        white-space: nowrap; font-weight: 600; font-size: 12px; color: #555;
+        line-height: 1.35;
+    }
+    #members-table.table td[data-empty="1"] { display: none; }
+    #members-table.table td a.btn { height: auto !important; padding: 1px 6px; font-size: 12px; line-height: 1.2; }
+    #members-table.table .text-right { text-align: left !important; }
+    #members-table.table .hide-mobile { display: none !important; }
+    #members-table.table .show-mobile { display: block !important; }
+    .padding-container { padding: 8px; }
+    .title-row { flex-wrap: wrap; gap: 5px; margin-bottom: 5px; }
+    .title-row h2 { font-size: 16px; margin-bottom: 0; }
+    .title-row .btn { font-size: 11px; padding: 2px 6px; }
+    .controls-bar { padding: 6px 8px; gap: 6px; margin-bottom: 8px; font-size: 12px; }
+    .controls-bar .filter-group label { font-size: 11px; }
+    .controls-bar input, .controls-bar select { font-size: 12px; }
+    .controls-bar .filter-selects { flex: 1 1 100%; display: flex; flex-wrap: wrap; gap: 6px; }
+    .controls-bar .filter-actions { flex: 1 1 100%; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .controls-bar .filter-actions .search-group { flex: 1 1 100%; }
+    #record-count { font-size: 11px; }
+}
+
+@media (max-width: 580px) {
+    #members-table.table tbody { flex-direction: column; gap: 8px; }
+    #members-table.table tr { width: 100%; min-width: 0; }
+    #members-table.table > tbody > tr > td:last-child { padding-bottom: 8px; }
+}
+    </style>
+    <style>
     <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
     <?php $inc = "./orgs/" . $org . "/heading2.css"; if (file_exists($inc)) include $inc; ?>
     </style>
@@ -143,41 +203,41 @@ $filterClasses = isset($_GET['classes']) ? $_GET['classes'] : $defaultClasses;
 <div class="title-row">
     <h2>Members List</h2>
     <a href="/MembersListOld" class="btn btn-default btn-sm">Old Version</a>
+    <a href="/MemberNew" class="btn btn-primary btn-sm">Create New</a>
 </div>
 
 <div class="controls-bar">
-    <a href="/MemberNew" class="btn btn-primary btn-sm">Create New</a>
-    
-    <!-- Filters -->
-    <div class="filter-group">
-        <label for="filter-classes">Class:</label>
-        <select id="filter-classes" name="classes[]" multiple class="selectpicker" data-live-search="true" data-width="150px">
-            <?php foreach ($allClasses as $class): ?>
-                <option value="<?php echo $class->id; ?>" <?php echo in_array($class->id, $filterClasses) ? 'selected' : ''; ?>>
-                    <?php echo htmlspecialchars($class->class); ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
+    <div class="filter-selects">
+        <div class="filter-group">
+            <label for="filter-classes">Class:</label>
+            <select id="filter-classes" name="classes[]" multiple class="selectpicker" data-live-search="true" data-width="150px">
+                <?php foreach ($allClasses as $class): ?>
+                    <option value="<?php echo $class->id; ?>" <?php echo in_array($class->id, $filterClasses) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($class->class); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="filter-statuses">Status:</label>
+            <select id="filter-statuses" name="statuses[]" multiple class="selectpicker" data-live-search="true" data-width="120px">
+                <?php foreach ($allStatuses as $status): ?>
+                    <option value="<?php echo $status->id; ?>" <?php echo in_array($status->id, $filterStatuses) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($status->status_name); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
     </div>
     
-    <div class="filter-group">
-        <label for="filter-statuses">Status:</label>
-        <select id="filter-statuses" name="statuses[]" multiple class="selectpicker" data-live-search="true" data-width="120px">
-            <?php foreach ($allStatuses as $status): ?>
-                <option value="<?php echo $status->id; ?>" <?php echo in_array($status->id, $filterStatuses) ? 'selected' : ''; ?>>
-                    <?php echo htmlspecialchars($status->status_name); ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-    
-    <button id="apply-filters" class="btn btn-primary btn-sm">Apply</button>
-    <button id="reset-filters" class="btn btn-default btn-sm">Reset</button>
-    
-    <!-- Search and length together -->
-    <div class="filter-group">
-        <label for="dt-search">Search:</label>
-        <input type="text" id="dt-search" placeholder="Name, email, phone..." style="padding: 4px; border: 1px solid #ccc; border-radius: 3px;">
+    <div class="filter-actions">
+        <div class="filter-group search-group">
+            <label for="dt-search">Search:</label>
+            <input type="text" id="dt-search" placeholder="Name, email, phone..." style="padding: 4px; border: 1px solid #ccc; border-radius: 3px;">
+        </div>
+        <button id="apply-filters" class="btn btn-primary btn-sm">Apply Filters</button>
+        <button id="reset-filters" class="btn btn-default btn-sm">Reset</button>
     </div>
     
     <div class="filter-group">
@@ -314,7 +374,7 @@ function buildDataTable() {
                     title: 'User',
                     render: function(data) {
                         if (data) {
-                            return '<a href="/Users/' + data + '" class="btn btn-success btn-xs" style="display:flex;align-items:center;justify-content:center;width:100%;height:40px;box-sizing:border-box;">Yes</a>';
+                            return '<a href="/Users/' + data + '" class="btn btn-success btn-xs" style="display:flex;align-items:center;justify-content:center;width:100%;height:40px;box-sizing:border-box;">Yes (Edit)</a>';
                         }
                         return '<span style="color:#999;">No</span>';
                     },
@@ -340,6 +400,16 @@ function buildDataTable() {
             searching: false,
             lengthChange: false,
             dom: '<"top"f>t<"bottom"ip>',
+            createdRow: function(row, data, dataIndex) {
+                var headers = $('#members-table thead th');
+                $(row).children('td').each(function(i) {
+                    var label = $(headers[i]).text().trim();
+                    $(this).attr('data-label', label);
+                    if ($(this).text().trim() === '' && !$(this).find('img').length) {
+                        $(this).attr('data-empty', '1');
+                    }
+                });
+            },
             initComplete: function(settings, json) {
                 var pagination = $('#members-table_wrapper .dataTables_paginate');
                 if (pagination.length) {

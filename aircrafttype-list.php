@@ -11,14 +11,14 @@ if(isset($_SESSION['security'])){
 ?>
 <!DOCTYPE HTML>
 <html>
-<meta name="viewport" content="width=device-width">
-<meta name="viewport" content="initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
 <style>
 <?php $inc = "./orgs/" . $org . "/heading2.css"; include $inc; ?>
 </style>
 <style>
 <?php $inc = "./orgs/" . $org . "/menu1.css"; include $inc; ?></style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="styletable1.css">
 <script>function goBack() {window.history.back()}</script>
 </head>
@@ -57,7 +57,7 @@ if ($colsort == 0)
 ?>
 <div id="div1">
 <div id="div2">
-<table><tr>
+<div class="table-responsive"><table class="table table-bordered table-striped" style="width:100%;"><tr>
 <?php
 if (true){echo '<th ';if ($colsort == 1) echo "class='colsel'";echo " onclick=";echo "\"";echo "location.href='aircrafttype-list.php?col=1'";echo "\"";echo " style='cursor:pointer;'";echo ">";echo "ID";echo "</th>";}
 if ($_SESSION['security'] & 128){echo '<th ';if ($colsort == 2) echo "class='colsel'";echo " onclick=";echo "\"";echo "location.href='aircrafttype-list.php?col=2'";echo "\"";echo " style='cursor:pointer;'";echo ">";echo "ORGANISATION";echo "</th>";}
@@ -95,13 +95,14 @@ $rownum = 0;
 while ($row = mysqli_fetch_array($r) )
 {
  $rownum = $rownum + 1;
-  echo "<tr class='";if (($rownum % 2) == 0)echo "even";else echo "odd";  echo "'>";if (true){echo "<td class='right'>";echo "<a href='AircraftType?id=";echo $row[0];echo "'>";echo $row[0];echo "</a>";echo "</td>";}
-if ($_SESSION['security'] & 128){echo "<td>";echo $row[1];echo "</td>";}
-if (true){echo "<td>";echo $row[2];echo "</td>";}
+  echo "<tr class='";if (($rownum % 2) == 0)echo "even";else echo "odd";  echo "'>";if (true){$__e = (!isset($row[0]) || $row[0] === ''); echo "<td class='right'" . ($__e ? " data-empty='1'" : "") . ">";echo "<a href='AircraftType?id=";echo $row[0];echo "'>";echo $row[0];echo "</a>";echo "</td>";}
+if ($_SESSION['security'] & 128){echo "<td" . ((!isset($row[1]) || $row[1] === '') ? " data-empty='1'" : "") . ">";echo $row[1];echo "</td>";}
+if (true){echo "<td" . ((!isset($row[2]) || $row[2] === '') ? " data-empty='1'" : "") . ">";echo $row[2];echo "</td>";}
   echo "</tr>";
 }
 ?>
 </table>
+</div>
 </div>
 </div>
 <form id="form1" action='AircraftType' method='GET'><input type='submit' value = 'Create New'>
