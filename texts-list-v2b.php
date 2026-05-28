@@ -127,7 +127,7 @@ body { min-height: 100vh; }
 <div class="padding-container">
 <div class="title-row">
     <h1 id="page-title" style="margin:0">Sent Messages</h1>
-    <a href="/texts-list-old" class="btn btn-default btn-sm">Old Version</a>
+
 </div>
 
 <div id="message-area"></div>

@@ -139,7 +139,6 @@ mysqli_close($con);
         ?></h2>
         <?php if (!$isMyDetails): ?>
         <a href="/AllMembers" class="btn btn-default btn-sm">Back to Members List</a>
-        <a href="/Member<?php echo $memberId ? '?id=' . $memberId : ''; ?>" class="btn btn-default btn-sm">Old Version</a>
         <?php endif; ?>
     </div>
 

@@ -202,7 +202,6 @@ body { min-height: 100vh; }
 <div class="padding-container">
 <div class="title-row">
     <h2>Members List</h2>
-    <a href="/MembersListOld" class="btn btn-default btn-sm">Old Version</a>
     <a href="/MemberNew" class="btn btn-primary btn-sm">Create New</a>
 </div>
 

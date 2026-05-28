@@ -57,13 +57,12 @@ RewriteRule ^api/js-debug$ api/js-debug.php [L,QSA]
 # Texts/Messages API
 RewriteRule ^api/texts$ api/texts.php [L,QSA]
 RewriteRule texts-list texts-list-v2b.php [L,QSA]
-RewriteRule texts-list-old texts-list.php [L,QSA]
 RewriteRule SentMessages texts-list-v2b.php [L,QSA]
 RewriteRule MessagesTree messages-tree.php [L,QSA]
 
 # New members list (v2b is now the default)
 RewriteRule AllMembers members-list-v2b.php [L,QSA]
-RewriteRule MembersListOld members-list.php [L]
+
 
 # New member create/edit page
 RewriteRule MemberNew members-new.php [L,QSA]
@@ -84,13 +83,12 @@ RewriteRule AssignRole role_member.php [L]
 RewriteRule FlightTypes flighttypes-list.php [L]
 RewriteRule FlightType flighttypes.php [L]
 RewriteRule FlyingNow FlyingNow.php [L]
-RewriteRule MessagingPageOld MessagingPageOld.php [L,QSA]
 RewriteRule MessagingPage MessagingPage.php [L,QSA]
 RewriteRule AircraftTypes aircrafttype-list.php [L]
 RewriteRule AircraftType aircrafttype.php [L]
 RewriteRule AllAircraft aircraft-list.php [L]
 RewriteRule Aircraft aircraft.php [L]
-RewriteRule AllMembers members-list.php [L]
+
 RewriteRule AllFlightsMobile AllFlightsReportMobile.php [L,QSA]
 RewriteRule AllFlightsReportNew AllFlightsReportNew.php [L,QSA]
 RewriteRule Analytics analytics-dashboard.php [L,QSA]
@@ -113,7 +111,6 @@ RewriteRule LaunchTypes launchtypes-list.php [L]
 RewriteRule LaunchType launchtypes.php [L]
 RewriteRule Organisations organisations-list.php [L]
 RewriteRule Organisation organisations.php [L]
-RewriteRule Member members.php [L]
 RewriteRule Aircraft aircraft.php [L]
 
 RewriteRule Roles roles-list.php [L]

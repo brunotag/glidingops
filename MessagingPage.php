@@ -223,7 +223,7 @@ Open smtp4dev: <a href='http://localhost:1080' target='_blank'>http://localhost:
 </div>
 <?php endif; ?>
 <div class="panel left-panel">
-<h1>New Message <a href="MessagingPageOld" style="font-size:14px;font-weight:normal;">(Old Version)</a></h1>
+<h1>New Message</h1>
 
 <div>
 <div class="subject-row">
