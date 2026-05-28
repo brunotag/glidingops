@@ -414,21 +414,15 @@ include __DIR__ . '/helpers/dev_mode_banner.php';
                 ?>
                 <div class="date-group">
                     <div class="date-header"><?php echo htmlspecialchars($displayDate) ?></div>
+                    <?php $seq = 0; ?>
                     <?php foreach ($events as $event): ?>
-                        <?php
-                        $timeStr = '';
-                        if (!empty($event['start'])) {
-                            $dt = new DateTime($event['start']);
-                            $dt->setTimezone($tz);
-                            $timeStr = $dt->format('i') + 1;
-                        }
-                        ?>
+                        <?php $seq++; ?>
                         <?php
                         $summary = $event['summary'];
                         $summaryFormatted = preg_replace('/ - /', "</br>", htmlspecialchars($summary));
                         ?>
                         <div class="booking-row <?php echo $event['is_ours'] ? '' : 'not-ours' ?>"<?php if ($event['booking_id']): ?> data-booking-id="<?php echo $event['booking_id'] ?>"<?php endif; ?>>
-                            <span class="booking-time"><?php echo htmlspecialchars($timeStr) ?></span>
+                            <span class="booking-time"><?php echo $seq ?></span>
                             <span class="booking-summary"><?php echo $summaryFormatted; ?></span>
                             <?php if ($event['can_edit']): ?>
                                 <span class="booking-actions">
