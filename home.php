@@ -418,6 +418,7 @@ if ($dbOk) {
             <div class="card-header">Reports</div>
             <div class="card-body">
               <?php if ($effectiveSecurity & 8): ?>
+                <a href="/BillingReport">Billing Report</a>
                 <a href="/TreasurerReportNew3">Treasurer Report</a>
                 <a href="/TreasurerReportNew4">Treasurer Report (New)</a>
               <?php endif; ?>

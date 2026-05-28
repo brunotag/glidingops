@@ -355,17 +355,16 @@ Fields:
 
 ## Reports
 
-### Treasurer.php
-**Purpose:** Monthly billing report
+### billing-report.php
+**Purpose:** Monthly billing report (replaces broken Treasurer.php)
 
 **Features:**
 - Select month/year
-- Lists all flights with calculated charges
-- Separate sections: Check flights, No charge, Trials, Charged
-- Totals by member
+- Lists all flights with calculated charges  
+- Separate sections: Trial flights, Member flight charges (collapsible), Membership subscriptions
+- Totals by member with correct calculations
 - Export to CSV
-
-**Issue:** Billing calculations are BROKEN - "fees are wrong but times can be trusted"
+- Expand/collapse all member detail rows
 
 **Security:** Requires security level 8 (CFO/Treasurer)
 

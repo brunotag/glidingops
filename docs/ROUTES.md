@@ -33,6 +33,8 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/LaunchType` | launchtypes.php | Add/edit type |
 | `/BillingOptions` | billingoptions-list.php | Billing options |
 | `/BillingOption` | billingoptions.php | Add/edit option |
+| `/BillingReport` | billing-report.php | Treasurer monthly billing report |
+| `/BillingReport.csv` | billing-report.php | Treasurer report CSV export |
 | `/TowCharges` | towcharges-list.php | Tow pricing |
 | `/TowCharge` | towcharges.php | Add/edit tow charge |
 | `/OtherCharges` | charges-list.php | Other fees |

@@ -109,7 +109,7 @@ All follow similar pattern - form for single record:
 - Login.php, checklogin.php - Auth
 - StartDay.php, DailySheet.php - Daily ops
 - MasterDisplay.php - Map
-- Treasurer.php, Engineer.php - Reports
+- billing-report.php, Engineer.php - Reports
 
 ---
 
@@ -165,11 +165,11 @@ All follow similar pattern - form for single record:
 Largest files (most complex):
 1. dailysheet.php - 1302 lines (flight entry)
 2. members.php - 1283 lines (member form)
-3. Treasurer.php - 867 lines (billing report)
+3. billing-report.php - 879 lines (billing report)
 4. helpers.php - 276 lines (utility functions)
 5. members-list.php - 361 lines (list view)
 
-These are the most important to understand.
+These are some of the more complex files.
 
 ---
 
@@ -281,7 +281,7 @@ $stmt->bind_param("i", $id);
 |------|-------|---------|
 | dailysheet.php | ~1302 | Flight entry - most complex |
 | members.php | ~1283 | Member form - 40+ fields |
-| Treasurer.php | ~867 | Billing report |
+| billing-report.php | ~879 | Billing report |
 | helpers.php | ~276 | Core utilities |
 | members-list.php | ~361 | Member list table |
 | home.php | ~280 | Dashboard |
@@ -301,7 +301,7 @@ $stmt->bind_param("i", $id);
 - edit-my-details.php (self-service)
 
 ### Reports
-- Treasurer.php, Treasurer2.php (billing)
+- billing-report.php (billing)
 - Engineer.php, Engineer2.php (aircraft)
 - MyFlights.php (member's own flights)
 - DayTimes.php, DaycheckAndFinal.php (daily summaries)

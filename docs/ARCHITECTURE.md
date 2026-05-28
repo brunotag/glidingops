@@ -87,7 +87,7 @@ Connection configured in:
 - `todayxml.php` - JSON feed for map
 
 ### Reports
-- `Treasurer.php` - Monthly billing report (fees broken)
+- `billing-report.php` - Monthly billing report (replaces broken Treasurer.php)
 - `Engineer.php` - Aircraft usage report
 - `last-flights-list.php` - Currency/instructor recency
 
@@ -130,9 +130,9 @@ Each club (org) has its own customization folder in `/orgs/{id}/`:
 4. `MasterDisplay.js` renders on Google Maps
 
 ### Billing Flow
-1. `Treasurer.php` queries flights for month
-2. Calls `CalcTowCharge()`, `CalcGliderCharge()`, `CalcOtherCharges()` from `/orgs/{id}/accountrules.php`
-3. Many bugs in the calculation logic
+1. `billing-report.php` queries flights for month
+2. Uses `helpers/billing-calc.php` for calculation functions (glider, launch, competition, 50/50)
+3. DB rates updated to match Nov 2025 Fee PDF (glider $2.25/min, winch $39/$25, etc.)
 
 ## Tracking Architecture
 

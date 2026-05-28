@@ -12,11 +12,8 @@
 - (none)
 
 ### Completed This Session
-- **Facebook no-email fix**: Facebook `/me` doesn't return `email` (permission not approved). Redirect to `oauth-link.php?no_email=1` for manual username entry instead of failing.
-- **Social photo auto-fetch**: `helpers/oauth-photo-helper.php` + `oauth-photo.php`. On first social login, auto-saves Google/Facebook profile photo if user has none, or redirects to comparison page if user has an existing photo. GD resize max 400px JPEG q80. `oauth-link-action.php` also handles photos for manual link flow. `.htaccess` route `/OAuthPhoto`.
-- **Bug fix**: `dirname(__DIR__)` in root-level files goes one level too high. Changed to `__DIR__` for photo paths.
-- **Deploy**: Prod code at `/var/www/html/` requires explicit `git pull` after push.
-- **Local backup tool**: `tmp/unlink-social-production.ps1` — plinks to prod, runs MySQL via heredoc to list/delete `user_providers` entries (gitignored).
+- **Billing report (billing-report.php)**: New Treasurer Monthly Billing Report at `/BillingReport`. Replaces broken Treasurer.php. Uses `helpers/billing-calc.php` for correct calculations (glider $2.25/min, Youth $1.50/min on GGR/GPJ/GMB, winch first $39 relaunch $25, self-launch $25). Collapsible member rows with expand/collapse all toggle. CSV export at `/BillingReport.csv`. Test file: `tests/BillingReportTest.php` (41 tests).
+- **Column widths**: Auto-layout with `col-narrow` (width:1px; white-space:nowrap) on fixed-content columns; Member takes remaining space.
 
 ### Next Steps
 1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)
@@ -102,7 +99,7 @@ All docs in `docs/` folder - see individual files for details:
 ## Route Order in .htaccess
 More specific routes must come BEFORE less specific ones.
 For example:
-- `TreasurerReportNew2` before `TreasurerReportNew`
+- `BillingReport` before `BillingOptions`
 - `MyFlightsCSV` before `MyFlights`
 
 ## Modernized Pages (v2b pattern)

@@ -7,88 +7,54 @@ mode: subagent
 
 ## Overview
 
-The billing system (in Treasurer.php and orgs/*/accountrules.php) is ASSUMED BROKEN. The Treasurer report shows times that are accurate, but fees are wrong.
+The billing system has been rebuilt. `billing-report.php` (route `/BillingReport`) now correctly calculates charges using `helpers/billing-calc.php`. The old `Treasurer.php` has been deleted. The old org `accountrules.php` functions are no longer used by the report.
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
-| Treasurer.php | Monthly billing report (867 lines) |
-| Treasurer2.php | CSV export for GlideAccounts |
-| orgs/*/accountrules.php | Billing calculation functions per org |
+| billing-report.php | Monthly billing report (879 lines) with collapsible member rows, CSV export |
+| helpers/billing-calc.php | Pure calculation functions (glider, launch, competition, 50/50) |
+| Treasurer2.php | CSV export for GlideAccounts (legacy, kept for external dependency) |
+| orgs/*/accountrules.php | Legacy billing functions (no longer used by main report) |
 
-## Broken Calculations
+## Current Billing System
 
-Treasurer.php calls billing functions with HARDCODED dummy values:
+**Working correctly (verified against Nov 2025 Fee PDF):**
+- Glider charges: $2.25/min for all club gliders, $1.50/min Youth rate on GGR/GPJ/GMB only
+- Launch charges: WINCH first/day $39, relaunch $25; AEROTOW separate; Self-launch $25
+- Trial flights shown in separate reconciliation panel
+- Competition flights highlighted and excluded from normal billing (tow billed separately)
+- No Charge flights shown as $0 rows
+- 50/50 billing splits between PIC and P2
+- Quarterly membership info (informational)
+- DB rates updated: aircraft $2.25/min max $180, winch first $39 relaunch $25
 
-```php
-$towcost = CalcTowCharge2($org, $launchtype, $towplane, $duration, $height, "", 1, 0);
-//                                                                    ^^  ^  ^
-//                                                             empty string     is5050
-//                                                             (not actual      hardcoded
-//                                                              member class)    club_glider=1
+**Calculation approach (billing-calc.php):**
+- `calcGliderCharge()`: minutes × rate, with Youth discount on specific gliders
+- `calcLaunchCharge()`: winch (first/relaunch), self-launch flat fee, aerotow returns "separate"
+- `calcCompetitionAmount()`: returns null (tow billed separately)
+- `calc5050Amount()`: splits total between PIC and P2
+- `chargeLabel()`: human-readable charge source text
 
-$glidcost = CalcGliderCharge($org, 1, $rego, 0, 0.00, 0, $mins, "");
-//                          ^ ^ ^    ^   ^       ^    ^   ^
-//                     hardcoded  hardcoded empty
-//                     club_glider ignore_schemes iRateGlider
-```
+## Old System (Deleted/Deprecated)
 
-## What Works vs What's Broken
+The old `Treasurer.php` and its calculation pipeline (`CalcTowCharge`, `CalcTowCharge2`, `CalcGliderCharge` in `orgs/*/accountrules.php`) were fundamentally broken — hardcoded dummy values, inconsistent ID vs string lookups, and scheme logic that didn't match actual billing.
 
-**WORKING (trust these):**
-- Flight times (start, towland, land)
-- Flight dates and sequence numbers
-- PIC/P2 assignments
-- Launch types
+Files deleted:
+- Treasurer.php, Treasurer-save.php
+- TreasurerReportNew.php, TreasurerReportNew2.php, TreasurerReportNew3.php, TreasurerReportNew4.php
 
-**BROKEN (don't rely on):**
-- Tow charges (CalcTowCharge, CalcTowCharge2)
-- Glider charges (CalcGliderCharge)
-- All scheme-related billing (incentive_schemes, scheme_subs)
-- "No Charge" logic calculations
+## Database Tables
 
-## Functions to Delete (After Verification)
+**Currently used by billing-report.php:**
+- flights (times, rego, launch type, billing options)
+- aircraft (rego, charge_per_minute, club_glider)
+- charges (winch first/relaunch rates)
+- members (displayname, class)
+- membership_class (class_name for rate lookup)
 
-In all 5 orgs/*/accountrules.php:
-- `CalcTowCharge()` - uses ID comparison (inconsistent)
-- `CalcTowCharge2()` - uses string comparison (inconsistent)
-- `CalcGliderCharge()`
-- `CalcOtherCharges()`
-- All scheme_subs queries
-
-## Database Tables Related to Billing
-
-**Active/Used:**
-- flights (times are good)
-- aircraft (rego, rates)
-- towcharges (height/time pricing rules)
-- billingoptions (who gets charged)
-
-**Legacy (can delete after verification):**
-- incentive_schemes (16 schemes, no active use)
-- scheme_subs (only 1 exists, billing ignores it)
-- vouchers, vouchertype (never implemented)
-
-## Cleanup Priority
-
-1. **Safe to delete files:**
-   - incentive_schemes.php, incentive_schemes-list.php
-   - scheme_subs.php, scheme_subs-list.php
-   - vouchers.php, vouchers-list.php, vouchertype.php, vouchertype-list.php
-
-2. **After testing Treasurer output:**
-   - Remove CalcTowCharge*, CalcGliderCharge, CalcOtherCharges from all accountrules.php
-   - Simplify Treasurer.php to show times only
-
-3. **Database cleanup (verify first):**
-   - incentive_schemes table
-   - scheme_subs table
-   - vouchers, vouchertype tables
-
-## Verification Steps
-
-Before cleanup, confirm:
-1. Treasurer.php output for fees is NOT used by anyone
-2. No external system relies on calculated fees
-3. Members don't expect accurate billing from this system
+**Legacy (unused by new report):**
+- incentive_schemes, scheme_subs - scheme logic deferred
+- towcharges - rates now hardcoded per Fee PDF
+- vouchers, vouchertype - never implemented
