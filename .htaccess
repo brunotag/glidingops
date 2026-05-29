@@ -1,5 +1,6 @@
 # .htaccess
 DirectoryIndex home.php
+php_value session.gc_maxlifetime 2592000
 RewriteEngine On
 
 # if maintenance.trigger exists, then reply with
