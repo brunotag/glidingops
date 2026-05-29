@@ -1,4 +1,4 @@
-<?php require './config/session.php'; $remember = !empty($_POST['remember']); session_set_cookie_params($remember ? SESSION_LIFETIME_REMEMBERED : 0, "/"); session_start(); ?>
+<?php require './config/session.php'; $remember = !empty($_POST['remember']); session_set_cookie_params($remember ? SESSION_LIFETIME_REMEMBERED : SESSION_LIFETIME_NOT_REMEMBERED, "/"); ini_set('session.gc_maxlifetime', $remember ? SESSION_LIFETIME_REMEMBERED : 1440); session_start(); ?>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -50,6 +50,7 @@ if ($row['password'] == $mypassword)
   else
     $q="INSERT INTO audit (userid,memberid,description) VALUES (" . $row['id'] ."," . $row['member'] .",'" . $desc . "')";
   $r = mysqli_query($con,$q);
+  session_regenerate_id(true);
   if($doForceCheck>0)
   {
     if ($row['force_pw_reset'] > 0)

@@ -1,7 +1,8 @@
 <?php
 require __DIR__ . '/config/session.php';
 $remember = !empty($_COOKIE['remember_me']);
-session_set_cookie_params($remember ? SESSION_LIFETIME_REMEMBERED : 0, "/");
+session_set_cookie_params($remember ? SESSION_LIFETIME_REMEMBERED : SESSION_LIFETIME_NOT_REMEMBERED, "/");
+ini_set('session.gc_maxlifetime', $remember ? SESSION_LIFETIME_REMEMBERED : 1440);
 session_start();
 
 $provider = $_GET['provider'] ?? '';

@@ -3,7 +3,9 @@ require_once __DIR__ . '/../helpers/api-base.php';
 
 require __DIR__ . '/../config/session.php';
 $remember = !isset($_GET['remember']) || $_GET['remember'] === '1';
-session_set_cookie_params($remember ? SESSION_LIFETIME_REMEMBERED : 0, "/"); session_start();
+session_set_cookie_params($remember ? SESSION_LIFETIME_REMEMBERED : SESSION_LIFETIME_NOT_REMEMBERED, "/");
+ini_set('session.gc_maxlifetime', $remember ? SESSION_LIFETIME_REMEMBERED : 1440);
+session_start();
 
 $token = isset($_GET['token']) ? trim($_GET['token']) : '';
 
@@ -85,6 +87,7 @@ if (!isset($_SESSION['memberid']) || $_SESSION['memberid'] === null) {
     mysqli_stmt_bind_param($auditStmt, 'iis', $user['id'], $_SESSION['memberid'], $desc);
 }
 mysqli_stmt_execute($auditStmt);
+session_regenerate_id(true);
 
 mysqli_close($con);
 

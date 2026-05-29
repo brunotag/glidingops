@@ -28,6 +28,10 @@
 3. Check logs: `Get-Content log/app.log -Tail 30` and `Get-Content log/error.log -Tail 30`
 4. Run `git status`
 
+## CRITICAL RULES
+
+**NEVER write to production without explicit confirmation.** Before pushing, deploying, or running any command on the production server (SSH, git pull, file writes, etc.), ask the user first. "Fix it" means fix locally unless they explicitly say "deploy" or "push to production."
+
 **BEFORE CLOSING a session:**
 Run `agentmemory_memory_consolidate` to persist learned context across sessions.
 

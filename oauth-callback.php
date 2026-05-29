@@ -1,6 +1,8 @@
 <?php
 require __DIR__ . '/config/session.php';
-session_set_cookie_params(SESSION_LIFETIME_REMEMBERED, "/"); session_start();
+session_set_cookie_params(SESSION_LIFETIME_REMEMBERED, "/");
+ini_set('session.gc_maxlifetime', SESSION_LIFETIME_REMEMBERED);
+session_start();
 
 require_once __DIR__ . '/helpers/logging.php';
 require_once __DIR__ . '/helpers/oauth-photo-helper.php';
@@ -274,6 +276,7 @@ if (!isset($_SESSION['memberid']) || $_SESSION['memberid'] === null) {
     $q = "INSERT INTO audit (userid, memberid, description) VALUES (" . intval($user['id']) . ", " . intval($user['member']) . ", '" . mysqli_real_escape_string($con, $desc) . "')";
 }
 mysqli_query($con, $q);
+session_regenerate_id(true);
 
 if ($user['force_pw_reset'] ?? 0 > 0) {
     $_SESSION['force_pw_reset'] = 1;
