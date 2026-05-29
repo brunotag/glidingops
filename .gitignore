@@ -1,4 +1,5 @@
 config/*.php
+!config/session.php
 lrv/bootstrap
 lrv/storage
 .env.local

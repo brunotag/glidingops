@@ -1,0 +1,2 @@
+<?php
+define('SESSION_LIFETIME_REMEMBERED', 30 * 24 * 3600);
