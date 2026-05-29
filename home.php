@@ -462,6 +462,16 @@ if ($dbOk) {
           </div>
         <?php endif; ?>
 
+        <!-- Dev Mode -->
+        <?php if (isLocal()): ?>
+          <div class="nav-card" style="border: 2px solid #d9534f;">
+            <div class="card-header" style="background: #d9534f; color: #fff; font-size: 13px;">DEV MODE</div>
+            <div class="card-body">
+              <a href="/DevEmailPreview" style="color:#d9534f;">Preview Recap Email</a>
+            </div>
+          </div>
+        <?php endif; ?>
+
         <!-- 11. Super Admin -->
         <?php if ($effectiveSecurity & 128): ?>
           <div class="nav-card">

@@ -28,6 +28,7 @@ function printit(){window.print();}
 include 'helpers.php';
 include './helpers/timehelpers.php';
 include './helpers/mail.php';
+include './helpers/email-templates.php';
 $DEBUG=0;
 $org=0;
 $diagtext="";
@@ -82,135 +83,30 @@ if (mysqli_num_rows($r) > 0)
 
 ?>
 <?php
-$message="";
 $stClass = getShortTermClass($con,$org);
 $towLaunchType = getTowLaunchType($con);
-$q= "SELECT members.id, members.email, members.displayname from members where class <> " . $stClass . " and enable_email > 0 and localdate_lastemail <> " .$dateStr;
+$currentYm = substr($dateStr, 0, 6);
+$q = "SELECT members.id, members.email, members.displayname FROM members WHERE class <> " . $stClass . " AND enable_email > 0 AND localdate_lastemail <> " . $dateStr;
 
-$r = mysqli_query($con,$q);
-while ($row = mysqli_fetch_array($r) )
+$r = mysqli_query($con, $q);
+while ($row = mysqli_fetch_array($r))
 {
-    $isInstructor = false;
-    $isInstructor = IsMemberInstructor($con,$row[0]);
-    $done=0;
-    if (strlen($row[1]) > 0)
+    $memberId = (int)$row[0];
+    $memberEmail = $row[1];
+    $memberDisplayName = $row[2];
+
+    $isInstructor = IsMemberInstructor($con, $memberId);
+    if (strlen($memberEmail) > 0)
     {
-        $q1= "SELECT flights.glider, flights.location, (flights.land - flights.start), flights.height, flights.launchtype, a.acronym, flights.pic , flights.p2, flights.start, flights.land, m.displayname as p2_name "
-                ."from flights LEFT JOIN launchtypes a on a.id = flights.launchtype "
-                ."LEFT JOIN members m on flights.p2 = m.id "
-                ."where flights.org = ".$org." and flights.localdate=" . $dateStr . " and flights.finalised = 1 and (flights.pic = ".$row[0]." or flights.p2 = ".$row[0].") "
-                ."order by flights.seq ASC";
-        $r2 = mysqli_query($con,$q1);
-        while ($row2 = mysqli_fetch_array($r2) )
+        $data = getMemberRecapData($con, $org, $memberId, $dateStr, $currentYm, $isInstructor);
+        if (count($data['flights']) > 0)
         {
-          if ($done==0)
-          {
-             $message="<!DOCTYPE HTML>
-<html>
-<head>
-<style>
-body {margin: 1em;font-family: Arial, Helvetica, sans-serif;}
-tr.tr1 {background-color:#063552;}
-td.td1 {font-family: Arial, Helvetica, sans-serif; color:#063552;font-size:20px}
-td.td2 {font-family: Arial, Helvetica, sans-serif; color:#063552;font-size:12px}
-td {font-size:14px;}
-th {font-size:14px;}
-table {border-collapse: collapse;}
-.headp1 {font-family: Calibri, Arial, Helvetica, sans-serif; color:white;font-size:50px}
-.headp2 {font-family: Calibri, Arial, Helvetica, sans-serif; color:white;font-size:20px}
-#container {background-color: #e0e0ff;}
-#id1 {background-color: #a0a0ff;border-radius: 5px;margin-left: 20px;}
-.right {text-align: right;}
-</style>
-</head>
-<body>
-<table>
-<tr class='tr1'><td colspan='7' class='headp1'>".$orgname."</td></tr>
-<tr class='tr1'><td colspan='7'class='headp2'>operations</td></tr>
-<tr><td colspan='7' class='td1'>Hi ".$row[2].",</td></tr>
-<tr><td colspan='7' class='td1'>Your flights for ";
-             $message .= $dateStr2;
-             $message .= "</td></tr><tr><td colspan='7' class='td1'></td></tr>
-<tr><th>GLIDER</th><th>MAKE/MODEL</th><th>LOCATION</th><th>DURATION</th><th>START</th><th>LAND</th>";
-if ($towChargeType==1)
-   $message .= "<th>HEIGHT</th>";
-$message .= "<th>LAUNCH TYPE</th><th>TYPE</th><th>P2</th></tr>";
-             $done=1;
-          }
-          $model=getGliderModel($con,$org,$row2[0]);
-	  $duration = intval($row2[2] / 1000);
-  	  $hours = intval($duration / 3600);
-          $mins = intval(($duration % 3600) / 60);
-          $timeval = sprintf("%02d:%02d",$hours,$mins);
-          if ($row2[4] == $towLaunchType)
-              $height = $row2[3];
-          $tr = "<tr>";
-	        $tr .= "<td>".$row2[0]."</td>";
-          $tr .= "<td>".$model."</td>";
-          $tr .= "<td>".$row2[1]."</td>";
-          $tr .= "<td class='right'>".$timeval."</td>";
+            $message = buildRecapEmail($orgname, $data['display_name'], $data['flights'], $dateStr2, $data['stats']);
+            $subject = "Your WWGC flying recap - " . $dateStr2;
+            Mail::SendMailHtml($memberEmail, $subject, $message);
 
-          $start_ts = (int)$row2[8] / 1000;
-          $land_ts  = (int)$row2[9] / 1000;
-          $start = (new DateTime())->setTimestamp($start_ts);
-          $land  = (new DateTime())->setTimestamp($land_ts);
-
-          $nz_timezone = new DateTimeZone("Pacific/Auckland");
-          $start->setTimezone($nz_timezone);
-          $land->setTimezone($nz_timezone);
-
-          $start_time = ($start_ts == 0) ? "" : $start->format('G:i:s');
-          $land_time = ($land_ts == 0) ? "" : $land->format('G:i:s');
-          $tr .= "<td class='right' style='padding-left:5px;'>".$start_time."</td>";
-          $tr .= "<td class='right' style='padding-left:5px;'>".$land_time."</td>";
-
-	  if ($towChargeType==1)
-          {
-            $tr .= "<td class='right'>";
-            if ($row2[4] == $towLaunchType)
-                $tr .= $row2[3];
-	    $tr .= "</td>";
-          }
-	  $tr .= "<td class='right'>".$row2[5]."</td>";
-          $tr .= "<td class='right'>";
-          if ($row2[6] == $row[0])
-          {
-              if ($row2[7] > 0)
-              {
-                 if ($isInstructor)
-	         	$tr .= "I";
-                 else
-	         	$tr .= "P1";
-              }
-              else
-		 $tr .= "P";
-          }
-	  else
-             $tr .= "P2";
-
-	  $tr .= "</td><td class='right'>";
-          if ($row2[6] == $row[0])
-          {
-            $tr .= $row2[10];
-          }else{
-            $tr .= "---";
-          }
-          $tr .= "</td>";
-          $tr .= "</tr>";
-          $message .= $tr;
-        }
-        if ($done==1)
-        {
-            //TODO: replace hardcoded domains
-           $message .= "<tr><td colspan='7' class='td1'></td></tr>
-<tr><td colspan='7' class='td2'>To check out more go to <a href='gops.wwgc.co.nz'>gops.wwgc.co.nz</a></td></tr>
-</table>
-</body>
-</html>";
-           Mail::SendMailHtml($row[1], "Your flight summary", $message);
-           $q5 = "UPDATE members SET localdate_lastemail = ".$dateStr." WHERE members.id = ".$row[0];
-           $r5 = mysqli_query($con,$q5);
-
+            $q5 = "UPDATE members SET localdate_lastemail = " . $dateStr . " WHERE members.id = " . $memberId;
+            mysqli_query($con, $q5);
         }
     }
 }

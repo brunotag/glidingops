@@ -1,6 +1,11 @@
 # .htaccess
 DirectoryIndex home.php
-php_value session.gc_maxlifetime 2592000
+<IfModule php7_module>
+    php_value session.gc_maxlifetime 2592000
+</IfModule>
+<IfModule php8_module>
+    php_value session.gc_maxlifetime 2592000
+</IfModule>
 RewriteEngine On
 
 # if maintenance.trigger exists, then reply with
@@ -143,6 +148,10 @@ RewriteRule ssb MasterDisplay.php?org=2 [L,QSA]
 RewriteRule ^Bookings$ bookings.php [L,QSA]
 RewriteRule wgc-new MasterDisplayNew.php?org=1 [L,QSA]
 RewriteRule wgc MasterDisplay.php?org=1 [L,QSA]
+
+# Dev tools (local only)
+RewriteRule ^DevEmailPreview$ dev-email-preview.php [L,QSA]
+RewriteRule ^api/date-members$ api/date-members.php [L,QSA]
 
 # Legal pages (no auth required)
 RewriteRule ^privacy$ privacy.php [L,QSA]
