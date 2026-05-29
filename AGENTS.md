@@ -12,6 +12,8 @@
 - (none)
 
 ### Completed This Session
+- **Session persistence / "Remember me"**: Root cause was `home.php` (DirectoryIndex) creating a session with lifetime=0 before the user sees Login.php — `session_set_cookie_params()` was silently ignored because PHP never re-sends Set-Cookie for existing sessions. **Fix:** `session_regenerate_id(true)` after successful login in all 3 auth paths (password, OAuth, magic link). Also set `php_value session.gc_maxlifetime 2592000` in `.htaccess` to prevent GC from killing session data after 24 min.
+Deployed to production commit `7933b7c`.
 - **Billing report (billing-report.php)**: New Treasurer Monthly Billing Report at `/BillingReport`. Replaces broken Treasurer.php. Uses `helpers/billing-calc.php` for correct calculations (glider $2.25/min, Youth $1.50/min on GGR/GPJ/GMB, winch first $39 relaunch $25, self-launch $25). Collapsible member rows with expand/collapse all toggle. CSV export at `/BillingReport.csv`. Test file: `tests/BillingReportTest.php` (41 tests).
 - **Column widths**: Auto-layout with `col-narrow` (width:1px; white-space:nowrap) on fixed-content columns; Member takes remaining space.
 

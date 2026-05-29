@@ -22,3 +22,4 @@ docs/_secrets.md
 vendor/
 composer.lock
 tmp/
+audit.log
