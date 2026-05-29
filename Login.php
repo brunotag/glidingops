@@ -247,6 +247,9 @@
 
   <div class="container">
     <?php
+    require_once __DIR__ . '/helpers/logging.php';
+
+    $isLocal = isLocal();
     $errorMsg = '';
     $errorType = isset($_GET['error']) ? $_GET['error'] : '';
     if ($errorType === 'invalid_link') $errorMsg = 'Invalid login link. Please request a new one.';
@@ -260,6 +263,12 @@
     elseif ($errorType === 'oauth_not_configured') $errorMsg = 'This sign-in method is not yet configured. Please use another method.';
     $showMagicLinkTab = $errorType !== '';
     ?>
+    <?php if ($isLocal): ?>
+    <div style="background-color:#ffffcc;padding:10px;margin-bottom:15px;border:1px solid #cccc00;border-radius:4px;font-size:13px;">
+      <strong>Dev Mode:</strong> Social login buttons redirect to the real provider, which then
+      calls back to production. They won't work here. Use the Password or Email Link tabs below to log in.
+    </div>
+    <?php endif; ?>
     <div class="row">
       <div class="col-md-7">
         <div class="login-card">
