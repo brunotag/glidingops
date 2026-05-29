@@ -1,4 +1,7 @@
 <?php
+require __DIR__ . '/config/session.php';
+$remember = !empty($_COOKIE['remember_me']);
+session_set_cookie_params($remember ? SESSION_LIFETIME_REMEMBERED : 0, "/");
 session_start();
 
 $provider = $_GET['provider'] ?? '';
@@ -21,6 +24,7 @@ $redirect_uri = $oauth_config['redirect_base'] . '/oauth-callback';
 $state = bin2hex(random_bytes(16));
 $_SESSION['oauth_state'] = $state;
 $_SESSION['oauth_provider'] = $provider;
+$_SESSION['oauth_remember'] = $remember ? '1' : '0';
 
 $params = [
     'state' => $state,

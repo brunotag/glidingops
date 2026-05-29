@@ -1,7 +1,9 @@
 <?php
 require_once __DIR__ . '/../helpers/api-base.php';
 
-session_start();
+require __DIR__ . '/../config/session.php';
+$remember = !isset($_GET['remember']) || $_GET['remember'] === '1';
+session_set_cookie_params($remember ? SESSION_LIFETIME_REMEMBERED : 0, "/"); session_start();
 
 $token = isset($_GET['token']) ? trim($_GET['token']) : '';
 

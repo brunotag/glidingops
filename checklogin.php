@@ -1,4 +1,4 @@
-<?php session_start(); ?>
+<?php require './config/session.php'; $remember = !empty($_POST['remember']); session_set_cookie_params($remember ? SESSION_LIFETIME_REMEMBERED : 0, "/"); session_start(); ?>
 <!DOCTYPE HTML>
 <html>
 <head>

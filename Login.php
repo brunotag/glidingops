@@ -281,6 +281,12 @@
             </div>
           </div>
 
+          <div class="remember-row" style="text-align:center;margin:10px 0 8px 0;">
+            <label style="font-weight:400;color:#555;cursor:pointer;font-size:14px;">
+              <input type="checkbox" value="1" checked id="remember-me"> Remember me on this device
+            </label>
+          </div>
+
           <div class="tab-section">
             <p class="or-divider">or use your password or email link</p>
 
@@ -297,6 +303,7 @@
               <!-- Password Tab -->
               <div role="tabpanel" class="tab-pane <?php echo $showMagicLinkTab ? '' : 'active'; ?>" id="password-tab">
                 <form method='POST' action='checklogin.php'>
+                  <input type="hidden" name="remember" id="remember-hidden" value="1">
                   <div class="form-group">
                     <label for="user">Username</label>
                     <input type='text' class="form-control" name='user' id="user" placeholder="Enter username" autofocus>
@@ -389,6 +396,20 @@
       $('#magic-email').val($('#user').val()).focus();
     });
 
+    // Keep form hidden input in sync with the checkbox
+    function syncRemember() {
+      var checked = $('#remember-me').is(':checked') ? '1' : '0';
+      $('#remember-hidden').val(checked);
+    }
+    $('#remember-me').change(syncRemember);
+    syncRemember();
+
+    // Social login: set remember cookie before navigating
+    $('.btn-oauth').click(function(e) {
+      var remember = $('#remember-me').is(':checked') ? '1' : '0';
+      document.cookie = 'remember_me=' + remember + '; path=/; max-age=3600';
+    });
+
     // Tab switch: focus email field
     $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
       var target = $(e.target).attr('href');
@@ -418,7 +439,7 @@
       $.ajax({
         url: '/api/magic-link-request',
         method: 'POST',
-        data: { email: email },
+        data: { email: email, remember: $('#remember-me').is(':checked') ? '1' : '0' },
         dataType: 'json'
       })
       .done(function(data) {

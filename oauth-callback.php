@@ -1,5 +1,6 @@
 <?php
-session_start();
+require __DIR__ . '/config/session.php';
+session_set_cookie_params(SESSION_LIFETIME_REMEMBERED, "/"); session_start();
 
 require_once __DIR__ . '/helpers/logging.php';
 require_once __DIR__ . '/helpers/oauth-photo-helper.php';

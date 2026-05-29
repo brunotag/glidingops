@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $input = isset($_POST['email']) ? trim(strtolower($_POST['email'])) : '';
+$remember = !empty($_POST['remember']);
 if (empty($input) || strlen($input) < 2) {
     echo json_encode(['success' => true]);
     apiExit();
@@ -24,7 +25,7 @@ if (mysqli_connect_errno()) {
     apiExitWithError('Database connection failed');
 }
 
-function sendMagicLink($con, $userId, $userName, $memberEmail, $usercode) {
+function sendMagicLink($con, $userId, $userName, $memberEmail, $usercode, $remember) {
     $countStmt = mysqli_prepare($con, "SELECT COUNT(*) as cnt FROM magic_link_tokens WHERE user_id = ? AND used_at IS NULL AND created_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)");
     mysqli_stmt_bind_param($countStmt, 'i', $userId);
     mysqli_stmt_execute($countStmt);
@@ -44,7 +45,7 @@ function sendMagicLink($con, $userId, $userName, $memberEmail, $usercode) {
 
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'];
-    $link = "$scheme://$host/api/magic-link-verify?token=" . urlencode($token);
+    $link = "$scheme://$host/api/magic-link-verify?token=" . urlencode($token) . "&remember=" . ($remember ? '1' : '0');
 
     $message = "Hi $userName,\n\nClick the link below to log in to Gliding Ops:\n$link\n\nYour username is: $usercode\n\nThis link expires in 15 minutes and can only be used once.\n\nIf you did not request this link, please ignore this email.";
 
@@ -69,7 +70,7 @@ $result = mysqli_stmt_get_result($stmt);
 $foundUser = false;
 while ($row = mysqli_fetch_assoc($result)) {
     $foundUser = true;
-    sendMagicLink($con, $row['id'], $row['name'], $row['member_email'], $row['usercode']);
+    sendMagicLink($con, $row['id'], $row['name'], $row['member_email'], $row['usercode'], $remember);
 }
 
 if (!$foundUser) {
@@ -98,7 +99,7 @@ if (!$foundUser) {
         );
         if (mysqli_stmt_execute($insertStmt)) {
             $newUserId = mysqli_insert_id($con);
-            sendMagicLink($con, $newUserId, $memberRow['displayname'], $memberRow['email'], $memberRow['email']);
+            sendMagicLink($con, $newUserId, $memberRow['displayname'], $memberRow['email'], $memberRow['email'], $remember);
         } else {
             logMsg("magic-link-request: INSERT user failed for member {$memberRow['id']}: " . mysqli_stmt_error($insertStmt));
         }
