@@ -189,6 +189,7 @@ function escapeHtml(s) {
 function renderSidebar() {
   var FLYING_HEADER = '<div class="flight-header">' +
     '<span class="color-dot"></span>' +
+    '<span class="seq">#</span>' +
     '<span class="rego">Reg</span>' +
     '<span class="timer">Time</span>' +
     '<span class="altitude-msl">MSL</span>' +
@@ -232,6 +233,7 @@ function renderSidebar() {
 
     var row1 = '<div class="flight-row">' +
       '<span class="color-dot" style="background:' + dotColor + '"></span>' +
+      '<span class="seq">' + f.seq + '</span>' +
       '<span class="rego">' + escapeHtml(f.regoShort) + '</span>' +
       '<span class="timer">' + (f.landed ? timer : flyingTimer) + '</span>';
 
@@ -256,6 +258,7 @@ function renderSidebar() {
     if (f.landed) {
       var doneRow = '<div class="flight-row">' +
         '<span class="color-dot" style="background:' + dotColor + '"></span>' +
+        '<span class="seq">' + f.seq + '</span>' +
         '<span class="rego">' + escapeHtml(f.regoShort) + '</span>' +
         '<span class="timer">' + timer + '</span>' +
         '<span class="pilot-inline">' + escapeHtml(f.name1) + (f.name2 ? '; ' + escapeHtml(f.name2) : '') + '</span>' +

@@ -298,7 +298,7 @@ body.mobile-mode #overlay-date-row input[type="date"]::-webkit-calendar-picker-i
   display: flex;
   align-items: center;
   gap: 4px;
-  padding-left: 44px;
+  padding-left: 66px;
   font-size: 11px;
   color: #b0c0d8;
   margin-top: 2px;
@@ -318,6 +318,15 @@ body.mobile-mode #overlay-date-row input[type="date"]::-webkit-calendar-picker-i
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+.seq {
+  width: 22px;
+  font-weight: 700;
+  color: #8899bb;
+  text-align: center;
+  flex-shrink: 0;
+  font-size: 11px;
 }
 
 .rego {
@@ -494,7 +503,7 @@ body.mobile-mode #overlay-date-row input[type="date"]::-webkit-calendar-picker-i
   }
   .flight-subrow {
     font-size: 13px;
-    padding-left: 46px;
+    padding-left: 68px;
   }
   .pilot-inline {
     font-size: 14px;
