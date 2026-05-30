@@ -38,21 +38,20 @@ $todayDate = $now->format('Y-m-d');
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Real-Time Map</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<link rel="stylesheet" href="/css/map.css?v=<?= filemtime(__DIR__ . '/css/map.css') ?>" />
+<link rel="stylesheet" href="/css/map-shared.css?v=<?= filemtime(__DIR__ . '/css/map-shared.css') ?>" />
 </head>
-<body>
+<body class="desktop-mode">
 <div id="container">
   <div id="sidebar">
     <div id="date-section">
-      <div class="section-header" style="display:none">DATE</div>
       <div class="section-header" style="display:flex;font-weight:400;text-transform:none;letter-spacing:0;gap:8px">
         <label id="brightness-label" style="display:none;align-items:center;gap:4px;cursor:default;flex:1">
           <input type="range" id="brightness-slider" min="10" max="100" value="80" style="width:60px;height:3px;accent-color:#e94560;cursor:pointer" />
-          <span id="brightness-icon" style="font-size:14px;color:#b4c7dc;line-height:1">&#9728;</span>
+          <span style="font-size:14px;color:#b4c7dc;line-height:1">&#9728;</span>
         </label>
         <span id="overlay-control" style="display:inline-flex;align-items:center;gap:4px;margin-left:auto">
           <input type="range" id="overlay-slider" min="0" max="80" value="25" style="width:70px;height:3px;accent-color:#e94560;cursor:pointer" />
-          <span id="overlay-icon" style="font-size:14px;color:#b4c7dc;line-height:1">&#9680;</span>
+          <span style="font-size:14px;color:#b4c7dc;line-height:1">&#9680;</span>
         </span>
       </div>
       <div id="date-controls">
@@ -78,25 +77,6 @@ $todayDate = $now->format('Y-m-d');
   </div>
   <div id="map-panel">
     <div id="map"></div>
-    <div id="divider-handle"></div>
-    <div id="overlay">
-    <div id="overlay-header">
-      <span id="overlay-slider-mob-wrap">
-        <input type="range" id="overlay-slider-mob" min="0" max="80" value="25" />
-        <span id="overlay-icon-mob">&#9680;</span>
-      </span>
-      <span id="brightness-mob-wrap" style="display:none;">
-        <input type="range" id="brightness-slider-mob" min="10" max="100" value="80" />
-        <span style="font-size:13px;color:#b4c7dc;line-height:1">&#9728;</span>
-      </span>
-    </div>
-      <div id="overlay-date-row">
-        <input type="date" id="date-picker-mob" />
-        <button id="refresh-btn-mob" class="btn-filter">Refresh</button>
-        <span id="last-updated-mob" class="last-updated"></span>
-      </div>
-      <div id="overlay-content"></div>
-    </div>
   </div>
 </div>
 
@@ -126,7 +106,8 @@ var MAP_LAT = <?php echo json_encode($mapLat); ?>;
 var MAP_LON = <?php echo json_encode($mapLon); ?>;
 var TIMEZONE = <?php echo json_encode($timezone); ?>;
 var LAUNCH_ELEVATION = <?php echo json_encode($launchElevation); ?>;
+var MODE = 'desktop';
 </script>
-<script src="/js/map.js?v=<?= filemtime(__DIR__ . '/js/map.js') ?>"></script>
+<script src="/js/map-shared.js?v=<?= filemtime(__DIR__ . '/js/map-shared.js') ?>"></script>
 </body>
 </html>

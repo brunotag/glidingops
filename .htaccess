@@ -146,8 +146,9 @@ RewriteRule agc MasterDisplay.php?org=4 [L,QSA]
 RewriteRule cgc MasterDisplay.php?org=3 [L,QSA]
 RewriteRule ssb MasterDisplay.php?org=2 [L,QSA]
 RewriteRule ^Bookings$ bookings.php [L,QSA]
-RewriteRule wgc-new MasterDisplayNew.php?org=1 [L,QSA]
-RewriteRule wgc MasterDisplay.php?org=1 [L,QSA]
+RewriteRule ^wgc-mixed$ MasterDisplayNew.php?org=1 [L,QSA]
+RewriteRule wgc-old MasterDisplay.php?org=1 [L,QSA]
+RewriteRule ^wgc$ MasterDisplayRouter.php?org=1 [L,QSA]
 
 # Dev tools (local only)
 RewriteRule ^DevEmailPreview$ dev-email-preview.php [L,QSA]

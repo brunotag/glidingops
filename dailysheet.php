@@ -369,7 +369,7 @@ function ShowCheckErrors(xml)
   }
 
   if (bErr==0)
-    window.location.href = "CompletedSheet.php?org=<?php echo $org;?>";
+    window.location.href = "CompletedSheet.php?org=<?php echo $org;?>&date=" + datestring;
 }
 
 function xmlReplyType(xml)

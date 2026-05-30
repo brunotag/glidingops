@@ -68,6 +68,7 @@ function buildRecapEmail($orgName, $memberDisplayName, $flights, $dateStr, $stat
 
         $html .= '<tr>';
         $html .= '<th style="padding:8px 6px;border-bottom:2px solid ' . $headerBg . ';font-size:11px;color:#888;text-align:left;text-transform:uppercase;letter-spacing:0.5px;">Glider</th>';
+        $html .= '<th style="padding:8px 6px;border-bottom:2px solid ' . $headerBg . ';font-size:11px;color:#888;text-align:left;text-transform:uppercase;letter-spacing:0.5px;"></th>';
         $html .= '<th style="padding:8px 6px;border-bottom:2px solid ' . $headerBg . ';font-size:11px;color:#888;text-align:left;text-transform:uppercase;letter-spacing:0.5px;">Start</th>';
         $html .= '<th style="padding:8px 6px;border-bottom:2px solid ' . $headerBg . ';font-size:11px;color:#888;text-align:left;text-transform:uppercase;letter-spacing:0.5px;">Land</th>';
         $html .= '<th style="padding:8px 6px;border-bottom:2px solid ' . $headerBg . ';font-size:11px;color:#888;text-align:right;text-transform:uppercase;letter-spacing:0.5px;">Dur</th>';
@@ -80,6 +81,7 @@ function buildRecapEmail($orgName, $memberDisplayName, $flights, $dateStr, $stat
             $bg = $alt ? '#fafafa' : '#ffffff';
             $html .= '<tr style="background-color:' . $bg . ';">';
             $html .= '<td style="padding:8px 6px;border-bottom:1px solid ' . $borderColor . ';font-size:14px;color:#333;">' . htmlspecialchars($f['glider']) . '</td>';
+            $html .= '<td style="padding:8px 6px;border-bottom:1px solid ' . $borderColor . ';font-size:14px;color:#333;"></td>';
             $html .= '<td style="padding:8px 6px;border-bottom:1px solid ' . $borderColor . ';font-size:14px;color:#333;">' . htmlspecialchars($f['start_time']) . '</td>';
             $html .= '<td style="padding:8px 6px;border-bottom:1px solid ' . $borderColor . ';font-size:14px;color:#333;">' . htmlspecialchars($f['land_time']) . '</td>';
             $html .= '<td style="padding:8px 6px;border-bottom:1px solid ' . $borderColor . ';font-size:14px;color:#333;text-align:right;white-space:nowrap;">' . htmlspecialchars($f['duration_display']) . '</td>';
@@ -211,8 +213,10 @@ function getMemberRecapData($con, $org, $memberId, $dateStr, $currentYm, $isInst
             $startTime = ($startTs == 0) ? "" : $startDt->format('G:i');
             $landTime = ($landTs == 0) ? "" : $landDt->format('G:i');
 
-            $durMin = (int)($durationMs / 60000);
-            $durStr = $durMin . 'm';
+            $totalMin = (int)($durationMs / 60000);
+            $h = (int)($totalMin / 60);
+            $m = $totalMin % 60;
+            $durStr = ($h > 0 ? $h . 'h ' : '') . $m . 'm';
 
             if ($row2['pic'] == $memberId) {
                 $role = ((int)$row2['p2'] > 0) ? ($isInstructor ? 'I' : 'P1') : 'P';

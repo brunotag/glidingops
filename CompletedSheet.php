@@ -1,39 +1,15 @@
-<?php session_start(); ?>
-<!DOCTYPE HTML>
-<html>
-<meta name="viewport" content="width=device-width">
-<meta name="viewport" content="initial-scale=1.0">
-<head>
-<style>
-@media print {
-    #print-button {display: none;}
-    @page {size: landscape;}
-}
+<?php session_start();
+$org=0;
+$dateStr = '';
+$dateStr2='';
+$diagtext="";
+$emailsSent = false;
 
-body {margin: 1em;font-family: Arial, Helvetica, sans-serif;}
-table {border-collapse: collapse;}
-th {font-size: 14px;padding-left: 5px;padding-right: 8px;}
-td {font-size: 14px;border-style: dotted;border-color:#404040;border-width: 1px;padding-left: 5px;padding-right: 5px;}
-h1 {font-size: 16px;}
-h2 {font-size: 14px;}
-.right {text-align: right;}
-.bordertop {border-top: black;border-top-style: solid;border-top-width: 1px;}
-</style>
-<script>
-function printit(){window.print();}
-</script>
-</head>
-<body>
-<?php
 include 'helpers.php';
 include './helpers/timehelpers.php';
 include './helpers/mail.php';
 include './helpers/email-templates.php';
-$DEBUG=0;
-$org=0;
-$diagtext="";
-$dateStr = '';
-$dateStr2='';
+
 $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
 $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
 if (mysqli_connect_errno())
@@ -41,8 +17,7 @@ if (mysqli_connect_errno())
  echo "<p>Unable to connect to database</p>";
  exit();
 }
-?>
-<?php
+
 if ($_SERVER["REQUEST_METHOD"] == "GET")
 {
  $org=$_GET['org'];
@@ -62,8 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET")
  $dateStr = $dateTime->format('Ymd');
  $dateStr2=$dateTime->format('d/m/Y');
 }
-?>
-<?php
 
 $towlaunch = getTowLaunchType($con);
 $flightTypeGlider = getGlidingFlightType($con);
@@ -76,17 +49,22 @@ $r = mysqli_query($con,"SELECT * FROM billingoptions where bill_other = 1");
 $billother=9999;
 if (mysqli_num_rows($r) > 0)
 {
-	$row = mysqli_fetch_array($r);
-	$billother=$row['id'];
-	$diagtext .= "Bill Other = " . $billother ."<br>";
+    $row = mysqli_fetch_array($r);
+    $billother=$row['id'];
+    $diagtext .= "Bill Other = " . $billother ."<br>";
 }
 
-?>
-<?php
 $stClass = getShortTermClass($con,$org);
 $towLaunchType = getTowLaunchType($con);
 $currentYm = substr($dateStr, 0, 6);
-$q = "SELECT members.id, members.email, members.displayname FROM members WHERE class <> " . $stClass . " AND enable_email > 0 AND localdate_lastemail <> " . $dateStr;
+
+$resend = isset($_GET['resend']) && $_GET['resend'] === '1';
+
+if ($resend) {
+    $q = "SELECT members.id, members.email, members.displayname FROM members WHERE class <> " . $stClass;
+} else {
+    $q = "SELECT members.id, members.email, members.displayname FROM members WHERE class <> " . $stClass . " AND localdate_lastemail <> " . $dateStr;
+}
 
 $r = mysqli_query($con, $q);
 while ($row = mysqli_fetch_array($r))
@@ -107,33 +85,103 @@ while ($row = mysqli_fetch_array($r))
 
             $q5 = "UPDATE members SET localdate_lastemail = " . $dateStr . " WHERE members.id = " . $memberId;
             mysqli_query($con, $q5);
+            $emailsSent = true;
+        }
+    }
+}
+
+// Check if emails were already sent (for showing the resend button)
+$alreadySent = false;
+if (!$emailsSent && !$resend) {
+    $checkQ = "SELECT COUNT(*) as cnt FROM members WHERE class <> " . $stClass . " AND localdate_lastemail = " . $dateStr;
+    $checkR = mysqli_query($con, $checkQ);
+    if ($checkR) {
+        $checkRow = mysqli_fetch_array($checkR);
+        if ((int)$checkRow['cnt'] > 0) {
+            $alreadySent = true;
         }
     }
 }
 ?>
-<h1>Daily Log Sheet for:<?php echo " ".$dateStr2; ?> </h1>
-<table><tr>
-<th>SEQ</th>
-<th>TOWPLANE</th>
-<th>GLIDER</th>
-<th>VECTOR</th>
-<th>TOW PILOT</th>
-<th>PIC</th>
-<th>P2</th>
-<th>DURATION</th>
-<th>TOW HEIGHT</th>
-<th>CHARGE</th>
-<th>COMMENTS</th>
-<th>LOCATION</th>
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Log Sheet - Gliding Ops</title>
+  <?php include 'jsLibraies.php'; ?>
+  <style>
+    <?php $inc = "./orgs/" . $org . "/heading2.css"; if (file_exists($inc)) include $inc; ?>
+    <?php $inc = "./orgs/" . $org . "/menu1.css"; if (file_exists($inc)) include $inc; ?>
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f0f0ff; }
+    .page-container { padding: 15px; max-width: 1400px; }
+    .page-title { font-size: 18px; font-weight: bold; color: #063552; margin: 0 0 12px 0; }
+    .page-actions { margin-bottom: 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .table-container { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); overflow-x: auto; padding: 10px; }
+    .table { margin-bottom: 0; }
+    .table th { background: #063552; color: #f26120; font-size: 12px; padding: 8px 6px; white-space: nowrap; vertical-align: middle; }
+    .table td { font-size: 13px; padding: 6px; vertical-align: middle; }
+    .right { text-align: right; }
+    .print-button { margin-top: 12px; }
+
+    @media print {
+        #print-button, .page-actions, #menu, .head-user { display: none; }
+        @page { size: landscape; }
+        .table-container { box-shadow: none; border: none; padding: 0; }
+        .table th { background: #063552 !important; color: #f26120 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { background: #fff; }
+        .page-container { padding: 0; }
+    }
+
+    .resend-bar { background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; font-size: 13px; color: #856404; }
+    .resend-bar .btn { white-space: nowrap; }
+    .email-sent-bar { background: #d4edda; border: 1px solid #c3e6cb; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; font-size: 13px; color: #155724; }
+  </style>
+</head>
+<body>
+  <?php include __DIR__ . '/helpers/dev_mode_banner.php'; ?>
+  <?php $inc = "./orgs/" . $org . "/heading2.txt"; if (file_exists($inc)) include $inc; ?>
+  <?php $inc = "./orgs/" . $org . "/menu1.txt"; if (file_exists($inc)) include $inc; ?>
+
+  <div class="page-container">
+    <div class="page-title">Daily Log Sheet &mdash; <?php echo $dateStr2; ?></div>
+
+    <?php if ($resend): ?>
+      <div class="email-sent-bar">Recap emails re-sent for <?php echo $dateStr2; ?>.</div>
+    <?php elseif ($alreadySent): ?>
+      <div class="resend-bar">
+        <span>Recap emails were already sent for this date.</span>
+        <a href="CompletedSheet.php?org=<?php echo $org; ?>&date=<?php echo $dateStr; ?>&resend=1" class="btn btn-warning btn-sm">Resend Recap Email</a>
+      </div>
+    <?php endif; ?>
+
+    <div class="table-container">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>SEQ</th>
+            <th>TOWPLANE</th>
+            <th>GLIDER</th>
+            <th>VECTOR</th>
+            <th>TOW PILOT</th>
+            <th>PIC</th>
+            <th>P2</th>
+            <th class="right">DURATION</th>
+            <th class="right">TOW HEIGHT</th>
+            <th>CHARGE</th>
+            <th>COMMENTS</th>
+            <th>LOCATION</th>
+          </tr>
+        </thead>
+        <tbody>
 <?php
 $sql= "SELECT flights.seq,e.rego_short,flights.glider, a.displayname,b.displayname,c.displayname, (flights.land - flights.start), flights.height, flights.billing_option, d.displayname,flights.billing_member2, comments, f.name , flights.launchtype, flights.type, flights.vector, flights.location from flights LEFT JOIN members a ON a.id = flights.towpilot LEFT JOIN members b ON b.id = flights.pic LEFT JOIN members c ON c.id = flights.p2 LEFT JOIN members d ON d.id = flights.billing_member1 LEFT JOIN aircraft e ON e.id = flights.towplane LEFT JOIN launchtypes f on f.id = flights.launchtype where flights.org = ".$org." and flights.finalised = 1 and flights.localdate=" . $dateStr . " order by flights.seq ASC";
-$diagtext .= $sql . "<br>";
 $r = mysqli_query($con,$sql);
 $rownum = 0;
 while ($row = mysqli_fetch_array($r) )
 {
-  $rownum = $rownum + 1;
-  echo "<tr class='";if (($rownum % 2) == 0)echo "even";else echo "odd";  echo "'>";
+  $rownum++;
+  echo "<tr>";
   echo "<td>";echo $row[0];echo "</td>";
   if ($row[13] == $towlaunch)
   {
@@ -190,12 +238,19 @@ while ($row = mysqli_fetch_array($r) )
   }
   echo "</td>";
   echo "<td>"; echo $row[16]; echo "</td>";
+  echo "</tr>";
 }
 ?>
-</table>
-<p></p>
-<button onclick='printit()' id='print-button'>Print Sheet</button>
-<?php if($DEBUG>0) echo "<p>".$diagtext."</p>";?>
-<?php mysqli_close($con);?>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="print-button">
+      <button onclick="window.print()" class="btn btn-default" id="print-button">Print Sheet</button>
+    </div>
+
+    <?php if($DEBUG>0) echo "<p>".$diagtext."</p>";?>
+  </div>
 </body>
 </html>
+<?php mysqli_close($con);?>

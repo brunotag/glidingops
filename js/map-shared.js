@@ -165,6 +165,7 @@ function parseXML(xmlDoc) {
 
 function renderDuties() {
   var el = document.getElementById('duties');
+  if (!el) return;
   if (!duties || duties.length === 0) {
     el.innerHTML = '';
     return;
@@ -265,31 +266,6 @@ function renderSidebar() {
 
   flyingEl.innerHTML = FLYING_HEADER + flyingRows.join('');
   completedEl.innerHTML = completedRows.join('');
-  refreshOverlay();
-}
-
-function refreshOverlay() {
-  var content = document.getElementById('overlay-content');
-  var flying = document.getElementById('flying-section');
-  var completed = document.getElementById('completed-section');
-  content.innerHTML = (flying ? flying.outerHTML : '') + (completed ? completed.outerHTML : '');
-  content.querySelectorAll('.flight-wrapper').forEach(function(w) {
-    var seq = parseInt(w.getAttribute('data-seq'), 10);
-    w.addEventListener('click', function(e) {
-      e.stopPropagation();
-      handleFlightClick(seq);
-    });
-  });
-  var sa = content.querySelector('#sidebar-show-all');
-  if (sa) {
-    sa.style.display = selectedFlights.length > 0 ? 'block' : 'none';
-    sa.addEventListener('click', deselectAll);
-  }
-  var fob = content.querySelector('#flying-only-btn');
-  if (fob) {
-    fob.addEventListener('click', toggleFlyingOnly);
-    if (flyingOnlyActive) { fob.classList.add('active'); } else { fob.classList.remove('active'); }
-  }
 }
 
 function makeGliderIcon(color, label) {
@@ -418,8 +394,6 @@ function setDate(raw) {
   currentDate = parsed;
   isViewingToday = (parsed === TODAY_DATE);
   document.getElementById('date-picker').value = parsed;
-  var mobPicker = document.getElementById('date-picker-mob');
-  if (mobPicker) mobPicker.value = parsed;
   document.getElementById('flying-section').style.display = isViewingToday ? '' : 'none';
   document.getElementById('completed-header-label').textContent = isViewingToday ? 'COMPLETED TODAY' : 'FLIGHTS OF THE DAY';
   deselectAll();
@@ -430,16 +404,11 @@ function setDate(raw) {
   fetchData();
   var showRefresh = isViewingToday ? '' : 'none';
   document.getElementById('refresh-btn').style.display = showRefresh;
-  var mobR = document.getElementById('refresh-btn-mob');
-  if (mobR) mobR.style.display = showRefresh;
-  var upd = document.getElementById('last-updated');
-  if (upd) upd.style.display = showRefresh;
-  var updMob = document.getElementById('last-updated-mob');
-  if (updMob) updMob.style.display = showRefresh;
+  document.getElementById('last-updated').style.display = showRefresh;
 }
 
 function fetchData() {
-  var url = 'todayxml.php?org=' + ORG;
+  var url = '/todayxml.php?org=' + ORG;
   var d = dateYmd(currentDate);
   if (!isViewingToday) url += '&date=' + d;
 
@@ -448,22 +417,11 @@ function fetchData() {
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4) {
       document.getElementById('refresh-btn').classList.remove('spin');
-      var mobBtn = document.getElementById('refresh-btn-mob');
-      if (mobBtn) mobBtn.classList.remove('spin');
       var updEl = document.getElementById('last-updated');
-      if (updEl) {
-        updEl.textContent = ' ' + new Date().toLocaleTimeString();
-        updEl.classList.remove('pulse');
-        void updEl.offsetWidth;
-        updEl.classList.add('pulse');
-      }
-      var updMob = document.getElementById('last-updated-mob');
-      if (updMob) {
-        updMob.textContent = ' ' + new Date().toLocaleTimeString();
-        updMob.classList.remove('pulse');
-        void updMob.offsetWidth;
-        updMob.classList.add('pulse');
-      }
+      updEl.textContent = ' ' + new Date().toLocaleTimeString();
+      updEl.classList.remove('pulse');
+      void updEl.offsetWidth;
+      updEl.classList.add('pulse');
       if (xhr.status === 200) {
         try {
           var xml = xhr.responseXML;
@@ -485,9 +443,10 @@ function fetchData() {
               flyingOnlyActive = true;
               selectedFlights = flyingSeqs;
             }
-            document.querySelectorAll('#flying-only-btn').forEach(function(b) {
-              if (flyingOnlyActive) { b.classList.add('active'); } else { b.classList.remove('active'); }
-            });
+            var btn = document.getElementById('flying-only-btn');
+            if (btn) {
+              if (flyingOnlyActive) { btn.classList.add('active'); } else { btn.classList.remove('active'); }
+            }
           }
           if (flyingOnlyActive) {
             selectedFlights = [];
@@ -554,15 +513,11 @@ function handleFlightClick(seq) {
 }
 
 function showBrightnessUI(show) {
-  var el = document.getElementById('brightness-label');
+  var el = document.getElementById('brightness-label') || document.getElementById('brightness-wrap');
   if (el) el.style.display = show ? '' : 'none';
-  var mob = document.getElementById('brightness-mob-wrap');
-  if (mob) mob.style.display = show ? 'inline-flex' : 'none';
   if (!show && traceBrightness !== 80) {
     traceBrightness = 80;
     document.getElementById('brightness-slider').value = 80;
-    var mobB = document.getElementById('brightness-slider-mob');
-    if (mobB) mobB.value = 80;
     renderMap(flights);
   }
 }
@@ -577,9 +532,8 @@ function updateFlyingOnlyBtnVisibility() {
     }
   });
   var show = hasFlying && !allFlyingSelected;
-  document.querySelectorAll('#flying-only-btn').forEach(function(b) {
-    b.style.display = show ? '' : 'none';
-  });
+  var btn = document.getElementById('flying-only-btn');
+  if (btn) btn.style.display = show ? '' : 'none';
 }
 
 function deselectAll() {
@@ -590,10 +544,8 @@ function deselectAll() {
     if (btn) btn.classList.remove('active');
   }
   document.getElementById('sidebar-show-all').style.display = 'none';
-  var bl = document.getElementById('brightness-label');
+  var bl = document.getElementById('brightness-label') || document.getElementById('brightness-wrap');
   if (bl) bl.style.display = 'none';
-  var mobBw = document.getElementById('brightness-mob-wrap');
-  if (mobBw) mobBw.style.display = 'none';
   renderSidebar();
   renderMap(flights);
   updateFlyingOnlyBtnVisibility();
@@ -610,9 +562,10 @@ function toggleFlyingOnly() {
   } else {
     selectedFlights = [];
   }
-  document.querySelectorAll('#flying-only-btn').forEach(function(b) {
-    if (flyingOnlyActive) { b.classList.add('active'); } else { b.classList.remove('active'); }
-  });
+  var btn = document.getElementById('flying-only-btn');
+  if (btn) {
+    if (flyingOnlyActive) { btn.classList.add('active'); } else { btn.classList.remove('active'); }
+  }
   showBrightnessUI(selectedFlights.length === 1);
   document.getElementById('sidebar-show-all').style.display = selectedFlights.length > 0 ? 'block' : 'none';
   renderSidebar();
@@ -623,6 +576,8 @@ function toggleFlyingOnly() {
 function initDivider() {
   var divider = document.getElementById('divider-handle');
   var overlay = document.getElementById('overlay');
+  if (!divider || !overlay) return;
+
   var mapPanel = document.getElementById('map-panel');
   var startY, startHeight;
 
@@ -643,8 +598,8 @@ function initDivider() {
     var clientY = e.clientY || e.touches[0].clientY;
     var dy = startY - clientY;
     var newHeight = startHeight + dy;
-    var panelHeight = mapPanel.getBoundingClientRect().height;
-    newHeight = Math.max(120, Math.min(panelHeight * 0.8, newHeight));
+    var viewportHeight = window.innerHeight;
+    newHeight = Math.max(120, Math.min(viewportHeight * 0.82, newHeight));
     overlay.style.height = newHeight + 'px';
     map._onResize();
     e.preventDefault();
@@ -731,20 +686,13 @@ function init() {
   document.getElementById('brightness-slider').addEventListener('input', function() {
     traceBrightness = parseInt(this.value, 10);
     renderMap(flights);
-    var mobBright = document.getElementById('brightness-slider-mob');
-    if (mobBright) mobBright.value = this.value;
   });
 
   function doRefresh() {
-    var btn = document.getElementById('refresh-btn');
-    btn.classList.add('spin');
-    var mobBtn = document.getElementById('refresh-btn-mob');
-    if (mobBtn) mobBtn.classList.add('spin');
+    document.getElementById('refresh-btn').classList.add('spin');
     fetchData();
   }
   document.getElementById('refresh-btn').addEventListener('click', doRefresh);
-  var mobRefresh = document.getElementById('refresh-btn-mob');
-  if (mobRefresh) mobRefresh.addEventListener('click', doRefresh);
 
   document.getElementById('flying-only-btn').addEventListener('click', toggleFlyingOnly);
 
@@ -753,40 +701,7 @@ function init() {
     darkenLayer.setStyle({ fillOpacity: val });
     var dev = document.getElementById('dev-overlay');
     if (dev) dev.value = this.value;
-    var mob = document.getElementById('overlay-slider-mob');
-    if (mob) mob.value = this.value;
   });
-
-  var mobSlider = document.getElementById('overlay-slider-mob');
-  if (mobSlider) {
-    mobSlider.value = document.getElementById('overlay-slider').value;
-    mobSlider.addEventListener('input', function() {
-      var val = this.value / 100;
-      darkenLayer.setStyle({ fillOpacity: val });
-      document.getElementById('overlay-slider').value = this.value;
-      var dev = document.getElementById('dev-overlay');
-      if (dev) dev.value = this.value;
-    });
-  }
-
-  var mobBright = document.getElementById('brightness-slider-mob');
-  if (mobBright) {
-    mobBright.value = document.getElementById('brightness-slider').value;
-    mobBright.addEventListener('input', function() {
-      traceBrightness = parseInt(this.value, 10);
-      document.getElementById('brightness-slider').value = this.value;
-      renderMap(flights);
-    });
-  }
-
-  var mobPicker = document.getElementById('date-picker-mob');
-  if (mobPicker) {
-    mobPicker.value = TODAY_DATE;
-    mobPicker.addEventListener('change', function() {
-      document.getElementById('date-picker').value = this.value;
-      setDate(this.value);
-    });
-  }
 
   initDivider();
 

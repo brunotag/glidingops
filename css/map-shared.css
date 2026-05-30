@@ -18,7 +18,11 @@ html, body {
   width: 100vw;
 }
 
-#sidebar {
+/* Desktop layout */
+body.desktop-mode #container {
+  flex-direction: row;
+}
+body.desktop-mode #sidebar {
   width: 340px;
   min-width: 340px;
   overflow-y: auto;
@@ -28,23 +32,20 @@ html, body {
   flex-direction: column;
   z-index: 1;
 }
-
-#map-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  position: relative;
-}
-
-#map {
-  flex: 1;
-  min-height: 0;
-  background: #0d1117;
-}
-
-#divider-handle {
+body.desktop-mode #overlay,
+body.desktop-mode #divider-handle {
   display: none;
+}
+
+/* Mobile layout */
+body.mobile-mode #container {
+  flex-direction: column;
+}
+body.mobile-mode #sidebar {
+  display: none;
+}
+body.mobile-mode #divider-handle {
+  display: flex;
   height: 10px;
   background: #0f3460;
   cursor: row-resize;
@@ -52,25 +53,121 @@ html, body {
   align-items: center;
   justify-content: center;
   position: relative;
+  touch-action: none;
 }
-#divider-handle::after {
+body.mobile-mode #divider-handle::after {
   content: '';
   width: 40px;
   height: 3px;
   border-radius: 2px;
   background: #2a4a6a;
 }
-#divider-handle:hover::after {
+body.mobile-mode #divider-handle:hover::after {
   background: #e94560;
 }
+body.mobile-mode #overlay {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  background: #16213e;
+  overflow: hidden;
+  height: 40vh;
+}
+body.mobile-mode #overlay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #080a14;
+  border-bottom: 2px dotted #0f3460;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  font-weight: 700;
+  color: #e8edf5;
+  font-size: 13px;
+  letter-spacing: 1px;
+  gap: 8px;
+  touch-action: none;
+}
+body.mobile-mode #overlay-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+body.mobile-mode #overlay-slider {
+  width: 100px;
+  height: 3px;
+  accent-color: #e94560;
+  cursor: pointer;
+}
+body.mobile-mode #overlay-icon {
+  font-size: 14px;
+  color: #b4c7dc;
+  line-height: 1;
+}
+body.mobile-mode #brightness-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+body.mobile-mode #brightness-slider {
+  width: 100px;
+  height: 3px;
+  accent-color: #e94560;
+  cursor: pointer;
+}
+body.mobile-mode #overlay-date-row {
+  display: flex;
+  gap: 6px;
+  padding: 6px 16px;
+  background: #1a1a2e;
+  border-bottom: 1px solid #0f3460;
+  align-items: center;
+}
+body.mobile-mode #overlay-date-row input[type="date"] {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #0f3460;
+  border-radius: 4px;
+  background: #16213e;
+  color: #f0f4fa;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 500;
+  min-height: 36px;
+}
+body.mobile-mode #overlay-date-row input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  cursor: pointer;
+}
+/* Map panel — shared */
+#map-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+}
+#map {
+  flex: 1;
+  min-height: 0;
+  background: #0d1117;
+}
 
+/* Section headers — shared */
 .section-header {
   padding: 8px 12px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.5px;
   color: #e8edf5;
-  background: #0f3460;
+  background: #080a14;
+  border-bottom: 2px dotted  #0f3460;
   text-transform: uppercase;
   position: sticky;
   top: 0;
@@ -116,18 +213,28 @@ html, body {
   cursor: pointer;
 }
 
-#flying-section, #completed-section {
+#flying-section {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+#flying-section.hidden {
+  display: none;
+}
+#completed-section {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
 }
-#flying-section.hidden {
-  display: none;
+#flying-list {
+  overflow-y: auto;
+  max-height: 40vh;
 }
-#flying-list, #completed-list {
+#completed-list {
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
 }
 
 .flight-header {
@@ -339,140 +446,7 @@ html, body {
   cursor: pointer;
 }
 
-#overlay {
-  display: none;
-  flex-shrink: 0;
-  background: #16213e;
-  overflow-y: auto;
-}
-#overlay-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background: #0f3460;
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  font-weight: 700;
-  color: #e8edf5;
-  font-size: 13px;
-  letter-spacing: 1px;
-  gap: 8px;
-}
-#overlay-slider-mob-wrap {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-  justify-content: center;
-}
-#overlay-slider-mob {
-  width: 100px;
-  height: 3px;
-  accent-color: #e94560;
-  cursor: pointer;
-}
-#overlay-icon-mob {
-  font-size: 14px;
-  color: #b4c7dc;
-  line-height: 1;
-}
-#overlay-date-row {
-  display: flex;
-  gap: 6px;
-  padding: 6px 16px;
-  background: #1a1a2e;
-  border-bottom: 1px solid #0f3460;
-  align-items: center;
-}
-#overlay-date-row input[type="date"] {
-  flex: 1;
-  padding: 6px 8px;
-  border: 1px solid #0f3460;
-  border-radius: 4px;
-  background: #16213e;
-  color: #f0f4fa;
-  font-size: 11px;
-  font-family: inherit;
-  font-weight: 500;
-  min-height: 36px;
-}
-
-#overlay-date-row input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.8);
-  cursor: pointer;
-}
-#overlay-content {
-  padding: 0;
-}
-
-@media (max-width: 768px) {
-  #container {
-    flex-direction: column;
-  }
-  #sidebar {
-    display: none;
-  }
-  #divider-handle {
-    display: flex;
-    touch-action: none;
-  }
-  #overlay {
-    display: block;
-    height: 40vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  #overlay-header {
-    touch-action: none;
-  }
-  #date-picker {
-    font-size: 12px;
-    min-height: 36px;
-  }
-  .btn-filter {
-    font-size: 13px;
-    padding: 6px 14px;
-  }
-  .flight-header {
-    font-size: 12px;
-  }
-  .flight-row {
-    font-size: 14px;
-  }
-  .flight-subrow {
-    font-size: 12px;
-  }
-  .section-header {
-    font-size: 12px;
-  }
-  .timer {
-    font-size: 12px;
-  }
-  .altitude-msl, .altitude-agl {
-    font-size: 12px;
-  }
-  .age {
-    font-size: 12px;
-  }
-  .pilot-inline {
-    font-size: 13px;
-  }
-  #brightness-slider-mob {
-    width: 100px;
-    height: 3px;
-    accent-color: #e94560;
-    cursor: pointer;
-  }
-  #brightness-mob-wrap {
-    align-items: center;
-    gap: 4px;
-    flex: 1;
-    justify-content: center;
-  }
-}
-
+/* Desktop typography */
 @media (min-width: 769px) {
   .section-header {
     font-size: 13px;
