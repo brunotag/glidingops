@@ -20,6 +20,8 @@ var isViewingToday = true;
 var darkenLayer = null;
 var flyingOnlyActive = false;
 var initialLoad = true;
+var waypointLayer = null;
+var wpState = 0;
 
 function parseDateInput(s) {
   s = s.trim().replace(/\//g, '-');
@@ -271,16 +273,18 @@ function renderSidebar() {
 function makeGliderIcon(color, label) {
   var r = parseInt(color.slice(1,3), 16), g = parseInt(color.slice(3,5), 16), b = parseInt(color.slice(5,7), 16);
   var lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  var sz = MODE === 'mobile' ? 22 : 34;
+  var anchor = Math.round(sz / 2);
   return L.divIcon({
     className: '',
-    html: '<div style="width:34px;height:34px;border-radius:50%;background:' + color +
-      ';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:' +
+    html: '<div style="width:' + sz + 'px;height:' + sz + 'px;border-radius:50%;background:' + color +
+      ';display:flex;align-items:center;justify-content:center;font-size:' + (sz < 30 ? 10 : 12) + 'px;font-weight:800;color:' +
       (lum > 0.5 ? '#111' : '#fff') + ';border:2px solid rgba(255,255,255,0.4)">' + label + '</div>',
-    iconSize: [34, 34], iconAnchor: [17, 17]
+    iconSize: [sz, sz], iconAnchor: [anchor, anchor]
   });
 }
 
-function renderMap(dataFlights) {
+function renderMap(dataFlights, preserveView) {
   for (var key in flightLayers) {
     if (flightLayers[key]) {
       if (flightLayers[key].polyline) map.removeLayer(flightLayers[key].polyline);
@@ -291,6 +295,12 @@ function renderMap(dataFlights) {
     }
   }
   flightLayers = {};
+
+  var savedCenter, savedZoom;
+  if (preserveView) {
+    savedCenter = map.getCenter();
+    savedZoom = map.getZoom();
+  }
 
   var bounds = [];
   var hasVisible = false;
@@ -349,7 +359,9 @@ function renderMap(dataFlights) {
     hasVisible = true;
   });
 
-  if (hasVisible) {
+  if (preserveView && savedCenter) {
+    map.setView(savedCenter, savedZoom);
+  } else if (hasVisible) {
     map.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
   } else {
     map.setView([MAP_LAT, MAP_LON], 11);
@@ -447,6 +459,7 @@ function fetchData() {
             if (btn) {
               if (flyingOnlyActive) { btn.classList.add('active'); } else { btn.classList.remove('active'); }
             }
+            document.getElementById('sidebar-show-all').style.display = selectedFlights.length > 0 ? 'block' : 'none';
           }
           if (flyingOnlyActive) {
             selectedFlights = [];
@@ -454,7 +467,7 @@ function fetchData() {
           }
           renderDuties();
           renderSidebar();
-          renderMap(flights);
+          renderMap(flights, true);
           updateFlyingOnlyBtnVisibility();
           pollcnt = 0;
           refreshInterval = 30 + Math.floor(Math.random() * 31);
@@ -518,20 +531,23 @@ function showBrightnessUI(show) {
   if (!show && traceBrightness !== 80) {
     traceBrightness = 80;
     document.getElementById('brightness-slider').value = 80;
-    renderMap(flights);
+    renderMap(flights, true);
   }
 }
 
 function updateFlyingOnlyBtnVisibility() {
   var hasFlying = false;
   var allFlyingSelected = true;
+  var hasCompletedSelected = false;
   flights.forEach(function(f) {
     if (!f.landed) {
       hasFlying = true;
       if (selectedFlights.indexOf(f.seq) === -1) allFlyingSelected = false;
+    } else {
+      if (selectedFlights.indexOf(f.seq) !== -1) hasCompletedSelected = true;
     }
   });
-  var show = hasFlying && !allFlyingSelected;
+  var show = hasFlying && (!allFlyingSelected || hasCompletedSelected);
   var btn = document.getElementById('flying-only-btn');
   if (btn) btn.style.display = show ? '' : 'none';
 }
@@ -573,6 +589,33 @@ function toggleFlyingOnly() {
   updateFlyingOnlyBtnVisibility();
 }
 
+function renderWaypoints() {
+  if (waypointLayer) { map.removeLayer(waypointLayer); waypointLayer = null; }
+  if (wpState === 0) return;
+  waypointLayer = L.layerGroup();
+  WAYPOINTS.forEach(function(wp) {
+    var dotClass = 'wp-dot';
+    if (wp.style !== 1) dotClass += ' wp-dot-runway';
+    var html = '<div class="' + dotClass + '" style="width:10px;height:10px;background:#e066ff';
+    if (wp.style !== 1) html += ';box-shadow:inset 0 0 0 2px #000';
+    html += '"></div><div class="wp-label" style="font-size:11px">' + wp.name + '</div>';
+    L.marker([wp.lat, wp.lon], {
+      icon: L.divIcon({ className: 'wp-marker', html: html, iconSize: [12, 12], iconAnchor: [6, 6] })
+    }).addTo(waypointLayer);
+  });
+  waypointLayer.addTo(map);
+}
+
+function toggleWaypoints() {
+  wpState = wpState === 0 ? 2 : 0;
+  renderWaypoints();
+  var btn = document.getElementById('waypoints-btn');
+  if (!btn) return;
+  btn.classList.remove('active', 'active-md');
+  if (wpState === 2) { btn.classList.add('active-md'); btn.textContent = 'Waypoints'; }
+  else { btn.textContent = 'Waypoints'; }
+}
+
 function initDivider() {
   var divider = document.getElementById('divider-handle');
   var overlay = document.getElementById('overlay');
@@ -598,8 +641,8 @@ function initDivider() {
     var clientY = e.clientY || e.touches[0].clientY;
     var dy = startY - clientY;
     var newHeight = startHeight + dy;
-    var viewportHeight = window.innerHeight;
-    newHeight = Math.max(120, Math.min(viewportHeight * 0.82, newHeight));
+    var viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    newHeight = Math.max(120, Math.min(viewportHeight * 0.95, newHeight));
     overlay.style.height = newHeight + 'px';
     map._onResize();
     e.preventDefault();
@@ -685,7 +728,7 @@ function init() {
 
   document.getElementById('brightness-slider').addEventListener('input', function() {
     traceBrightness = parseInt(this.value, 10);
-    renderMap(flights);
+    renderMap(flights, true);
   });
 
   function doRefresh() {
@@ -695,6 +738,7 @@ function init() {
   document.getElementById('refresh-btn').addEventListener('click', doRefresh);
 
   document.getElementById('flying-only-btn').addEventListener('click', toggleFlyingOnly);
+  document.getElementById('waypoints-btn').addEventListener('click', toggleWaypoints);
 
   document.getElementById('overlay-slider').addEventListener('input', function() {
     var val = this.value / 100;

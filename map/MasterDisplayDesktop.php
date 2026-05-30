@@ -7,10 +7,10 @@ else
 
 $date = isset($_GET['date']) ? $_GET['date'] : null;
 
-require_once __DIR__ . '/helpers/logging.php';
+require_once __DIR__ . '/../helpers/logging.php';
 $isDev = isLocal();
 
-$con_params = require(__DIR__ . '/config/database.php');
+$con_params = require(__DIR__ . '/../config/database.php');
 $con_params = $con_params['gliding'];
 $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
 
@@ -30,6 +30,22 @@ $launchElevation = 50;
 $tz = new DateTimeZone($timezone);
 $now = new DateTime('now', $tz);
 $todayDate = $now->format('Y-m-d');
+
+function parseCupLat($s) { $d = substr($s,-1); $n = substr($s,0,-1); return ($d==='S'||$d==='W'?-1:1)*(intval(substr($n,0,2))+floatval(substr($n,2))/60); }
+function parseCupLon($s) { $d = substr($s,-1); $n = substr($s,0,-1); return ($d==='S'||$d==='W'?-1:1)*(intval(substr($n,0,3))+floatval(substr($n,3))/60); }
+function loadWaypoints($path) {
+  $wps = []; $lines = @file($path, FILE_IGNORE_NEW_LINES|FILE_SKIP_EMPTY_LINES);
+  if (!$lines) return $wps;
+  $hdr = str_getcsv(array_shift($lines));
+  $nameIdx = array_search('name',$hdr); $latIdx = array_search('lat',$hdr);
+  $lonIdx = array_search('lon',$hdr); $styIdx = array_search('style',$hdr);
+  if ($nameIdx===false||$latIdx===false||$lonIdx===false) return $wps;
+  foreach ($lines as $line) {
+    $f = str_getcsv($line); if (count($f)<=max($nameIdx,$latIdx,$lonIdx)) continue;
+    $wps[] = ['name'=>$f[$nameIdx],'lat'=>parseCupLat(trim($f[$latIdx])),'lon'=>parseCupLon(trim($f[$lonIdx])),'style'=>intval($styIdx!==false&&isset($f[$styIdx])?$f[$styIdx]:1)];
+  } return $wps;
+}
+$waypoints = loadWaypoints(__DIR__ . '/PAP_LONG_24P.cup');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,7 +54,7 @@ $todayDate = $now->format('Y-m-d');
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Real-Time Map</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<link rel="stylesheet" href="/css/map-shared.css?v=<?= filemtime(__DIR__ . '/css/map-shared.css') ?>" />
+<link rel="stylesheet" href="/map/map-shared.css?v=<?= filemtime(__DIR__ . '/map-shared.css') ?>" />
 </head>
 <body class="desktop-mode">
 <div id="container">
@@ -56,7 +72,8 @@ $todayDate = $now->format('Y-m-d');
       </div>
       <div id="date-controls">
         <input type="date" id="date-picker" />
-        <button id="refresh-btn" class="btn-filter">Refresh</button>
+        <button id="refresh-btn" class="btn-filter">&#x21bb;</button>
+        <button id="waypoints-btn" class="btn-filter">Waypoints</button>
         <span id="last-updated" class="last-updated"></span>
       </div>
     </div>
@@ -107,7 +124,8 @@ var MAP_LON = <?php echo json_encode($mapLon); ?>;
 var TIMEZONE = <?php echo json_encode($timezone); ?>;
 var LAUNCH_ELEVATION = <?php echo json_encode($launchElevation); ?>;
 var MODE = 'desktop';
+var WAYPOINTS = <?php echo json_encode($waypoints); ?>;
 </script>
-<script src="/js/map-shared.js?v=<?= filemtime(__DIR__ . '/js/map-shared.js') ?>"></script>
+<script src="/map/map-shared.js?v=<?= filemtime(__DIR__ . '/map-shared.js') ?>"></script>
 </body>
 </html>

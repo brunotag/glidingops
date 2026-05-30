@@ -172,19 +172,28 @@ Archived historical tracking data. Records are moved here after 3 days.
 
 ## Map Display
 
-### MasterDisplayNew.php (Current - `/wgc-new`)
+### MasterDisplay (Current - `/wgc`, split desktop/mobile)
 - **Technology:** Leaflet.js + OpenTopoMap tiles (free, no API key)
-- **Files:** `MasterDisplayNew.php`, `css/map.css`, `js/map.js`
+- **Files:**
+  - `map/MasterDisplayDesktop.php` — desktop layout (sidebar + map)
+  - `map/MasterDisplayMobile.php` — mobile layout (full map + overlay + drag divider)
+  - `map/MasterDisplayRouter.php` — device detection (UA check)
+  - `map/map-shared.js` — shared logic (no twin elements, mode-guarded)
+  - `map/map-shared.css` — shared styles, scoped to `.desktop-mode` / `.mobile-mode`
 - **Features:**
+  - Separate HTML files per mode — no twin element syncing, no `refreshOverlay()`
   - 24-color unique palette per flight
   - Altitude gradient coloring (single flight mode)
-  - Multi-select flight toggle
-  - Double-click to isolate flight
-  - Mobile-responsive with collapsible overlay
-  - Dark overlay pane with brightness slider
-  - Dev tools panel (overlay + track opacity)
-- **Data feed:** `todayxml.php` (fetched every 30s, UI ticks every 1s)
-- **Route:** `/wgc-new`
+  - Multi-select flight toggle, Flying Only mode
+  - Brightness slider (visible when 1 flight selected)
+  - Contrast slider on desktop (opacity 0–0.8)
+  - Compact flying section (`flex: 0 0 auto`), completed fills remaining
+  - Dark `#080a14` section headers with `#e94560` accent border
+  - Glider markers: 34px circle with 2-letter rego, auto-contrasting text
+  - Auto-refresh preserves flight selections; timer in mm:ss/h:mm:ss
+- **Data feed:** `todayxml.php` (fetched every 10-60s random, UI ticks every 1s)
+- **Routes:** `/wgc` (router), `/wgc/desktop`, `/wgc/mobile`
+- **Old version:** `/wgc-mixed` (single-file `MasterDisplayNew.php`)
 
 ### MasterDisplay.php (Legacy - `/wgc`, `/ssb`, `/cgc`, `/agc`)
 - **Technology:** Google Maps API (requires API key)
@@ -208,7 +217,7 @@ Org-specific map settings in `organisations` table:
 | def_launch_lon | Launch point longitude |
 
 ### Future Development
-See `FUTURE_DEVELOPMENT_MAP.md` for planned improvements and migration off Google Maps.
+See `MAP.md` for current map architecture and feature reference.
 
 ---
 

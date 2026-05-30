@@ -613,8 +613,9 @@ Particle/Flarm/SPOT/bTraced  -->  gliding.tracks  -->  todayxml.php  -->  Master
 
 ### Map Display
 
-- **Current:** `MasterDisplayNew.php` (Leaflet + OpenTopoMap) via `/wgc-new`
-- **Legacy:** `MasterDisplay.php` (Google Maps) via `/wgc`, `/ssb`, `/cgc`, `/agc`
+- **Current:** `map/MasterDisplayDesktop.php` / `map/MasterDisplayMobile.php` (split desktop/mobile, Leaflet + OpenTopoMap) via `/wgc` (device detection), shared `map/map-shared.js` + `map/map-shared.css`
+- **Old single-file:** `map/MasterDisplayNew.php` via `/wgc-mixed`
+- **Legacy:** `map/MasterDisplay.php` (Google Maps) via `/wgc-old`, `/ssb`, `/cgc`, `/agc`
 
 ### todayxml.php
 **Purpose:** JSON feed for live tracking map

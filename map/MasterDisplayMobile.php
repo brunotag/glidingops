@@ -7,10 +7,10 @@ else
 
 $date = isset($_GET['date']) ? $_GET['date'] : null;
 
-require_once __DIR__ . '/helpers/logging.php';
+require_once __DIR__ . '/../helpers/logging.php';
 $isDev = isLocal();
 
-$con_params = require(__DIR__ . '/config/database.php');
+$con_params = require(__DIR__ . '/../config/database.php');
 $con_params = $con_params['gliding'];
 $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
 
@@ -30,38 +30,57 @@ $launchElevation = 50;
 $tz = new DateTimeZone($timezone);
 $now = new DateTime('now', $tz);
 $todayDate = $now->format('Y-m-d');
+
+function parseCupLat($s) { $d = substr($s,-1); $n = substr($s,0,-1); return ($d==='S'||$d==='W'?-1:1)*(intval(substr($n,0,2))+floatval(substr($n,2))/60); }
+function parseCupLon($s) { $d = substr($s,-1); $n = substr($s,0,-1); return ($d==='S'||$d==='W'?-1:1)*(intval(substr($n,0,3))+floatval(substr($n,3))/60); }
+function loadWaypoints($path) {
+  $wps = []; $lines = @file($path, FILE_IGNORE_NEW_LINES|FILE_SKIP_EMPTY_LINES);
+  if (!$lines) return $wps;
+  $hdr = str_getcsv(array_shift($lines));
+  $nameIdx = array_search('name',$hdr); $latIdx = array_search('lat',$hdr);
+  $lonIdx = array_search('lon',$hdr); $styIdx = array_search('style',$hdr);
+  if ($nameIdx===false||$latIdx===false||$lonIdx===false) return $wps;
+  foreach ($lines as $line) {
+    $f = str_getcsv($line); if (count($f)<=max($nameIdx,$latIdx,$lonIdx)) continue;
+    $wps[] = ['name'=>$f[$nameIdx],'lat'=>parseCupLat(trim($f[$latIdx])),'lon'=>parseCupLon(trim($f[$lonIdx])),'style'=>intval($styIdx!==false&&isset($f[$styIdx])?$f[$styIdx]:1)];
+  } return $wps;
+}
+$waypoints = loadWaypoints(__DIR__ . '/PAP_LONG_24P.cup');
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Real-Time Map</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<link rel="stylesheet" href="/css/map.css?v=<?= filemtime(__DIR__ . '/css/map.css') ?>" />
+<link rel="stylesheet" href="/map/map-shared.css?v=<?= filemtime(__DIR__ . '/map-shared.css') ?>" />
 </head>
-<body>
+<body class="mobile-mode">
 <div id="container">
-  <div id="sidebar">
-    <div id="date-section">
-      <div class="section-header" style="display:none">DATE</div>
-      <div class="section-header" style="display:flex;font-weight:400;text-transform:none;letter-spacing:0;gap:8px">
-        <label id="brightness-label" style="display:none;align-items:center;gap:4px;cursor:default;flex:1">
-          <input type="range" id="brightness-slider" min="10" max="100" value="80" style="width:60px;height:3px;accent-color:#e94560;cursor:pointer" />
-          <span id="brightness-icon" style="font-size:14px;color:#b4c7dc;line-height:1">&#9728;</span>
-        </label>
-        <span id="overlay-control" style="display:inline-flex;align-items:center;gap:4px;margin-left:auto">
-          <input type="range" id="overlay-slider" min="0" max="80" value="25" style="width:70px;height:3px;accent-color:#e94560;cursor:pointer" />
-          <span id="overlay-icon" style="font-size:14px;color:#b4c7dc;line-height:1">&#9680;</span>
-        </span>
-      </div>
-      <div id="date-controls">
-        <input type="date" id="date-picker" />
-        <button id="refresh-btn" class="btn-filter">Refresh</button>
-        <span id="last-updated" class="last-updated"></span>
-      </div>
+  <div id="map-panel">
+    <div id="map"></div>
+  </div>
+  <div id="divider-handle">
+    <span id="drag-grip"></span>
+  </div>
+  <div id="overlay">
+    <div id="overlay-header">
+      <span id="overlay-wrap">
+        <input type="range" id="overlay-slider" min="0" max="80" value="25" />
+        <span id="overlay-icon">&#9680;</span>
+      </span>
+      <span id="brightness-wrap" style="display:none">
+        <input type="range" id="brightness-slider" min="10" max="100" value="80" />
+        <span style="font-size:13px;color:#b4c7dc;line-height:1">&#9728;</span>
+      </span>
     </div>
-    <div id="duties"></div>
+    <div id="overlay-date-row">
+      <input type="date" id="date-picker" />
+      <button id="refresh-btn" class="btn-filter">&#x21bb;</button>
+      <button id="waypoints-btn" class="btn-filter">Waypoints</button>
+      <span id="last-updated" class="last-updated"></span>
+    </div>
     <div id="flying-section">
       <div class="section-header">
         FLYING NOW <button id="flying-only-btn" class="btn-filter">Flying only</button>
@@ -74,28 +93,6 @@ $todayDate = $now->format('Y-m-d');
         <button id="sidebar-show-all" class="btn-filter">Show all</button>
       </div>
       <div id="completed-list"></div>
-    </div>
-  </div>
-  <div id="map-panel">
-    <div id="map"></div>
-    <div id="divider-handle"></div>
-    <div id="overlay">
-    <div id="overlay-header">
-      <span id="overlay-slider-mob-wrap">
-        <input type="range" id="overlay-slider-mob" min="0" max="80" value="25" />
-        <span id="overlay-icon-mob">&#9680;</span>
-      </span>
-      <span id="brightness-mob-wrap" style="display:none;">
-        <input type="range" id="brightness-slider-mob" min="10" max="100" value="80" />
-        <span style="font-size:13px;color:#b4c7dc;line-height:1">&#9728;</span>
-      </span>
-    </div>
-      <div id="overlay-date-row">
-        <input type="date" id="date-picker-mob" />
-        <button id="refresh-btn-mob" class="btn-filter">Refresh</button>
-        <span id="last-updated-mob" class="last-updated"></span>
-      </div>
-      <div id="overlay-content"></div>
     </div>
   </div>
 </div>
@@ -126,7 +123,9 @@ var MAP_LAT = <?php echo json_encode($mapLat); ?>;
 var MAP_LON = <?php echo json_encode($mapLon); ?>;
 var TIMEZONE = <?php echo json_encode($timezone); ?>;
 var LAUNCH_ELEVATION = <?php echo json_encode($launchElevation); ?>;
+var MODE = 'mobile';
+var WAYPOINTS = <?php echo json_encode($waypoints); ?>;
 </script>
-<script src="/js/map.js?v=<?= filemtime(__DIR__ . '/js/map.js') ?>"></script>
+<script src="/map/map-shared.js?v=<?= filemtime(__DIR__ . '/map-shared.js') ?>"></script>
 </body>
 </html>

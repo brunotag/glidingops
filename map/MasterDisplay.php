@@ -12,7 +12,7 @@ else{
   $date = null;
 }
 
-$global_settings = require(dirname(__FILE__) . '/config/site.php');
+$global_settings = require(__DIR__ . '/../config/site.php');
 $global_settings = $global_settings['globalSettings'];
 ?>
 <!DOCTYPE html>
@@ -20,7 +20,7 @@ $global_settings = $global_settings['globalSettings'];
 <head>
   <meta http-equiv="refresh" content="3600">
   <style>
-    <?php $inc = "./orgs/" . $org . "/heading1.css";
+    <?php $inc = __DIR__ . "/../orgs/" . $org . "/heading1.css";
     include $inc; ?>
   </style>
   <style>
@@ -318,12 +318,12 @@ $global_settings = $global_settings['globalSettings'];
   </style>
   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?php echo $global_settings['mapKey']; ?>">
   </script>
-  <script type="text/javascript" src="/mapiconmaker.js">
+  <script type="text/javascript" src="/map/mapiconmaker.js">
   </script>
   <script>
     <?PHP
     $clockNow = new DateTime('now');
-    $con_params = require('./config/database.php');
+    $con_params = require(__DIR__ . '/../config/database.php');
     $con_params = $con_params['gliding'];
     $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
     $q = "SELECT def_launch_lat,def_launch_lon,map_centre_lat,map_centre_lon from organisations where id = " . $org;

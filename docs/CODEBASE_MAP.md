@@ -312,8 +312,13 @@ $stmt->bind_param("i", $id);
 - incentive_schemes.php, scheme_subs.php (discount schemes)
 
 ### Tracking
-- MasterDisplay.php (live map - legacy)
-- MasterDisplayNew.php (live map - new Leaflet version)
+- `map/MasterDisplay.php` (live map - legacy Google Maps, at `/wgc-old`)
+- `map/MasterDisplayDesktop.php` (live map - desktop Leaflet, at `/wgc`)
+- `map/MasterDisplayMobile.php` (live map - mobile Leaflet, at `/wgc` — via router)
+- `map/MasterDisplayRouter.php` (device detection router, at `/wgc`)
+- `map/MasterDisplayNew.php` (live map - old single-file Leaflet, at `/wgc-mixed`)
+- `map/map-shared.js` (shared JS for current map)
+- `map/map-shared.css` (shared CSS for current map)
 - todayxml.php (JSON feed)
 - spots.php (device mapping)
 - FlyingNow.php (current flights)

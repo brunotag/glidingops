@@ -23,6 +23,11 @@ This application has accumulated technical debt. This document identifies code t
 | Priority | File | Reason |
 |----------|------|--------|
 | 1 | `api/js-debug.php` | Route exists but nothing calls it |
+| 1 | `map/MasterDisplayNew.php` | Dead — replaced by MasterDisplayDesktop/Mobile at `/wgc` |
+| 1 | `map/MasterDisplay.php` | Dead — replaced by new Leaflet map, was at `/wgc-old` |
+| 1 | `map/map.css` | Dead — belonged to MasterDisplayNew.php (old single-file) |
+| 1 | `map/map.js` | Dead — belonged to MasterDisplayNew.php (old single-file) |
+| 1 | `map/mapiconmaker.js` | Dead — Google Maps icon maker for MasterDisplay.php |
 | 2 | `MessagingPageOld.php` | Listed as to-delete in AGENTS.md, replaced by MessagingPage.php |
 | 3 | `texts-list.php` | Dead SMS layer, replaced by `texts-list-v2b.php` |
 | 4 | `users-list.php` | Replaced by `users-list-v2b.php`, "Old Version" button in modern page |
@@ -44,6 +49,10 @@ This application has accumulated technical debt. This document identifies code t
 | `/texts-list-old` | `texts-list.php` | `/texts-list` → `texts-list-v2b.php` |
 | `/UsersOld` | `users.php` | `/Users` → `users-new.php` |
 | `/UsersListOld` | `users-list.php` | `/UsersList` → `users-list-v2b.php` |
+| `/wgc-mixed` | `map/MasterDisplayNew.php` | `/wgc` → `map/MasterDisplayRouter.php` (device detection) |
+| `/wgc-old` | `map/MasterDisplay.php` | `/wgc` → `map/MasterDisplayRouter.php` (Leaflet, not Google Maps) |
+| `/wgc/desktop` | `map/MasterDisplayDesktop.php` | **Do NOT add** — only the router at `/wgc`, no sub-routes |
+| `/wgc/mobile` | `map/MasterDisplayMobile.php` | **Do NOT add** — only the router at `/wgc`, no sub-routes |
 
 ### Links to Delete Before Removing Routes
 
