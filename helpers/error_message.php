@@ -1,4 +1,4 @@
-<?php 
+﻿<?php 
 if (isset($_SESSION["errtext"]) && empty($_SESSION["errtext"])){
     ?>
     <p style="color:green"> Success! </p>      

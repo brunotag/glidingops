@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 function checkSecretCode($org, $key) {
     $secretCode = md5($key);

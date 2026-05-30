@@ -1,4 +1,4 @@
-<?php session_start(); ?>
+﻿<?php session_start(); ?>
 <?php
 include 'helpers/secret_code_helpers.php';
 if(isset($_SESSION['security'])){

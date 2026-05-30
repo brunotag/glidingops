@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 include './helpers/session_helpers.php';
 include './helpers/secret_code_helpers.php';
 session_start();
