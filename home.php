@@ -344,7 +344,7 @@ if ($dbOk) {
               <?php endforeach; ?>
             <?php endif; ?>
             <?php if ($org == 1): ?>
-              <a href="/wgc-new" target="_blank" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">Real Time Map &rarr;</a>
+              <a href="/wgc" target="_blank" style="color:#063552;font-weight:bold;border-top:1px solid #e0e0e0;margin-top:4px;padding-top:6px;">Real Time Map &rarr;</a>
               <div style="margin-top:6px;display:flex;align-items:center;">
                 <input type="date" id="map-date" style="font-size:13px;padding:2px 4px;border:1px solid #ccc;border-radius:3px;">
                 <a href="#" id="see-past-flights" style="color:#063552;font-weight:bold;margin-left:6px;white-space:nowrap;">See Past Flights &rarr;</a>
