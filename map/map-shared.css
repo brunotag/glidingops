@@ -23,8 +23,8 @@ body.desktop-mode #container {
   flex-direction: row;
 }
 body.desktop-mode #sidebar {
-  width: 370px;
-  min-width: 370px;
+  width: 410px;
+  min-width: 410px;
   overflow-y: auto;
   background: #16213e;
   border-right: 1px solid #0f3460;
