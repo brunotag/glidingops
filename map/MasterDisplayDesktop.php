@@ -92,6 +92,7 @@ $waypoints = loadWaypoints(__DIR__ . '/PAP_LONG_24P.cup');
       <div id="completed-list"></div>
     </div>
   </div>
+  <div id="sidebar-resizer"></div>
   <div id="map-panel">
     <div id="map"></div>
   </div>
