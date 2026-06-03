@@ -367,6 +367,7 @@ if ($dbOk) {
               <a href="/StartDay?org=<?php echo $org; ?>">New Daily Timesheet</a>
               <a href="/EditDailySheet?org=<?php echo $org; ?>">Edit Daily Timesheet</a>
               <a href="/DailyLogSheet?org=<?php echo $org; ?>">View Daily Timesheet</a>
+              <a href="/SelfLaunchEntry">Self-Launch Flight</a>
             </div>
           </div>
         <?php endif; ?>
@@ -455,9 +456,7 @@ if ($dbOk) {
             <div class="card-body">
               <a href="/maintenance/testemail.php">Test Email</a>
               <a href="/SentMessages">All Messages</a>
-              <?php if ($_SESSION['security'] & 128): ?>
-                <a href="/ViewAs">View Homepage As...</a>
-              <?php endif; ?>
+              <a href="/ViewAs">View Homepage As...</a>
             </div>
           </div>
         <?php endif; ?>

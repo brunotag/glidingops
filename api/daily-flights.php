@@ -41,11 +41,13 @@ if (mysqli_num_rows($r) > 0) {
     $billother = $row['id'];
 }
 
-$sql = "SELECT flights.seq, e.rego_short, flights.glider, a.displayname as towpilot_name,
+$sql = "SELECT flights.id AS flight_id, flights.seq, e.rego_short, flights.glider,
+        a.displayname as towpilot_name,
         b.displayname as pic_name, c.displayname as p2_name,
         (flights.land - flights.start) as duration_ms, flights.height, flights.billing_option,
         d.displayname as billing_name, flights.comments, f.name as launch_name,
-        flights.launchtype, flights.location, flights.type, flights.start, flights.land, flights.vector
+        flights.launchtype, flights.location, flights.type, flights.start, flights.land, flights.vector,
+        flights.pic, flights.p2
         FROM flights
         LEFT JOIN members a ON a.id = flights.towpilot
         LEFT JOIN members b ON b.id = flights.pic
@@ -53,7 +55,7 @@ $sql = "SELECT flights.seq, e.rego_short, flights.glider, a.displayname as towpi
         LEFT JOIN members d ON d.id = flights.billing_member1
         LEFT JOIN aircraft e ON e.id = flights.towplane
         LEFT JOIN launchtypes f ON f.id = flights.launchtype
-        WHERE flights.org = " . $org . " AND flights.localdate = " . $dateStr . "
+        WHERE flights.org = " . $org . " AND flights.localdate = " . $dateStr . " AND flights.deleted <> 1
         ORDER BY flights.seq ASC";
 
 $r = mysqli_query($con, $sql);
@@ -98,6 +100,7 @@ while ($row = mysqli_fetch_assoc($r)) {
     $towDisplay = ($towluanch == $row['launchtype']) ? ($row['rego_short'] ?: '') : ($row['launch_name'] ?: '');
 
     $flights[] = [
+        'flight_id' => (int)$row['flight_id'],
         'seq' => (int)$row['seq'],
         'towplane' => $towDisplay,
         'glider' => $row['glider'],
@@ -108,12 +111,30 @@ while ($row = mysqli_fetch_assoc($r)) {
         'duration' => $duration,
         'billing' => $billingDisplay,
         'comments' => $typeDisplay,
-        'location' => $row['location']
+        'location' => $row['location'],
+        'launchtype' => (int)$row['launchtype'],
+        'start' => $row['start'] ? (int)$row['start'] : 0,
+        'land' => $row['land'] ? (int)$row['land'] : 0,
+        'pic_id' => (int)$row['pic'],
+        'p2_id' => $row['p2'] ? (int)$row['p2'] : null,
+        'billing_id' => (int)$row['billing_option']
     ];
+}
+
+// Get max seq including deleted flights for accurate nextSeq calculation
+$maxSeqAll = 0;
+$maxSeqR = mysqli_query($con, "SELECT COALESCE(MAX(seq), 0) AS max_seq FROM flights WHERE org = $org AND localdate = $dateStr");
+if ($maxSeqR && ($mRow = mysqli_fetch_assoc($maxSeqR))) {
+    $maxSeqAll = (int)$mRow['max_seq'];
 }
 
 mysqli_close($con);
 
 header('Content-Type: application/json');
-echo json_encode(['success' => true, 'flights' => $flights, 'location' => $location]);
+echo json_encode([
+    'success' => true,
+    'flights' => $flights,
+    'location' => $location,
+    'next_seq' => $maxSeqAll + 1
+]);
 apiExit(null);

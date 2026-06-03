@@ -5,3 +5,7 @@
 #menu a:link{color:#f26120;}
 #menu a:visited{color:#f26120;}
 #menu a:hover{color:#fff;}
+
+@media (max-width: 640px) {
+    #menu a { font-size: 15px; }
+}

@@ -53,6 +53,15 @@ RewriteRule ^api/myflights$ api/myflights-data.php [L,QSA]
 # Daily flights API
 RewriteRule ^api/daily-flights$ api/daily-flights.php [L,QSA]
 
+# Flight creation API
+RewriteRule ^api/flights$ api/flights.php [L,QSA]
+
+# Aircraft autocomplete API
+RewriteRule ^api/aircraft$ api/aircraft.php [L,QSA]
+
+# Track-derived flight segments API
+RewriteRule ^api/track-flights$ api/track-flights.php [L,QSA]
+
 # Magic link login API
 RewriteRule ^api/magic-link-request$ api/magic-link-request.php [L,QSA]
 RewriteRule ^api/magic-link-verify$ api/magic-link-verify.php [L,QSA]
@@ -102,6 +111,7 @@ RewriteRule SeasonTrends analytics-season-trends.php [L,QSA]
 RewriteRule BillingOptions billingoptions-list.php [L]
 RewriteRule BillingOption billingoptions.php [L]
 
+RewriteRule SelfLaunchEntry self-launch-entry.php [L,QSA]
 RewriteRule EditDailySheet EditDailySheet.php [L,QSA]
 RewriteRule DailyLogSheet DailyLogSheet.php [L,QSA]
 RewriteRule StartDay StartDay.php [L,QSA]

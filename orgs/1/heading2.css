@@ -12,3 +12,9 @@
 #head a:link{color:#f26120;}
 #head a:visited{color:#f26120;}
 #head a:hover{color:#fff;}
+
+@media (max-width: 640px) {
+    .head-title { font-size: 22px; }
+    .head-sub { font-size: 15px; }
+    .head-user { font-size: 14px; }
+}
