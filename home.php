@@ -119,6 +119,25 @@ if ($dbOk) {
         }
     }
 }
+
+// Favourites
+$editFavs = isset($_GET['edit_favs']) && $_GET['edit_favs'] == 1 && ($_SESSION['security'] & 128);
+$editMemberId = isset($_GET['edit_member_id']) ? intval($_GET['edit_member_id']) : 0;
+$favMemberId = $editFavs && $editMemberId ? $editMemberId : (isset($_SESSION['memberid']) ? intval($_SESSION['memberid']) : 0);
+$favourites = [];
+$favHrefs = [];
+if ($dbOk && $favMemberId > 0) {
+    $favQ = "SELECT href, label FROM user_favourites WHERE member_id = $favMemberId ORDER BY created_at ASC";
+    $favR = mysqli_query($con, $favQ);
+    if ($favR) {
+        while ($row = mysqli_fetch_assoc($favR)) {
+            $favourites[] = $row;
+            $favHrefs[] = $row['href'];
+        }
+    }
+}
+$favHrefsJson = json_encode($favHrefs);
+$favMemberIdJson = json_encode($favMemberId);
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -193,13 +212,38 @@ if ($dbOk) {
       padding: 12px 16px;
       font-size: 15px;
     }
-    .nav-card .card-body a {
-      display: block;
+    .nav-link-row {
+      display: flex;
+      align-items: center;
       padding: 6px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .nav-link-row:last-child { border-bottom: none; }
+    .nav-link-row a {
+      display: inline;
       color: #333;
       text-decoration: none;
+      line-height: 1.4;
     }
-    .nav-card .card-body a:hover { color: #063552; font-weight: bold; }
+    .nav-card .nav-link-row a:hover { color: #063552; font-weight: bold; }
+    .nav-card .nav-link-row a:focus { outline: none; }
+    .nav-link-row .fav-star {
+      margin-left: auto;
+      cursor: pointer;
+      font-size: 28px;
+      color: #ccc;
+      user-select: none;
+      line-height: 1;
+      padding-left: 12px;
+    }
+    .nav-link-row .fav-star.active { color: #f26120; }
+    .nav-link-row .fav-star:hover { color: #f29720; }
+    .card-body span .fav-star { font-size: 24px; cursor: pointer; color: #ccc; user-select: none; margin-left: 6px; }
+    .card-body span .fav-star.active { color: #f26120; }
+    .nav-card .card-body > a { display: block; padding: 6px 0; color: #333; text-decoration: none; border-bottom: 1px solid #f0f0f0; }
+    .nav-card .card-body > a:last-child { border-bottom: none; }
+    .nav-card .card-body > a:hover { color: #063552; font-weight: bold; }
+
 
     .roster-box {
       background: #d9edf7;
@@ -259,6 +303,17 @@ if ($dbOk) {
       <?php endif; ?>
 
       <div class="widget-grid">
+
+        <?php if (!empty($favourites)): ?>
+          <div class="nav-card no-stars">
+            <div class="card-header">Favourites</div>
+            <div class="card-body">
+              <?php foreach ($favourites as $fav): ?>
+                <a href="<?php echo htmlspecialchars($fav['href']); ?>"><?php echo htmlspecialchars($fav['label']); ?></a>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        <?php endif; ?>
 
         <div class="dashboard-card wide">
           <div class="card-header">Latest Updates</div>
@@ -539,6 +594,81 @@ if ($dbOk) {
       localStorage.setItem('gops_broadcast_seen_max', currentMax.toString());
     }
   })();
+  </script>
+
+  <script>
+  var userFavHrefs = <?php echo $favHrefsJson; ?>;
+  var editFavs = <?php echo $editFavs ? 'true' : 'false'; ?>;
+  var favMemberId = <?php echo $favMemberIdJson; ?>;
+
+  $(function() {
+    // Restructure direct child links into rows (text clickable, star separate)
+    $('.nav-card:not(.no-stars) > .card-body > a').each(function() {
+      var $a = $(this);
+      var href = $a.attr('href');
+      if (!href) return;
+      var label = $.trim($a.clone().children().remove().end().text());
+      var isFav = userFavHrefs.indexOf(href) !== -1;
+      var $star = $('<span class="fav-star' + (isFav ? ' active' : '') + '" data-href="' + href.replace(/"/g, '&quot;') + '" data-label="' + label.replace(/"/g, '&quot;') + '">' + (isFav ? '&#9733;' : '&#9734;') + '</span>');
+      $star.insertAfter($a);
+      var $row = $('<div class="nav-link-row"></div>');
+      $a.before($row);
+      $row.append($a, $star);
+    });
+    // Links inside wrappers (e.g. "All Flights Report (New)") — star inside link
+    $('.nav-card:not(.no-stars) .card-body span a').each(function() {
+      var $a = $(this);
+      if ($a.find('.fav-star').length) return;
+      var href = $a.attr('href');
+      if (!href) return;
+      var label = $.trim($a.text());
+      var isFav = userFavHrefs.indexOf(href) !== -1;
+      $a.append('<span class="fav-star' + (isFav ? ' active' : '') + '" data-href="' + href.replace(/"/g, '&quot;') + '" data-label="' + label.replace(/"/g, '&quot;') + '">' + (isFav ? '&#9733;' : '&#9734;') + '</span>');
+    });
+
+    $(document).on('click', '.fav-star', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var $star = $(this);
+      var data = {
+        href: $star.data('href'),
+        label: $star.data('label')
+      };
+      if (editFavs && favMemberId) {
+        data.member_id = favMemberId;
+      }
+      $.ajax({
+        url: '/api/favourites',
+        method: 'POST',
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function(resp) {
+          $star.toggleClass('active').html(resp.favourited ? '&#9733;' : '&#9734;');
+          var href = $star.data('href');
+          var label = $star.data('label');
+          if (resp.favourited) {
+            userFavHrefs.push(href);
+            var $favCard = $('.widget-grid > .no-stars');
+            if ($favCard.length === 0) {
+              $favCard = $('<div class="nav-card no-stars"><div class="card-header">Favourites</div><div class="card-body"></div></div>');
+              $('.widget-grid').prepend($favCard);
+            }
+            $favCard.find('.card-body').append('<a href="' + href.replace(/"/g, '&quot;') + '">' + label.replace(/"/g, '&quot;') + '</a>');
+          } else {
+            userFavHrefs = userFavHrefs.filter(function(h) { return h !== href; });
+            var $favCard = $('.widget-grid > .no-stars');
+            if ($favCard.length) {
+              $favCard.find('.card-body a[href="' + href.replace(/"/g, '&quot;') + '"]').remove();
+              if ($favCard.find('.card-body a').length === 0) {
+                $favCard.remove();
+              }
+            }
+          }
+        }
+      });
+    });
+  });
   </script>
 
   <style>

@@ -18,7 +18,7 @@ $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_par
 
 $users = [];
 if (!mysqli_connect_errno()) {
-    $r = mysqli_query($con, "SELECT id, name, securitylevel FROM users ORDER BY name ASC");
+    $r = mysqli_query($con, "SELECT u.id, u.name, u.securitylevel, u.member FROM users u ORDER BY u.name ASC");
     if ($r) {
         while ($row = mysqli_fetch_assoc($r)) {
             $users[] = $row;
@@ -75,9 +75,12 @@ $levels = [
     <script>
         function openHomeAsUser() {
             var sel = document.getElementById('user');
-            var val = sel.options[sel.selectedIndex].getAttribute('data-level');
+            var opt = sel.options[sel.selectedIndex];
+            var val = opt.getAttribute('data-level');
+            var memberId = opt.getAttribute('data-member');
             if (val) {
                 var url = '/home?as=' + val;
+                if (memberId && memberId !== '0') url += '&edit_favs=1&edit_member_id=' + memberId;
                 window.open(url, '_blank');
             }
         }
@@ -103,11 +106,12 @@ $levels = [
             <select id="user">
                 <option value="">-- Select a user --</option>
                 <?php foreach ($users as $u): ?>
-                    <option value="<?php echo $u['id']; ?>" data-level="<?php echo $u['securitylevel']; ?>">
+                    <option value="<?php echo $u['id']; ?>" data-level="<?php echo $u['securitylevel']; ?>" data-member="<?php echo intval($u['member']); ?>">
                         <?php echo htmlspecialchars($u['name']); ?> (level <?php echo $u['securitylevel']; ?>)
                     </option>
                 <?php endforeach; ?>
             </select>
+            <p style="margin:10px 0 0;font-size:13px;color:#888;">You can click the stars to edit this user's favourites.</p>
             <button type="submit" class="open-btn">Open Homepage as This User</button>
         </form>
 

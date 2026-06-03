@@ -35,6 +35,9 @@ RewriteRule ^api/analytics-trends$ api/analytics-trends.php [L,QSA]
 # Member autocomplete search API
 RewriteRule ^api/member-search$ api/member-search.php [L,QSA]
 
+# Favourites API
+RewriteRule ^api/favourites$ api/favourites.php [L,QSA]
+
 # DataTables API for members
 RewriteRule ^api/members$ api/members.php [L,QSA]
 
