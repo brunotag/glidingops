@@ -240,7 +240,7 @@ body { background: #f5f5f5; font-family: Arial, Helvetica, sans-serif; min-heigh
 
         <div class="form-group">
             <label for="vector">Vector</label>
-            <input type="text" id="vector" class="form-control" maxlength="2" placeholder="e.g. NN" style="width:80px;">
+            <input type="text" id="vector" class="form-control" maxlength="2" placeholder="e.g. 03" style="width:80px;">
         </div>
 
         <div class="form-group">
