@@ -88,7 +88,7 @@ body.mobile-mode #overlay {
   background: #16213e;
   overflow: hidden;
   height: 40dvh;
-  padding-bottom: max(var(--android-nav-height), 80px); 
+  padding-bottom: max(var(--android-nav-height), 60px); 
   box-sizing: border-box;
 }
 body.mobile-mode #overlay-header {
