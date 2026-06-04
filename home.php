@@ -33,18 +33,6 @@ $dateStr = $dateTime->format('Y-m-d');
 $localDateInt = intval($dateTime->format('Ymd'));
 require_once __DIR__ . '/helpers.php';
 
-// Rostered duties
-$rosterDuties = [];
-if ($dbOk && isset($_SESSION['memberid'])) {
-    $q = "SELECT localdate, a.name FROM duty LEFT JOIN dutytypes a ON a.id = duty.type WHERE duty.org = $org AND member = {$_SESSION['memberid']} AND localdate >= '$dateStr' ORDER BY localdate ASC";
-    $r = mysqli_query($con, $q);
-    if ($r) {
-        while ($row = mysqli_fetch_array($r)) {
-            $rosterDuties[] = ['date' => $row[0], 'type' => $row[1]];
-        }
-    }
-}
-
 // Data widgets
 $recentFlights = [];
 $todayFlightCount = 0;
@@ -245,15 +233,6 @@ $favMemberIdJson = json_encode($favMemberId);
     .nav-card .card-body > a:hover { color: #063552; font-weight: bold; }
 
 
-    .roster-box {
-      background: #d9edf7;
-      border: 1px solid #bce8f1;
-      border-radius: 6px;
-      padding: 10px 14px;
-      margin-bottom: 20px;
-      font-size: 13px;
-      color: #31708f;
-    }
 
     a { text-decoration: none; }
     a:link { color: #333; }
@@ -291,16 +270,6 @@ $favMemberIdJson = json_encode($favMemberId);
 
   <div id="container">
     <div class="container-fluid" style="padding:10px;">
-
-      <?php if (!empty($rosterDuties)): ?>
-        <div class="roster-box">
-          <strong>Your next rostered duties:</strong>
-          <?php foreach ($rosterDuties as $d): ?>
-            <?php $dd = strval($d['date']); $dt = strlen($dd) >= 8 ? substr($dd, 6, 2) . '/' . substr($dd, 4, 2) . '/' . substr($dd, 0, 4) : $dd; ?>
-            &nbsp; <?php echo $dt; ?> - <?php echo htmlspecialchars($d['type']); ?>
-          <?php endforeach; ?>
-        </div>
-      <?php endif; ?>
 
       <div class="widget-grid">
 
@@ -548,12 +517,10 @@ $favMemberIdJson = json_encode($favMemberId);
               <?php endif; ?>
               <?php if ($effectiveSecurity & 64): ?>
                 <a href="/AircraftTypes">Aircraft Types</a>
-                <a href="/DutyTypes">Duty Types</a>
                 <a href="/flights-list.php">Flights Raw</a>
                 <a href="/membership_class-list.php">Membership Classes</a>
                 <a href="/membership_status-list.php">Membership Statuses</a>
                 <a href="/Roles">Roles</a>
-                <a href="/AssignRoles">Role Assignment</a>
                 <a href="/spots-list.php">Spots</a>
                 <a href="/manage-secret-code.php">Manage Secret Code</a>
               <?php endif; ?>

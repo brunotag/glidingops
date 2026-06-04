@@ -72,8 +72,6 @@
         $con->query("UPDATE audit SET memberid = {$genuine_id} WHERE memberid={$id}");
 
         $con->query("UPDATE bookings SET member_id = {$genuine_id} WHERE member_id={$id}");
-        $con->query("UPDATE duty SET member = {$genuine_id} WHERE member={$id}");
-
         $con->query("UPDATE group_member SET gm_member_id = {$genuine_id} WHERE gm_member_id={$id}");
 
         $con->query("UPDATE scheme_subs SET member = {$genuine_id} WHERE member={$id}");
@@ -134,7 +132,6 @@ WHERE
 | ✓ audit_ibfk_2        | audit        | memberid        | members               | id                     |
 | ✓ bookings_ibfk_3     | bookings     | member          | members               | id                     |
 | ✓ bookings_ibfk_5     | bookings     | instructor      | members               | id                     |
-| ✓ duty_ibfk_2         | duty         | member          | members               | id                     |
 | ✓ flights_ibfk_10     | flights      | billing_member2 | members               | id                     |
 | ✓ flights_ibfk_5      | flights      | towpilot        | members               | id                     |
 | ✓ flights_ibfk_6      | flights      | pic             | members               | id                     |

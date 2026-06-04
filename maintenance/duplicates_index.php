@@ -58,7 +58,6 @@
                   mysqli_query($con, "UPDATE texts SET txt_member_id = $genuineId WHERE txt_member_id = $id");
                   mysqli_query($con, "UPDATE audit SET memberid = $genuineId WHERE memberid = $id");
                   mysqli_query($con, "UPDATE bookings SET member_id = $genuineId WHERE member_id = $id");
-                  mysqli_query($con, "UPDATE duty SET member = $genuineId WHERE member = $id");
                   mysqli_query($con, "UPDATE group_member SET gm_member_id = $genuineId WHERE gm_member_id = $id");
                   mysqli_query($con, "UPDATE scheme_subs SET member = $genuineId WHERE member = $id");
                   mysqli_query($con, "UPDATE users SET member = $genuineId WHERE member = $id");

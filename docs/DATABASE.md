@@ -303,19 +303,6 @@ id, org, member (FK), start, end, scheme (incentive_schemes FK)
 
 ### Operations
 
-#### duty
-Roster/duty assignments.
-```
-id, org, type (dutytypes FK), localdate, member
-```
-
-#### dutytypes
-Duty types.
-```
-id, name
-Values: "Instructor", "Tow Pilot", "Winch Driver", "Launch Point Controller", etc.
-```
-
 #### spots
 Tracking device configuration (Flarm/OGN).
 ```
@@ -421,7 +408,6 @@ These tables exist but have no active use:
 | users | 0.11 MB | 330 | 0.03% | System logins |
 | aircraft | 0.09 MB | 101 | 0.02% | |
 | role_member | 0.09 MB | 315 | 0.02% | |
-| duty | 0.08 MB | 417 | 0.02% | |
 | towcharges | 0.08 MB | 103 | 0.02% | |
 | spots | 0.08 MB | 12 | 0.02% | |
 | scheme_subs | 0.08 MB | 85 | 0.02% | Legacy |

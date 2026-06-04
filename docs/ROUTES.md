@@ -39,10 +39,6 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/TowCharge` | towcharges.php | Add/edit tow charge |
 | `/OtherCharges` | charges-list.php | Other fees |
 | `/OtherCharge` | charges.php | Add/edit charge |
-| `/DutyTypes` | dutytypes-list.php | Duty types |
-| `/DutyType` | dutytypes.php | Add/edit duty type |
-| `/Rosters` | duty-list.php | Roster list |
-| `/Roster` | duty.php | Add/edit duty |
 | `/IncentiveSchemes` | incentive_schemes-list.php | Pricing schemes |
 | `/IncentiveScheme` | incentive_schemes.php | Add/edit scheme |
 | `/SubsToSchemes` | scheme_subs-list.php | Subscriptions |

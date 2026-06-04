@@ -403,39 +403,7 @@ member	int				F		members	id	displayname	MEMBER	1		IO			Member	1	displayname
 aircraft	int				F		aircraft	id	registration	AIRCRAFT	1		IO			Aircraft	1	registration		
 instructor	int				F		members	id	displayname	INSTRUCTOR	1		IO			Instructor	1	displayname		
 user	int						users	id	name	USER						MADE BY	1	name		
-END FIELDS																				
-TABLENAME	dutytypes																			
-SECURITY	64																			
-STYLESHEET FORM	styleform1.css																			
-STYLESHEET TABLE	styletable1.css																			
-TABLE DEFAULT SORT																				
-URL RECORD	DutyType																			
-URL LIST	DutyTypes																			
-FIELDS																				
-id	int NOT NULL AUTO_INCREMENT				P	1				ID	2		O			ID	1			
-name	VARCHAR(20)			1						TYPE	1		IO			TYPE	1			
-END FIELDS																				
-TABLENAME	duty																			
-SECURITY	6																			
-SECURITY LIST	1																			
-STYLESHEET FORM	styleform1.css																			
-STYLESHEET TABLE	styletable1.css																			
-HEADING	heading2																			
-MENU	menu1																			
-TABLE DEFAULT SORT	localdate																			
-ADVANCED SELECT	org	$_SESSION['org']																		
-URL RECORD	Roster																			
-URL LIST	Rosters																			
-ON DELETE	Rosters																			
-ON UPDATE	Rosters																			
-TITLE TABLE	Gliding - Rosters																			
-FIELDS																				
-id	int NOT NULL AUTO_INCREMENT				P	1				ID	2		O			ID	1			
-org	int		$_SESSION['org']		F		organisations	id	name	ORGANISATION	0		IO			ORGANISATION	0	name		
-type	int			1	F		dutytypes	id	name	DUTY	1		IO			DUTY	1	name		
-localdate	TIMESTAMP			1						DATE	1		IO	Date		DATE	1		D d/m/Y	
-member	int			1	F		members	id	displayname	MEMBER	1		IO			MEMBER	1	displayname		
-END FIELDS																				
+END FIELDS
 TABLENAME	towcharges																			
 SECURITY	8																			
 STYLESHEET FORM	styleform1.css																			
@@ -510,22 +478,6 @@ id	int NOT NULL AUTO_INCREMENT				P	1				ID	2		O			ID	1
 create_time	TIMESTAMP			1						CREATE TIME	1		IO			CREATE TIME	1			
 data	VARCHAR(2000)	2000								DIAG DATA	1		IO			DIAG DATA	1			
 END FIELDS																				
-TABLENAME	role_member																			
-SECURITY	4																			
-STYLESHEET FORM	styleform1.css																			
-STYLESHEET TABLE	styletable1.css																			
-HEADING	heading2																			
-MENU	menu1																			
-TABLE DEFAULT SORT	role_id																			
-URL RECORD	AssignRole																			
-URL LIST	AssignRoles																			
-TITLE TABLE	Gliding-Role Assignment																			
-ADVANCED SELECT	org	$_SESSION['org']																		
-FIELDS																				
-id	int NOT NULL AUTO_INCREMENT				P	1				ID	2		O			ID	1			
-org	int		$_SESSION['org']		F		organisations	id	name	ORGANISATION	0					ORGANISATION	0			
-role_id	int			1	F	2	roles	id	name	ROLE	1		IO			ROLE	1	name		
-member_id	int			1	F	2	members	id	displayname	MEMBER	1		IO			MEMBER	1	displayname		
 END FIELDS																				
 TABLENAME	audit																			
 SECURITY	64																			

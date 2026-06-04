@@ -483,8 +483,6 @@ All follow similar pattern: *-list.php (list) + *.php (edit)
 | billingoptions-list.php / billingoptions.php | Billing schemes |
 | towcharges-list.php / towcharges.php | Tow pricing |
 | charges-list.php / charges.php | Other fees (airways, landing) |
-| dutytypes-list.php / dutytypes.php | Duty types |
-| duty-list.php / duty.php | Roster entries |
 | roles-list.php / roles.php | Role definitions |
 | role_member-list.php / role_member.php | Role assignments |
 | groups-list.php / groups.php | Member groups |
@@ -570,10 +568,6 @@ Google and Facebook Sign In buttons on Login.php. Flow:
 ### aircrafttype.php / aircrafttype-list.php
 **Purpose:** Aircraft types (ASK-21, Pawnee, etc.)
 - name, manufacturer, category
-
-### dutytypes.php / dutytypes-list.php
-**Purpose:** Types of duties (Launch, Landing, Instructor, etc.)
-- name, default_pay_rate
 
 ### launchtypes.php / launchtypes-list.php
 **Purpose:** Launch methods (Aerotow, Winch, Self Launch)

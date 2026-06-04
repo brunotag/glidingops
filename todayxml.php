@@ -27,18 +27,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
   }
   $flightTypeGlider = getGlidingFlightType($con);
   echo "<resp>";
-  echo "<duties>";
-
-  $sql = "SELECT a.name , b.displayname from duty LEFT JOIN dutytypes a ON a.id = duty.type LEFT JOIN members b ON b.id = duty.member where duty.org = " . $org . " and duty.localdate = '" . $dateStr2 . "'";
-  $r = mysqli_query($con, $sql);
-  while ($row = mysqli_fetch_array($r)) {
-    echo "<duty>";
-    echo "<t>" . $row[0] . "</t>";
-    echo "<n>" . $row[1] . "</n>";
-    echo "</duty>";
-  }
-  echo "</duties>";
-
   echo "<flights>";
   $q = "SELECT flights.seq,flights.glider, b.displayname,c.displayname, (flights.start/1000) , (flights.land/1000) from flights LEFT JOIN members b ON b.id = flights.pic LEFT JOIN members c ON c.id = flights.p2 where flights.org = " . $org . " and flights.localdate=" . $dateStr . " and flights.type = " . $flightTypeGlider . " and flights.deleted <> 1 and flights.start > 0 order by flights.seq ASC";
   $r = mysqli_query($con, $q);

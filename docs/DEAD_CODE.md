@@ -220,6 +220,20 @@ Cleaned up during current session:
 - `TreasurerReportNew.php` — Deleted (was Option 1)
 - `TreasurerReportNew2.php` — Deleted (was Option 2)
 
+## Files Already Deleted (2026-06-04 Session)
+
+Cleaned up during current session:
+- `role_member-list.php` — Deleted (at `/AssignRoles`), unused UI for role assignments
+- `role_member.php` — Deleted (at `/AssignRole`), unused add/edit form for role assignments
+- Routes `/AssignRoles` and `/AssignRole` removed from `.htaccess`
+- Link "Role Assignment" removed from `home.php`
+- `role_member` schema block removed from `GlidingSchema.txt`
+- `duty.php`, `duty-list.php`, `dutytypes.php`, `dutytypes-list.php` — Deleted along with routes `/Roster`, `/Rosters`, `/DutyType`, `/DutyTypes`
+- Duty queries removed from `home.php`, `FlyingNow.php`, `todayxml.php`
+- "Duty Types" link removed from `home.php`
+- `duty` and `dutytypes` database tables dropped via migration
+- `duty` UPDATE/FK references removed from 3 maintenance files
+
 ---
 
 ## Caution

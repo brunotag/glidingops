@@ -75,20 +75,13 @@ if ($_SERVER["REQUEST_METHOD"] == "GET")
 }
 ?>
 
-<table>
 <?php
 $dateTimeNow = new DateTime("now");
-$sql= "SELECT a.name , b.displayname from duty LEFT JOIN dutytypes a ON a.id = duty.type LEFT JOIN members b ON b.id = duty.member where duty.org = ".$org." and duty.localdate = '" .$dateStr2. "'";
+?>
+<table>
+<tr><td colspan='5' class='b'>FLYING NOW</td></tr>
 
-$r = mysqli_query($con,$sql);
-while ($row = mysqli_fetch_array($r) )
-{
-    echo "<tr><td>".$row[0]."</td><td>".$row[1]."</td><td></td><td></td><td></td></tr>";
-}
-echo "<tr class='tr1'><td colspan = '5' class='b'></td></tr>";
-echo "<tr><td colspan = '5' class='b'>FLYING NOW</td></tr>";
-
-
+<?php
 $sql= "SELECT flights.seq,flights.glider, b.displayname,c.displayname, (flights.start/1000) from flights LEFT JOIN members b ON b.id = flights.pic LEFT JOIN members c ON c.id = flights.p2 where flights.org = ".$org." and flights.localdate=" . $dateStr . " and flights.type = ".$flightTypeGlider." and flights.deleted <> 1 and flights.start > 0 and flights.land=0 order by flights.seq ASC";
 $r = mysqli_query($con,$sql);
 $rownum = 0;
