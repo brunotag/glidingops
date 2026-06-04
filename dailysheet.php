@@ -17,11 +17,6 @@ else {
     die("Please logon");
   }
 }
-//12 hours session cookie lifetime from this page
-session_set_cookie_params(12 * 3600,"/");
-
-
-
 include './helpers/timehelpers.php';
 include 'helpers.php';
 $DEBUG=0;
@@ -55,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET")
 <meta name="viewport" content="initial-scale=1.0">
 <head>
 <style>
-  <?php $inc = "./orgs/" . $org . "/heading6.css"; include $inc; ?>
+  <?php $inc = "./orgs/" . $org . "/heading2.css"; include $inc; ?>
 </style>
 <style>
   <?php $inc = "./orgs/" . $org . "/menu1.css"; include $inc; ?>
@@ -1248,7 +1243,7 @@ function AddNewLine()
 <body id="body" onload="StartUp()">
   <?php include __DIR__.'/helpers/dev_mode_banner.php' ?>
   <?php if ($org <= 0){ die("Cannot start daily log sheet as Club Organisation not specified");}  ?>
-  <?php $inc = "./orgs/" . $org . "/heading6.txt"; include $inc; ?>
+  <?php $inc = "./orgs/" . $org . "/heading2.txt"; include $inc; ?>
   <?php $inc = "./orgs/" . $org . "/menu1.txt"; include $inc; ?>
   <?php if (strlen($location) == 0){ header('Location: StartDay.php?org='.$org);}  ?>
   <div id="container">

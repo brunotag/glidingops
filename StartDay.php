@@ -54,7 +54,7 @@ $dateStr = $dateTime->format('d-M-Y');
 <head>
     <title>New Daily Timesheet</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style><?php $inc = "./orgs/" . $org . "/heading1.css";
+    <style><?php $inc = "./orgs/" . $org . "/heading2.css";
     include $inc; ?></style>
     <style><?php $inc = "./orgs/" . $org . "/menu1.css";
     include $inc; ?></style>
@@ -145,7 +145,7 @@ $dateStr = $dateTime->format('d-M-Y');
 </head>
 <body>
 <?php include __DIR__ . '/helpers/dev_mode_banner.php' ?>
-<?php $inc = "./orgs/" . $org . "/heading1.txt";
+<?php $inc = "./orgs/" . $org . "/heading2.txt";
 include $inc; ?>
 <?php $inc = "./orgs/" . $org . "/menu1.txt";
 include $inc; ?>

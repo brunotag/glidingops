@@ -38,8 +38,8 @@ glidingops/
 **Tracking Flow:**
 1. Flarm device sends data to external tracking server (particletrack)
 2. Data lands in `tracks` table (org = glider registration)
-3. todayxml.php queries tracks for glider positions
-4. MasterDisplay.js renders on Google Maps
+3. `api/daily-flights.php?tracks=1` queries flights + tracks for glider positions
+4. `map-shared.js` renders on Leaflet map
 
 Connection configured in:
 - `config/database.php` (root - expects sample file)
@@ -82,112 +82,10 @@ Connection configured in:
 - `CompletedSheet.php` - Finalize day
 
 ### Live Tracking
-- `FlyingNow.php` - Simple status page
-- `MasterDisplay.php` - Full map with tracks
-- `todayxml.php` - JSON feed for map
-
-### Reports
-- `billing-report.php` - Monthly billing report (replaces broken Treasurer.php)
-- `Engineer.php` - Aircraft usage report
-- `last-flights-list.php` - Currency/instructor recency
-
----
-
-## Organization Customization (orgs/)
-
-Each club (org) has its own customization folder in `/orgs/{id}/`:
-
-### Per-Org Files
-
-| File | Purpose |
-|------|---------|
-| heading1-6.txt | HTML header templates |
-| heading1-6.css | Header-specific styles |
-| menu1.txt | Navigation menu HTML |
-| menu1.css | Menu styles |
-| accountrules.php | **Billing calculation logic** |
-| orgHelpers.php | Org-specific helper functions |
-
-### Why This Matters
-
-- **accountrules.php** - Each org defines how to calculate tow/glider fees. This is why billing is broken - CalcTowCharge() vs CalcTowCharge2() differ!
-- **orgHelpers.php** - May contain `trialClass()` returning different values per org
-- **Route mapping** - /wgc, /ssb, /cgc, /agc map to orgs 1-4 via .htaccess
-
-## Data Flow
-
-### Flight Entry
-1. User visits `StartDay.php` → selects location
-2. Redirects to `DailySheet.php?org=X&location=Y`
-3. Form loads existing flights for date, pilots, aircraft
-4. On submit → AJAX to save flights to `flights` table
-5. Times stored as BIGINT (Unix timestamp in milliseconds)
-
-### Live Tracking
-1. Flarm devices send GPS to external system
-2. Data stored in `tracks` table
-3. `todayxml.php` queries tracks for current flights
-4. `MasterDisplay.js` renders on Google Maps
-
-### Billing Flow
-1. `billing-report.php` queries flights for month
-2. Uses `helpers/billing-calc.php` for calculation functions (glider, launch, competition, 50/50)
-3. DB rates updated to match Nov 2025 Fee PDF (glider $2.25/min, winch $39/$25, etc.)
-
-## Tracking Architecture
-
-### Tracking Sources (3 different systems feed into gliding.tracks)
-
-1. **Particle Devices** - Primary tracking
-   - Hardware: Particle-based GPS trackers in gliders
-   - API: `tracks/apiParticlejsonv1.php` - receives UDP/TCP data
-   - Stores in: `particletrack` database
-   - Forwards to: gliding ops (apiglidjsonv1.php?createtrack)
-   - Also sends to: gliding.net.nz (GNZ tracking)
-
-2. **Spot Devices** - Legacy, rarely used
-   - Cron: `GetSpotTask.php -o <org>`
-   - Polls Spot API (findmespot.com) for gliders flying today
-   - Source label: 'SPOT'
-
-3. **Flarm/OGN** - Secondary tracking
-   - Cron: `getFlarmTask.php`
-   - Queries OGN (Open Glider Network) for current positions
-   - Queries Gliding NZ API for historical data
-   - Source labels: 'FlarmOGN', 'FlarmGNZ'
-
-### Cron Jobs (Production - Verified)
-
-| Schedule | Command | Purpose |
-|----------|---------|---------|
-| `*/2 20-23 * * *` | `php GetSpotTask.php -o 1` | Poll Spot API (evening) |
-| `*/2 00-07 * * *` | `php GetSpotTask.php -o 1` | Poll Spot API (overnight) |
-| `* * * * *` | `php getFlarmTask.php` | Fetch OGN/GNZ data (every minute!) |
-| `0 6 * * *` | `php DayTimes.php` | Send daily operations summary email |
-| `0 12 1 * *` | `gops-reporting/main.php` | Monthly billing report |
-
-**Notes:**
-- GetSpotTask runs every 2 minutes, only during 8pm-11pm and midnight-7am
-- getFlarmTask runs EVERY MINUTE - could be optimized (excessive!)
-- DayTimes.php analyzes GPS tracks to reconstruct flight times, email sent to club ops manager (address in _secrets.md)
-- gops-reporting is a separate PHP reporting application (not in main repo)
-
-### Backup Cron Jobs (Daily at noon)
-
-| Schedule | Command | Purpose |
-|----------|---------|---------|
-| `0 12 * * *` | `mysqldump gliding` | Backup gliding DB to /media/mysqldump/ |
-| `0 12 * * *` | `mysqldump tracks` | Backup tracks DB to /media/mysqldump/ |
-| `0 12 * * *` | `mysqldump particletrack` | Backup particletrack DB to /media/mysqldump/ |
-| `0 12 * * *` | `find /media/mysqldump -mtime +30 -delete` | Delete backups older than 30 days |
-
-All three databases backed up daily at noon, stored in /media/mysqldump/ with date stamps. Old backups automatically cleaned up after 30 days.
-
-### Tracking Display
-
-- `todayxml.php` - JSON feed for live map
-- `MasterDisplay.php` - Full screen map with Google Maps
-- `FlyingNow.php` - Simple current status page
+- `MasterDisplayRouter.php` - Device detection router at `/wgc`
+- `MasterDisplayDesktop.php` - Full screen Leaflet map (desktop)
+- `MasterDisplayMobile.php` - Mobile Leaflet map
+- `api/daily-flights.php` - JSON feed for flights (with optional tracks)
 
 ## Key Files
 

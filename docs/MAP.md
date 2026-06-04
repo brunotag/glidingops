@@ -44,7 +44,7 @@ The live tracking map at `/wgc` uses Leaflet.js + OpenTopoMap tiles (free, no AP
 - **Mobile divider** — drag up to 95% of viewport height
 - **Cache-busted CSS/JS** via `?v=filemtime()`
 - **Drag divider** for mobile overlay height
-- **Data feed**: `todayxml.php` (absolute `/todayxml.php` URL in JS fetch)
+- **Data feed**: `api/daily-flights.php?tracks=1` (JSON, public with `org` param)
 
 ## Glider Naming
 

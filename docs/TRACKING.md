@@ -38,7 +38,7 @@ bTraced mobile app  (btraced.php)
 
 **Read path (live map):**
 ```
-gliding.tracks  -->  todayxml.php  -->  MasterDisplay.php / MasterDisplayNew.php
+gliding.tracks  -->  api/daily-flights.php?tracks=1  -->  map-shared.js (modern Leaflet map)
 ```
 
 **Read fallback (flight replay):**
@@ -191,19 +191,8 @@ Archived historical tracking data. Records are moved here after 3 days.
   - Dark `#080a14` section headers with `#e94560` accent border
   - Glider markers: 34px circle with 2-letter rego, auto-contrasting text
   - Auto-refresh preserves flight selections; timer in mm:ss/h:mm:ss
-- **Data feed:** `todayxml.php` (fetched every 10-60s random, UI ticks every 1s)
-- **Routes:** `/wgc` (router), `/wgc/desktop`, `/wgc/mobile`
-- **Old version:** `/wgc-mixed` (single-file `MasterDisplayNew.php`)
-
-### MasterDisplay.php (Legacy - `/wgc`, `/ssb`, `/cgc`, `/agc`)
-- **Technology:** Google Maps API (requires API key)
-- **Features:**
-  - Active flights with colored paths
-  - Current position markers
-  - Altitude, distance, vector to launch
-  - Completed flights list
-- **Data feed:** `todayxml.php`
-- **Routes:** `/wgc` (org 1), `/ssb` (org 2), `/cgc` (org 3), `/agc` (org 4)
+- **Data feed:** `api/daily-flights.php?tracks=1` (JSON, public with `org` param)
+- **Routes:** `/wgc` (router)
 
 ### Map Configuration
 
@@ -223,11 +212,11 @@ See `MAP.md` for current map architecture and feature reference.
 
 ## Live Data Feed
 
-### todayxml.php
-- **URL:** `todayxml.php?org=1` (public, no auth required)
-- **Format:** XML
-- **Returns:** Current flights, duties, and GPS track positions
-- **Consumed by:** MasterDisplay.php, MasterDisplayNew.js, FlyingNow.php
+### api/daily-flights.php
+- **URL:** `api/daily-flights.php?org=1&tracks=1&date=YYYY-MM-DD` (public with `org` param)
+- **Format:** JSON
+- **Returns:** Current flights and GPS track positions
+- **Consumed by:** map-shared.js (modern Leaflet map), DailyLogSheet, self-launch-entry
 
 ### apiglidjsonv1.php
 - **Routes:** `/api/v1/json/*/tracks`, `/api/v1/json/*/trackheights`, `/api/v1/json/*/flightdata`, `/api/v1/json/*/createtrack`
@@ -291,9 +280,7 @@ Maps glider registrations to tracking device identifiers.
 | `tracks/apiParticlejsonv1.php` | Receives Particle UDP/HTTP data |
 | `apiParticlejsonv1.php` | Duplicate of above (root level) |
 | `apiglidjsonv1.php` | Internal API: read/write gliding.tracks |
-| `todayxml.php` | Live XML feed for map |
-| `MasterDisplayNew.php` | Live map (Leaflet) |
-| `MasterDisplay.php` | Live map (Google Maps, legacy) |
+| `api/daily-flights.php` | Flight + tracking JSON feed (map data) |
 | `getFlarmTask.php` | Cron: fetch Flarm/OGN data |
 | `GetSpotTask.php` | Cron: fetch SPOT data |
 | `btraced.php` | bTraced mobile app ingestion |

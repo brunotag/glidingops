@@ -2,14 +2,23 @@
 require_once __DIR__ . '/../helpers/api-base.php';
 require_once __DIR__ . '/../helpers.php';
 
-session_start();
+$publicAccess = false;
+$org = 0;
 
-if (!isset($_SESSION['memberid'])) {
-    apiExitWithError('Not logged in');
+if (isset($_GET['org'])) {
+    $org = (int)$_GET['org'];
+    $publicAccess = true;
 }
 
-$org = isset($_SESSION['org']) ? (int)$_SESSION['org'] : 0;
-if ($org == 0) {
+if (!$publicAccess) {
+    session_start();
+    if (!isset($_SESSION['memberid'])) {
+        apiExitWithError('Not logged in');
+    }
+    $org = isset($_SESSION['org']) ? (int)$_SESSION['org'] : 0;
+}
+
+if ($org < 1) {
     apiExitWithError('No organisation');
 }
 
@@ -23,7 +32,7 @@ if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
 }
 
 $dateStr = str_replace('-', '', $date);
-logMsg("API daily-flights: date=$date dateStr=$dateStr org=$org");
+logMsg("API daily-flights: date=$date dateStr=$dateStr org=$org" . ($publicAccess ? ' (public)' : ''));
 
 $con_params = require(__DIR__ . '/../config/database.php');
 $con_params = $con_params['gliding'];
@@ -99,6 +108,10 @@ while ($row = mysqli_fetch_assoc($r)) {
 
     $towDisplay = ($towluanch == $row['launchtype']) ? ($row['rego_short'] ?: '') : ($row['launch_name'] ?: '');
 
+    $startMs = $row['start'] ? (int)$row['start'] : 0;
+    $landMs = $row['land'] ? (int)$row['land'] : 0;
+    $landed = $landMs > 0;
+
     $flights[] = [
         'flight_id' => (int)$row['flight_id'],
         'seq' => (int)$row['seq'],
@@ -113,12 +126,47 @@ while ($row = mysqli_fetch_assoc($r)) {
         'comments' => $typeDisplay,
         'location' => $row['location'],
         'launchtype' => (int)$row['launchtype'],
-        'start' => $row['start'] ? (int)$row['start'] : 0,
-        'land' => $row['land'] ? (int)$row['land'] : 0,
+        'start' => $startMs,
+        'land' => $landMs,
         'pic_id' => (int)$row['pic'],
         'p2_id' => $row['p2'] ? (int)$row['p2'] : null,
-        'billing_id' => (int)$row['billing_option']
+        'billing_id' => (int)$row['billing_option'],
+        'name1' => $row['pic_name'] ?: '',
+        'name2' => $row['p2_name'] ?: '',
+        'landed' => $landed,
+        'start_seconds' => intval($startMs / 1000),
+        'dur_seconds' => $landed ? intval(($landMs - $startMs) / 1000) : 0
     ];
+}
+
+// Fetch tracking data if requested
+if (isset($_GET['tracks']) && $_GET['tracks'] == 1) {
+    foreach ($flights as &$flight) {
+        $gliderSafe = mysqli_real_escape_string($con, $flight['glider']);
+        $startTime = date('Y-m-d H:i:s', $flight['start_seconds']);
+        $tracksSql = "SELECT point_time, lattitude, longitude, altitude FROM tracks
+                      WHERE org = $org AND glider = '$gliderSafe'
+                      AND point_time >= '$startTime'";
+        if ($flight['landed']) {
+            $landTime = date('Y-m-d H:i:s', intval($flight['land'] / 1000));
+            $tracksSql .= " AND point_time <= '$landTime'";
+        }
+        $tracksSql .= " ORDER BY point_time";
+        $tracksResult = mysqli_query($con, $tracksSql);
+        $tracks = [];
+        if ($tracksResult) {
+            while ($trackRow = mysqli_fetch_assoc($tracksResult)) {
+                $tracks[] = [
+                    't' => strtotime($trackRow['point_time']),
+                    'lt' => floatval($trackRow['lattitude']),
+                    'ln' => floatval($trackRow['longitude']),
+                    'al' => floatval($trackRow['altitude'])
+                ];
+            }
+        }
+        $flight['tracks'] = $tracks;
+    }
+    unset($flight);
 }
 
 // Get max seq including deleted flights for accurate nextSeq calculation

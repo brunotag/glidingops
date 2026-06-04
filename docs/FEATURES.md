@@ -173,8 +173,8 @@ GPS tracking system using Flarm devices. Separate database (`tracks` or `particl
 1. **Flarm devices** in aircraft send GPS coordinates to external tracking server
 2. Data stored in `tracks` table with glider registration as identifier
 3. **spots** table maps gliderrego_short → spotkey (device identifier)
-4. **todayxml.php** queries tracks for flights currently in air
-5. **MasterDisplay.php** renders positions on Google Maps
+4. **api/daily-flights.php?tracks=1** queries flights + tracks for glider positions
+5. **MasterDisplayDesktop.php** / **MasterDisplayMobile.php** render positions on Leaflet map
 
 ### Database Connection
 - Main DB: `gliding` (members, flights, etc.)
@@ -196,12 +196,8 @@ GPS tracking system using Flarm devices. Separate database (`tracks` or `particl
 **Access:** Public - no authentication required
 **Routes:** /wgc (org 1), /ssb (org 2), /cgc (org 3), /agc (org 4)
 
-### todayxml.php
-**Purpose:** JSON/XML data feed for map
-
-**Parameters:**
-- org (required)
-- date (optional, defaults to today)
+### (Deleted - replaced by api/daily-flights.php?tracks=1)
+**Purpose:** JSON/XML data feed for map (legacy)
 
 **Returns:**
 - Duties for the day
@@ -245,12 +241,8 @@ Fields:
 
 ---
 
-### todayxml.php
-**Purpose:** JSON/XML data feed for map
-
-**Returns:**
-- Today's duties
-- Flying flights with positions from tracks table
+### (Deleted - replaced by api/daily-flights.php?tracks=1)
+**Purpose:** JSON/XML data feed for map (legacy)
 - Completed flights
 
 ---
@@ -591,7 +583,7 @@ Multiple tracking sources feed GPS data into three databases, displayed on the l
 ### Data Flow Summary
 
 ```
-Particle/Flarm/SPOT/bTraced  -->  gliding.tracks  -->  todayxml.php  -->  MasterDisplay
+Particle/Flarm/SPOT/bTraced  -->  gliding.tracks  -->  api/daily-flights.php?tracks=1  -->  map-shared.js (modern Leaflet map)
                                     |                     
                                     +--> ArchiveTracks.php (after 3 days) --> tracks.tracksarchive
                                     |                     
@@ -611,11 +603,8 @@ Particle/Flarm/SPOT/bTraced  -->  gliding.tracks  -->  todayxml.php  -->  Master
 - **Old single-file:** `map/MasterDisplayNew.php` via `/wgc-mixed`
 - **Legacy:** `map/MasterDisplay.php` (Google Maps) via `/wgc-old`, `/ssb`, `/cgc`, `/agc`
 
-### todayxml.php
-**Purpose:** JSON feed for live tracking map
-**Access:** Public (no auth)
-**Parameters:** org, date (optional)
-**Returns:** Flights, duties, positions from tracks DB
+### (Deleted - replaced by api/daily-flights.php?tracks=1)
+**Purpose:** JSON feed for live tracking map (legacy)
 
 ### apiParticlejsonv1.php
 **Purpose:** Alternative tracking data

@@ -1,4 +1,0 @@
-<div id='head'>
-<p class='headp1'>glidingops.com</p>
-<p class='headp2'>Super Admin</p>
-</div>

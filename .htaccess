@@ -98,7 +98,6 @@ RewriteRule home home.php [L]
 RewriteRule ViewAs ViewAs.php [L,QSA]
 RewriteRule FlightTypes flighttypes-list.php [L]
 RewriteRule FlightType flighttypes.php [L]
-RewriteRule FlyingNow FlyingNow.php [L]
 RewriteRule MessagingPage MessagingPage.php [L,QSA]
 RewriteRule AircraftTypes aircrafttype-list.php [L]
 RewriteRule AircraftType aircrafttype.php [L]
@@ -149,14 +148,7 @@ RewriteRule Engineering.csv Engineer2.php [L]
 RewriteRule Engineer Engineer.php [L,QSA]
 RewriteRule OlcFile.igc igcgenerate.php [L]
 RewriteRule PasswordChange PasswordChange.php [L]
-RewriteRule agc map/MasterDisplay.php?org=4 [L,QSA]
-
-RewriteRule cgc map/MasterDisplay.php?org=3 [L,QSA]
-
-RewriteRule ssb map/MasterDisplay.php?org=2 [L,QSA]
 RewriteRule ^Bookings$ bookings.php [L,QSA]
-RewriteRule ^wgc-mixed$ map/MasterDisplayNew.php?org=1 [L,QSA]
-RewriteRule wgc-old map/MasterDisplay.php?org=1 [L,QSA]
 RewriteRule ^wgc$ map/MasterDisplayRouter.php?org=1 [L,QSA]
 
 # Dev tools (local only)

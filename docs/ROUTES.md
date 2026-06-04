@@ -51,7 +51,7 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/Group` | groups.php | Add/edit group |
 | `/MessagingPage` | MessagingPage.php | Broadcast message |
 | `/MyFlights` | MyFlights.php | Member's flights |
-| `/FlyingNow` | FlyingNow.php | Current flights status |
+
 | `/PasswordChange` | PasswordChange.php | Change password |
 | `/Organisations` | organisations-list.php | Org list (super admin) |
 | `/Organisation` | organisations.php | Add/edit org |
@@ -77,11 +77,6 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/Engineering.csv` | Engineer2.php | Engineer CSV export |
 | `/OlcFile.igc` | igcgenerate.php | IGC file download |
 | `/wgc` | map/MasterDisplayRouter.php?org=1 | Real-time map (device detection: desktop/mobile split) |
-| `/wgc-mixed` | map/MasterDisplayNew.php?org=1 | **DEAD** — old single-file version, pending deletion |
-| `/wgc-old` | map/MasterDisplay.php?org=1 | **DEAD** — original Google Maps version, pending deletion |
-| `/ssb` | map/MasterDisplay.php?org=2 | SSB club map |
-| `/cgc` | map/MasterDisplay.php?org=3 | CGC club map |
-| `/agc` | map/MasterDisplay.php?org=4 | AGC club map |
 | `/SentMessages` | texts-list-v2b.php | Sent messages table view |
 | `/MessagesTree` | messages-tree.php | Sent messages treeview |
 | `/MessagesTreeOld` | messages-tree.php | (alias) |

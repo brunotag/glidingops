@@ -1,4 +1,0 @@
-<div id='head'>
-<p class='headp1'>The Soaring Society of Boulder</p>
-<p class='headp2'>operations</p>
-</div>

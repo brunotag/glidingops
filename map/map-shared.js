@@ -111,56 +111,30 @@ function secondsToAge(s) {
   return Math.floor(s / 3600) + 'h';
 }
 
-function getNodeText(node, tag) {
-  var el = node.getElementsByTagName(tag);
-  return el.length ? (el[0].textContent || '') : '';
-}
-
-function parseXML(xmlDoc) {
+function parseFromJSON(json) {
   var result = { flights: [], duties: [] };
+  if (!json || !json.success) return result;
 
-  var dutyNodes = xmlDoc.getElementsByTagName('duty');
-  for (var i = 0; i < dutyNodes.length; i++) {
-    result.duties.push({
-      type: getNodeText(dutyNodes[i], 't'),
-      name: getNodeText(dutyNodes[i], 'n')
-    });
-  }
-
-  var flightNodes = xmlDoc.getElementsByTagName('flight');
-  for (var i = 0; i < flightNodes.length; i++) {
-    var fn = flightNodes[i];
-    var glider = getNodeText(fn, 'glider');
+  (json.flights || []).forEach(function(f) {
+    var glider = f.glider || '';
     var regoShort = regoShortFromFull(glider);
-    var seq = parseInt(getNodeText(fn, 'seq'), 10) || i + 1;
-    var start = parseFloat(getNodeText(fn, 'start')) || 0;
-    var dur = parseFloat(getNodeText(fn, 'dur')) || 0;
-    var landed = parseInt(getNodeText(fn, 'landed'), 10) === 1 ? 1 : 0;
-
-    var points = [];
-    var pNodes = fn.getElementsByTagName('p');
-    for (var j = 0; j < pNodes.length; j++) {
-      var pn = pNodes[j];
-      points.push({
-        t: parseFloat(getNodeText(pn, 't')) || 0,
-        lt: parseFloat(getNodeText(pn, 'lt')) || 0,
-        ln: parseFloat(getNodeText(pn, 'ln')) || 0,
-        al: parseFloat(getNodeText(pn, 'al')) || 0
-      });
-    }
+    var landed = f.landed ? 1 : 0;
+    var tracks = (f.tracks || []).map(function(p) {
+      return { t: p.t, lt: p.lt, ln: p.ln, al: p.al };
+    });
 
     result.flights.push({
-      seq: seq,
+      seq: f.seq || 0,
       glider: glider,
       regoShort: regoShort,
       landed: landed,
-      name1: getNodeText(fn, 'name1'),
-      name2: getNodeText(fn, 'name2'),
-      start: start,
-      dur: dur,
-      points: filterOutliers(points)
+      name1: f.name1 || '',
+      name2: f.name2 || '',
+      start: f.start_seconds || 0,
+      dur: f.dur_seconds || 0,
+      points: filterOutliers(tracks)
     });
-  }
+  });
 
   return result;
 }
@@ -423,9 +397,7 @@ function setDate(raw) {
 }
 
 function fetchData() {
-  var url = '/todayxml.php?org=' + ORG;
-  var d = dateYmd(currentDate);
-  if (!isViewingToday) url += '&date=' + d;
+  var url = '/api/daily-flights.php?org=' + ORG + '&tracks=1&date=' + currentDate;
 
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
@@ -439,12 +411,8 @@ function fetchData() {
       updEl.classList.add('pulse');
       if (xhr.status === 200) {
         try {
-          var xml = xhr.responseXML;
-          if (!xml) {
-            var parser = new DOMParser();
-            xml = parser.parseFromString(xhr.responseText, 'text/xml');
-          }
-          var data = parseXML(xml);
+          var json = JSON.parse(xhr.responseText);
+          var data = parseFromJSON(json);
           flights = data.flights;
           duties = data.duties;
           if (isViewingToday && initialLoad) {

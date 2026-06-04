@@ -14,11 +14,11 @@ if(isset($_SESSION['security'])){
 <meta name="viewport" content="width=device-width">
 <meta name="viewport" content="initial-scale=1.0">
 <head>
-<style><?php $inc = "./orgs/" . $org . "/heading3.css"; include $inc; ?></style>
+<style><?php $inc = "./orgs/" . $org . "/heading2.css"; include $inc; ?></style>
 <link rel="stylesheet" type="text/css" href="styleform1.css">
 </head>
 <body>
-<?php $inc = "./orgs/" . $org . "/heading3.txt"; include $inc; ?>
+<?php $inc = "./orgs/" . $org . "/heading2.txt"; include $inc; ?>
 <script>function goBack() {window.history.back()}</script>
 <?php
 $DEBUG=0;

@@ -14,7 +14,7 @@ if(isset($_SESSION['security'])){
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
 <style>
-<?php $inc = "./orgs/" . $org . "/heading3.css"; include $inc; ?>
+<?php $inc = "./orgs/" . $org . "/heading2.css"; include $inc; ?>
 </style>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="styletable1.css">
@@ -39,7 +39,7 @@ body { min-height: 100vh; }
 </style>
 </head>
 <body>
-<?php $inc = "./orgs/" . $org . "/heading3.txt"; include $inc; ?>
+<?php $inc = "./orgs/" . $org . "/heading2.txt"; include $inc; ?>
 <?php
 include './helpers/timehelpers.php';
 function dtfmt($dt)
