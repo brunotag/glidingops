@@ -3,6 +3,12 @@
   "instructions": ["AGENTS.md", "docs/DEVELOP.md", "docs/ARCHITECTURE.md", "docs/SECURITY.md", "docs/DEAD_CODE.md", "docs/DATABASE.md", "docs/ROUTES.md", "docs/CODEBASE_MAP.md"],
   "snapshot": true,
   "autoupdate": true,
+  "command": {
+    "start": {
+      "description": "Full session startup: recall memories, check logs, check git status",
+      "template": "Run the standard session startup ritual: 1) agentmemory_memory_recall query=\"glidingops\" 2) Read log/app.log -Tail 20 3) Read log/error.log -Tail 20 4) Run git status 5) Read all /md file in all subdirectory"
+    }
+  },
   "permission": {
     "edit": "allow",
     "bash": "allow",

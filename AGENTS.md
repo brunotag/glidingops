@@ -12,10 +12,8 @@
 - (none)
 
 ### Completed This Session
-- **Session persistence / "Remember me"**: Root cause was `home.php` (DirectoryIndex) creating a session with lifetime=0 before the user sees Login.php — `session_set_cookie_params()` was silently ignored because PHP never re-sends Set-Cookie for existing sessions. **Fix:** `session_regenerate_id(true)` after successful login in all 3 auth paths (password, OAuth, magic link). Also set `php_value session.gc_maxlifetime 2592000` in `.htaccess` to prevent GC from killing session data after 24 min.
-Deployed to production commit `7933b7c`.
-- **Billing report (billing-report.php)**: New Treasurer Monthly Billing Report at `/BillingReport`. Replaces broken Treasurer.php. Uses `helpers/billing-calc.php` for correct calculations (glider $2.25/min, Youth $1.50/min on GGR/GPJ/GMB, winch first $39 relaunch $25, self-launch $25). Collapsible member rows with expand/collapse all toggle. CSV export at `/BillingReport.csv`. Test file: `tests/BillingReportTest.php` (41 tests).
-- **Column widths**: Auto-layout with `col-narrow` (width:1px; white-space:nowrap) on fixed-content columns; Member takes remaining space.
+- **Migrated auth from bitmask ($_SESSION['security'] & N) to permission-based system** (`require_perm('perm.name')`). Core: `helpers/permissions.php`. 9 personas, 66 permissions. All page-level, API-level, and home-page widget checks migrated. `compute_security_bitmask()`, `$personaBitmask`, `$_SESSION['personas']`, `helpers/session_helpers.php` deleted. Permission-subset assignment (editor can only assign personas whose perms are a subset of editor's). Secret code flow preserved. ViewAs uses per-request override (no session corruption). Member persona auto-assigned to all users.
+- Deployed to production commit `e9897e3`.
 
 ### Next Steps
 1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)
@@ -24,9 +22,9 @@ Deployed to production commit `7933b7c`.
 
 ## How To Work In This Repo
 
-**BEFORE starting any task:**
+**BEFORE starting any task (AUTO-RUN these steps in order):**
 1. Read this AGENTS.md file (mandatory)
-2. Recall past context: `agentmemory_memory_recall query="glidingops"` or `agentmemory_memory_smart_search query="glidingops"`
+2. Recall past context: `agentmemory_memory_recall query="glidingops"` — this loads all past decisions, architecture, and lessons learned from previous sessions. Always do this first before any code changes.
 3. Check logs: `Get-Content log/app.log -Tail 30` and `Get-Content log/error.log -Tail 30`
 4. Run `git status`
 
@@ -53,6 +51,20 @@ Run `agentmemory_memory_consolidate` to persist learned context across sessions.
 
 **BEFORE DELETING OLD FILES:** See `docs/DEAD_CODE.md`
 
+**DEPLOYMENT:**
+1. `git pull` on production (SSH credentials in `docs/_secrets.md`)
+2. `cd /var/www/html/lrv && php artisan migrate --force`
+3. Clear session files: `rm -f /var/lib/php/sessions/*`
+4. Restart Apache: `systemctl restart apache2`
+5. Note: Apache restart alone does NOT clear sessions — files on disk persist. Must explicitly delete session files.
+
+**AUTHORIZATION (new system):**
+- ALL auth gates use `require_perm('perm.name')` — never `$_SESSION['security']`, never bitmasks, never persona names
+- `helpers/permissions.php` is the single source of truth
+- `require_auth()` has a service-user bypass: `$_SESSION['who'] === 'service-user'` passes even though `userid = -1`
+- `effective_permissions()` resolves the `?as=` override per-request (no session corruption)
+- `getAssignablePersonaIds()` uses permission-subset matching: editor can only assign personas whose perms are a subset of editor's own
+
 ## Key Reference
 
 See these documents for detailed info:
@@ -77,12 +89,14 @@ All docs in `docs/` folder - see individual files for details:
 ## Key Files
 - `helpers/api-base.php` - API error handling, `apiExit()`, `apiExitWithError()`
 - `helpers/logging.php` - `logMsg()`, `isLocal()`, fatal error handler
+- `helpers/permissions.php` - Permission system: `require_perm()`, `has_perm()`, `effective_permissions()`
 - `config/database.php` - gliding and tracks DB config
 
 ## Session Variables
 - `$_SESSION['memberid']`
-- `$_SESSION['security']` - bitmask (1=member, 6=admin)
 - `$_SESSION['org']`
+- `$_SESSION['permissions']` — array of permission strings, resolved from user_personas at login (replaces old `$_SESSION['security']` bitmask)
+- `$_SESSION['security']` — **REMOVED** as of commit `e9897e3`. All auth uses `require_perm()` now.
 
 ## Database Conventions
 - Primary key is `id` (NOT `member_id`) in members table
