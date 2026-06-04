@@ -2,14 +2,7 @@
 <?php
 $org = 0;
 if (isset($_SESSION['org'])) $org = $_SESSION['org'];
-if (isset($_SESSION['security'])) {
-  if (!($_SESSION['security'] & 1)) {
-    die("Secruity level too low for this page");
-  }
-} else {
-  header('Location: /Login.php');
-  die("Please logon");
-}
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('tracking.view');
 ?>
 <!DOCTYPE HTML>
 <html>

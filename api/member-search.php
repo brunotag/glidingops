@@ -3,9 +3,9 @@ require_once __DIR__ . '/../helpers/api-base.php';
 
 apiMaybeResumeSession();
 
-if (!isset($_SESSION['security']) || !($_SESSION['security'] & 1)) {
-    apiExitWithError('Not logged in');
-}
+require_once __DIR__ . '/../helpers/permissions.php';
+
+require_perm('members.list');
 
 $org = isset($_SESSION['org']) ? intval($_SESSION['org']) : 0;
 

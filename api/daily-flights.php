@@ -12,7 +12,8 @@ if (isset($_GET['org'])) {
 
 if (!$publicAccess) {
     session_start();
-    if (!isset($_SESSION['memberid'])) {
+    require_once __DIR__ . '/../helpers/permissions.php';
+    if (!isset($_SESSION['userid']) || $_SESSION['userid'] <= 0) {
         apiExitWithError('Not logged in');
     }
     $org = isset($_SESSION['org']) ? (int)$_SESSION['org'] : 0;

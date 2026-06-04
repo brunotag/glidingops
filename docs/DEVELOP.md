@@ -179,7 +179,7 @@ vagrant ssh -c "mysql gliding -e \"SELECT id, usercode, member FROM users WHERE 
 
 # 2. If missing, create the dev user
 #    (user/pass both "fgordon", MD5 hash from echo -n "fgordon" | md5sum)
-vagrant ssh -c "mysql gliding -e \"INSERT INTO users (name, usercode, password, org, securitylevel) VALUES ('Fred Gordon', 'fgordon', '1ff17bffa21715410a5970dc06cdb0f8', 1, 4);\""
+vagrant ssh -c "mysql gliding -e \"INSERT INTO users (name, usercode, password, org) VALUES ('Fred Gordon', 'fgordon', '1ff17bffa21715410a5970dc06cdb0f8', 1);\""
 
 # 3. Find your member record
 vagrant ssh -c "mysql gliding -e \"SELECT id, displayname FROM members WHERE firstname LIKE '%Bruno%';\""

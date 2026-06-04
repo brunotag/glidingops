@@ -1,7 +1,7 @@
 <?php
-include './helpers/session_helpers.php';
 session_start();
-require_security_level(4);
+require_once __DIR__ . '/helpers/permissions.php';
+require_perm('daily-sheet.access');
 
 include './helpers/timehelpers.php';
 include 'helpers.php';

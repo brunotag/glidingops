@@ -3,14 +3,7 @@ session_start();
 
 $org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 
-if (isset($_SESSION['security'])) {
-    if (!($_SESSION['security'] & 128)) {
-        die("Security level too low for this page");
-    }
-} else {
-    header('Location: /Login.php');
-    die("Please logon");
-}
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('users.invite');
 
 require_once __DIR__ . '/helpers/logging.php';
 
@@ -180,7 +173,7 @@ h1 { color: #063552; font-size: 20px; border-bottom: 2px solid #f26120; padding-
         $email = $m['email'];
         $displayname = $fullName;
 
-        $insertStmt = mysqli_prepare($con, "INSERT INTO users (name, org, usercode, password, securitylevel, force_pw_reset, member) VALUES (?, ?, ?, ?, 1, 1, ?)");
+        $insertStmt = mysqli_prepare($con, "INSERT INTO users (name, org, usercode, password, force_pw_reset, member) VALUES (?, ?, ?, ?, 1, ?)");
         mysqli_stmt_bind_param($insertStmt, 'sissi', $displayname, $memOrg, $email, $tempPw, $memId);
         if (mysqli_stmt_execute($insertStmt)) {
             $newUserId = mysqli_insert_id($con);

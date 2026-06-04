@@ -2,19 +2,27 @@
 session_start();
 require_once __DIR__ . '/../helpers/api-base.php';
 require_once __DIR__ . '/../helpers/logging.php';
+require_once __DIR__ . '/../helpers/permissions.php';
 
-logMsg("texts API called - security=" . ($_SESSION['security'] ?? 'null') . ", memberid=" . ($_SESSION['memberid'] ?? 'null'));
+logMsg("texts API called - userid=" . ($_SESSION['userid'] ?? 'null') . ", memberid=" . ($_SESSION['memberid'] ?? 'null'));
 
 $org = 0;
 if (isset($_SESSION['org'])) {
     $org = intval($_SESSION['org']);
 }
 
-if (!isset($_SESSION['security']) || !($_SESSION['security'] & 4)) {
+if (!isset($_SESSION['userid']) || $_SESSION['userid'] <= 0) {
     logMsg("texts API - auth failed");
+    http_response_code(401);
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
+    apiExit();
+}
+if (!has_perm('api.texts')) {
+    logMsg("texts API - permission denied");
     http_response_code(403);
     header('Content-Type: application/json');
-    echo json_encode(['success' => false, 'message' => 'Security level too low']);
+    echo json_encode(['success' => false, 'message' => 'Not authorized']);
     apiExit();
 }
 

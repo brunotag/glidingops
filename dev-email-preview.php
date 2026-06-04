@@ -8,10 +8,7 @@ if (!isLocal()) {
     die("Only available in dev environment");
 }
 
-if (!isset($_SESSION['security']) || !($_SESSION['security'] & 1)) {
-    header('Location: /Login.php');
-    die("Please logon");
-}
+require_once __DIR__ . '/helpers/permissions.php'; require_auth();
 
 $org = isset($_SESSION['org']) ? intval($_SESSION['org']) : 0;
 if ($org === 0) $org = 1;

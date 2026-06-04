@@ -45,8 +45,10 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/SubsToScheme` | scheme_subs.php | Add/edit subscription |
 | `/Roles` | roles-list.php | Role list |
 | `/Role` | roles.php | Add/edit role |
-| `/AssignRoles` | role_member-list.php | Role assignments |
-| `/AssignRole` | role_member.php | Assign role |
+| `/Permissions` | permissions-list.php | Permission list (god only) |
+| `/Permission` | permission.php | Add/edit permission (god only) |
+| `/Personas` | personas-list.php | Persona list (god only) |
+| `/Persona` | persona.php | Add/edit persona with permission checkboxes (god only) |
 | `/Groups` | groups-list.php | Group list |
 | `/Group` | groups.php | Add/edit group |
 | `/MessagingPage` | MessagingPage.php | Broadcast message |
@@ -55,7 +57,6 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/PasswordChange` | PasswordChange.php | Change password |
 | `/Organisations` | organisations-list.php | Org list (super admin) |
 | `/Organisation` | organisations.php | Add/edit org |
-| `/Audits` | audit-list.php | Audit log |
 | `/Spots` | spots-list.php | Tracking devices |
 | `/Spot` | spots.php | Add/edit spot |
 | `/membership_class` | membership_class-list.php | Member classes |
@@ -73,8 +74,6 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 | `/api/member-form` | api/member-form.php | Member form API (GET: classes/statuses/roles, POST: save) |
 | `/api/users` | api/users.php | DataTables user list |
 | `/api/user-form` | api/user-form.php | User form API (GET: orgs/members, POST: save) |
-| `/GlideAccounts.csv` | Treasurer2.php | Treasurer CSV export |
-| `/Engineering.csv` | Engineer2.php | Engineer CSV export |
 | `/OlcFile.igc` | igcgenerate.php | IGC file download |
 | `/wgc` | map/MasterDisplayRouter.php?org=1 | Real-time map (device detection: desktop/mobile split) |
 | `/SentMessages` | texts-list-v2b.php | Sent messages table view |
@@ -89,13 +88,6 @@ The application uses Apache `.htaccess` for URL routing. Clean URLs map to PHP f
 
 These redirect to login:
 - Any page without proper session
-
-## Legacy/Deprecated Routes
-
-Some routes exist but point to dead features:
-- Some role_* routes
-- Some group_* routes
-- Backup routes in various places
 
 ## How Routing Works
 

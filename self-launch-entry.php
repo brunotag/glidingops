@@ -1,14 +1,11 @@
 <?php session_start(); ?>
 <?php
 require_once __DIR__ . '/helpers/logging.php';
+require_once __DIR__ . '/helpers/permissions.php';
+require_perm('self-launch.access');
 logMsg("START");
 
 $org = isset($_SESSION['org']) ? intval($_SESSION['org']) : 0;
-$securityLevel = isset($_SESSION['security']) ? $_SESSION['security'] : 0;
-
-if (!isset($_SESSION['security']) || !($securityLevel & 4)) {
-    die("Security level too low for this page");
-}
 
 $con_params = require('./config/database.php');
 $con_params = $con_params['gliding'];

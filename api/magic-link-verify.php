@@ -52,7 +52,7 @@ $stmt2 = mysqli_prepare($con, "UPDATE magic_link_tokens SET used_at = NOW() WHER
 mysqli_stmt_bind_param($stmt2, 'i', $row['id']);
 mysqli_stmt_execute($stmt2);
 
-$stmt3 = mysqli_prepare($con, "SELECT id, usercode, member, org, securitylevel, name, force_pw_reset FROM users WHERE id = ?");
+$stmt3 = mysqli_prepare($con, "SELECT id, usercode, member, org, name, force_pw_reset FROM users WHERE id = ?");
 mysqli_stmt_bind_param($stmt3, 'i', $row['user_id']);
 mysqli_stmt_execute($stmt3);
 $userResult = mysqli_stmt_get_result($stmt3);
@@ -69,7 +69,8 @@ $_SESSION['who'] = $user['usercode'];
 $_SESSION['memberid'] = $user['member'];
 $_SESSION['org'] = $user['org'];
 if ($_SESSION['org'] === null) $_SESSION['org'] = 0;
-$_SESSION['security'] = $user['securitylevel'];
+require_once __DIR__ . '/../helpers/permissions.php';
+$_SESSION['permissions'] = load_user_permissions($con, $user['id']);
 $_SESSION['dispname'] = $user['name'];
 
 if ($_SESSION['org'] != 0) {

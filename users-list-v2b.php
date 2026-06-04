@@ -9,14 +9,7 @@ if (isset($_GET['org'])) {
     $org = $_SESSION['org'];
 }
 
-if (isset($_SESSION['security'])) {
-    if (!($_SESSION['security'] & 64)) {
-        die("Security level too low for this page");
-    }
-} else {
-    header('Location: /Login.php');
-    die("Please logon");
-}
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('users.manage');
 
 $organisation = App\Models\Organisation::find($org);
 ?>
@@ -189,8 +182,8 @@ body { min-height: 100vh; }
     <th>ID</th>
     <th>Name</th>
     <th>Usercode</th>
+    <th>Personas</th>
     <th>Organisation</th>
-    <th>Security Level</th>
     <th>Member</th>
     <th>Force PW Reset</th>
     <th>Last Login</th>
@@ -250,8 +243,8 @@ function buildDataTable() {
                 { data: 'id' },
                 { data: 'name' },
                 { data: 'usercode' },
+                { data: 'personas', title: 'Personas', orderable: false, searchable: false },
                 { data: 'org' },
-                { data: 'securitylevel' },
                 { data: 'member' },
                 { data: 'force_pw_reset', render: function(data) {
                     return data == 1 ? 'Yes' : 'No';

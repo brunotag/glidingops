@@ -3,14 +3,7 @@ session_start();
 $org = 0;
 if (isset($_SESSION['org'])) $org = $_SESSION['org'];
 
-if (isset($_SESSION['security'])) {
-    if (!($_SESSION['security'] & 128)) {
-        die("Security level too low for this page");
-    }
-} else {
-    header('Location: /Login.php');
-    die("Please logon");
-}
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('god.view-as');
 
 $con_params = require('./config/database.php');
 $con_params = $con_params['gliding'];
@@ -18,7 +11,7 @@ $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_par
 
 $users = [];
 if (!mysqli_connect_errno()) {
-    $r = mysqli_query($con, "SELECT u.id, u.name, u.securitylevel, u.member FROM users u ORDER BY u.name ASC");
+    $r = mysqli_query($con, "SELECT u.id, u.name, u.member FROM users u ORDER BY u.name ASC");
     if ($r) {
         while ($row = mysqli_fetch_assoc($r)) {
             $users[] = $row;
@@ -26,27 +19,13 @@ if (!mysqli_connect_errno()) {
     }
 }
 
-$levels = [
-    1   => 'Member',
-    2   => 'Booking Admin',
-    3   => 'Member + Booking Admin',
-    4   => 'Daily Ops',
-    5   => 'Member + Daily Ops',
-    6   => 'Booking Admin + Daily Ops',
-    7   => 'Member + Booking Admin + Daily Ops',
-    8   => 'CFO/Treasurer',
-    9   => 'Member + CFO',
-    12  => 'Daily Ops + CFO',
-    16  => 'CFI',
-    32  => 'Engineer',
-    48  => 'CFI + Engineer',
-    56  => 'CFO + CFI + Engineer',
-    64  => 'Admin',
-    72  => 'Admin + CFO',
-    120 => 'Admin + Engineer + CFI + CFO',
-    128 => 'God / Super Admin',
-    255 => 'Full Access (All)',
-];
+$personas = [];
+$pr = mysqli_query($con, "SELECT name, description FROM personas ORDER BY name");
+if ($pr) {
+    while ($prow = mysqli_fetch_assoc($pr)) {
+        $personas[] = $prow;
+    }
+}
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -76,16 +55,15 @@ $levels = [
         function openHomeAsUser() {
             var sel = document.getElementById('user');
             var opt = sel.options[sel.selectedIndex];
-            var val = opt.getAttribute('data-level');
+            if (!opt || !opt.value) return;
+            var persona = opt.getAttribute('data-persona') || 'member';
             var memberId = opt.getAttribute('data-member');
-            if (val) {
-                var url = '/home?as=' + val;
-                if (memberId && memberId !== '0') url += '&edit_favs=1&edit_member_id=' + memberId;
-                window.open(url, '_blank');
-            }
+            var url = '/home/?as=' + persona;
+            if (memberId && memberId !== '0') url += '&edit_favs=1&edit_member_id=' + memberId;
+            window.open(url, '_blank');
         }
-        function openHomeAsLevel() {
-            var sel = document.getElementById('level');
+        function openHomeAsPersona() {
+            var sel = document.getElementById('persona');
             var val = sel.options[sel.selectedIndex].value;
             var url = '/home?as=' + val;
             window.open(url, '_blank');
@@ -105,9 +83,14 @@ $levels = [
             <label class="field-label" for="user">Pick a User:</label>
             <select id="user">
                 <option value="">-- Select a user --</option>
-                <?php foreach ($users as $u): ?>
-                    <option value="<?php echo $u['id']; ?>" data-level="<?php echo $u['securitylevel']; ?>" data-member="<?php echo intval($u['member']); ?>">
-                        <?php echo htmlspecialchars($u['name']); ?> (level <?php echo $u['securitylevel']; ?>)
+                <?php foreach ($users as $u): 
+                    $upr = mysqli_query($con, "SELECT p.name FROM user_personas up JOIN personas p ON p.id = up.persona_id WHERE up.user_id = " . intval($u['id']));
+                    $personaNames = [];
+                    while ($uprow = mysqli_fetch_assoc($upr)) { $personaNames[] = $uprow['name']; }
+                    $firstPersona = $personaNames[0] ?? '';
+                ?>
+                    <option value="<?php echo $u['id']; ?>" data-persona="<?php echo $firstPersona; ?>" data-member="<?php echo intval($u['member']); ?>">
+                        <?php echo htmlspecialchars($u['name']); ?> (<?php echo implode(', ', $personaNames) ?: 'auth-only'; ?>)
                     </option>
                 <?php endforeach; ?>
             </select>
@@ -117,14 +100,14 @@ $levels = [
 
         <div class="or-divider">&mdash; or &mdash;</div>
 
-        <form onsubmit="event.preventDefault(); openHomeAsLevel();">
-            <label class="field-label" for="level">Security Level:</label>
-            <select id="level">
-                <?php foreach ($levels as $val => $label): ?>
-                    <option value="<?php echo $val; ?>"><?php echo $label; ?> (<?php echo $val; ?>)</option>
+        <form onsubmit="event.preventDefault(); openHomeAsPersona();">
+            <label class="field-label" for="persona">Persona:</label>
+            <select id="persona">
+                <?php foreach ($personas as $p): ?>
+                    <option value="<?php echo $p['name']; ?>"><?php echo htmlspecialchars($p['name']); ?> &mdash; <?php echo htmlspecialchars($p['description'] ?? ''); ?></option>
                 <?php endforeach; ?>
             </select>
-            <button type="submit" class="open-btn">Open Homepage as This Role</button>
+            <button type="submit" class="open-btn">Open Homepage as This Persona</button>
         </form>
         <a class="back-link" href="home">&larr; Back to Home</a>
     </div>

@@ -1,21 +1,19 @@
-﻿<?php session_start(); ?>
+<?php session_start(); ?>
 <?php
+require_once __DIR__ . '/helpers/permissions.php';
 include 'helpers/secret_code_helpers.php';
-if(isset($_SESSION['security'])){
-  if (($_SESSION['security'] < 4)){
-    die("Security level too low for this page");
-  }
-}
-else {
+if (!isset($_SESSION['userid'])) {
   $org = $_GET['org'];
   $key = $_GET['key'];
   if (checkSecretCode($org, $key)) {
-    initiateServiceUserSession(5, $org);
+    initiateServiceUserSession($org);
   }
   else {
     header('Location: /Login.php');
     die("Please logon");
   }
+} elseif ($_SESSION['userid'] > 0) {
+  require_perm('daily-sheet.access');
 }
 include './helpers/timehelpers.php';
 include 'helpers.php';

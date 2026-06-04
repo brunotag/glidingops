@@ -2,13 +2,7 @@
 <?php
 $org=0;
 if(isset($_SESSION['org'])) $org=$_SESSION['org'];
-if(isset($_SESSION['security'])){
- if (!($_SESSION['security'] & 64)) {die("Secruity level too low for this page");}
-}else{
- header('Location: /Login.php');
- die("Please logon");
-}
-?>
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('aircraft-types.manage'); ?>
 <!DOCTYPE HTML>
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,7 +54,7 @@ if ($colsort == 0)
 <div class="table-responsive"><table class="table table-bordered table-striped" style="width:100%;"><tr>
 <?php
 if (true){echo '<th ';if ($colsort == 1) echo "class='colsel'";echo " onclick=";echo "\"";echo "location.href='aircrafttype-list.php?col=1'";echo "\"";echo " style='cursor:pointer;'";echo ">";echo "ID";echo "</th>";}
-if ($_SESSION['security'] & 128){echo '<th ';if ($colsort == 2) echo "class='colsel'";echo " onclick=";echo "\"";echo "location.href='aircrafttype-list.php?col=2'";echo "\"";echo " style='cursor:pointer;'";echo ">";echo "ORGANISATION";echo "</th>";}
+if (has_perm('organisations.manage')){echo '<th ';if ($colsort == 2) echo "class='colsel'";echo " onclick=";echo "\"";echo "location.href='aircrafttype-list.php?col=2'";echo "\"";echo " style='cursor:pointer;'";echo ">";echo "ORGANISATION";echo "</th>";}
 if (true){echo '<th ';if ($colsort == 3) echo "class='colsel'";echo " onclick=";echo "\"";echo "location.href='aircrafttype-list.php?col=3'";echo "\"";echo " style='cursor:pointer;'";echo ">";echo "NAME";echo "</th>";}
 ?>
 </tr>
@@ -96,7 +90,7 @@ while ($row = mysqli_fetch_array($r) )
 {
  $rownum = $rownum + 1;
   echo "<tr class='";if (($rownum % 2) == 0)echo "even";else echo "odd";  echo "'>";if (true){$__e = (!isset($row[0]) || $row[0] === ''); echo "<td class='right'" . ($__e ? " data-empty='1'" : "") . ">";echo "<a href='AircraftType?id=";echo $row[0];echo "'>";echo $row[0];echo "</a>";echo "</td>";}
-if ($_SESSION['security'] & 128){echo "<td" . ((!isset($row[1]) || $row[1] === '') ? " data-empty='1'" : "") . ">";echo $row[1];echo "</td>";}
+if (has_perm('organisations.manage')){echo "<td" . ((!isset($row[1]) || $row[1] === '') ? " data-empty='1'" : "") . ">";echo $row[1];echo "</td>";}
 if (true){echo "<td" . ((!isset($row[2]) || $row[2] === '') ? " data-empty='1'" : "") . ">";echo $row[2];echo "</td>";}
   echo "</tr>";
 }

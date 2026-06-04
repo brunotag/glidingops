@@ -90,8 +90,8 @@ if (!$foundUser) {
         $memOrg = intval($memberRow['org']);
         $memId = intval($memberRow['id']);
         $insertStmt = mysqli_prepare($con, "
-            INSERT INTO users (name, org, usercode, password, securitylevel, force_pw_reset, member)
-            VALUES (?, ?, ?, ?, 1, 1, ?)
+            INSERT INTO users (name, org, usercode, password, force_pw_reset, member)
+            VALUES (?, ?, ?, ?, 1, ?)
         ");
         mysqli_stmt_bind_param($insertStmt, 'sissi',
             $memberRow['displayname'], $memOrg, $memberRow['email'],

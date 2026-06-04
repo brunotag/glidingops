@@ -33,6 +33,8 @@ This application has accumulated technical debt. This document identifies code t
 | 9 | `js/DailySheetEntry.js` | Not loaded by any page. Superseded by `DailySheetEntryType.js` |
 | 10 | `texts-list-last-200.php` | Dead SMS layer (referenced only by MessagingPageOld.php) |
 | 11 | `message-delete.php` | Dead SMS layer (referenced only by texts-list-last-200.php) |
+| 12 | `GroupAllocate.php`, `GroupXML.php`, `groups.php`, `groups-list.php`, `group_member.php`, `group_member-list.php` | Orphaned group management feature. No routes, no UI links. Tables kept for maintenance scripts. |
+| — | `groups.manage` (permission) | Removed from DB — no longer needed |
 
 ### Legacy Routes to Remove
 
@@ -68,9 +70,6 @@ This application has accumulated technical debt. This document identifies code t
 | `MyFlightMap.php` | No references |
 | `webcams.php` | No references |
 | `tracks-list.php` | No references |
-| `group_member.php` | No links found |
-| `group_member-list.php` | No links found |
-| `groups-list.php` | No links found |
 | `audit.php` | Documented route `/Audits` missing from `.htaccess` |
 | `audit-list.php` | Documented route `/Audits` missing from `.htaccess` |
 
@@ -137,6 +136,8 @@ These tables have active queries in billing and maintenance code. Need refactori
 |-------|-------------------|
 | `incentive_schemes` | Queried in `Treasurer2.php` → `MemberScheme()` and `orgs/*/accountrules.php` → `CalcGliderCharge()` |
 | `scheme_subs` | Same as above, plus `maintenance/duplicates_delete.php` references it |
+| `groups` | `maintenance/duplicates_*.php` update FK refs in group_member on member merge |
+| `group_member` | `maintenance/duplicates_*.php` reassign gm_member_id on member merge |
 
 ### Former Dead Code Files (Already Deleted)
 
@@ -146,6 +147,7 @@ These tables have active queries in billing and maintenance code. Need refactori
 | `airspace.php`, `airspace-list.php`, `airspacecoords.php`, `airspacecoords-list.php` | Already deleted (files not found in scan — tables dropped by migration) |
 | `controllers.php`, `controllers-list.php`, `switches.php`, `switches-list.php` | Already deleted (files not found in scan) |
 | `msg.php`, `msguser.php` | Already deleted (files not found in scan) |
+| `GroupAllocate.php`, `GroupXML.php`, `groups.php`, `groups-list.php`, `group_member.php`, `group_member-list.php` | Already deleted — orphaned group management feature |
 
 ---
 

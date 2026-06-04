@@ -2,13 +2,7 @@
 <?php
 $org=0;
 if(isset($_SESSION['org'])) $org=$_SESSION['org'];
-if(isset($_SESSION['security'])){
- if (!($_SESSION['security'] & 64)){die("Secruity level too low for this page");}
-}else{
- header('Location: /Login.php');
- die("Please logon");
-}
-?>
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('aircraft-types.manage'); ?>
 <!DOCTYPE HTML>
 <html>
 <meta name="viewport" content="width=device-width">
@@ -79,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
  $id_err = "";
  $org_err = "";
  $name_err = "";
-if ($_SESSION['security'] & 128) { $org_f = InputChecker($_POST["org_i"]);
+if (has_perm('organisations.manage')) { $org_f = InputChecker($_POST["org_i"]);
 }
  $name_f = InputChecker($_POST["name_i"]);
  if (empty($name_f) )
@@ -102,8 +96,8 @@ $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params[
        $Q="DELETE FROM aircrafttype WHERE id = " . $_POST['updateid'] ;}}
      if (isset($_POST["tran"]) ) {if ($_POST["tran"] == "Update"){
       $Q = "UPDATE aircrafttype SET ";
-if ($_SESSION['security'] & 128) {      $Q .= "org=";
-       if ($org_f ==0) $Q .= "null"; else {$Q .= "'";$Q .= "$org_f"; $Q .= "'"; }
+if (has_perm('organisations.manage')) {      $Q .= "org=";
+        if ($org_f ==0) $Q .= "null"; else {$Q .= "'";$Q .= "$org_f"; $Q .= "'"; }
 }
       $Q .= ",name=";
       $Q .= "'" . mysqli_real_escape_string($con, $name_f)  . "'";
@@ -112,7 +106,7 @@ $Q .= $_POST['updateid'];}
      else
      if ($_POST["tran"] == "Create"){
        $Q = "INSERT INTO aircrafttype (";$Q .= "org";$Q .= ", name";$Q .= " ) VALUES (";
-if ($_SESSION['security'] & 128) {       if ($org_f ==0)$Q .= "null"; else{$Q .= "'";$Q .= $org_f;$Q .= "'";}
+if (has_perm('organisations.manage')) {       if ($org_f ==0)$Q .= "null"; else{$Q .= "'";$Q .= $org_f;$Q .= "'";}
 }else{$Q.=$_SESSION['org'];}
        $Q.= ",";
        $Q .= "'" . mysqli_real_escape_string($con, $name_f) . "'";
@@ -144,7 +138,7 @@ echo $id_f; echo "</td>";echo "<td>";
 echo $id_err; echo "</td></tr>";
 }
 ?>
-<?php if ($_SESSION['security'] & 128)
+<?php if (has_perm('organisations.manage'))
 {
 echo "<tr><td class='desc'>ORGANISATION</td><td></td>";
 echo "<td><select name='org_i'>";

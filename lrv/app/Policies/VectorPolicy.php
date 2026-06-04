@@ -21,10 +21,6 @@ class VectorPolicy
 
     public function before($user, $ability)
     {
-        if ($user->securitylevel & 64) {
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
 }

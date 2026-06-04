@@ -2,10 +2,8 @@
 session_start();
 $org = isset($_SESSION['org']) ? (int)$_SESSION['org'] : 0;
 
-if (!isset($_SESSION['security']) || !($_SESSION['security'] & 1)) {
-    header('Location: /Login.php');
-    exit;
-}
+require_once __DIR__ . '/helpers/permissions.php';
+require_perm('bookings.view');
 
 require_once __DIR__ . '/load_model.php';
 require_once __DIR__ . '/helpers/logging.php';
@@ -20,7 +18,7 @@ if ($memberId <= 0) {
     }
     die('No member account linked to your user');
 }
-$isAdmin = isset($_SESSION['security']) && ($_SESSION['security'] & 64);
+$isAdmin = has_perm('bookings.admin');
 $tzName = orgTimezone(null, $org);
 $tz = new DateTimeZone($tzName);
 

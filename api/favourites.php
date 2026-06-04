@@ -3,9 +3,9 @@ require_once __DIR__ . '/../helpers/api-base.php';
 
 apiMaybeResumeSession();
 
-if (!isset($_SESSION['security']) || !($_SESSION['security'] & 1)) {
-    apiExitWithError('Not logged in');
-}
+require_once __DIR__ . '/../helpers/permissions.php';
+
+require_perm('my-flights.view');
 
 header('Content-Type: application/json');
 
@@ -24,8 +24,8 @@ $myMemberId = isset($_SESSION['memberid']) ? intval($_SESSION['memberid']) : 0;
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $memberId = isset($_GET['member_id']) ? intval($_GET['member_id']) : $myMemberId;
 
-    // If requesting another member's favourites, must be super admin
-    if ($memberId !== $myMemberId && (!isset($_SESSION['security']) || !($_SESSION['security'] & 128))) {
+    // If requesting another member's favourites, must be god persona
+    if ($memberId !== $myMemberId && !has_perm('favourites.admin')) {
         apiExitWithError('Not authorized', $con);
     }
 
@@ -50,8 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $memberId = isset($input['member_id']) ? intval($input['member_id']) : $myMemberId;
 
-    // If toggling for another member, must be super admin
-    if ($memberId !== $myMemberId && (!isset($_SESSION['security']) || !($_SESSION['security'] & 128))) {
+    // If toggling for another member, must be god persona
+    if ($memberId !== $myMemberId && !has_perm('favourites.admin')) {
         apiExitWithError('Not authorized', $con);
     }
 

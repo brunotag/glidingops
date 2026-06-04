@@ -1,10 +1,7 @@
 <?php session_start(); ?>
 <?php
 $org = isset($_SESSION['org']) ? (int)$_SESSION['org'] : 0;
-if (!isset($_SESSION['security']) || $_SESSION['security'] < 1) {
-    header('Location: /Login.php');
-    die("Security level too low for this page");
-}
+require_once __DIR__ . '/helpers/permissions.php'; require_auth();
 require_once __DIR__ . '/helpers/timehelpers.php';
 $tzName = orgTimezone(null, $org);
 $tz = new DateTimeZone($tzName);

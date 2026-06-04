@@ -4,15 +4,10 @@ require_once __DIR__ . '/../helpers/api-base.php';
 session_start();
 
 require_once __DIR__ . '/../helpers/logging.php';
+require_once __DIR__ . '/../helpers/permissions.php';
 logMsg("START");
 
-if (!isset($_SESSION['security']) || !($_SESSION['security'] & 64)) {
-    logMsg("AUTH FAIL - security=" . ($_SESSION['security'] ?? 'null'));
-    http_response_code(401);
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'Unauthorized']);
-    apiExit($con);
-}
+require_perm('api.users');
 logMsg("AUTH OK - memberid=" . ($_SESSION['memberid'] ?? 'null'));
 
 $org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
@@ -51,12 +46,12 @@ $orderDir = isset($_GET['order'][0]['dir']) ? $_GET['order'][0]['dir'] : 'asc';
 
 // Column mapping (DataTables column index -> DB field)
 $columns = [
-    0 => null, // Actions - not sortable, won't be used
+    0 => null, // Actions
     1 => 'users.id',
     2 => 'users.name',
     3 => 'users.usercode',
-    4 => 'organisations.name',
-    5 => 'users.securitylevel',
+    4 => null, // personas (subquery, not sortable)
+    5 => 'organisations.name',
     6 => 'members.displayname',
     7 => 'users.force_pw_reset',
     8 => 'last_logins.last_login'
@@ -129,10 +124,10 @@ $dataQuery = "SELECT
     users.name,
     users.usercode,
     organisations.name as org_name,
-    users.securitylevel,
     members.displayname as member_name,
     users.force_pw_reset,
-    last_logins.last_login
+    last_logins.last_login,
+    (SELECT GROUP_CONCAT(p.name SEPARATOR ', ') FROM user_personas up JOIN personas p ON p.id = up.persona_id WHERE up.user_id = users.id) as personas
 FROM users
 LEFT JOIN organisations ON organisations.id = users.org
 LEFT JOIN members ON members.id = users.member
@@ -162,8 +157,8 @@ while ($row = mysqli_fetch_assoc($result)) {
         'name' => $row['name'],
         'usercode' => $row['usercode'],
         'org' => $row['org_name'] ?? '',
-        'securitylevel' => $row['securitylevel'],
         'member' => $row['member_name'] ?? '',
+        'personas' => $row['personas'] ?? '',
         'force_pw_reset' => $row['force_pw_reset'],
         'last_login' => $row['last_login'],
         'edit_url' => '/Users/' . $row['id']

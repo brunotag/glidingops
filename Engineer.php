@@ -1,18 +1,6 @@
-﻿<?php session_start(); ?>
+<?php session_start(); ?>
 
-<?php
-if(isset($_SESSION['security']))
-{
- if (!($_SESSION['security'] & 32))
- {
-  die("Secruity level too low for this page");
- }
-}
-else
-{
- header('Location: /Login.php');
- die("Please logon");
-}
+<?php require_once __DIR__ . '/helpers/permissions.php'; require_perm('engineer.view'); ?>
 ?>
 
 <?php

@@ -6,10 +6,7 @@ logMsg("START");
 
 $org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 
-if (!isset($_SESSION['security']) || $_SESSION['security'] < 1) {
-    logMsg("AUTH FAIL");
-    die("Security level too low for this page");
-}
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('my-flights.export');
 if (!isset($_SESSION['memberid'])) {
     logMsg("AUTH FAIL - no memberid");
     header('Location: /Login.php');

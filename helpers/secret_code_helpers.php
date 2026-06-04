@@ -16,14 +16,13 @@ function checkSecretCode($org, $key) {
     return $row[0] == $secretCode;
 }
 
-function initiateServiceUserSession($securityLevel, $org){
+function initiateServiceUserSession($org){
     $_SESSION['userid']= -1;
     $_SESSION['who']= "service-user";
     $_SESSION['memberid']= -1;
     $_SESSION['org']= $org;
-    $_SESSION['security']=$securityLevel;
-    //$_SESSION['pagesortdata']=$pagesortdata ;
-    $_SESSION['dispname']="";
+    require_once __DIR__ . '/permissions.php';
+    $_SESSION['permissions'] = ['daily-sheet.access', 'daily-sheet.start-day'];
     $q="SELECT timezone from organisations where id = " . $org;
     $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
     $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);

@@ -1,4 +1,5 @@
 <?php session_start();
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('daily-sheet.access');
 $org=0;
 $dateStr = '';
 $dateStr2='';

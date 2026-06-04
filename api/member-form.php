@@ -4,16 +4,17 @@ require_once __DIR__ . '/../helpers/api-base.php';
 session_start();
 
 require_once __DIR__ . '/../helpers/logging.php';
+require_once __DIR__ . '/../helpers/permissions.php';
 
 logMsg("START method=" . $_SERVER['REQUEST_METHOD']);
 
-// Check authentication - require security level 1 (member access)
-if (!isset($_SESSION['security']) || !($_SESSION['security'] & 1)) {
-    logMsg("AUTH FAIL - security=" . ($_SESSION['security'] ?? 'null'));
+if (!isset($_SESSION['userid']) || $_SESSION['userid'] <= 0) {
+    logMsg("AUTH FAIL - userid=" . ($_SESSION['userid'] ?? 'null'));
     header('Content-Type: application/json');
     echo json_encode(['error' => 'Unauthorized', 'message' => 'Please log in']);
     exit;
 }
+$hasMemberEdit = has_perm('member.edit');
 
 logMsg("AUTH OK - memberid=" . ($_SESSION['memberid'] ?? 'null'));
 
@@ -86,8 +87,8 @@ if ($r) {
 // Get member data if editing
 $member = null;
 if ($memberId) {
-    // Check security level for edit (need level 6)
-    if (!isset($_SESSION['security']) || !($_SESSION['security'] & 6)) {
+    // Check persona for editing other members
+    if (!$hasMemberEdit) {
         echo json_encode(['error' => 'Unauthorized', 'message' => 'Security level too low for editing']);
         exit;
     }
@@ -155,14 +156,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     logMsg("memberId from POST=" . $memberId);
     $isEdit = $memberId !== null;
     $currentMemberId = isset($_SESSION['memberid']) ? intval($_SESSION['memberid']) : 0;
-    $securityLevel = isset($_SESSION['security']) ? $_SESSION['security'] : 0;
-    logMsg("currentMemberId=$currentMemberId securityLevel=$securityLevel");
+    logMsg("currentMemberId=$currentMemberId");
     
     // Check if editing someone else's data
     if ($isEdit && $memberId !== $currentMemberId) {
         logMsg("EDITING OTHER - memberId=$memberId vs current=$currentMemberId");
-        // Only admins (level 6) can edit other members
-        if (!($securityLevel & 6)) {
+        // Only booking/daily-ops personas can edit other members
+        if (!$hasMemberEdit) {
             logMsg("FAIL - not admin");
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Security level too low']);

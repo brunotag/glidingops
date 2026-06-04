@@ -46,7 +46,7 @@ official_observer, first_aider (flags)
 System user accounts (login).
 ```
 id, name, usercode, password (MD5 hash!), org, expire
-securitylevel (bitmask), member (FK to members), force_pw_reset
+member (FK to members), force_pw_reset
 ```
 
 #### flights

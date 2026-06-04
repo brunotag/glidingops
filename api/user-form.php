@@ -4,15 +4,10 @@ require_once __DIR__ . '/../helpers/api-base.php';
 session_start();
 
 require_once __DIR__ . '/../helpers/logging.php';
+require_once __DIR__ . '/../helpers/permissions.php';
 logMsg("START method=" . $_SERVER['REQUEST_METHOD']);
 
-// Check authentication - require security level 64 (system admin)
-if (!isset($_SESSION['security']) || !($_SESSION['security'] & 64)) {
-    logMsg("AUTH FAIL - security=" . ($_SESSION['security'] ?? 'null'));
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'Unauthorized', 'message' => 'Security level too low']);
-    exit;
-}
+require_perm('api.user-form');
 
 logMsg("AUTH OK - memberid=" . ($_SESSION['memberid'] ?? 'null'));
 
@@ -85,6 +80,29 @@ if ($memberId) {
     }
 }
 
+$assignableIds = getAssignablePersonaIds($con, $_SESSION['permissions'] ?? []);
+
+// Pre-fetch personas (filtered by what the editor can assign)
+$personas = [];
+$pr = mysqli_query($con, "SELECT id, name, description FROM personas ORDER BY name");
+if ($pr) {
+    while ($prow = mysqli_fetch_assoc($pr)) {
+        if (in_array(intval($prow['id']), $assignableIds)) {
+            $personas[] = ['id' => $prow['id'], 'name' => $prow['name'], 'description' => $prow['description']];
+        }
+    }
+}
+
+$userPersonaIds = [];
+if ($user) {
+    $upr = mysqli_query($con, "SELECT persona_id FROM user_personas WHERE user_id = " . intval($user['id']));
+    if ($upr) {
+        while ($uprow = mysqli_fetch_assoc($upr)) {
+            $userPersonaIds[] = intval($uprow['persona_id']);
+        }
+    }
+}
+
 mysqli_close($con);
 
 // Handle POST (save user)
@@ -103,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     logMsg("POST DB connected OK");
 
-    $userId = isset($_POST['id']) ? intval($_POST['id']) : null;
+    $userId = isset($_POST['id']) && $_POST['id'] !== '' ? intval($_POST['id']) : null;
     $isEdit = $userId !== null;
 
     logMsg("isEdit=$isEdit userId=$userId");
@@ -113,11 +131,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usercode = isset($_POST['usercode']) ? trim($_POST['usercode']) : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
     $expire = isset($_POST['expire']) && !empty($_POST['expire']) ? $_POST['expire'] : null;
-    $securitylevel = isset($_POST['securitylevel']) ? intval($_POST['securitylevel']) : 0;
     $member = isset($_POST['member']) ? intval($_POST['member']) : null;
     $force_pw_reset = isset($_POST['force_pw_reset']) ? 1 : 0;
 
-    if ($_SESSION['security'] & 128) {
+    if (has_perm('organisations.manage')) {
         $org = isset($_POST['org']) ? intval($_POST['org']) : 0;
     }
 
@@ -127,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    logMsg("name=$name usercode=$usercode securitylevel=$securitylevel");
+    logMsg("name=$name usercode=$usercode");
 
     // Escape strings
     $nameEsc = mysqli_real_escape_string($con, $name);
@@ -140,7 +157,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             name = '$nameEsc',
             usercode = '$usercodeEsc',
             expire = '$expireEsc',
-            securitylevel = $securitylevel,
             member = " . ($member ? $member : 'NULL') . ",
             force_pw_reset = $force_pw_reset";
 
@@ -149,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $q .= ", password = '$passwordEsc'";
         }
 
-        if ($_SESSION['security'] & 128) {
+        if (has_perm('organisations.manage')) {
             $q .= ", org = " . ($org ? $org : 'NULL');
         }
 
@@ -157,13 +173,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Build INSERT query
         $passwordEsc = mysqli_real_escape_string($con, md5($password));
-        $q = "INSERT INTO users (name, usercode, password, org, expire, securitylevel, member, force_pw_reset) VALUES (
+        $q = "INSERT INTO users (name, usercode, password, org, expire, member, force_pw_reset) VALUES (
             '$nameEsc',
             '$usercodeEsc',
             '$passwordEsc',
-            " . ($_SESSION['security'] & 128 ? ($org ? $org : 'NULL') : $_SESSION['org']) . ",
+            " . (has_perm('organisations.manage') ? ($org ? $org : 'NULL') : $_SESSION['org']) . ",
             '$expireEsc',
-            $securitylevel,
             " . ($member ? $member : 'NULL') . ",
             $force_pw_reset
         )";
@@ -174,6 +189,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         logMsg("QUERY SUCCESS");
         $newId = $isEdit ? $userId : mysqli_insert_id($con);
         logMsg("newId=$newId");
+
+        // Save persona assignments (only assignable personas)
+        $assignableIds = getAssignablePersonaIds($con, $_SESSION['permissions'] ?? []);
+        mysqli_query($con, "DELETE FROM user_personas WHERE user_id = " . intval($newId));
+        $selectedPersonas = isset($_POST['personas']) ? $_POST['personas'] : [];
+        if (is_array($selectedPersonas)) {
+            $validPersonas = [];
+            foreach ($selectedPersonas as $pid) {
+                $pid = intval($pid);
+                if ($pid > 0 && in_array($pid, $assignableIds)) {
+                    $validPersonas[] = $pid;
+                } elseif ($pid > 0) {
+                    logMsg("REJECTED persona_id=$pid not assignable by editor");
+                }
+            }
+            foreach ($validPersonas as $pid) {
+                mysqli_query($con, "INSERT INTO user_personas (user_id, persona_id) VALUES (" . intval($newId) . ", $pid)");
+            }
+        }
 
         echo json_encode([
             'success' => true,
@@ -189,10 +223,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-// Return form data
+// Return form data for GET requests
 echo json_encode([
     'organisations' => $organisations,
     'members' => $members,
-    'user' => $user
+    'user' => $user,
+    'personas' => $personas,
+    'user_personas' => $userPersonaIds
 ]);
 apiExit();

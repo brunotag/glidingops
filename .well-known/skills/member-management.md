@@ -27,7 +27,7 @@ official_observer, first_aider (flags)
 System user accounts (login) - separate from members:
 ```
 id, name, usercode, password (MD5 hash!), org, expire
-securitylevel (bitmask), member (FK to members), force_pw_reset
+member (FK to members), force_pw_reset
 ```
 
 ## Key Concept: Member vs User
@@ -109,23 +109,22 @@ gm_group_id, gm_member_id
 
 Used for daily ops grouping (Group A, Group B, etc.)
 
-## Security Levels (users.securitylevel)
+## Security (Computed from Personas)
 
-Bitmask stored in `$_SESSION['security']`:
+The `users.securitylevel` column has been removed. `$_SESSION['security']` is **computed at login** from the user's persona assignment via `compute_security_bitmask()`:
 
-| Level | Value | Name | Description |
-|-------|-------|------|-------------|
-| 0 | 0 | None | Not logged in |
-| 1 | 1 | Member | Basic member access |
-| 2 | 2 | Booking Admin | Can manage bookings |
-| 4 | 4 | Daily Ops | Can enter flights |
-| 8 | 8 | CFO/Treasurer | Billing access |
-| 16 | 16 | CFI | Chief Flight Instructor |
-| 32 | 32 | Engineer | Engineering reports |
-| 64 | 64 | Admin | Full admin |
-| 128 | 128 | God | Super admin |
+| Persona | Bit | Description |
+|---------|-----|-------------|
+| Member (implicit) | 1 | Basic member access |
+| booking | 2 | Can manage bookings |
+| daily-ops | 4 | Can enter flights |
+| cfo | 8 | Billing access |
+| cfi | 16 | Chief Flight Instructor |
+| engineer | 32 | Engineering reports |
+| admin | 64 | Full admin |
+| god | 128 | Super admin |
 
-Check: `$_SESSION['security'] & LEVEL` (non-zero = has access)
+Used only for legacy display-level checks (home.php widget visibility). New permission checks use `require_persona('admin')` etc.
 
 ## Modern vs Legacy Pages
 
@@ -175,7 +174,7 @@ Format: Members display photo on list pages (60px thumbnail)
 
 When joining members with users:
 ```sql
-SELECT m.*, u.securitylevel 
+-- securitylevel column was dropped — use user_personas instead
 FROM members m 
 LEFT JOIN users u ON u.member = m.id 
 WHERE m.id = ?

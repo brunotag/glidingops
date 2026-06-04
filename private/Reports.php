@@ -1,17 +1,6 @@
 <?php session_start(); ?>
 <?php
-if(isset($_SESSION['security']))
-{
- if (!($_SESSION['security'] & 1))
- {
-  die("Secruity level too low for this page");
- }
-}
-else
-{
- header('Location: /Login.php');
- die("Please logon");
-}
+require_once __DIR__ . '/../helpers/permissions.php'; require_auth();
 ?>
 <?php
 include 'helpers.php';
@@ -53,8 +42,7 @@ function printit(){window.print();}
 </script>
 <?php
 $org = 0;
-if(isset($_SESSION['security']))
-    $org = $_SESSION['org'];
+$org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 $dateTimeZone = new DateTimeZone($_SESSION['timezone']);
 $dateTime = new DateTime('now', $dateTimeZone);
 $dateStr = $dateTime->format('Y-m-d');

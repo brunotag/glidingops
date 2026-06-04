@@ -83,9 +83,7 @@ GET FUNCTIONS
 function getAllTableRecs($req,$tablename,$where,$order,$from,$to)
 {
     global $DB;
-    if (!isset($_SESSION['security']))
-        returnError($req,1008,'Security Error');
-    if ($_SESSION['security'] < 255)
+    if (!has_perm('organisations.manage'))
         returnError($req,1008,'Security Error');
     $ed = 0;
     if ($from)

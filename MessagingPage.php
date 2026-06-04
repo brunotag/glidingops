@@ -2,10 +2,7 @@
 session_start();
 $org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 
-if (!isset($_SESSION['security']) || !($_SESSION['security'] & 5)) {
-    header('Location: /Login.php');
-    exit;
-}
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('messages.send');
 
 include 'helpers.php';
 include 'helpers/mail.php';

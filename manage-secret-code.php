@@ -1,8 +1,7 @@
-﻿<?php
-include './helpers/session_helpers.php';
+<?php
 include './helpers/secret_code_helpers.php';
 session_start();
-require_security_level(64);
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('admin.manage');
 
 $org = isset($_SESSION['org']) ? $org=$_SESSION['org'] : 0;
 

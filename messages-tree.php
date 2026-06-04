@@ -1,18 +1,8 @@
 <?php session_start(); ?>
 <?php
-$org = 0;
-if (isset($_SESSION['org'])) {
-    $org = intval($_SESSION['org']);
-}
-
-if (isset($_SESSION['security'])) {
-    if (!($_SESSION['security'] & 4)) {
-        die("Security level too low for this page");
-    }
-} else {
-    header('Location: /Login.php');
-    die("Please logon");
-}
+require_once __DIR__ . '/helpers/permissions.php';
+require_perm('messages.view');
+$org = isset($_SESSION['org']) ? intval($_SESSION['org']) : 0;
 
 require_once __DIR__ . '/helpers/timehelpers.php';
 

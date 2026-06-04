@@ -10,14 +10,7 @@ if (isset($_GET['org'])) {
     $org = $_SESSION['org'];
 }
 
-if (isset($_SESSION['security'])) {
-    if (!($_SESSION['security'] & 1)) {
-        die("Security level too low for this page");
-    }
-} else {
-    header('Location: /Login.php');
-    die("Please logon");
-}
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('members.list');
 
 // Get filter options from database
 $organisation = App\Models\Organisation::find($org);

@@ -34,7 +34,7 @@ if (mysqli_connect_errno()) {
     exit;
 }
 
-$stmt = mysqli_prepare($con, "SELECT id, password, member, org, securitylevel, name FROM users WHERE usercode = ? LIMIT 1");
+$stmt = mysqli_prepare($con, "SELECT id, password, member, org, name FROM users WHERE usercode = ? LIMIT 1");
 mysqli_stmt_bind_param($stmt, 's', $existing_user);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
@@ -74,7 +74,8 @@ $_SESSION['who'] = $existing_user;
 $_SESSION['memberid'] = $user['member'];
 $_SESSION['org'] = $user['org'];
 if ($_SESSION['org'] === null) $_SESSION['org'] = 0;
-$_SESSION['security'] = $user['securitylevel'];
+require_once __DIR__ . '/helpers/permissions.php';
+$_SESSION['permissions'] = load_user_permissions($con, $user['id']);
 $_SESSION['pagesortdata'] = array_fill(0, 65, 0);
 $_SESSION['dispname'] = $user['name'];
 

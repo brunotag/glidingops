@@ -34,7 +34,8 @@ if ($row['password'] == $mypassword)
   $_SESSION['org']=$row['org'];
   if ($_SESSION['org'] === NULL)
     $_SESSION['org'] = 0;
-  $_SESSION['security']=$row['securitylevel'];
+  require_once __DIR__ . '/helpers/permissions.php';
+  $_SESSION['permissions'] = load_user_permissions($con, $row['id']);
   $_SESSION['pagesortdata']=$pagesortdata ;
   $_SESSION['dispname']=$row['name'];
   if ($_SESSION['org'] != 0)

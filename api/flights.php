@@ -4,13 +4,20 @@ require_once __DIR__ . '/../helpers/api-base.php';
 session_start();
 
 require_once __DIR__ . '/../helpers/logging.php';
+require_once __DIR__ . '/../helpers/permissions.php';
 
 logMsg("START method=" . $_SERVER['REQUEST_METHOD']);
 
-if (!isset($_SESSION['security']) || !($_SESSION['security'] & 4)) {
-    logMsg("AUTH FAIL - security=" . ($_SESSION['security'] ?? 'null'));
+if (!isset($_SESSION['userid']) || $_SESSION['userid'] <= 0) {
+    logMsg("AUTH FAIL - userid=" . ($_SESSION['userid'] ?? 'null'));
     header('Content-Type: application/json');
-    echo json_encode(['error' => 'Unauthorized', 'message' => 'Security level too low']);
+    echo json_encode(['error' => 'Unauthorized', 'message' => 'Not logged in']);
+    exit;
+}
+if (!has_perm('api.flights')) {
+    logMsg("PERM FAIL - no api.flights permission");
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Forbidden', 'message' => 'Not authorized']);
     exit;
 }
 

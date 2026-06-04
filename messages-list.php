@@ -1,4 +1,5 @@
-﻿<?php session_start(); ?>
+<?php session_start();
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('messages.view'); ?>
 <!DOCTYPE html>
 <html>
 <body>

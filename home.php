@@ -4,29 +4,22 @@ if (isset($_SESSION['org'])) $org = $_SESSION['org']; ?>
 <?php
 include './helpers/timehelpers.php';
 require_once __DIR__ . '/helpers/logging.php';
-if (isset($_SESSION['security'])) {
-   if (!($_SESSION['security'] & 1)) {
-      die("Secruity level too low for this page");
-   }
-} else {
-    header('Location: /Login.php');
-   die("Please logon");
-}
-
-$effectiveSecurity = $_SESSION['security'];
-$asOverride = 0;
-if (isset($_GET['as']) && ($effectiveSecurity & 128)) {
-    $v = intval($_GET['as']);
-    if ($v >= 0 && $v <= 255) {
-        $effectiveSecurity = $v;
-        $asOverride = $v;
-    }
-}
+require_once __DIR__ . '/helpers/permissions.php';
+require_auth();
 
 $con_params = require('./config/database.php');
 $con_params = $con_params['gliding'];
 $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+$GLOBALS['con'] = $con;
 $dbOk = !mysqli_connect_errno();
+
+$asOverride = 0;
+if (!empty($_GET['as'])) {
+    $userPerms = $_SESSION['permissions'] ?? [];
+    if (in_array('god.view-as', $userPerms)) {
+        $asOverride = $_GET['as'];
+    }
+}
 
 $dateTime = new DateTime('now');
 $dateStr = $dateTime->format('Y-m-d');
@@ -99,7 +92,7 @@ if ($dbOk) {
 
     // Duplicate members count
     $duplicateCount = 0;
-    if ($effectiveSecurity & 64) {
+    if (has_perm('admin.manage')) {
         $q6 = "SELECT COUNT(*) AS cnt FROM (SELECT firstname, surname FROM members WHERE org = $org GROUP BY firstname, surname HAVING COUNT(*) > 1) AS dups";
         $r6 = mysqli_query($con, $q6);
         if ($r6 && $row = mysqli_fetch_array($r6)) {
@@ -109,7 +102,7 @@ if ($dbOk) {
 }
 
 // Favourites
-$editFavs = isset($_GET['edit_favs']) && $_GET['edit_favs'] == 1 && ($_SESSION['security'] & 128);
+$editFavs = isset($_GET['edit_favs']) && $_GET['edit_favs'] == 1 && has_perm('god.view-as');
 $editMemberId = isset($_GET['edit_member_id']) ? intval($_GET['edit_member_id']) : 0;
 $favMemberId = $editFavs && $editMemberId ? $editMemberId : (isset($_SESSION['memberid']) ? intval($_SESSION['memberid']) : 0);
 $favourites = [];
@@ -255,7 +248,7 @@ $favMemberIdJson = json_encode($favMemberId);
   <?php if ($asOverride): ?>
     <div style="background:#fff3cd;color:#856404;text-align:center;padding:6px;font-size:13px;font-weight:bold;">
       Viewing as security level <?php echo $asOverride; ?>
-      &mdash; <a href="home" style="color:#856404;text-decoration:underline;">Clear override</a>
+      &mdash; <a href="/home/" style="color:#856404;text-decoration:underline;">Clear override</a>
     </div>
   <?php endif; ?>
 
@@ -378,20 +371,20 @@ $favMemberIdJson = json_encode($favMemberId);
         </div>
 
         <!-- 4. Daily Ops -->
-        <?php if ($effectiveSecurity >= 4): ?>
+        <?php if (has_any_perm('daily-sheet.start-day', 'daily-sheet.edit', 'daily-sheet.access', 'self-launch.access')): ?>
 <div class="nav-card">
             <div class="card-header">Daily Ops</div>
             <div class="card-body">
-              <a href="/StartDay?org=<?php echo $org; ?>">New Daily Timesheet</a>
-              <a href="/EditDailySheet?org=<?php echo $org; ?>">Edit Daily Timesheet</a>
-              <a href="/DailyLogSheet?org=<?php echo $org; ?>">View Daily Timesheet</a>
-              <a href="/SelfLaunchEntry">Self-Launch Flight</a>
+              <?php if (has_perm('daily-sheet.start-day')): ?><a href="/StartDay?org=<?php echo $org; ?>">New Daily Timesheet</a><?php endif; ?>
+              <?php if (has_perm('daily-sheet.edit')): ?><a href="/EditDailySheet?org=<?php echo $org; ?>">Edit Daily Timesheet</a><?php endif; ?>
+              <?php if (has_perm('daily-sheet.access')): ?><a href="/DailyLogSheet?org=<?php echo $org; ?>">View Daily Timesheet</a><?php endif; ?>
+              <?php if (has_perm('self-launch.access')): ?><a href="/SelfLaunchEntry">Self-Launch Flight</a><?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
 
         <!-- 5. Rosters & Bookings -->
-        <?php if ($effectiveSecurity >= 1): ?>
+        <?php if (has_perm('bookings.view')): ?>
           <div class="nav-card">
             <div class="card-header">Rosters &amp; Bookings</div>
             <div class="card-body">
@@ -403,78 +396,66 @@ $favMemberIdJson = json_encode($favMemberId);
         <?php endif; ?>
 
         <!-- 6. Messaging -->
-        <?php if ($effectiveSecurity >= 5): ?>
+        <?php if (has_any_perm('messages.send', 'messages.view')): ?>
           <div class="nav-card">
             <div class="card-header">Messaging</div>
             <div class="card-body">
-              <a href="/MessagingPage">Broadcast a Message</a>
-              <a href="/MessagesTree">See Past Messages</a>
+              <?php if (has_perm('messages.send')): ?><a href="/MessagingPage">Broadcast a Message</a><?php endif; ?>
+              <?php if (has_perm('messages.view')): ?><a href="/MessagesTree">See Past Messages</a><?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
 
         <!-- 7. Members & Users -->
-        <?php if ($effectiveSecurity >= 1): ?>
+        <?php if (has_any_perm('members.list', 'users.manage', 'admin.manage')): ?>
           <div class="nav-card">
             <div class="card-header">Members &amp; Users</div>
             <div class="card-body">
-              <a href="/AllMembers">View Members</a>
-              <?php if ($effectiveSecurity & 64): ?>
-                <a href="/UsersList">View Users</a>
-                <a href="/Users">Create User</a>
-                <a href="/maintenance/duplicates_index.php">Manage Duplicate Memberships<?php if ($duplicateCount > 0): ?> <span class="dup-badge"><?php echo $duplicateCount; ?></span><?php endif; ?></a>
-              <?php endif; ?>
-              <?php if ($effectiveSecurity & 24): ?>
-                <a href="/app/reports/membersRolesStatsReport">Members Roles Report</a>
-              <?php endif; ?>
+              <?php if (has_perm('members.list')): ?><a href="/AllMembers">View Members</a><?php endif; ?>
+              <?php if (has_perm('users.manage')): ?><a href="/UsersList">View Users</a><?php endif; ?>
+              <?php if (has_perm('users.manage')): ?><a href="/Users">Create User</a><?php endif; ?>
+              <?php if (has_perm('admin.manage')): ?><a href="/maintenance/duplicates_index.php">Manage Duplicate Memberships<?php if ($duplicateCount > 0): ?> <span class="dup-badge"><?php echo $duplicateCount; ?></span><?php endif; ?></a><?php endif; ?>
+              <?php if (has_perm('admin.manage')): ?><a href="/app/reports/membersRolesStatsReport">Members Roles Report</a><?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
 
         <!-- 8. Reports -->
-        <?php if ($effectiveSecurity >= 1): ?>
+        <?php if (has_any_perm('treasurer-report.view', 'flights.list', 'engineer.view')): ?>
           <div class="nav-card">
             <div class="card-header">Reports</div>
             <div class="card-body">
-              <?php if ($effectiveSecurity & 8): ?>
-                <a href="/BillingReport">Billing Report</a>
-                <a href="/TreasurerReportNew3">Treasurer Report</a>
-                <a href="/TreasurerReportNew4">Treasurer Report (New)</a>
-              <?php endif; ?>
-              <?php if ($_SESSION['security'] & 1): ?>
-                <a href="/app/allFlightsReport">All Flights Report</a>
-                <a href="/AllFlightsReportNew">All Flights Report (New)</a>
-<?php if (isLocal()): ?><a href="/AllFlightsMobile" style="color:#d00;">[dev] All Flights Report (New) [mobile]</a><?php endif; ?>
-<?php endif; ?>
-              <?php if ($effectiveSecurity & 32): ?>
-                <a href="/Engineer">Engineer Report</a>
-                <a href="/last-flights-list?col=1&descsort=1">Currency Report</a>
-              <?php endif; ?>
+              <?php if (has_perm('treasurer-report.view')): ?><a href="/BillingReport">Billing Report</a><?php endif; ?>
+              <?php if (has_perm('treasurer-report.view')): ?><a href="/TreasurerReportNew3">Treasurer Report</a><?php endif; ?>
+              <?php if (has_perm('treasurer-report.view')): ?><a href="/TreasurerReportNew4">Treasurer Report (New)</a><?php endif; ?>
+              <?php if (has_perm('flights.list')): ?><a href="/app/allFlightsReport">All Flights Report</a><?php endif; ?>
+              <?php if (has_perm('flights.list')): ?><a href="/AllFlightsReportNew">All Flights Report (New)</a><?php endif; ?>
+<?php if (isLocal() && has_perm('flights.list')): ?><a href="/AllFlightsMobile" style="color:#d00;">[dev] All Flights Report (New) [mobile]</a><?php endif; ?>
+              <?php if (has_perm('engineer.view')): ?><a href="/Engineer">Engineer Report</a><?php endif; ?>
+              <?php if (has_perm('engineer.view')): ?><a href="/last-flights-list?col=1&descsort=1">Currency Report</a><?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
 
         <!-- 9. Analytics -->
-        <?php if ($effectiveSecurity >= 1): ?>
+        <?php if (has_any_perm('analytics.season-trends', 'analytics.dashboard')): ?>
           <div class="nav-card">
             <div class="card-header">Analytics</div>
             <div class="card-body">
-              <a href="/SeasonTrends">Trends Across Seasons</a>
-              <?php if ($effectiveSecurity & 64): ?>
-                <a href="/Analytics">Compare Two Seasons / YTD</a>
-              <?php endif; ?>
+              <?php if (has_perm('analytics.season-trends')): ?><a href="/SeasonTrends">Trends Across Seasons</a><?php endif; ?>
+              <?php if (has_perm('analytics.dashboard')): ?><a href="/Analytics">Compare Two Seasons / YTD</a><?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
 
         <!-- 10. Diagnostics & Recovery -->
-        <?php if ($effectiveSecurity & 64): ?>
+        <?php if (has_any_perm('admin.manage', 'messages.view', 'god.view-as')): ?>
           <div class="nav-card">
             <div class="card-header">Diagnostics &amp; Recovery</div>
             <div class="card-body">
-              <a href="/maintenance/testemail.php">Test Email</a>
-              <a href="/SentMessages">All Messages</a>
-              <a href="/ViewAs">View Homepage As...</a>
+              <?php if (has_perm('admin.manage')): ?><a href="/maintenance/testemail.php">Test Email</a><?php endif; ?>
+              <?php if (has_perm('messages.view')): ?><a href="/SentMessages">All Messages</a><?php endif; ?>
+              <?php if (has_perm('god.view-as')): ?><a href="/ViewAs">View Homepage As...</a><?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
@@ -490,40 +471,36 @@ $favMemberIdJson = json_encode($favMemberId);
         <?php endif; ?>
 
         <!-- 11. Super Admin -->
-        <?php if ($effectiveSecurity & 128): ?>
+        <?php if (has_any_perm('users.invite', 'organisations.manage', 'admin.manage')): ?>
           <div class="nav-card">
             <div class="card-header">Super Admin</div>
             <div class="card-body">
-              <a href="/InviteUsers">Invite Users to Gliding Ops</a>
-              <a href="/Organisations">Organisations</a>
-              <a href="/maintenance/duplicates_suggestions.php">Suggested Duplicates</a>
+              <?php if (has_perm('users.invite')): ?><a href="/InviteUsers">Invite Users to Gliding Ops</a><?php endif; ?>
+              <?php if (has_perm('organisations.manage')): ?><a href="/Organisations">Organisations</a><?php endif; ?>
+              <?php if (has_perm('admin.manage')): ?><a href="/maintenance/duplicates_suggestions.php">Suggested Duplicates</a><?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
 
         <!-- 12. Data Maintenance -->
-        <?php if ($effectiveSecurity & 120): ?>
+        <?php if (has_any_perm('aircraft.manage', 'aircraft-types.manage', 'flight-types.manage', 'launch-types.manage', 'billing-options.manage', 'roles.manage', 'membership-classes.manage', 'membership-statuses.manage', 'spots.manage', 'admin.manage', 'charges.manage', 'tow-charges.manage', 'incentive-schemes.manage', 'scheme-subs.manage', 'personas.manage', 'permissions.manage')): ?>
           <div class="nav-card">
             <div class="card-header">Data Maintenance</div>
             <div class="card-body">
-              <?php if ($effectiveSecurity & 104): ?>
-                <a href="/AllAircraft">Aircraft</a>
-              <?php endif; ?>
-              <?php if ($effectiveSecurity & 64): ?>
-                <a href="/AircraftTypes">Aircraft Types</a>
-                <a href="/flights-list.php">Flights Raw</a>
-                <a href="/membership_class-list.php">Membership Classes</a>
-                <a href="/membership_status-list.php">Membership Statuses</a>
-                <a href="/Roles">Roles</a>
-                <a href="/spots-list.php">Spots</a>
-                <a href="/manage-secret-code.php">Manage Secret Code</a>
-              <?php endif; ?>
-              <?php if ($effectiveSecurity & 72): ?>
-                <a href="/IncentiveSchemes">Incentive Schemes</a>
-                <a href="/OtherCharges">Other Charges</a>
-                <a href="/SubsToSchemes">Subs to Incentives</a>
-                <a href="/TowCharges">Tow Charging</a>
-              <?php endif; ?>
+              <?php if (has_perm('aircraft.manage')): ?><a href="/AllAircraft">Aircraft</a><?php endif; ?>
+              <?php if (has_perm('aircraft-types.manage')): ?><a href="/AircraftTypes">Aircraft Types</a><?php endif; ?>
+              <?php if (has_perm('flights.manage')): ?><a href="/flights-list.php">Flights Raw</a><?php endif; ?>
+              <?php if (has_perm('membership-classes.manage')): ?><a href="/membership_class-list.php">Membership Classes</a><?php endif; ?>
+              <?php if (has_perm('membership-statuses.manage')): ?><a href="/membership_status-list.php">Membership Statuses</a><?php endif; ?>
+              <?php if (has_perm('roles.manage')): ?><a href="/Roles">Roles</a><?php endif; ?>
+              <?php if (has_perm('spots.manage')): ?><a href="/spots-list.php">Spots</a><?php endif; ?>
+              <?php if (has_perm('admin.manage')): ?><a href="/manage-secret-code.php">Manage Secret Code</a><?php endif; ?>
+              <?php if (has_perm('personas.manage')): ?><a href="/Personas">Personas</a><?php endif; ?>
+              <?php if (has_perm('permissions.manage')): ?><a href="/Permissions">Permissions</a><?php endif; ?>
+              <?php if (has_perm('incentive-schemes.manage')): ?><a href="/IncentiveSchemes">Incentive Schemes</a><?php endif; ?>
+              <?php if (has_perm('charges.manage')): ?><a href="/OtherCharges">Other Charges</a><?php endif; ?>
+              <?php if (has_perm('scheme-subs.manage')): ?><a href="/SubsToSchemes">Subs to Incentives</a><?php endif; ?>
+              <?php if (has_perm('tow-charges.manage')): ?><a href="/TowCharges">Tow Charging</a><?php endif; ?>
             </div>
           </div>
         <?php endif; ?>

@@ -1,8 +1,8 @@
 <?php 
-  include '../helpers/session_helpers.php';
   session_start();
-  require_security_level(64);
-  $current_org = current_org();
+  require_once __DIR__ . '/../helpers/permissions.php';
+  require_perm('admin.manage');
+  $current_org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 ?>
 
 <!DOCTYPE HTML>

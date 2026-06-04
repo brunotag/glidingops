@@ -9,14 +9,7 @@ if (isset($_GET['org'])) {
     $org = $_SESSION['org'];
 }
 
-if (isset($_SESSION['security'])) {
-    if (!($_SESSION['security'] & 64)) {
-        die("Security level too low for this page");
-    }
-} else {
-    header('Location: /Login.php');
-    die("Please logon");
-}
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('users.manage');
 
 $requestedId = isset($_GET['id']) ? intval($_GET['id']) : null;
 $isEdit = $requestedId !== null;
@@ -48,11 +41,25 @@ while ($row = mysqli_fetch_assoc($r)) {
 }
 
 $user = null;
+$userPersonas = [];
 if ($isEdit) {
     $q = "SELECT * FROM users WHERE id = " . intval($requestedId);
     $r = mysqli_query($con, $q);
     if ($r) {
         $user = mysqli_fetch_assoc($r);
+    }
+    $pr = mysqli_query($con, "SELECT persona_id FROM user_personas WHERE user_id = " . intval($requestedId));
+    while ($prow = mysqli_fetch_assoc($pr)) {
+        $userPersonas[] = $prow['persona_id'];
+    }
+}
+
+$personas = [];
+$assignableIds = getAssignablePersonaIds($con, $_SESSION['permissions'] ?? []);
+$pr = mysqli_query($con, "SELECT id, name, description FROM personas WHERE assignable = 1 ORDER BY name");
+while ($prow = mysqli_fetch_assoc($pr)) {
+    if (in_array(intval($prow['id']), $assignableIds)) {
+        $personas[] = $prow;
     }
 }
 
@@ -120,7 +127,7 @@ mysqli_close($con);
             </div>
         </div>
 
-        <?php if ($_SESSION['security'] & 128): ?>
+        <?php if (in_array('god.view-as', $_SESSION['permissions'] ?? [])): ?>
         <div class="form-group">
             <label class="control-label col-sm-2">Organisation</label>
             <div class="col-sm-4">
@@ -140,13 +147,6 @@ mysqli_close($con);
             <label class="control-label col-sm-2">Expires <span class="required">*</span></label>
             <div class="col-sm-4">
                 <input type="date" class="form-control" name="expire" id="expire" value="<?php echo $user ? substr($user['expire'], 0, 10) : ''; ?>" required>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-sm-2">Security Level <span class="required">*</span></label>
-            <div class="col-sm-4">
-                <input type="text" class="form-control" name="securitylevel" id="securitylevel" value="<?php echo $user ? htmlspecialchars($user['securitylevel']) : ''; ?>" required>
             </div>
         </div>
 
@@ -172,6 +172,18 @@ mysqli_close($con);
                         Force Password Reset
                     </label>
                 </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2">Personas</label>
+            <div class="col-sm-8">
+                <?php foreach ($personas as $p): ?>
+                <label class="checkbox-inline" style="margin-right:15px; min-width:120px;">
+                    <input type="checkbox" name="personas[]" value="<?php echo $p['id']; ?>" <?php echo in_array($p['id'], $userPersonas) ? 'checked' : ''; ?>>
+                    <?php echo htmlspecialchars($p['name']); ?>
+                </label>
+                <?php endforeach; ?>
             </div>
         </div>
 

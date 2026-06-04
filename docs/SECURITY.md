@@ -42,7 +42,7 @@ $_SESSION['userid']     // users.id
 $_SESSION['who']        // usercode (username/email)
 $_SESSION['memberid']   // members.id (linked member, nullable)
 $_SESSION['org']        // organisations.id (0 if admin)
-$_SESSION['security']   // securitylevel bitmask
+$_SESSION['security']   // computed from personas via compute_security_bitmask()
 $_SESSION['timezone']   // org timezone
 $_SESSION['dispname']   // users.name (display name)
 ```
@@ -57,10 +57,9 @@ $_SESSION['dispname']   // users.name (display name)
 - Basic session_start() - no fingerprinting
 - No HTTPS enforcement (likely HTTP)
 
-## Authorization - Security Levels
+## Authorization - Security Levels (Legacy Bitmask)
 
-### Bitmask System
-Security levels use bitmask values. Check with: `$_SESSION['security'] & LEVEL`
+The system still maintains a `$_SESSION['security']` bitmask for backward compatibility with home.php display-level conditionals. It is now **computed from personas** at login time via `compute_security_bitmask()` rather than read from the database.
 
 | Level | Value | Name | Description |
 |-------|-------|------|-------------|

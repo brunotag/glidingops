@@ -5,14 +5,7 @@ if (isset($_SESSION['org'])) {
     $org = intval($_SESSION['org']);
 }
 
-if (isset($_SESSION['security'])) {
-    if (!($_SESSION['security'] & 1)) {
-        die("Security level too low for this page");
-    }
-} else {
-    header('Location: /Login.php');
-    die("Please logon");
-}
+require_once __DIR__ . '/helpers/permissions.php'; require_perm('flights.list');
 
 $today = date('Y-m-d');
 $firstOfMonth = date('Y-m-01');
@@ -186,7 +179,7 @@ body { min-height: 100vh; }
 <div class="padding-container">
 <div class="title-row">
     <h2>All Flights Report</h2>
-    <a href="/app/allFlightsReport" class="btn btn-default btn-sm">Old Version</a>
+
 </div>
 
 <div class="controls-bar">

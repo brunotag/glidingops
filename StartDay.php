@@ -1,9 +1,9 @@
 <?php
+session_start();
+require_once __DIR__ . '/helpers/permissions.php';
+require_perm('daily-sheet.start-day');
 include './helpers/timehelpers.php';
 include 'helpers.php';
-include './helpers/session_helpers.php';
-session_start();
-require_security_level(4);
 
 $org = 0;
 $errtext = '';

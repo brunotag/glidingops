@@ -4,22 +4,17 @@ require_once __DIR__ . '/../helpers/api-base.php';
 session_start();
 
 require_once __DIR__ . '/../helpers/logging.php';
+require_once __DIR__ . '/../helpers/permissions.php';
 
 logMsg("START");
 
-if (!isset($_SESSION['security']) || $_SESSION['security'] < 1) {
-    http_response_code(401);
-    logMsg("AUTH FAIL");
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'Unauthorized']);
-    apiExit($con);
-}
+require_perm('my-flights.view');
 if (!isset($_SESSION['memberid'])) {
     http_response_code(401);
     logMsg("AUTH FAIL - no memberid");
     header('Content-Type: application/json');
     echo json_encode(['error' => 'Unauthorized']);
-    apiExit($con);
+    apiExit();
 }
 
 logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);

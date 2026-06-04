@@ -185,7 +185,7 @@ if (empty($email)) {
     exit;
 }
 
-$stmt = mysqli_prepare($con, "SELECT u.id, u.usercode, u.member, u.org, u.securitylevel, u.name
+$stmt = mysqli_prepare($con, "SELECT u.id, u.usercode, u.member, u.org, u.name
                                FROM users u
                                WHERE u.usercode = ?
                                LIMIT 1");
@@ -196,7 +196,7 @@ $user = mysqli_fetch_assoc($result);
 mysqli_stmt_close($stmt);
 
 if (!$user) {
-    $stmt = mysqli_prepare($con, "SELECT u.id, u.usercode, u.member, u.org, u.securitylevel, u.name
+    $stmt = mysqli_prepare($con, "SELECT u.id, u.usercode, u.member, u.org, u.name
                                    FROM users u
                                    JOIN user_providers up ON up.user_id = u.id
                                    WHERE up.provider = ? AND up.provider_id = ?
@@ -209,7 +209,7 @@ if (!$user) {
 }
 
 if (!$user) {
-    $stmt = mysqli_prepare($con, "SELECT u.id, u.usercode, u.member, u.org, u.securitylevel, u.name
+    $stmt = mysqli_prepare($con, "SELECT u.id, u.usercode, u.member, u.org, u.name
                                    FROM users u
                                    JOIN members m ON m.id = u.member
                                    WHERE m.email = ?
@@ -237,7 +237,8 @@ $_SESSION['who'] = $user['usercode'];
 $_SESSION['memberid'] = $user['member'];
 $_SESSION['org'] = $user['org'];
 if ($_SESSION['org'] === null) $_SESSION['org'] = 0;
-$_SESSION['security'] = $user['securitylevel'];
+require_once __DIR__ . '/helpers/permissions.php';
+$_SESSION['permissions'] = load_user_permissions($con, $user['id']);
 $_SESSION['pagesortdata'] = array_fill(0, 65, 0);
 $_SESSION['dispname'] = $user['name'];
 

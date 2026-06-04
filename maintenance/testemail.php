@@ -6,14 +6,8 @@ include "../helpers/logging.php";
 $org = 0;
 $updtext = '';
 if (isset($_SESSION['org'])) $org = $_SESSION['org'];
-if (isset($_SESSION['security'])) {
-   if (!($_SESSION['security'] & 4)) {
-      die("Secruity level too low for this page");
-   }
-} else {
-   header('Location: /Login.php');
-   die("Please logon");
-}
+require_once __DIR__ . '/../helpers/permissions.php';
+require_perm('admin.manage');
 $con_params = require('../config/database.php');
 $con_params = $con_params['gliding'];
 $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);

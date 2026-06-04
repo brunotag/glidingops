@@ -7,26 +7,14 @@ logMsg("START - " . ($_GET['id'] ?? 'no id'));
 
 $org = 0;
 if (isset($_SESSION['org'])) $org = $_SESSION['org'];
-if (isset($_SESSION['security'])) {
-    if ($_SESSION['security'] < 1) {
-        logMsg("AUTH FAIL - security too low");
-        die("Security level too low for this page");
-    }
-} else {
-    logMsg("AUTH FAIL - no session");
-    header('Location: /Login.php');
-    die("Please logon");
-}
+require_once __DIR__ . '/helpers/permissions.php'; require_auth();
 
 $requestedId = isset($_GET['id']) ? intval($_GET['id']) : null;
 $currentMemberId = isset($_SESSION['memberid']) ? intval($_SESSION['memberid']) : 0;
-$securityLevel = isset($_SESSION['security']) ? $_SESSION['security'] : 0;
 $isCreateNew = $requestedId === null && strpos($_SERVER['REQUEST_URI'], 'MemberNew') !== false;
 
 if (!$isCreateNew && $requestedId !== null && $requestedId !== $currentMemberId) {
-    if (!($securityLevel & 6)) {
-        die("You can only edit your own details");
-    }
+    require_once __DIR__ . '/helpers/permissions.php'; require_perm('member.edit');
 }
 
 if ($isCreateNew) {

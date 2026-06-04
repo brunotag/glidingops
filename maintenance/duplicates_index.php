@@ -1,9 +1,9 @@
 <?php 
-  include '../helpers/session_helpers.php';
   include '../helpers/audit_helpers.php';
   session_start();
-  require_security_level(64);
-  $current_org = current_org();
+  require_once __DIR__ . '/../helpers/permissions.php';
+  require_perm('admin.manage');
+  $current_org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
   $org = $current_org;
 ?>
 <?php include '../helpers/dev_mode_banner.php'; ?>
