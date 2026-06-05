@@ -236,7 +236,7 @@ Searchable dropdowns for:
 - MessagingPage.php (create broadcast)
 - messages-tree.php (sent messages treeview)
 - texts-list-v2b.php (sent messages DataTables view)
-- messages-list.php (display on home - legacy)
+- messages-list.php (public broadcast feed, no auth required)
 - SendTxt.php (process queue)
 
 ### Admin / Diagnostics

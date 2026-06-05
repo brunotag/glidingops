@@ -416,6 +416,8 @@ Fields:
 ### messages-list.php
 **Purpose:** Display broadcast messages on homepage
 
+**Security:** Fully public — no authentication or authorization required. Requires `?org=1` query param. Used by club website embed.
+
 **Features:**
 - Styled like Twitter feed
 - Shows last 20 messages for org

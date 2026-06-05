@@ -2,7 +2,17 @@
 
 ## Authentication
 
-### Login Page (Login.php)
+### Public Pages
+
+These pages require no authentication or authorization:
+
+- `messages-list.php` — Broadcast messages feed, requires `?org=N` query param (e.g. `?org=1`). Consumed by external systems like the club website.
+- `api/magic-link-request.php` — Magic link request endpoint
+- `api/magic-link-verify.php` — Magic link verification endpoint
+
+---
+
+## Login Page (Login.php)
 
 The login page has two tabs:
 

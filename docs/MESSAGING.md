@@ -66,4 +66,4 @@ Two views available:
 | `texts-list.php` | List of text records (misleading) |
 | `texts-list-last-200.php` | Redundant list, misleading label |
 | `messaging-page-old.php` | Old messaging page |
-| `messages-list.php` | Homepage Twitter feed (replaced by treeview) |
+| `messages-list.php` | Public Twitter feed (no auth, used by club website embed) |

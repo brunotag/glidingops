@@ -2,6 +2,18 @@
 
 Reference document for the permission system overhaul. Every page, API endpoint, and navigation feature is mapped to its current security requirement and the new persona requirement.
 
+## Public Pages (No Auth Required)
+
+These pages require no authentication or authorization at all — they can be consumed by external/club systems that cannot pass session cookies.
+
+| File | Required Param | Notes |
+|------|---------------|-------|
+| `messages-list.php` | `?org=N` | Club broadcast messages as Twitter-style feed |
+| `api/magic-link-request.php` | — | Magic link email request |
+| `api/magic-link-verify.php` | `?token=XXX` | Magic link token verification |
+
+---
+
 ## Legend
 
 | Column | Meaning |
