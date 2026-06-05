@@ -1,5 +1,6 @@
-<?php session_start();
-require_once __DIR__ . '/helpers/permissions.php'; require_perm('messages.view'); ?>
+<?php
+$org = isset($_GET['org']) ? intval($_GET['org']) : 0;
+if ($org === 0) { echo "Missing org parameter"; exit; } ?>
 <!DOCTYPE html>
 <html>
 <body>
@@ -110,13 +111,6 @@ body {
 
 
 <?php
-
-if(isset($_SESSION['org'])) 
-    $org=$_SESSION['org'];
-else if (isset($_GET['org']))
-    $org=$_GET['org'];
-
-
 $con_params = require('./config/database.php');
 $con_params = $con_params['gliding'];
 if (mysqli_connect_errno()) {
