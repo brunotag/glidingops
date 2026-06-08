@@ -1,7 +1,7 @@
 <?php 
   session_start();
   require_once __DIR__ . '/../helpers/permissions.php';
-  require_perm('admin.manage');
+  require_perm('members.edit');
   $current_org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 ?>
 

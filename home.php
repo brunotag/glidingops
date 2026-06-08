@@ -414,7 +414,7 @@ $favMemberIdJson = json_encode($favMemberId);
               <?php if (has_perm('members.list')): ?><a href="/AllMembers">View Members</a><?php endif; ?>
               <?php if (has_perm('users.manage')): ?><a href="/UsersList">View Users</a><?php endif; ?>
               <?php if (has_perm('users.manage')): ?><a href="/Users">Create User</a><?php endif; ?>
-              <?php if (has_perm('admin.manage')): ?><a href="/maintenance/duplicates_index.php">Manage Duplicate Memberships<?php if ($duplicateCount > 0): ?> <span class="dup-badge"><?php echo $duplicateCount; ?></span><?php endif; ?></a><?php endif; ?>
+              <?php if (has_perm('members.edit')): ?><a href="/maintenance/duplicates_index.php">Manage Duplicate Memberships<?php if ($duplicateCount > 0): ?> <span class="dup-badge"><?php echo $duplicateCount; ?></span><?php endif; ?></a><?php endif; ?>
               <?php if (has_perm('admin.manage')): ?><a href="/app/reports/membersRolesStatsReport">Members Roles Report</a><?php endif; ?>
             </div>
           </div>
