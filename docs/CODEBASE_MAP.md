@@ -124,7 +124,7 @@ All follow similar pattern - form for single record:
 | `session_helpers.php` | `require_security_level()`, `current_org()` - auth helpers |
 | `mail.php` | Email class with hardcoded WWGC email settings |
 | `audit_helpers.php` | `audit_log()` - writes to audit table |
-| `error_message.php` | Error display utility |
+| `error_message.php` | Error display utility (Bootstrap alert classes via `$_SESSION["errtext"]`) |
 | `dev_mode_banner.php` | Shows "DEV MODE" banner when active |
 
 ### Database Classes (in /includes/)

@@ -14,6 +14,7 @@
 ### Completed This Session
 - **Migrated auth from bitmask ($_SESSION['security'] & N) to permission-based system** (`require_perm('perm.name')`). Core: `helpers/permissions.php`. 9 personas, 66 permissions. All page-level, API-level, and home-page widget checks migrated. `compute_security_bitmask()`, `$personaBitmask`, `$_SESSION['personas']`, `helpers/session_helpers.php` deleted. Permission-subset assignment (editor can only assign personas whose perms are a subset of editor's). Secret code flow preserved. ViewAs uses per-request override (no session corruption). Member persona auto-assigned to all users.
 - Deployed to production commit `e9897e3`.
+- **Branded error pages and login error fix** (commit `3b60f01`). New `error-page.php` for 400/403/404/500/503. `checklogin.php` now redirects to `Login.php?error=wrong_password` instead of bare echo. `require_perm()` sets HTTP 403 + redirects to error page. `helpers/error_message.php` uses Bootstrap alert classes. Fatal error handler promoted to production with redirect to branded 500 page. `ErrorDocument` directives added to `.htaccess`. See `docs/ERROR_PAGES.md`.
 
 ### Next Steps
 1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)
@@ -72,11 +73,12 @@ See these documents for detailed info:
 - `docs/DEAD_CODE.md` - Files marked for deletion
 - `docs/TODO.md` - Known issues
 - `docs/ARCHITECTURE.md` - Technical structure
+- `docs/ERROR_PAGES.md` - Error page system (error-page.php, ErrorDocument, fatal handler)
 
 ## Documentation Index
 
 All docs in `docs/` folder - see individual files for details:
-- README.md, ARCHITECTURE.md, DATABASE.md, FEATURES.md, ROUTES.md, SECURITY.md, MESSAGING.md, CODEBASE_MAP.md, WEB_AUTH.md, TESTING.md, DEVELOP.md, DEAD_CODE.md, TODO.md
+- README.md, ARCHITECTURE.md, DATABASE.md, FEATURES.md, ROUTES.md, SECURITY.md, MESSAGING.md, CODEBASE_MAP.md, WEB_AUTH.md, TESTING.md, DEVELOP.md, DEAD_CODE.md, TODO.md, ERROR_PAGES.md
 
 ## Dev URLs
 - **App:** http://glidingops.test (NOT https - self-signed cert issues)

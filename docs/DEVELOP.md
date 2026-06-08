@@ -45,8 +45,11 @@ Get-Content log/error.log -Tail 20
 
 ## Error Handling
 
-- `helpers/logging.php` registers a fatal error handler that writes to `log/error.log` in dev
+- `helpers/logging.php` registers a fatal error handler (`fatalShutdownHandler()`) in all environments. Logs to `log/error.log` + `error_log()`, redirects to branded 500 page if headers not sent.
 - `helpers/api-base.php` sets up an error handler for API endpoints that returns JSON
+- `helpers/permissions.php` `require_perm()` sets HTTP 403 and redirects to `error-page.php?code=403`
+- `error-page.php` serves branded error pages for HTTP 400/403/404/500/503 (triggered by `ErrorDocument` in `.htaccess`)
+- See `docs/ERROR_PAGES.md` for full documentation
 
 ## API Endpoints
 
