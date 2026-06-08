@@ -67,7 +67,7 @@ if ($row['password'] == $mypassword)
 }
 else
 {
-  echo "Wrong Username or Password";
+  header('Location: Login.php?error=wrong_password');
 }
 mysqli_close($con);
 ?>

@@ -50,15 +50,18 @@ function logError($message, $logName = 'app.log') {
     file_put_contents($logFile, date('Y-m-d H:i:s') . " [" . $uri . "] ERROR [$file:$line] " . $message . "\n", FILE_APPEND);
 }
 
-// Register fatal error handler (local dev only)
-if (isLocalEnvironment()) {
-    function logFatalErrorHandler() {
-        $error = error_get_last();
-        if ($error && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE])) {
-            $msg = $error['message'] . ' in ' . $error['file'] . ':' . $error['line'];
-            $logFile = getLogDir() . '/error.log';
-            @file_put_contents($logFile, date('Y-m-d H:i:s') . " [PHP FATAL] $msg\n", FILE_APPEND);
+// Register fatal error handler (all environments)
+function fatalShutdownHandler() {
+    $error = error_get_last();
+    if ($error && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE])) {
+        $msg = $error['message'] . ' in ' . $error['file'] . ':' . $error['line'];
+        $logFile = getLogDir() . '/error.log';
+        @file_put_contents($logFile, date('Y-m-d H:i:s') . " [PHP FATAL] $msg\n", FILE_APPEND);
+        error_log("PHP FATAL: $msg");
+        if (!headers_sent()) {
+            header('Location: /error-page.php?code=500');
+            exit;
         }
     }
-    register_shutdown_function('logFatalErrorHandler');
 }
+register_shutdown_function('fatalShutdownHandler');

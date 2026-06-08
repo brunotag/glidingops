@@ -6,6 +6,13 @@ DirectoryIndex home.php
 <IfModule php8_module>
     php_value session.gc_maxlifetime 2592000
 </IfModule>
+# Error pages
+ErrorDocument 400 /error-page.php?code=400
+ErrorDocument 403 /error-page.php?code=403
+ErrorDocument 404 /error-page.php?code=404
+ErrorDocument 500 /error-page.php?code=500
+ErrorDocument 503 /error-page.php?code=503
+
 RewriteEngine On
 
 # if maintenance.trigger exists, then reply with

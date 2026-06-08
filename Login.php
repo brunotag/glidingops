@@ -261,6 +261,7 @@
     elseif ($errorType === 'oauth_email_not_found') $errorMsg = 'Facebook did not return your email address. Use the Email or Register tab below to sign in with your member email instead, or try Google.';
     elseif ($errorType === 'oauth_provider_error') $errorMsg = 'The social sign-in provider returned an error. Please try again.';
     elseif ($errorType === 'oauth_not_configured') $errorMsg = 'This sign-in method is not yet configured. Please use another method.';
+    elseif ($errorType === 'wrong_password') $errorMsg = 'Incorrect username or password. Please try again.';
     $showMagicLinkTab = $errorType !== '';
     ?>
     <?php if ($isLocal): ?>

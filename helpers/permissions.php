@@ -83,12 +83,14 @@ function require_perm(...$required) {
             return;
         }
     }
+    http_response_code(403);
     if (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) {
         header('Content-Type: application/json');
         echo json_encode(['error' => 'Not authorized']);
         exit;
     }
-    die("Not authorized");
+    header('Location: /error-page.php?code=403');
+    exit;
 }
 
 function load_user_permissions($con, $userId) {
