@@ -407,7 +407,7 @@ $favMemberIdJson = json_encode($favMemberId);
         <?php endif; ?>
 
         <!-- 7. Members & Users -->
-        <?php if (has_any_perm('members.list', 'users.manage', 'admin.manage')): ?>
+        <?php if (has_any_perm('members.list', 'users.manage', 'admin.manage', 'members.edit')): ?>
           <div class="nav-card">
             <div class="card-header">Members &amp; Users</div>
             <div class="card-body">
