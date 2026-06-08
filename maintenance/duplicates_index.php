@@ -2,7 +2,7 @@
   include '../helpers/audit_helpers.php';
   session_start();
   require_once __DIR__ . '/../helpers/permissions.php';
-  require_perm('members.edit');
+  require_perm('members.dedup');
   $current_org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
   $org = $current_org;
 ?>

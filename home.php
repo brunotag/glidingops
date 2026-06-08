@@ -407,14 +407,14 @@ $favMemberIdJson = json_encode($favMemberId);
         <?php endif; ?>
 
         <!-- 7. Members & Users -->
-        <?php if (has_any_perm('members.list', 'users.manage', 'admin.manage', 'members.edit')): ?>
+        <?php if (has_any_perm('members.list', 'users.manage', 'admin.manage', 'members.dedup')): ?>
           <div class="nav-card">
             <div class="card-header">Members &amp; Users</div>
             <div class="card-body">
               <?php if (has_perm('members.list')): ?><a href="/AllMembers">View Members</a><?php endif; ?>
               <?php if (has_perm('users.manage')): ?><a href="/UsersList">View Users</a><?php endif; ?>
               <?php if (has_perm('users.manage')): ?><a href="/Users">Create User</a><?php endif; ?>
-              <?php if (has_perm('members.edit')): ?><a href="/maintenance/duplicates_index.php">Manage Duplicate Memberships<?php if ($duplicateCount > 0): ?> <span class="dup-badge"><?php echo $duplicateCount; ?></span><?php endif; ?></a><?php endif; ?>
+              <?php if (has_perm('members.dedup')): ?><a href="/maintenance/duplicates_index.php">Manage Duplicate Memberships<?php if ($duplicateCount > 0): ?> <span class="dup-badge"><?php echo $duplicateCount; ?></span><?php endif; ?></a><?php endif; ?>
               <?php if (has_perm('admin.manage')): ?><a href="/app/reports/membersRolesStatsReport">Members Roles Report</a><?php endif; ?>
             </div>
           </div>
