@@ -7,6 +7,10 @@
     "start": {
       "description": "Full session startup: recall memories, check logs, check git status",
       "template": "Run the standard session startup ritual: 1) agentmemory_memory_recall query=\"glidingops\" 2) Read log/app.log -Tail 20 3) Read log/error.log -Tail 20 4) Run git status 5) Read all /md file in all subdirectory"
+    },
+    "smoke-test": {
+      "description": "Run smoke tests against the production website (gops.wwgc.co.nz)",
+      "template": "You are smoke-testing the production GlidingOps website (gops.wwgc.co.nz). The main tool you need is chrome-devtools (chrome-devtools-mcp). Before starting, confirm you have chrome-devtools tools available by calling chrome-devtools_list_pages. If that fails or returns no pages, tell the user: 'The smoke-test requires chrome-devtools-mcp. Please add it to your MCP config. See https://opencode.ai/config/mcp for details.' and stop. If chrome-devtools is available, start with smoke-tests/00-setup.md and proceed through each numbered file in sequence. Execute every step using chrome-devtools for browser actions and plink for SSH DB queries. Report pass/fail for each page. For any CRUD step that says 'ASK USER' or creates/deletes data, stop and ask for permission first."
     }
   },
   "permission": {
