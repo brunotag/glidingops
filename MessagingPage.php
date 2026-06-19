@@ -10,9 +10,11 @@ include 'helpers/logging.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'send') {
     header('Content-Type: application/json; charset=utf-8');
+    error_log('[MessagingPage] POST send started, member=' . ($_SESSION['memberid'] ?? 'null'));
 
     function sendApiError($errno, $errstr, $errfile, $errline) {
         if (!(error_reporting() & $errno)) return false;
+        error_log('[MessagingPage] PHP error: ' . $errstr . ' in ' . $errfile . ':' . $errline);
         http_response_code(500);
         echo json_encode(['type' => 'result', 'success' => 0, 'failed' => [], 'error' => 'Server error: ' . $errstr]);
         exit;
@@ -40,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
 
     if (mysqli_connect_errno()) {
+        error_log('[MessagingPage] DB connection failed: ' . mysqli_connect_error());
         echo json_encode(['type' => 'result', 'success' => 0, 'failed' => [], 'error' => 'Database connection failed']);
         exit;
     }
@@ -62,9 +65,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 
     $isBroadcast = $fakeTwitter ? 1 : 0;
-    $msgSql = "INSERT INTO messages (org, create_time, msg, txt_sender_member_id, is_broadcast) VALUES ($org, NOW(), '" . mysqli_real_escape_string($con, $message) . "', " . intval($_SESSION['memberid']) . ", $isBroadcast)";
-    mysqli_query($con, $msgSql);
+    $escapedMessage = mysqli_real_escape_string($con, $message);
+    $memberId = intval($_SESSION['memberid'] ?? 0);
+    $msgSql = "INSERT INTO messages (org, create_time, msg, txt_sender_member_id, is_broadcast) VALUES ($org, NOW(), '$escapedMessage', $memberId, $isBroadcast)";
+    $msgResult = mysqli_query($con, $msgSql);
+
+    if (!$msgResult) {
+        $dbErr = mysqli_error($con);
+        error_log('[MessagingPage] Failed to insert message: ' . $dbErr);
+        mysqli_close($con);
+        echo json_encode(['type' => 'result', 'success' => 0, 'failed' => [], 'error' => 'Database error saving message: ' . $dbErr]);
+        exit;
+    }
+
     $msgId = mysqli_insert_id($con);
+    error_log('[MessagingPage] Saved message id=' . $msgId . ', recipients=' . count($recipients));
 
     $total = count($recipients);
     $success = 0;
@@ -85,26 +100,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
             if ($sent) {
                 $memberIdQuery = mysqli_query($con, "SELECT id FROM members WHERE email = '" . mysqli_real_escape_string($con, $email) . "' LIMIT 1");
-                $memberId = null;
+                $foundMemberId = null;
                 if ($memberIdQuery && $memberRow = mysqli_fetch_array($memberIdQuery)) {
-                    $memberId = $memberRow['id'];
+                    $foundMemberId = $memberRow['id'];
                 }
 
-                $txtSql = "INSERT INTO texts (txt_msg_id, txt_member_id, txt_to, txt_status, txt_timestamp_sent) VALUES ($msgId, " . ($memberId ? intval($memberId) : 'NULL') . ", NULL, 3, NOW())";
-                mysqli_query($con, $txtSql);
+                $memberIdVal = $foundMemberId ? intval($foundMemberId) : 'NULL';
+                $txtSql = "INSERT INTO texts (txt_msg_id, txt_member_id, txt_to, txt_status, txt_timestamp_sent) VALUES ($msgId, $memberIdVal, NULL, 3, NOW())";
+                $txtResult = mysqli_query($con, $txtSql);
 
-                $success++;
+                if ($txtResult) {
+                    $success++;
+                } else {
+                    $dbErr = mysqli_error($con);
+                    error_log('[MessagingPage] Failed to insert texts row for ' . $email . ': ' . $dbErr);
+                    $failed[] = ['email' => $email, 'reason' => 'DB save error: ' . $dbErr];
+                }
             } else {
+                error_log('[MessagingPage] Mail server rejected send to ' . $email);
                 $failed[] = ['email' => $email, 'reason' => 'Mail server rejected'];
             }
         } catch (Exception $e) {
+            error_log('[MessagingPage] Exception sending to ' . $email . ': ' . $e->getMessage());
             $failed[] = ['email' => $email, 'reason' => $e->getMessage()];
         } catch (Error $e) {
+            error_log('[MessagingPage] Error sending to ' . $email . ': ' . $e->getMessage());
             $failed[] = ['email' => $email, 'reason' => $e->getMessage()];
         }
     }
 
     mysqli_close($con);
+
+    error_log('[MessagingPage] Send complete: ' . $success . '/' . $total . ' sent, ' . count($failed) . ' failed');
 
     echo json_encode([
         'type' => 'result',
@@ -296,11 +323,8 @@ foreach ($mailing_lists as $name => $email):
 <div class="modal-content">
 <div class="modal-header">Sending Messages...</div>
 <div class="modal-body">
-<div class="progress-text" id="progressText">Preparing to send...</div>
-<div class="progress-bar">
-<div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
-</div>
-<div class="email-status-list" id="emailStatusList"></div>
+<div class="progress-spinner" id="progressSpinner"></div>
+<div class="progress-text" id="progressText">Sending...</div>
 </div>
 </div>
 </div>
@@ -341,8 +365,6 @@ const cancelSend = document.getElementById('cancelSend');
 const confirmSend = document.getElementById('confirmSend');
 const progressModal = document.getElementById('progressModal');
 const progressText = document.getElementById('progressText');
-const progressBar = document.getElementById('progressBar');
-const emailStatusList = document.getElementById('emailStatusList');
 const resultModal = document.getElementById('resultModal');
 const resultIcon = document.getElementById('resultIcon');
 const resultHeader = document.getElementById('resultHeader');
@@ -544,9 +566,7 @@ confirmSend.addEventListener('click', () => {
 
 async function sendMessages() {
     progressModal.classList.add('active');
-    progressText.textContent = 'Sending...';
-    progressBar.style.width = '50%';
-    emailStatusList.innerHTML = '';
+    progressText.textContent = 'Sending to ' + recipients.length + ' recipient(s)...';
 
     const message = messageText.value.trim();
     const subject = messageSubject.value.trim();
@@ -566,7 +586,6 @@ async function sendMessages() {
             })
         });
 
-        progressBar.style.width = '90%';
         progressText.textContent = 'Processing response...';
 
         if (!response.ok) {
