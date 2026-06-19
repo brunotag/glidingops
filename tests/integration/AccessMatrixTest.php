@@ -1,15 +1,11 @@
 <?php
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 
 /** One login per persona, test all pages (noisy routes excluded). */
 class AccessMatrixTest extends TestCase
 {
-    private static \mysqli $con;
-    private static int $fgUserId;
-
     private const PAGES = [
         ['/home',                    'auth'],
         ['/MyFlights',               'auth'],
@@ -32,14 +28,14 @@ class AccessMatrixTest extends TestCase
         ['/SentMessages',            'daily-ops'],
 
         ['/BillingReport',           'cfo'],
-        ['/TowCharges',              'cfo,admin'],
-        ['/TowCharge',               'cfo,admin'],
-        ['/OtherCharges',            'cfo,admin'],
-        ['/OtherCharge',             'cfo,admin'],
-        ['/IncentiveSchemes',        'cfo,admin'],
-        ['/IncentiveScheme',         'cfo,admin'],
-        ['/SubsToSchemes',           'cfo,admin'],
-        ['/SubsToScheme',            'cfo,admin'],
+        ['/TowCharges',              'cfo'],
+        ['/TowCharge',               'cfo'],
+        ['/OtherCharges',            'cfo'],
+        ['/OtherCharge',             'cfo'],
+        ['/IncentiveSchemes',        'cfo'],
+        ['/IncentiveScheme',         'cfo'],
+        ['/SubsToSchemes',           'cfo'],
+        ['/SubsToScheme',            'cfo'],
         ['/TreasurerReportNew3',     'cfo'],
         ['/TreasurerReportNew4',     'cfo'],
 
@@ -78,54 +74,9 @@ class AccessMatrixTest extends TestCase
         ['GET', '/api/texts',               'daily-ops'],
     ];
 
-    private const PERSONA_TESTS = [
-        'booking', 'daily-ops', 'cfo', 'cfi', 'engineer', 'admin', 'god'
-    ];
-
-    public static function setUpBeforeClass(): void
-    {
-        $db = require __DIR__ . '/../config/database.php';
-        $p = $db['gliding'];
-        self::$con = mysqli_connect($p['hostname'], $p['username'], $p['password'], $p['dbname']);
-        if (!self::$con) throw new RuntimeException('DB fail');
-        $r = mysqli_query(self::$con, "SELECT id FROM users WHERE usercode='fgordon'");
-        $u = mysqli_fetch_assoc($r);
-        self::$fgUserId = intval($u['id']);
-    }
-
     public static function tearDownAfterClass(): void
     {
-        if (self::$con) {
-            mysqli_query(self::$con, "DELETE FROM user_personas WHERE user_id=" . self::$fgUserId);
-            $q = "INSERT INTO user_personas (user_id, persona_id)
-                  SELECT " . self::$fgUserId . ", p.id FROM personas p";
-            mysqli_query(self::$con, $q);
-            mysqli_close(self::$con);
-        }
-    }
-
-    private static function setP(string $persona): void
-    {
-        mysqli_query(self::$con, "DELETE FROM user_personas WHERE user_id=" . self::$fgUserId);
-        $q = "INSERT INTO user_personas (user_id, persona_id)
-              SELECT " . self::$fgUserId . ", p.id FROM personas p WHERE p.name='$persona'";
-        $r = mysqli_query(self::$con, $q);
-        if (!$r) throw new RuntimeException("setP($persona) failed");
-    }
-
-    private static function login(): Client
-    {
-        $jar = new CookieJar();
-        $c = new Client([
-            'base_uri' => 'http://glidingops.test',
-            'cookies' => $jar,
-            'allow_redirects' => ['max' => 5, 'strict' => false],
-            'http_errors' => false,
-            'headers' => ['Accept' => 'text/html,application/json,*/*'],
-            'timeout' => 15,
-        ]);
-        $c->post('/checklogin.php', ['form_params' => ['user'=>'fgordon','pcode'=>'fgordon']]);
-        return $c;
+        restoreAllPersonas();
     }
 
     private function shouldAllow(string $persona, string $rule): bool {
@@ -135,8 +86,7 @@ class AccessMatrixTest extends TestCase
 
     private function testAll(string $persona): void
     {
-        self::setP($persona);
-        $client = self::login();
+        $client = loginAsPersona($persona);
 
         foreach (self::PAGES as [$route, $rule]) {
             $resp = $client->get($route, ['allow_redirects' => false]);
@@ -179,8 +129,7 @@ class AccessMatrixTest extends TestCase
     /** God can view home as another persona. */
     public function testViewAsOverride(): void
     {
-        self::setP('god');
-        $client = self::login();
+        $client = loginAsPersona('god');
 
         $resp = $client->get('/home/?as=booking', ['allow_redirects' => false]);
         $this->assertEquals(200, $resp->getStatusCode());
@@ -194,8 +143,7 @@ class AccessMatrixTest extends TestCase
     /** Non-god user cannot use ?as= override. */
     public function testViewAsOverrideDenied(): void
     {
-        self::setP('booking');
-        $client = self::login();
+        $client = loginAsPersona('booking');
 
         $resp = $client->get('/home/?as=god', ['allow_redirects' => false]);
         $this->assertEquals(200, $resp->getStatusCode());
@@ -205,8 +153,8 @@ class AccessMatrixTest extends TestCase
     /** ?as= does not corrupt god session. */
     public function testViewAsDoesNotCorruptSession(): void
     {
-        self::setP('god');
-        $client = self::login();
+        setPersona('god');
+        $client = loginClient();
 
         $client->get('/home/?as=booking', ['allow_redirects' => false]);
         $resp = $client->get('/ViewAs', ['allow_redirects' => false]);
@@ -217,8 +165,7 @@ class AccessMatrixTest extends TestCase
     /** Unknown persona name defaults to security level 1. */
     public function testViewAsUnknownPersonaDefaultsToMember(): void
     {
-        self::setP('god');
-        $client = self::login();
+        $client = loginAsPersona('god');
 
         $resp = $client->get('/home/?as=member', ['allow_redirects' => false]);
         $this->assertEquals(200, $resp->getStatusCode());

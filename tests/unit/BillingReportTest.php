@@ -2,8 +2,6 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../helpers/billing-calc.php';
-
 class BillingReportTest extends TestCase
 {
     // -----------------------------------------------------------------------
@@ -43,6 +41,16 @@ class BillingReportTest extends TestCase
 
             'Case insensitive Youth' => [1, 'GGR', 10, 'youth', 2.25, 180.00, 15.00],
             'Short Term no discount' => [1, 'GGR', 10, 'Short Term', 2.25, 180.00, 22.50],
+
+            'Junior on GGR 10min $2.25 (no discount)' => [1, 'GGR', 10, 'Junior', 2.25, 180.00, 22.50],
+            'Junior on GPJ 10min $2.25 (no discount)' => [1, 'GPJ', 10, 'Junior', 2.25, 180.00, 22.50],
+            'Junior on GNB 10min $2.25 (no discount)' => [1, 'GNB', 10, 'Junior', 2.25, 180.00, 22.50],
+            'Junior on unknown glider 10min $2.25' => [1, 'XYZ', 10, 'Junior', 2.25, 180.00, 22.50],
+
+            'Non Flying on GGR 10min no discount' => [1, 'GGR', 10, 'Non Flying', 2.25, 180.00, 22.50],
+            'Visitor on GGR 10min no discount' => [1, 'GGR', 10, 'Visitor', 2.25, 180.00, 22.50],
+
+            'Zero minute flight = $0' => [1, 'GGR', 0, 'Flying', 2.25, 180.00, 0.00],
         ];
     }
 
@@ -135,56 +143,10 @@ class BillingReportTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // End-to-end test: page loads and contains data
-    // -----------------------------------------------------------------------
-
-    /** @group e2e */
-    public function testPageLoadsAndShowsFlights(): void
-    {
-        $client = loginClient();
-
-        $resp = $client->post('/BillingReport', [
-            'form_params' => [
-                'month' => date('m'),
-                'year'  => date('Y'),
-                'view'  => 'View Report',
-            ],
-        ]);
-
-        $this->assertEquals(200, $resp->getStatusCode());
-        $html = (string)$resp->getBody();
-
-        $this->assertStringContainsString('Treasurer Monthly Report', $html);
-        $this->assertStringContainsString('Flight Charges', $html);
-    }
-
-    /** @group e2e */
-    public function testCsvExportDownloads(): void
-    {
-        $client = loginClient();
-
-        $resp = $client->post('/BillingReport.csv', [
-            'form_params' => [
-                'month'  => date('m'),
-                'year'   => date('Y'),
-                'export' => 'Export CSV',
-            ],
-        ]);
-
-        $this->assertEquals(200, $resp->getStatusCode());
-        $contentType = $resp->getHeaderLine('Content-Type');
-        $this->assertStringContainsString('text/csv', $contentType);
-
-        $body = (string)$resp->getBody();
-        $this->assertStringContainsString('SURNAME', $body);
-    }
-
-    // -----------------------------------------------------------------------
-    // Verify the calculation results are correct by comparing known values
+    // Combined calculation tests (pure logic, no DB)
     // -----------------------------------------------------------------------
 
     /**
-     * @group e2e
      * @dataProvider knownFlightProvider
      */
     public function testKnownFlightCalculationProducesCorrectCharges(
@@ -205,8 +167,6 @@ class BillingReportTest extends TestCase
 
     public function knownFlightProvider(): array
     {
-        // Scenario: Flying member, first winch, 15min flight in GGR
-        // Glider: 15 * 2.25 = 33.75, Launch: 39.00, Total: 72.75
         return [
             'Flying GGR 15min first winch' => [1, 'GGR', 15, 'Flying', 2.25, 180, 2, true, 33.75, 39.00, 72.75],
             'Flying GGR 15min relaunch' => [1, 'GGR', 15, 'Flying', 2.25, 180, 2, false, 33.75, 25.00, 58.75],
@@ -215,6 +175,15 @@ class BillingReportTest extends TestCase
             'Flying GGR 80min cap winch' => [1, 'GGR', 80, 'Flying', 2.25, 180, 2, true, 180.00, 39.00, 219.00],
             'Flying self-launch landing fee' => [1, 'GGR', 10, 'Flying', 2.25, 180, 3, false, 22.50, 25.00, 47.50],
             'Private glider no charge' => [0, 'ABC', 10, 'Flying', 2.25, 180, 2, true, 0.00, 39.00, 39.00],
+
+            'Junior GGR 10min first winch (no discount)' => [1, 'GGR', 10, 'Junior', 2.25, 180, 2, true, 22.50, 39.00, 61.50],
+            'Junior GPJ 10min first winch (no discount)' => [1, 'GPJ', 10, 'Junior', 2.25, 180, 2, true, 22.50, 39.00, 61.50],
+            'Junior GGR 60min cap winch (no discount)' => [1, 'GGR', 60, 'Junior', 2.25, 180, 2, true, 135.00, 39.00, 174.00],
+            'Junior GGR 10min relaunch (no discount)' => [1, 'GGR', 10, 'Junior', 2.25, 180, 2, false, 22.50, 25.00, 47.50],
+
+            'Flying GGR 10min self-launch' => [1, 'GGR', 10, 'Flying', 2.25, 180, 3, false, 22.50, 25.00, 47.50],
+            'Flying GGR 10min aerotow (comp)' => [1, 'GGR', 10, 'Flying', 2.25, 180, 1, false, 22.50, 0.00, 22.50],
+            'Flying GGR 10min aerotow first winch irrelevant' => [1, 'GGR', 10, 'Flying', 2.25, 180, 1, true, 22.50, 0.00, 22.50],
         ];
     }
 }

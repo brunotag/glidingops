@@ -1,7 +1,7 @@
-$AGENTMEMORY_DIR = Join-Path $PSScriptRoot ".agentmemory"
-$PROJ = $PWD.Path
-$LARAVEL = Join-Path $PSScriptRoot "lrv"
-$TOKEN_FILE = Join-Path $PSScriptRoot ".opencode\.domshell_token"
+$AGENTMEMORY_DIR = Join-Path $PSScriptRoot "..\.agentmemory"
+$PROJ = (Get-Item $PSScriptRoot\..).FullName
+$LARAVEL = Join-Path $PSScriptRoot "..\lrv"
+$TOKEN_FILE = Join-Path $PSScriptRoot "..\.opencode\.domshell_token"
 
 # Generate random DOMSHELL_TOKEN for browser automation (32 hex chars)
 $token = -join (1..32 | ForEach-Object { '0123456789abcdef'[(Get-Random -Maximum 16)] })

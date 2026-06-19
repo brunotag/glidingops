@@ -48,7 +48,9 @@ Run `agentmemory_memory_consolidate` to persist learned context across sessions.
 **TESTING:** 
 - Always verify CSS/JS changes by fetching the page with PowerShell WebRequestSession (see `docs/WEB_AUTH.md`). Do NOT rely purely on code reasoning — the browser is the ground truth.
 - Use `docs/WEB_AUTH.md` for PowerShell WebRequestSession patterns
-- Run PHPUnit test suite: `cd lrv; vagrant ssh -c "cd /home/vagrant/code && ./lrv/vendor/bin/phpunit"` (see `docs/TESTING.md` for full details)
+- Run integration tests: `.\tools\run-tests` (see `docs/TESTING.md` for full details)
+- Run unit tests only: `.\tools\run-tests -Unit`
+- Two test suites: `tests/unit/` (pure functions, 0.05s) and `tests/integration/` (HTTP + DB, ~4min)
 
 **BEFORE DELETING OLD FILES:** See `docs/DEAD_CODE.md`
 
@@ -141,14 +143,14 @@ cd lrv; vagrant ssh -c "php -l ./code/<path>" 2>&1
 ```
 
 ## Running Tests
-```bash
-cd lrv; vagrant ssh -c "cd /home/vagrant/code && ./lrv/vendor/bin/phpunit"
-```
+```powershell
+.\tools\run-tests           # integration tests (requires Vagrant, ~4min)
+.\tools\run-tests -Unit     # unit tests only (fast, 0.05s)
+.\tools\run-tests -Filter HomePageTest   # filter to a specific test
 ```
 
-Test suite in `tests/` using PHPUnit + GuzzleHttp:
-- `HomePageTest` — CSS Grid, widgets, height/limit, DOM structure
-- `PhotoUploadTest` — Upload photo with GD resize, reject non-image
-- `MemberListPhotoTest` — Photo URLs are ID-based, not displayname-based
-- `HeaderPhotoTest` — Header photo on home, AllMembers, MyFlights, noprofile fallback
-- `NavigationTest` — 45+ internal links return 200, specific expected links present
+Test suites:
+- `tests/unit/` — Pure function tests (billing calc), 53 tests, 81 assertions
+- `tests/integration/` — HTTP + DB integration tests, 72 tests, 1051 assertions
+
+See `docs/TESTING.md` for full documentation.

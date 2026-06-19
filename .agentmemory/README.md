@@ -17,7 +17,7 @@ Contains configuration for iii-engine and agentmemory
 
 2. Start everything in Windows Terminal tabs:
    ```
-   .\start-dev.ps1
+   .\tools\start-dev.ps1
    ```
    (must be run from the glidingops directory)
 

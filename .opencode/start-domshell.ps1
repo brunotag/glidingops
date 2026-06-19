@@ -1,5 +1,5 @@
 #!/usr/bin/env pwsh
-# Launched by start-dev.ps1 — starts the DOMShell MCP server with the generated token.
+# Launched by tools/start-dev.ps1 — starts the DOMShell MCP server with the generated token.
 
 param(
     [string]$TokenFile = (Join-Path $PSScriptRoot ".domshell_token")

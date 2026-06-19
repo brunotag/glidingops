@@ -1,6 +1,7 @@
 <?php
 
-require __DIR__ . '/../lrv/vendor/autoload.php';
+require __DIR__ . '/../../lrv/vendor/autoload.php';
+require __DIR__ . '/TestHelper.php';
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
