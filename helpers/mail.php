@@ -47,6 +47,15 @@ class Mail
         return $mail;
     }
 
+    private static function parseAddress(string $input): array
+    {
+        $input = trim($input);
+        if (preg_match('/^(.+?)<([^>]+)>$/', $input, $m)) {
+            return [trim($m[2]), trim($m[1])];
+        }
+        return [$input, ''];
+    }
+
     private static function send(PHPMailer $mail, string $context = ''): bool
     {
         try {
@@ -63,8 +72,16 @@ class Mail
     {
         $mail = self::createMailer();
         try {
-            $mail->addAddress($to);
-            $mail->addReplyTo($reply_to);
+            list($addr, $name) = self::parseAddress($to);
+            $mail->addAddress($addr, $name);
+            $replyAddresses = explode(',', $reply_to);
+            foreach ($replyAddresses as $rawReply) {
+                $rawReply = trim($rawReply);
+                if (!empty($rawReply)) {
+                    list($replyAddr, $replyName) = self::parseAddress($rawReply);
+                    $mail->addReplyTo($replyAddr, $replyName);
+                }
+            }
             $mail->Subject = $subject;
             $mail->isHTML(stripos($content_type, 'html') !== false);
             $mail->Body = $message;
