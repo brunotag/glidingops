@@ -31,23 +31,19 @@ function getLogDir() {
 }
 
 function logMsg($message, $logName = 'app.log') {
-    if (!isLocalEnvironment()) return;
-
     $logFile = getLogDir() . '/' . $logName;
     $uri = $_SERVER['REQUEST_URI'] ?? 'unknown';
-    file_put_contents($logFile, date('Y-m-d H:i:s') . " [" . $uri . "] " . $message . "\n", FILE_APPEND);
+    @file_put_contents($logFile, date('Y-m-d H:i:s') . " [" . $uri . "] " . $message . "\n", FILE_APPEND);
 }
 
-function logError($message, $logName = 'app.log') {
-    if (!isLocalEnvironment()) return;
-
+function logError($message, $logName = 'error.log') {
     $logFile = getLogDir() . '/' . $logName;
     $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
     $caller = $trace[1] ?? $trace[0];
     $file = basename($caller['file'] ?? '');
     $line = $caller['line'] ?? '';
     $uri = $_SERVER['REQUEST_URI'] ?? 'unknown';
-    file_put_contents($logFile, date('Y-m-d H:i:s') . " [" . $uri . "] ERROR [$file:$line] " . $message . "\n", FILE_APPEND);
+    @file_put_contents($logFile, date('Y-m-d H:i:s') . " [" . $uri . "] ERROR [$file:$line] " . $message . "\n", FILE_APPEND);
 }
 
 // Register fatal error handler (all environments)
