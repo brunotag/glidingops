@@ -13,6 +13,8 @@ The messaging system has evolved over time and now consists of:
 
 ### Broadcast Email (Active)
 
+**Delivery mechanism:** `helpers/mail.php` uses **PHPMailer over SMTP**. Dev: MailHog (`localhost:1025`). Production: Gmail SMTP (`smtp.gmail.com:465`) as `machinery.gops@wwgc.co.nz`.
+
 **Flow:**
 1. Admin visits `MessagingPage.php`
 2. Types message (160 char limit - legacy)
@@ -20,7 +22,7 @@ The messaging system has evolved over time and now consists of:
 4. Or selects "Fake Twitter" (broadcast to all active members)
 5. Submit via AJAX:
    - Creates `messages` record
-   - Sends emails synchronously with real-time progress
+   - Sends emails synchronously via PHPMailer with real-time progress
    - For each successful send, creates `texts` record with `txt_msg_id`, `txt_member_id`, status=3
 6. Results shown in modal (success/failure count)
 
@@ -57,7 +59,7 @@ Two views available:
 | `texts-list-v2b.php` | DataTables flat view (admin only) |
 | `api/texts.php` | DataTables API for texts-list-v2b |
 | `api/members-email.php` | Member search autocomplete |
-| `SendTxt.php` | Process queue -> send emails |
+| `SendTxt.php` | Process queue -> send emails (legacy cron) |
 
 ### Dead Files (Can Delete)
 | File | Purpose |

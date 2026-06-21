@@ -122,7 +122,7 @@ All follow similar pattern - form for single record:
 | `helpers.php` | ~276 lines - Core utility functions (getFlightType, getRoleId, getClassId, etc.) |
 | `timehelpers.php` | Timezone conversion using Eloquent - `orgTimezone()`, `timeLocalFormat()`, `timeLocalSQL()` |
 | `session_helpers.php` | `require_security_level()`, `current_org()` - auth helpers |
-| `mail.php` | Email class with hardcoded WWGC email settings |
+| `mail.php` | PHPMailer SMTP delivery, config in config/mail.php |
 | `audit_helpers.php` | `audit_log()` - writes to audit table |
 | `error_message.php` | Error display utility (Bootstrap alert classes via `$_SESSION["errtext"]`) |
 | `dev_mode_banner.php` | Shows "DEV MODE" banner when active |

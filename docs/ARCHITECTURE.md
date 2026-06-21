@@ -113,7 +113,8 @@ Connection configured in:
 - Used for all date/time display via `orgTimezone()`
 
 ### Email
-- Hardcoded in `helpers/mail.php` - WWGC-specific
-- Configurable per org?
-- Via PHP mail() - hardcoded in helpers/mail.php
+- PHPMailer over SMTP in `helpers/mail.php`
+- Config in `config/mail.php` (gitignored), template `config/mail.php.sample`
+- Dev: MailHog on localhost:1025
+- Production: smtp.gmail.com:465 as machinery.gops@wwgc.co.nz
 - SendTxt.php cron job converts texts to emails
