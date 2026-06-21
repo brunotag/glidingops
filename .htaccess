@@ -158,6 +158,9 @@ RewriteRule PasswordChange PasswordChange.php [L]
 RewriteRule ^Bookings$ bookings.php [L,QSA]
 RewriteRule ^wgc$ map/MasterDisplayRouter.php?org=1 [L,QSA]
 
+# Server Logs viewer
+RewriteRule ^Logs$ logs.php [L,QSA]
+
 # Dev tools (local only)
 RewriteRule ^DevEmailPreview$ dev-email-preview.php [L,QSA]
 RewriteRule ^api/date-members$ api/date-members.php [L,QSA]

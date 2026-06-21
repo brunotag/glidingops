@@ -480,13 +480,14 @@ $favMemberIdJson = json_encode($favMemberId);
         <?php endif; ?>
 
         <!-- 11. Super Admin -->
-        <?php if (has_any_perm('users.invite', 'organisations.manage', 'admin.manage')): ?>
+        <?php if (has_any_perm('users.invite', 'organisations.manage', 'admin.manage', 'logs.view')): ?>
           <div class="nav-card">
             <div class="card-header">Super Admin</div>
             <div class="card-body">
               <?php if (has_perm('users.invite')): ?><a href="/InviteUsers">Invite Users to Gliding Ops</a><?php endif; ?>
               <?php if (has_perm('organisations.manage')): ?><a href="/Organisations">Organisations</a><?php endif; ?>
               <?php if (has_perm('admin.manage')): ?><a href="/maintenance/duplicates_suggestions.php">Suggested Duplicates</a><?php endif; ?>
+              <?php if (has_perm('logs.view')): ?><a href="/Logs">Server Logs</a><?php endif; ?>
             </div>
           </div>
         <?php endif; ?>

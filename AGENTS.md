@@ -47,6 +47,7 @@ Run `agentmemory_memory_consolidate` to persist learned context across sessions.
 5. Send emails synchronously with real-time progress
 6. Always add new API routes to .htaccess
 7. Use ASCII only - no unicode or special characters in code
+8. **Permissions**: When creating new pages/functionality, always define the permission(s) needed. Use new dedicated permissions (e.g. `logs.view`) rather than reusing vague ones. Always ask the user which personas should get the new permission and where the page should live on the homepage.
 
 **TESTING:** 
 - Always verify CSS/JS changes by fetching the page with PowerShell WebRequestSession (see `docs/WEB_AUTH.md`). Do NOT rely purely on code reasoning — the browser is the ground truth.
