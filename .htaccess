@@ -94,10 +94,13 @@ RewriteRule EditMyDetails members-new.php [L,QSA]
 # Invite Users (must come BEFORE Users rules to avoid collision)
 RewriteRule InviteUsers invite-users.php [L,QSA]
 
+# Persona users list (must come BEFORE Users rules — "PersonaUsers" contains "Users")
+RewriteRule ^PersonaUsers$ persona-users.php [L,QSA]
+
 # New users list and create/edit
 RewriteRule UsersList users-list-v2b.php [L,QSA]
 RewriteRule Users/([0-9]+) users-new.php?id=$1 [L,QSA]
-RewriteRule Users users-new.php [L,QSA]
+RewriteRule ^Users$ users-new.php [L,QSA]
 
 RewriteRule home home.php [L]
 RewriteRule ViewAs ViewAs.php [L,QSA]
@@ -146,6 +149,7 @@ RewriteRule ^Permissions$ permissions-list.php [L,QSA]
 RewriteRule ^Permission$ permission.php [L,QSA]
 RewriteRule ^Personas$ personas-list.php [L,QSA]
 RewriteRule ^Persona$ persona.php [L,QSA]
+RewriteRule ^PersonaUsers$ persona-users.php [L,QSA]
 RewriteRule ^BillingReport$ billing-report.php [L,QSA]
 RewriteRule ^BillingReport\.csv$ billing-report.php [L,QSA]
 RewriteRule TreasurerReportNew4 TreasurerReportNew4.php [L,QSA]

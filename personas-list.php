@@ -10,7 +10,7 @@
 <body>
 <div id="div1"><div id="div2">
 <div class="table-responsive"><table class="table table-bordered table-striped" style="width:100%;">
-<tr><th>ID</th><th>Persona Name</th><th>Description</th><th>Permissions</th></tr>
+<tr><th>ID</th><th>Persona Name</th><th>Description</th><th>Permissions</th><th>Users</th></tr>
 <?php
 require_once __DIR__ . '/helpers/database.php';
 $con = open_gliding_db();
@@ -19,11 +19,14 @@ while ($row = mysqli_fetch_array($r)) {
     $pid = $row['id'];
     $permR = mysqli_query($con, "SELECT COUNT(*) FROM persona_permissions WHERE persona_id = $pid");
     $permCount = mysqli_fetch_array($permR)[0];
+    $userR = mysqli_query($con, "SELECT COUNT(*) FROM user_personas WHERE persona_id = $pid");
+    $userCount = mysqli_fetch_array($userR)[0];
     echo "<tr>";
     echo "<td><a href='Persona?id=" . $pid . "'>" . $pid . "</a></td>";
     echo "<td>" . htmlspecialchars($row['name']) . "</td>";
     echo "<td>" . htmlspecialchars($row['description'] ?? '') . "</td>";
     echo "<td>" . $permCount . " permissions</td>";
+    echo "<td><a href='PersonaUsers?id=" . $pid . "'>" . $userCount . " users</a></td>";
     echo "</tr>";
 }
 mysqli_close($con);

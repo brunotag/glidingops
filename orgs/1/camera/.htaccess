@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^camera[0-9]-[0-9]+\.jpg$ noimage.jpg [L]
