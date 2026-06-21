@@ -22,6 +22,7 @@
 - **Messaging modal mobile-friendly** — Confirmation buttons now stack full-width with larger tap targets on mobile.
 - **Old files verified deleted:** texts-list.php, users-list.php, users.php, members-list.php, members.php, MessagingPageOld.php — all gone. No `soar.co.nz` placeholders in MessagingPage.php.
 - **SMTP migration to PHPMailer** — `helpers/mail.php` rewritten to use PHPMailer over SMTP instead of `mail()`. PHPMailer v7.1.1 installed via Composer. `config/mail.php` gitignored; `config/mail.php.sample` committed. Dev uses MailHog on localhost:1025 (no auth). Production uses smtp.gmail.com:465 with machinery.gops@wwgc.co.nz app password. Stale ssmtp package purged from production. `docs/FUTURE_DEVELOPMENT_AUTOMATED_EMAILS.md` updated to reflect reality (recaps were already working). Deployed commit `4b79b67`.
+- **Org isolation enforced as foundational tenet** — Found bug where `members-new.php` queried `membership_class` and `roles` without org filter, showing classes from orgs 2-5 and allowing users to assign cross-org classes. ZZZ_TEST (class 29 from org 5) was invisible to member list filter. Fixed 4 files (`members-new.php`, `api/member-form.php`, `roles-list.php`). Fixed 2 members' classes on production (ZZZ_TEST→Flying, Martyn Cook→Life). Documented as FOUNDATIONAL TENET in AGENTS.md.
 
 ## How To Work In This Repo
 
@@ -103,6 +104,24 @@ All docs in `docs/` folder - see individual files for details:
 - `$_SESSION['org']`
 - `$_SESSION['permissions']` — array of permission strings, resolved from user_personas at login (replaces old `$_SESSION['security']` bitmask)
 - `$_SESSION['security']` — **REMOVED** as of commit `e9897e3`. All auth uses `require_perm()` now.
+
+## FOUNDATIONAL TENET: Org Isolation
+Every query on a table with an `org` column MUST filter by `$_SESSION['org']`. There is NO exception.
+
+Rationale: The app supports multiple orgs in the same database. Without org filtering, a user in org 1 can select a membership class from org 5, creating members invisible to the org 1 default filters. This caused duplicate dropdown entries and missing members.
+
+**Pattern (every list/edit/add page, every API):**
+```php
+$q = "SELECT * FROM membership_class";
+if ($org > 0) {
+    $q .= " WHERE org = " . intval($org);
+}
+$q .= " ORDER BY class";
+```
+
+Tables with `org` column: `members`, `flights`, `users`, `aircraft`, `aircrafttype`, `roles`, `membership_class`, `charges`, `spots`, `towcharges`, `role_member`, `messages`, `organisations`
+
+Tables WITHOUT `org` column (shared global lookups): `membership_status`, `flighttypes`, `launchtypes`, `billingoptions`
 
 ## Database Conventions
 - Primary key is `id` (NOT `member_id`) in members table

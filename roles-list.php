@@ -59,6 +59,7 @@ if (mysqli_connect_errno())
  echo "<p>Unable to connect to database</p>";
 }
 $sql= "SELECT roles.id,roles.create_time,roles.name FROM roles"; 
+if ($_SESSION['org'] > 0){$sql .= " WHERE roles.org=".$_SESSION['org'];}
 $sql.=" ORDER BY ";
 switch ($colsort) {
  case 0:

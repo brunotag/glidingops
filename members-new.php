@@ -31,9 +31,13 @@ $isMyDetails = !$isCreateNew && $requestedId === null && $memberId === $currentM
 require_once __DIR__ . '/helpers/database.php';
 $con = open_gliding_db();
 
-// Get membership classes
+// Get membership classes (filtered by org to avoid duplicates)
 $allClasses = [];
-$q = "SELECT * FROM membership_class ORDER BY class";
+$q = "SELECT * FROM membership_class";
+if ($org > 0) {
+    $q .= " WHERE org = " . intval($org);
+}
+$q .= " ORDER BY class";
 $r = mysqli_query($con, $q);
 while ($row = mysqli_fetch_assoc($r)) {
     $allClasses[] = $row;
@@ -47,9 +51,13 @@ while ($row = mysqli_fetch_assoc($r)) {
     $allStatuses[] = $row;
 }
 
-// Get roles
+// Get roles (filtered by org)
 $allRoles = [];
-$q = "SELECT * FROM roles ORDER BY name";
+$q = "SELECT * FROM roles";
+if ($org > 0) {
+    $q .= " WHERE org = " . intval($org);
+}
+$q .= " ORDER BY name";
 $r = mysqli_query($con, $q);
 while ($row = mysqli_fetch_assoc($r)) {
     $allRoles[] = $row;

@@ -41,7 +41,7 @@ $memberId = isset($_GET['id']) ? intval($_GET['id']) : null;
 $classes = [];
 $q = "SELECT * FROM membership_class";
 if ($org > 0) {
-    $q .= " WHERE org = " . intval($org) . " OR org = 0";
+    $q .= " WHERE org = " . intval($org);
 }
 $q .= " ORDER BY class";
 $r = mysqli_query($con, $q);
