@@ -80,9 +80,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET")
   $recid = $_GET['id'];
   if ($recid >= 0)
   {
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -195,9 +195,9 @@ else
  if (!empty($deleted_f ) ) {if (!is_numeric($deleted_f ) ) {$deleted_err = "DELETED is not numeric";$error = 1;}}
  if ($error != 1)
  {
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -350,9 +350,9 @@ echo $seq_err; echo "</td></tr>";
 {
 echo "<tr><td class='desc'>TYPE</td><td></td>";
 echo "<td><select name='type_i'>";
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -378,9 +378,9 @@ echo $type_err; echo "</td></tr>";
 {
 echo "<tr><td class='desc'>LAUNCH TYPE</td><td></td>";
 echo "<td><select name='launchtype_i'>";
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -406,9 +406,9 @@ echo $launchtype_err; echo "</td></tr>";
 {
 echo "<tr><td class='desc'>TOW PLANE</td><td></td>";
 echo "<td><select name='towplane_i'>";
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -443,9 +443,9 @@ echo $glider_err; echo "</td></tr>";
 {
 echo "<tr><td class='desc'>TOW PILOT</td><td></td>";
 echo "<td><select name='towpilot_i'>";
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -471,9 +471,9 @@ echo $towpilot_err; echo "</td></tr>";
 {
 echo "<tr><td class='desc'>PIC</td><td></td>";
 echo "<td><select name='pic_i'>";
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -499,9 +499,9 @@ echo $pic_err; echo "</td></tr>";
 {
 echo "<tr><td class='desc'>P2</td><td></td>";
 echo "<td><select name='p2_i'>";
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -563,9 +563,9 @@ echo $height_err; echo "</td></tr>";
 {
 echo "<tr><td class='desc'>BILLING OPTION</td><td></td>";
 echo "<td><select name='billing_option_i'>";
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -591,9 +591,9 @@ echo $billing_option_err; echo "</td></tr>";
 {
 echo "<tr><td class='desc'>BILLING 1</td><td></td>";
 echo "<td><select name='billing_member1_i'>";
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -619,9 +619,9 @@ echo $billing_member1_err; echo "</td></tr>";
 {
 echo "<tr><td class='desc'>BILLING 1</td><td></td>";
 echo "<td><select name='billing_member2_i'>";
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }

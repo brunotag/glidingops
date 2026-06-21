@@ -7,9 +7,8 @@ include 'helpers.php';
 
 $org = 0;
 $errtext = '';
-$con_params = require('./config/database.php');
-$con_params = $con_params['gliding'];
-$con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     if (isset($_GET['org'])) {

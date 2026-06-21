@@ -8,8 +8,8 @@ function removecomma($str)
 function CalcTowRetrieve($org,$towplane,$duration)
 {
    $chrg=-1.0;
-   $con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-   $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+require_once __DIR__ . '/../../helpers/database.php';
+$con = open_gliding_db();
    if (!mysqli_connect_errno())
    {
     $q="SELECT cost from towcharges where org = ".$org." and type = 1 and plane = ".$towplane." order by effective_from DESC";  
@@ -33,8 +33,8 @@ function CalcTowCharge($org,$launchtype,$towtype,$towplane,$duration,$height,$me
      return $chrg;
    }
    $q="";
-   $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-   $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+require_once __DIR__ . '/../../helpers/database.php';
+$con = open_gliding_db();
    if (!mysqli_connect_errno())
    {
       if ($memberclass ==  $juniorclass)
@@ -65,8 +65,8 @@ function CalcTowCharge2($org,$launchtype,$towplane,$duration,$height,$strmemberc
      return $chrg;
    }
    $q="";
-   $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-   $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+require_once __DIR__ . '/../../helpers/database.php';
+$con = open_gliding_db();
    if (!mysqli_connect_errno())
    {
       if (strcasecmp($strmemberclass, "Junior") == 0) 
@@ -137,8 +137,8 @@ function CalcGliderCharge($org,$clubGlider,$regoshort,$SchemeCharge,$iRateGlider
   $maxglidtime=0;
   $glidrate=0;
   $q="";
-  $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];     
-  $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);        		
+require_once __DIR__ . '/../../helpers/database.php';
+$con = open_gliding_db();
   $q="SELECT charge_per_minute,max_perflight_charge FROM aircraft where aircraft.org = ".$org." and rego_short = '" .$regoshort."'";
   $r = mysqli_query($con,$q);
   if (mysqli_num_rows($r) > 0)
@@ -166,8 +166,8 @@ else
 function MemberScheme($org,$memberid,$flightDate,$glider,&$rate,&$chargetow,&$chargeairways,&$name)
 {
  $ret=-1;
- $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
- $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);    
+require_once __DIR__ . '/../../helpers/database.php';
+$con = open_gliding_db();
  //First look for a scheme that includes specific gliders.
  $q = "SELECT a.id, a.rate_glider , a.charge_tow, a.name, a.specific_glider_list, a.charge_airways from scheme_subs LEFT JOIN incentive_schemes a ON a.id = scheme_subs.scheme WHERE scheme_subs.org = ".$org." and member =" .$memberid.  " and start <= '" .  $flightDate->format('Y-m-d') .  "' and end >= '".  $flightDate->format('Y-m-d') . "' and a.specific_glider_list LIKE '%" . $glider . "%'";
  $r = mysqli_query($con,$q);
@@ -210,8 +210,8 @@ function CalcAirwaysCharge($org,$location,$clubGlider,$memberClass,$juniorclass,
    $ret = 0.0;
    if($clubGlider > 0 && !($memberClass == $juniorclass))
    {        
-     $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-     $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+require_once __DIR__ . '/../../helpers/database.php';
+$con = open_gliding_db();
      $q ="SELECT amount,validfrom from charges where org = ".$org." and location = '".$location."' and name ='Airways' and validfrom <= '" . $flightDate->format('Y-m-d')  ."' order by validfrom DESC";
      $r = mysqli_query($con,$q);
      if (mysqli_num_rows($r) > 0)
@@ -231,8 +231,8 @@ function CalcOtherCharges($org,$location,$clubGlider,$memberClass,$juniorclass,$
    $ret = 0.0;
    if($clubGlider > 0 && !($memberClass == $juniorclass))
    {        
-     $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];        
-     $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+require_once __DIR__ . '/../../helpers/database.php';
+$con = open_gliding_db();
      $q ="SELECT amount,validfrom from charges where org = ".$org." and location = '".$location."' and name ='Airways' and validfrom <= '" . $flightDate->format('Y-m-d')  ."' order by validfrom DESC";
      $r = mysqli_query($con,$q);
      if (mysqli_num_rows($r) > 0)

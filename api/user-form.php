@@ -16,15 +16,8 @@ if ($org === null) $org = 0;
 
 header('Content-Type: application/json');
 
-$con_params = require(__DIR__ . '/../config/database.php');
-$con_params = $con_params['gliding'];
-$con = mysqli_connect(
-    $con_params['hostname'],
-    $con_params['username'],
-    $con_params['password'],
-    $con_params['dbname']
-);
-
+require_once __DIR__ . '/../helpers/database.php';
+$con = open_gliding_db();
 if (mysqli_connect_errno()) {
     logMsg("DB CONNECTION ERROR: " . mysqli_connect_error());
     echo json_encode(['success' => false, 'message' => 'Database connection failed']);
@@ -107,13 +100,7 @@ mysqli_close($con);
 
 // Handle POST (save user)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $con = mysqli_connect(
-        $con_params['hostname'],
-        $con_params['username'],
-        $con_params['password'],
-        $con_params['dbname']
-    );
-
+    $con = open_gliding_db();
     if (mysqli_connect_errno()) {
         logMsg("POST DB CONNECTION FAILED");
         echo json_encode(['success' => false, 'message' => 'Database connection failed']);

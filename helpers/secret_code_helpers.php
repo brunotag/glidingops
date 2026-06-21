@@ -3,8 +3,8 @@
 function checkSecretCode($org, $key) {
     $secretCode = md5($key);
 
-    $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-    $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+    require_once __DIR__ . '/database.php';
+    $con = open_gliding_db();
     if (mysqli_connect_errno())
     {
         return false;
@@ -24,8 +24,8 @@ function initiateServiceUserSession($org){
     require_once __DIR__ . '/permissions.php';
     $_SESSION['permissions'] = ['daily-sheet.access', 'daily-sheet.start-day'];
     $q="SELECT timezone from organisations where id = " . $org;
-    $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-    $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+    require_once __DIR__ . '/database.php';
+    $con = open_gliding_db();
     $r2 = mysqli_query($con,$q);
     $row2 = mysqli_fetch_array($r2);
     $_SESSION['timezone'] = $row2[0];

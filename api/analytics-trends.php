@@ -21,8 +21,8 @@ logMsg("AUTH OK - memberid=" . ($_SESSION['memberid'] ?? 'none'));
 $org = isset($_SESSION['org']) ? intval($_SESSION['org']) : 0;
 $orgWhere = $org > 0 ? "org = $org" : "1=1";
 
-$con_params = require __DIR__ . '/../config/database.php';
-$con = mysqli_connect($con_params['gliding']['hostname'], $con_params['gliding']['username'], $con_params['gliding']['password'], $con_params['gliding']['dbname']);
+require_once __DIR__ . '/../helpers/database.php';
+$con = open_gliding_db();
 if (mysqli_connect_errno()) {
     http_response_code(500);
     logMsg("DB CONNECTION FAILED: " . mysqli_connect_error());

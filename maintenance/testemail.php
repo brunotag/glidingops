@@ -8,9 +8,8 @@ $updtext = '';
 if (isset($_SESSION['org'])) $org = $_SESSION['org'];
 require_once __DIR__ . '/../helpers/permissions.php';
 require_perm('admin.manage');
-$con_params = require('../config/database.php');
-$con_params = $con_params['gliding'];
-$con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+require_once __DIR__ . '/../helpers/database.php';
+$con = open_gliding_db();
 if (mysqli_connect_errno())
    die("Failed to connect to Database: " . mysqli_connect_error());
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

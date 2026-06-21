@@ -5,9 +5,8 @@ if (isset($_SESSION['org'])) $org = $_SESSION['org'];
 
 require_once __DIR__ . '/helpers/permissions.php'; require_perm('god.view-as');
 
-$con_params = require('./config/database.php');
-$con_params = $con_params['gliding'];
-$con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
 
 $users = [];
 if (!mysqli_connect_errno()) {

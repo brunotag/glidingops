@@ -53,9 +53,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET")
   $recid = $_GET['id'];
   if ($recid >= 0)
   {
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -96,9 +96,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
  $txt_timestamp_recv_err = "";
  if ($error != 1)
  {
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -149,9 +149,9 @@ echo $txt_unique_err; echo "</td></tr>";
 {
 echo "<tr><td class='desc'>Message</td><td>*</td>";
 echo "<td><select name='txt_msg_id_i'>";
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -176,9 +176,9 @@ echo $txt_msg_id_err; echo "</td></tr>";
 {
 echo "<tr><td class='desc'>To</td><td>*</td>";
 echo "<td><select name='txt_member_id_i'>";
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }

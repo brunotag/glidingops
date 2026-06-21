@@ -8,8 +8,8 @@ if (isset($_POST['export']))
     header('Content-Type: text/csv');
     header('Content-Disposition: attachment; filename="TreasurerReportNew4.csv"');
 
-    $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-    $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+    require_once __DIR__ . '/helpers/database.php';
+    $con = open_gliding_db();
 
     $dateStart = new DateTime();
     $dateEnd = new DateTime();
@@ -348,9 +348,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     $dateStart2 = $dateStart->format('Ymd');
     $dateEnd2 = $dateEnd->format('Ymd');
 
-    $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-    $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-    if (mysqli_connect_errno())
+    require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
     {
         echo "<p>Unable to connect to database</p>";
         exit();

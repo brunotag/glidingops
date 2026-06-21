@@ -18,8 +18,8 @@ $recid = -1;
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
     $recid = $_GET['id'];
     if ($recid >= 0) {
-        $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-        $con = mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+        require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
         $q = "SELECT * FROM permissions WHERE id = " . intval($recid);
         $r = mysqli_query($con, $q);
         $row = mysqli_fetch_array($r);
@@ -37,8 +37,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($name_f)) {
         $errtext = "Permission name is required";
     } else {
-        $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-        $con = mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+        require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
         if (isset($_POST['del'])) {
             $q = "DELETE FROM permissions WHERE id = " . intval($_POST['updateid']);
         } elseif ($_POST['tran'] == "Update") {

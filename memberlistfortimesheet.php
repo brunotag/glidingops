@@ -22,8 +22,8 @@ if (strlen($specific_date) > 0) {
   $whatdt=$specific_date;
 }
 
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
 
 $dateTimeZone = new DateTimeZone(orgTimezone($con,$org));
 $dateTime = new DateTime($whatdt, $dateTimeZone);

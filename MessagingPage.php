@@ -37,11 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         exit;
     }
 
-    $con_params = require('./config/database.php');
-    $con_params = $con_params['gliding'];
-    $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-
-    if (mysqli_connect_errno()) {
+    require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno()) {
         error_log('[MessagingPage] DB connection failed: ' . mysqli_connect_error());
         echo json_encode(['type' => 'result', 'success' => 0, 'failed' => [], 'error' => 'Database connection failed']);
         exit;

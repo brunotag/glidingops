@@ -7,13 +7,8 @@ require_once __DIR__ . '/helpers/permissions.php'; require_perm('users.invite');
 
 require_once __DIR__ . '/helpers/logging.php';
 
-$con_params = require(__DIR__ . '/config/database.php');
-$con_params = $con_params['gliding'];
-$con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-
-if (mysqli_connect_errno()) {
-    die("Database connection failed: " . mysqli_connect_error());
-}
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
 
 require_once __DIR__ . '/helpers/mail.php';
 

@@ -10,9 +10,8 @@
 <?php $inc = "../orgs/" . $org . "/heading2.txt"; if (file_exists($inc)) include $inc; ?>
 <?php $inc = "../orgs/" . $org . "/menu1.txt"; if (file_exists($inc)) include $inc; ?>
 <?php
-  $con_params = require('../config/database.php'); $con_params = $con_params['gliding']; 
-  $con=mysqli_connect($con_params['hostname'],$con_params['username'],
-                      $con_params['password'],$con_params['dbname']);
+  require_once __DIR__ . '/../helpers/database.php';
+  $con = open_gliding_db();
 
   $q = "
         SELECT firstname, surname, org, COUNT(*) AS dup_count, organisations.name AS org_name

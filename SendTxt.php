@@ -13,9 +13,8 @@ function var_error_log($object = null, $text = '')
 //Gte t=environemnt variables
 include "helpers.php";
 include "./helpers/mail.php";
-$con_params = require('./config/database.php');
-$con_params = $con_params['gliding'];
-$con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
 if (mysqli_connect_errno()) {
     error_log("SendTxt ERROR: Unable to cpnnect to database");
     echo "<p>Unable to connect to database</p>";

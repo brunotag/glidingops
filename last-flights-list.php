@@ -94,8 +94,8 @@ $renderHeaderCell(5, "HAS FLOWN IN THE PAST 90 DAYS", $colsort, $descsort);
 ?>
 </tr>
 <?php
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding']; 
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
 if (mysqli_connect_errno())
 {
  echo "<p>Unable to connect to database</p>";

@@ -23,10 +23,9 @@ $mode = isset($_GET['mode']) ? $_GET['mode'] : 'season';
 $year = isset($_GET['year']) ? intval($_GET['year']) : intval(date('Y'));
 $compare = isset($_GET['compare']) ? intval($_GET['compare']) : 0;
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../helpers/database.php';
 
-$db_params = require __DIR__ . '/../config/database.php';
-$con = mysqli_connect($db_params['gliding']['hostname'], $db_params['gliding']['username'], $db_params['gliding']['password'], $db_params['gliding']['dbname']);
+$con = open_gliding_db();
 if (mysqli_connect_errno()) {
     http_response_code(500);
     logMsg("DB CONNECTION FAILED: " . mysqli_connect_error());

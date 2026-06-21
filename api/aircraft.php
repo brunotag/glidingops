@@ -17,10 +17,8 @@ if (!isset($_GET['search']) || strlen($_GET['search']) < 2) {
 
 $search = $_GET['search'];
 
-$con_params = require dirname(__FILE__) . '/../config/database.php';
-$con_params = $con_params['gliding'];
-$con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-
+require_once __DIR__ . '/../helpers/database.php';
+$con = open_gliding_db();
 if (mysqli_connect_errno()) {
     apiExitWithError('Database connection failed', $con);
 }

@@ -1,5 +1,7 @@
 <?php
-class SQLPlus extends mysqli 
+require_once __DIR__ . '/../helpers/database.php';
+
+class SQLPlus extends LoggedMySQLi
 { 
     private $_sqlerr;
     

@@ -12,8 +12,8 @@
 <div class="table-responsive"><table class="table table-bordered table-striped" style="width:100%;">
 <tr><th>ID</th><th>Persona Name</th><th>Description</th><th>Permissions</th></tr>
 <?php
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-$con = mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
 $r = mysqli_query($con, "SELECT id, name, description FROM personas ORDER BY name");
 while ($row = mysqli_fetch_array($r)) {
     $pid = $row['id'];

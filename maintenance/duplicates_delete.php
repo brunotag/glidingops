@@ -18,10 +18,9 @@
   function purge() {
     global $current_org;
 
-    $con_params = require('../config/database.php'); $con_params = $con_params['gliding'];
-    mysqli_report(MYSQLI_REPORT_ALL); 
-    $con=mysqli_connect($con_params['hostname'],$con_params['username'],
-                        $con_params['password'],$con_params['dbname']);
+    require_once __DIR__ . '/../helpers/database.php';
+    mysqli_report(MYSQLI_REPORT_ALL);
+    $con = open_gliding_db();
 
     
     if(is_null($_POST['ids'])) {

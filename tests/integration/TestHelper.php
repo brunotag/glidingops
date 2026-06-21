@@ -10,9 +10,8 @@ function testDb(): mysqli
 {
     static $con = null;
     if ($con === null) {
-        $db = require __DIR__ . '/../../config/database.php';
-        $p = $db['gliding'];
-        $con = mysqli_connect($p['hostname'], $p['username'], $p['password'], $p['dbname']);
+        require_once __DIR__ . '/../../helpers/database.php';
+        $con = open_gliding_db();
         if (!$con) throw new RuntimeException('testDb: DB connection failed');
     }
     return $con;

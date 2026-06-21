@@ -9,9 +9,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
     $secret_code = generateRandomString(16);
 
-    $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-    $con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-    if (mysqli_connect_errno())
+    require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
     {
         return false;
     }

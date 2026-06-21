@@ -22,11 +22,10 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
 $memberid = intval($_SESSION['memberid']);
 $org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 
-require_once '../config/database.php';
+require_once __DIR__ . '/../helpers/database.php';
 require_once '../helpers.php';
 
-$db_params = require '../config/database.php';
-$con = mysqli_connect($db_params['gliding']['hostname'], $db_params['gliding']['username'], $db_params['gliding']['password'], $db_params['gliding']['dbname']);
+$con = open_gliding_db();
 if (mysqli_connect_errno()) {
     http_response_code(500);
     logMsg("DB CONNECTION FAILED: " . mysqli_connect_error());

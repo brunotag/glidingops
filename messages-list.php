@@ -111,12 +111,8 @@ body {
 
 
 <?php
-$con_params = require('./config/database.php');
-$con_params = $con_params['gliding'];
-if (mysqli_connect_errno()) {
-    echo "<p>Unable to connect to database</p>";
-}
-$conn = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+require_once __DIR__ . '/helpers/database.php';
+$conn = open_gliding_db();
 $query = "SELECT id, create_time, msg FROM gliding.messages WHERE is_broadcast AND org = ".$org." ORDER BY create_time desc LIMIT 10";
 $result = mysqli_query($conn, $query);
 while ($row = mysqli_fetch_array($result))

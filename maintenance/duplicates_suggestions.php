@@ -21,9 +21,8 @@
       return levenshtein($s1, $s2);
   }
 
-  $con_params = require('../config/database.php'); $con_params = $con_params['gliding']; 
-  $con=mysqli_connect($con_params['hostname'],$con_params['username'],
-                      $con_params['password'],$con_params['dbname']);
+  require_once __DIR__ . '/../helpers/database.php';
+  $con = open_gliding_db();
 
   $classNames = [];
   $cres = mysqli_query($con, "SELECT id, class FROM membership_class");

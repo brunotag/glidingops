@@ -11,9 +11,8 @@
 if (ob_get_level()) ob_end_flush();
 
 // DB connection
-$db = require __DIR__ . '/config/database.php';
-$p = $db['gliding'];
-$con = mysqli_connect($p['hostname'], $p['username'], $p['password'], $p['dbname']);
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
 if (!$con) { die("DB fail: " . mysqli_connect_error() . "\n"); }
 
 $PERSONAS = ['booking', 'daily-ops', 'cfo', 'cfi', 'engineer', 'admin', 'god'];

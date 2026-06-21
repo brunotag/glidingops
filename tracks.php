@@ -74,10 +74,9 @@ require_once __DIR__ . '/helpers/permissions.php'; require_perm('tracking.view')
     if ($_GET['id'] != "" && $_GET['id'] != null) {
       $recid = $_GET['id'];
       if ($recid >= 0) {
-        $con_params = require('./config/database.php');
-        $con_params = $con_params['gliding'];
-        $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-        if (mysqli_connect_errno()) {
+        require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno()) {
           $errtext = "Failed to connect to Database: " . mysqli_connect_error();
         } else {
           $q = "SELECT * FROM tracks WHERE id = " . $recid;
@@ -142,10 +141,8 @@ require_once __DIR__ . '/helpers/permissions.php'; require_perm('tracking.view')
     $altitude_f = InputChecker($_POST["altitude_i"]);
     $accuracy_f = InputChecker($_POST["accuracy_i"]);
     if ($error != 1) {
-      $con_params = require('./config/database.php');
-      $con_params = $con_params['gliding'];
-      $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-      if (mysqli_connect_errno()) {
+      $con = open_gliding_db();
+if (mysqli_connect_errno()) {
         $errtext = "Failed to connect to Database: " . mysqli_connect_error();
       } else {
         $Q = "";
@@ -261,10 +258,8 @@ require_once __DIR__ . '/helpers/permissions.php'; require_perm('tracking.view')
         <?php if (true) {
           echo "<tr><td class='desc'>USER</td><td></td>";
           echo "<td><select name='user_i'>";
-          $con_params = require('./config/database.php');
-          $con_params = $con_params['gliding'];
-          $con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
-          if (mysqli_connect_errno()) {
+          $con = open_gliding_db();
+if (mysqli_connect_errno()) {
             $errtext = "Failed to connect to Database: " . mysqli_connect_error();
           } else {
             echo "<option value='0'></option>";

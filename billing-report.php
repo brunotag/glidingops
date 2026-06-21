@@ -6,6 +6,7 @@ require_once __DIR__ . '/helpers/permissions.php';
 require_perm('treasurer-report.view');
 
 require_once __DIR__ . '/helpers/billing-calc.php';
+require_once __DIR__ . '/helpers/database.php';
 
 function isFirstWinchLaunchForMember($con, $org, $memberId, $localdate, $seq, $winchLaunchId)
 {
@@ -62,8 +63,7 @@ if (isset($_POST['export']))
     header('Content-Type: text/csv');
     header('Content-Disposition: attachment; filename="BillingReport-' . $selectedYear . '-' . sprintf('%02d', $selectedMonth) . '.csv"');
 
-    $con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-    $con = mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+    $con = open_gliding_db();
     if (mysqli_connect_errno()) { echo "Error"; exit(); }
 
     $dateStart = new DateTime();
@@ -314,8 +314,7 @@ $dateEnd->setDate($y2, $m2, 1);
 $dateStart2 = $dateStart->format('Ymd');
 $dateEnd2 = $dateEnd->format('Ymd');
 
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-$con = mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
+$con = open_gliding_db();
 if (mysqli_connect_errno()) { echo "<p>Unable to connect to database</p>"; exit(); }
 
 $towLaunch = getTowLaunchType($con);

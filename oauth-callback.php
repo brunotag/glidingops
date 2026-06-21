@@ -45,9 +45,8 @@ if (empty($oauth_config[$provider]['client_id']) && empty($oauth_config[$provide
 $config = $oauth_config[$provider];
 $redirect_uri = $oauth_config['redirect_base'] . '/oauth-callback';
 
-$con_params = require __DIR__ . '/config/database.php';
-$con_params = $con_params['gliding'];
-$con = @mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
 if (mysqli_connect_errno()) {
     logMsg("OAuth DB connection failed: " . mysqli_connect_error());
     header('Location: Login.php?error=server_error');

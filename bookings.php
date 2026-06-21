@@ -22,9 +22,8 @@ $isAdmin = has_perm('bookings.admin');
 $tzName = orgTimezone(null, $org);
 $tz = new DateTimeZone($tzName);
 
-$con_params = require('./config/database.php');
-$con_params = $con_params['gliding'];
-$con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
 if (mysqli_connect_errno()) {
     die('Database connection failed');
 }

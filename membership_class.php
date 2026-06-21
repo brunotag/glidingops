@@ -54,9 +54,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET")
   $recid = $_GET['id'];
   if ($recid >= 0)
   {
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }
@@ -104,9 +104,9 @@ else
  $email_broadcast_f = 0;
  if ($error != 1)
  {
-$con_params = require('./config/database.php'); $con_params = $con_params['gliding'];
-$con=mysqli_connect($con_params['hostname'],$con_params['username'],$con_params['password'],$con_params['dbname']);
-   if (mysqli_connect_errno())
+require_once __DIR__ . '/helpers/database.php';
+$con = open_gliding_db();
+if (mysqli_connect_errno())
    {
     $errtext= "Failed to connect to Database: " . mysqli_connect_error();
    }

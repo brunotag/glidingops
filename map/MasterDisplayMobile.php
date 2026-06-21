@@ -10,9 +10,8 @@ $date = isset($_GET['date']) ? $_GET['date'] : null;
 require_once __DIR__ . '/../helpers/logging.php';
 $isDev = isLocal();
 
-$con_params = require(__DIR__ . '/../config/database.php');
-$con_params = $con_params['gliding'];
-$con = mysqli_connect($con_params['hostname'], $con_params['username'], $con_params['password'], $con_params['dbname']);
+require_once __DIR__ . '/../helpers/database.php';
+$con = open_gliding_db();
 
 $q = "SELECT def_launch_lat,def_launch_lon,map_centre_lat,map_centre_lon,timezone FROM organisations WHERE id = " . $org;
 $r = mysqli_query($con, $q);
