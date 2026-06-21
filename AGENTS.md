@@ -21,6 +21,7 @@
 - **Header: avatar dropdown menu** — Replaced inline "Sign Out" / "Change PW" links with circular avatar in top-right that opens a dropdown (name/email, Edit My Details, Change Password, Sign Out). Shows "Hi, [name]" next to avatar on desktop (hidden on mobile). Fixes mobile overflow.
 - **Messaging modal mobile-friendly** — Confirmation buttons now stack full-width with larger tap targets on mobile.
 - **Old files verified deleted:** texts-list.php, users-list.php, users.php, members-list.php, members.php, MessagingPageOld.php — all gone. No `soar.co.nz` placeholders in MessagingPage.php.
+- **SMTP migration to PHPMailer** — `helpers/mail.php` rewritten to use PHPMailer over SMTP instead of `mail()`. PHPMailer v7.1.1 installed via Composer. `config/mail.php` gitignored; `config/mail.php.sample` committed. Dev uses MailHog on localhost:1025 (no auth). Production uses smtp.gmail.com:465 with machinery.gops@wwgc.co.nz app password. Stale ssmtp package purged from production. `docs/FUTURE_DEVELOPMENT_AUTOMATED_EMAILS.md` updated to reflect reality (recaps were already working). Deployed commit `4b79b67`.
 
 ## How To Work In This Repo
 

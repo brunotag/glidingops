@@ -47,12 +47,14 @@ class Mail
         return $mail;
     }
 
-    private static function send(PHPMailer $mail): bool
+    private static function send(PHPMailer $mail, string $context = ''): bool
     {
         try {
             $mail->send();
             return true;
         } catch (PHPMailerException $e) {
+            $tag = $context ? " [$context]" : '';
+            error_log("[Mail] PHPMailer send failed$tag: " . $e->getMessage());
             return false;
         }
     }
@@ -69,8 +71,9 @@ class Mail
             if ($mail->isHTML()) {
                 $mail->AltBody = strip_tags($message);
             }
-            return self::send($mail);
+            return self::send($mail, "to=$to");
         } catch (PHPMailerException $e) {
+            error_log("[Mail] SendMail exception to=$to: " . $e->getMessage());
             return false;
         }
     }

@@ -1,6 +1,6 @@
 # Automated Daily Recap Emails
 
-**STATUS: NOT IMPLEMENTED** — Still future work. None of the 4 phases have been started.
+**STATUS: IMPLEMENTED** — Recap emails are sent on finalising a day via `CompletedSheet.php`. SMTP via PHPMailer replaces `mail()`.
 
 ## Overview
 
