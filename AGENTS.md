@@ -16,10 +16,11 @@
 - Deployed to production commit `e9897e3`.
 - **Branded error pages and login error fix** (commit `3b60f01`). New `error-page.php` for 400/403/404/500/503. `checklogin.php` now redirects to `Login.php?error=wrong_password` instead of bare echo. `require_perm()` sets HTTP 403 + redirects to error page. `helpers/error_message.php` uses Bootstrap alert classes. Fatal error handler promoted to production with redirect to branded 500 page. `ErrorDocument` directives added to `.htaccess`. See `docs/ERROR_PAGES.md`.
 
-### Next Steps
-1. Fix mailing list email addresses in MessagingPage.php (replace `soar.co.nz` placeholders)
-2. Test messaging page end-to-end
-3. Delete old files after testing: texts-list.php, users-list.php, users.php, members-list.php, members.php, MessagingPageOld.php
+### Completed This Session (2026-06-21)
+- **Fixed ViewAs favourites regression** — `home.php:105` used `has_perm('god.view-as')` which went through `effective_permissions()` returning overridden persona permissions instead of the viewer's actual session permissions. Changed to `in_array()` on `$_SESSION['permissions']` directly. Banner now says "persona" not "security level", shows editing context. Added integration test `testViewAsFavouritesOverride`.
+- **Header: avatar dropdown menu** — Replaced inline "Sign Out" / "Change PW" links with circular avatar in top-right that opens a dropdown (name/email, Edit My Details, Change Password, Sign Out). Shows "Hi, [name]" next to avatar on desktop (hidden on mobile). Fixes mobile overflow.
+- **Messaging modal mobile-friendly** — Confirmation buttons now stack full-width with larger tap targets on mobile.
+- **Old files verified deleted:** texts-list.php, users-list.php, users.php, members-list.php, members.php, MessagingPageOld.php — all gone. No `soar.co.nz` placeholders in MessagingPage.php.
 
 ## How To Work In This Repo
 

@@ -1,40 +1,98 @@
 ﻿<?php
 
-class Mail 
+require_once dirname(__DIR__) . '/lrv/vendor/autoload.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
+
+class Mail
 {
-    private static function getCommonHeaders($reply_to) {
-        return 
-            'From: WWGC Gliding Operations <machinery.gops@wwgc.co.nz>' . "\r\n" .
-            'Reply-To: ' . $reply_to . "\r\n" .
-            'Return-PATH: gops.wwgc.co.nz@gmail.com' . "\r\n" .
-            'X-Mailer: PHP/' . phpversion();
+    private static $config = null;
+
+    private static function getConfig(): array
+    {
+        if (self::$config === null) {
+            $path = dirname(__DIR__) . '/config/mail.php';
+            self::$config = file_exists($path) ? require $path : [
+                'host' => 'localhost',
+                'port' => 1025,
+                'encryption' => '',
+                'username' => '',
+                'password' => '',
+                'from_address' => 'machinery.gops@wwgc.co.nz',
+                'from_name' => 'WWGC Gliding Operations',
+            ];
+        }
+        return self::$config;
+    }
+
+    private static function createMailer(): PHPMailer
+    {
+        $cfg = self::getConfig();
+        $mail = new PHPMailer(true);
+        $mail->isSMTP();
+        $mail->Host = $cfg['host'];
+        $mail->Port = (int)$cfg['port'];
+        $mail->SMTPAuth = !empty($cfg['username']);
+        if (!empty($cfg['username'])) {
+            $mail->Username = $cfg['username'];
+            $mail->Password = $cfg['password'];
+        }
+        if (!empty($cfg['encryption'])) {
+            $mail->SMTPSecure = $cfg['encryption'];
+        }
+        $mail->setFrom($cfg['from_address'], $cfg['from_name']);
+        $mail->Sender = $cfg['from_address'];
+        $mail->CharSet = 'UTF-8';
+        return $mail;
+    }
+
+    private static function send(PHPMailer $mail): bool
+    {
+        try {
+            $mail->send();
+            return true;
+        } catch (PHPMailerException $e) {
+            return false;
+        }
     }
 
     public static function SendMail($to, $subject, $message, $reply_to, $content_type)
     {
-        //TODO: replace hardcoded domains
-        $headers =  Mail::getCommonHeaders($reply_to) . "\r\n" .'Content-type: ' . $content_type;
-        return mail($to, $subject, $message, $headers, '-r machinery.gops@wwgc.co.nz');
-    }    
+        $mail = self::createMailer();
+        try {
+            $mail->addAddress($to);
+            $mail->addReplyTo($reply_to);
+            $mail->Subject = $subject;
+            $mail->isHTML(stripos($content_type, 'html') !== false);
+            $mail->Body = $message;
+            if ($mail->isHTML()) {
+                $mail->AltBody = strip_tags($message);
+            }
+            return self::send($mail);
+        } catch (PHPMailerException $e) {
+            return false;
+        }
+    }
 
     public static function SendMailPlainText($to, $subject, $message)
     {
-        return Mail::SendMail($to, $subject, $message, 'servicedelivery@wwgc.co.nz', 'text/plain');
+        return self::SendMail($to, $subject, $message, 'servicedelivery@wwgc.co.nz', 'text/plain');
     }
-    
+
     public static function SendMailHtml($to, $subject, $message)
     {
-        return Mail::SendMail($to, $subject, $message, 'servicedelivery@wwgc.co.nz', 'text/html; charset=iso-8859-1');
+        return self::SendMail($to, $subject, $message, 'servicedelivery@wwgc.co.nz', 'text/html');
     }
 
     public static function SendMailPlainTextReplyTo($to, $subject, $message, $reply_to)
     {
-        return Mail::SendMail($to, $subject, $message, 'servicedelivery@wwgc.co.nz, '. $reply_to, 'text/plain');
+        return self::SendMail($to, $subject, $message, 'servicedelivery@wwgc.co.nz, ' . $reply_to, 'text/plain');
     }
-    
+
     public static function SendMailHtmlReplyTo($to, $subject, $message, $reply_to)
     {
-        return Mail::SendMail($to, $subject, $message,'servicedelivery@wwgc.co.nz, '. $reply_to, 'text/html; charset=iso-8859-1');
+        return self::SendMail($to, $subject, $message, 'servicedelivery@wwgc.co.nz, ' . $reply_to, 'text/html');
     }
 
     public static function SendMailToRecipients($recipients, $subject, $message, $reply_to)
@@ -51,7 +109,7 @@ class Mail
 
             try {
                 $to = !empty($name) ? "$name <$email>" : $email;
-                $sent = Mail::SendMail($to, $subject, $message, $reply_to, 'text/plain');
+                $sent = self::SendMail($to, $subject, $message, $reply_to, 'text/plain');
 
                 if ($sent) {
                     $result['success']++;
@@ -95,7 +153,7 @@ class Mail
 
             try {
                 $to = !empty($name) ? "$name <$email>" : $email;
-                $sent = Mail::SendMail($to, $subject, $message, $reply_to, 'text/plain');
+                $sent = self::SendMail($to, $subject, $message, $reply_to, 'text/plain');
 
                 if ($sent) {
                     $result['success']++;
@@ -123,5 +181,4 @@ class Mail
 
         return $result;
     }
-
 }

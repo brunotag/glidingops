@@ -1,0 +1,10 @@
+<?php
+return [
+    'host'       => 'localhost',
+    'port'       => 1025,
+    'encryption' => '',
+    'username'   => '',
+    'password'   => '',
+    'from_address' => 'machinery.gops@wwgc.co.nz',
+    'from_name'    => 'WWGC Gliding Operations',
+];
