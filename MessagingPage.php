@@ -208,6 +208,13 @@ textarea:focus { outline: none; border-color: #4a90d9; }
 .recipient-preview-item { padding: 6px 0; border-bottom: 1px solid #f0f0f0; }
 .recipient-preview-item:last-child { border-bottom: none; }
 
+@media (max-width: 640px) {
+    .modal-content { padding: 20px; width: 95%; }
+    .modal-footer { text-align: center; }
+    .modal-footer button { width: 100%; margin: 8px 0 0 0; padding: 14px 20px; font-size: 16px; }
+    .modal-footer .cancel-btn { margin-top: 0; }
+}
+
 /* Progress modal */
 .progress-modal .modal-content { text-align: center; }
 .progress-bar { width: 100%; height: 24px; background: #e0e0e0; border-radius: 12px; overflow: hidden; margin: 20px 0; }
