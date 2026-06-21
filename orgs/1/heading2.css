@@ -1,20 +1,26 @@
 #head {background-color:#063552;}
-.head-inner {display:flex; justify-content:space-between; align-items:center; padding:5px 12px; flex-wrap:wrap; gap:4px;}
+.head-inner {display:flex; justify-content:space-between; align-items:center; padding:5px 12px; gap:4px;}
 .head-brand {display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;}
 .head-title {font-family:Calibri,Arial,Helvetica,sans-serif; color:#f26120; font-size:20px; font-weight:bold;}
 .head-sub {font-family:Calibri,Arial,Helvetica,sans-serif; color:#fff; font-size:13px;}
-.head-user {color:#f26120; font-size:12px; font-family:Arial,Helvetica,sans-serif; text-align:right; white-space:nowrap;}
-.head-user a {color:#f26120; text-decoration:none; margin-left:8px;}
-.head-user a:link{color:#f26120;}
-.head-user a:visited{color:#f26120;}
-.head-user a:hover{color:#fff;}
 #head a {text-decoration:none; color:#f26120;}
 #head a:link{color:#f26120;}
 #head a:visited{color:#f26120;}
 #head a:hover{color:#fff;}
 
+.head-user-menu {position:relative;display:flex;align-items:center;gap:8px;white-space:nowrap;}
+.head-greeting {font-family:Arial,Helvetica,sans-serif;color:#f26120;font-size:13px;}
+.head-avatar {width:32px;height:32px;border-radius:50%;cursor:pointer;object-fit:cover;vertical-align:middle;}
+.head-dropdown {display:none;position:absolute;right:0;top:calc(100% + 6px);background:#fff;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.2);min-width:200px;z-index:1000;}
+.head-dropdown.head-dropdown-open {display:block;}
+.head-dropdown-user {padding:12px 14px 8px;font-size:14px;font-weight:bold;color:#063552;line-height:1.4;}
+.head-dropdown-email {font-weight:normal;font-size:12px;color:#666;word-break:break-all;}
+.head-dropdown-divider {height:1px;background:#eee;margin:4px 0;}
+.head-dropdown-item {display:block;padding:10px 14px;font-size:13px;color:#333 !important;text-decoration:none;transition:background 0.15s;}
+.head-dropdown-item:hover {background:#f5f5f5;color:#063552 !important;}
+
 @media (max-width: 640px) {
     .head-title { font-size: 22px; }
     .head-sub { font-size: 15px; }
-    .head-user { font-size: 14px; }
+    .head-greeting { display: none; }
 }

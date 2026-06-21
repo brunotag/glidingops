@@ -4,13 +4,32 @@
       <span class='head-title'>Wellington Wairarapa</span>
       <span class='head-sub'>Gliding Club Operations</span>
     </div>
-    <div class='head-user'>
-      <img src='/img/members/<?php echo isset($_SESSION['memberid']) ? intval($_SESSION['memberid']) : 0;?>.jpg' onerror="this.src='/img/noprofile.png'" style='width:24px;height:24px;border-radius:3px;vertical-align:middle;margin-right:4px;object-fit:cover;'>
-      <?php echo isset($_SESSION['dispname']) ? htmlspecialchars($_SESSION['dispname']) : 'Guest';?> as <?php echo isset($_SESSION['who']) ? htmlspecialchars($_SESSION['who']) : 'not logged in';?>
-      <?php if (isset($_SESSION['who'])): ?>
-        <a href='/SignOut.php'>Sign Out</a>
-        <a href='/PasswordChange'>Change PW</a>
-      <?php endif; ?>
+    <?php if (isset($_SESSION['who'])): ?>
+    <div class='head-user-menu' id='head-user-menu'>
+      <span class='head-greeting'>Hi, <?php echo isset($_SESSION['dispname']) ? htmlspecialchars($_SESSION['dispname']) : 'Guest';?></span>
+      <img src='/img/members/<?php echo isset($_SESSION['memberid']) ? intval($_SESSION['memberid']) : 0;?>.jpg' onerror="this.src='/img/noprofile.png'" class='head-avatar' id='head-avatar'>
+      <div class='head-dropdown' id='head-dropdown'>
+        <div class='head-dropdown-user'>Hi, <?php echo isset($_SESSION['dispname']) ? htmlspecialchars($_SESSION['dispname']) : 'Guest';?><br><span class='head-dropdown-email'><?php echo htmlspecialchars($_SESSION['who']);?></span></div>
+        <div class='head-dropdown-divider'></div>
+        <a href='/EditMyDetails' class='head-dropdown-item'>Edit My Details</a>
+        <a href='/PasswordChange' class='head-dropdown-item'>Change Password</a>
+        <a href='/SignOut.php' class='head-dropdown-item'>Sign Out</a>
+      </div>
     </div>
+    <?php endif; ?>
   </div>
 </div>
+<script>
+(function(){
+  var menu = document.getElementById('head-user-menu');
+  var dropdown = document.getElementById('head-dropdown');
+  if (!menu || !dropdown) return;
+  menu.addEventListener('click', function(e) {
+    e.stopPropagation();
+    dropdown.classList.toggle('head-dropdown-open');
+  });
+  document.addEventListener('click', function() {
+    dropdown.classList.remove('head-dropdown-open');
+  });
+})();
+</script>

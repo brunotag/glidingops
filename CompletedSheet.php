@@ -126,7 +126,7 @@ if (!$emailsSent && !$resend) {
     .print-button { margin-top: 12px; }
 
     @media print {
-        #print-button, .page-actions, #menu, .head-user { display: none; }
+        #print-button, .page-actions, #menu, .head-user-menu { display: none; }
         @page { size: landscape; }
         .table-container { box-shadow: none; border: none; padding: 0; }
         .table th { background: #063552 !important; color: #f26120 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }

@@ -26,21 +26,21 @@ class HeaderPhotoTest extends TestCase
     {
         $html = $this->getPage('/home');
         $this->assertStringContainsString('/img/members/', $html);
-        $this->assertStringContainsString('head-user', $html);
+        $this->assertStringContainsString('head-user-menu', $html);
     }
 
     public function testHeaderOnAllMembers(): void
     {
         $html = $this->getPage('/AllMembers');
         $this->assertStringContainsString('/img/members/', $html);
-        $this->assertStringContainsString('head-user', $html);
+        $this->assertStringContainsString('head-user-menu', $html);
     }
 
     public function testHeaderOnMyFlights(): void
     {
         $html = $this->getPage('/MyFlights');
         $this->assertStringContainsString('/img/members/', $html);
-        $this->assertStringContainsString('head-user', $html);
+        $this->assertStringContainsString('head-user-menu', $html);
     }
 
     public function testHeaderNoprofileFallback(): void
