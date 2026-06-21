@@ -11,6 +11,11 @@
 ### In Progress
 - (none)
 
+### What I've Learned This Session
+- When building new features: always define new dedicated permissions (not vague existing ones), ask user which personas get them, and ask where on homepage the link goes.
+- Org isolation is a foundational tenet: every query on an `org`-column table MUST filter by `$_SESSION['org']`.
+- Log viewer at `/Logs` requires `logs.view`.
+
 ### Completed This Session
 - **Migrated auth from bitmask ($_SESSION['security'] & N) to permission-based system** (`require_perm('perm.name')`). Core: `helpers/permissions.php`. 9 personas, 66 permissions. All page-level, API-level, and home-page widget checks migrated. `compute_security_bitmask()`, `$personaBitmask`, `$_SESSION['personas']`, `helpers/session_helpers.php` deleted. Permission-subset assignment (editor can only assign personas whose perms are a subset of editor's). Secret code flow preserved. ViewAs uses per-request override (no session corruption). Member persona auto-assigned to all users.
 - Deployed to production commit `e9897e3`.
@@ -23,6 +28,7 @@
 - **Old files verified deleted:** texts-list.php, users-list.php, users.php, members-list.php, members.php, MessagingPageOld.php — all gone. No `soar.co.nz` placeholders in MessagingPage.php.
 - **SMTP migration to PHPMailer** — `helpers/mail.php` rewritten to use PHPMailer over SMTP instead of `mail()`. PHPMailer v7.1.1 installed via Composer. `config/mail.php` gitignored; `config/mail.php.sample` committed. Dev uses MailHog on localhost:1025 (no auth). Production uses smtp.gmail.com:465 with machinery.gops@wwgc.co.nz app password. Stale ssmtp package purged from production. `docs/FUTURE_DEVELOPMENT_AUTOMATED_EMAILS.md` updated to reflect reality (recaps were already working). Deployed commit `4b79b67`.
 - **Org isolation enforced as foundational tenet** — Found bug where `members-new.php` queried `membership_class` and `roles` without org filter, showing classes from orgs 2-5 and allowing users to assign cross-org classes. ZZZ_TEST (class 29 from org 5) was invisible to member list filter. Fixed 4 files (`members-new.php`, `api/member-form.php`, `roles-list.php`). Fixed 2 members' classes on production (ZZZ_TEST→Flying, Martyn Cook→Life). Documented as FOUNDATIONAL TENET in AGENTS.md.
+- **Log viewer page (`/Logs`)** — New `logs.view` permission, granted to super_admin and zzz_god. Tabbed viewer for PHP Error Log, Apache Error, Apache Access. Color-coded, search, auto-refresh. Link in Super Admin card. AGENTS.md: new rule #8 for BUILDING NEW FEATURES (ask about permission + personas + homepage placement). Deployed commit `9f22516`.
 
 ## How To Work In This Repo
 
