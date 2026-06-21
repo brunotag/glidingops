@@ -102,7 +102,7 @@ if ($dbOk) {
 }
 
 // Favourites
-$editFavs = isset($_GET['edit_favs']) && $_GET['edit_favs'] == 1 && has_perm('god.view-as');
+$editFavs = isset($_GET['edit_favs']) && $_GET['edit_favs'] == 1 && in_array('god.view-as', $_SESSION['permissions'] ?? []);
 $editMemberId = isset($_GET['edit_member_id']) ? intval($_GET['edit_member_id']) : 0;
 $favMemberId = $editFavs && $editMemberId ? $editMemberId : (isset($_SESSION['memberid']) ? intval($_SESSION['memberid']) : 0);
 $favourites = [];
@@ -115,6 +115,13 @@ if ($dbOk && $favMemberId > 0) {
             $favourites[] = $row;
             $favHrefs[] = $row['href'];
         }
+    }
+}
+$editFavsMemberName = '';
+if ($editFavs && $editMemberId && $dbOk) {
+    $nmQ = mysqli_query($con, "SELECT displayname FROM members WHERE id = $editMemberId");
+    if ($nmQ && $nmRow = mysqli_fetch_assoc($nmQ)) {
+        $editFavsMemberName = $nmRow['displayname'];
     }
 }
 $favHrefsJson = json_encode($favHrefs);
@@ -247,7 +254,10 @@ $favMemberIdJson = json_encode($favMemberId);
 
   <?php if ($asOverride): ?>
     <div style="background:#fff3cd;color:#856404;text-align:center;padding:6px;font-size:13px;font-weight:bold;">
-      Viewing as security level <?php echo $asOverride; ?>
+      Viewing as persona <?php echo htmlspecialchars($asOverride); ?>
+      <?php if ($editFavs && $editFavsMemberName): ?>
+        &mdash; editing <strong><?php echo htmlspecialchars($editFavsMemberName); ?></strong>'s favourites
+      <?php endif; ?>
       &mdash; <a href="/home/" style="color:#856404;text-decoration:underline;">Clear override</a>
     </div>
   <?php endif; ?>

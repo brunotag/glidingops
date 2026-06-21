@@ -133,11 +133,12 @@ class AccessMatrixTest extends TestCase
 
         $resp = $client->get('/home/?as=booking', ['allow_redirects' => false]);
         $this->assertEquals(200, $resp->getStatusCode());
-        $this->assertStringContainsString('Viewing as security level', (string)$resp->getBody());
+        $this->assertStringContainsString('Viewing as persona', (string)$resp->getBody());
+        $this->assertStringContainsString('booking', (string)$resp->getBody());
 
         $resp2 = $client->get('/home/', ['allow_redirects' => false]);
         $this->assertEquals(200, $resp2->getStatusCode());
-        $this->assertStringNotContainsString('Viewing as security level', (string)$resp2->getBody());
+        $this->assertStringNotContainsString('Viewing as persona', (string)$resp2->getBody());
     }
 
     /** Non-god user cannot use ?as= override. */
@@ -162,7 +163,47 @@ class AccessMatrixTest extends TestCase
         $this->assertStringNotContainsString('Not authorized', (string)$resp->getBody());
     }
 
-    /** Unknown persona name defaults to security level 1. */
+    /** ViewAs with edit_favs loads the target member's favourites, not the viewer's own. */
+    public function testViewAsFavouritesOverride(): void
+    {
+        $con = testDb();
+        $fgMemberId = fgordonMemberId();
+        $targetMemberId = 2; // Rod Ruddick
+
+        // Ensure a known favourite exists for the target member
+        $testHref = '/test-viewas-fav-' . bin2hex(random_bytes(4));
+        $testLabel = 'Test ViewAs Fav';
+        mysqli_query($con, "DELETE FROM user_favourites WHERE member_id = $targetMemberId AND href = '$testHref'");
+        mysqli_query($con, "INSERT INTO user_favourites (member_id, href, label) VALUES ($targetMemberId, '$testHref', '$testLabel')");
+
+        // Also ensure fgordon does NOT have this favourite (to prove we're not seeing fgordon's)
+        mysqli_query($con, "DELETE FROM user_favourites WHERE member_id = $fgMemberId AND href = '$testHref'");
+
+        $client = loginAsPersona('god');
+
+        $resp = $client->get("/home/?as=member&edit_favs=1&edit_member_id=$targetMemberId", ['allow_redirects' => false]);
+        $this->assertEquals(200, $resp->getStatusCode());
+        $body = (string)$resp->getBody();
+
+        // Should show target member's favourite
+        $this->assertStringContainsString($testHref, $body);
+        $this->assertStringContainsString($testLabel, $body);
+
+        // favMemberId should be the target, not fgordon
+        $this->assertStringContainsString("var favMemberId = $targetMemberId", $body);
+        $this->assertStringNotContainsString("var favMemberId = $fgMemberId", $body);
+
+        // editFavs should be true
+        $this->assertStringContainsString('var editFavs = true', $body);
+
+        // Banner should mention editing the target member's favourites
+        $this->assertStringContainsString("editing <strong>Rod Ruddick</strong>'s favourites", $body);
+
+        // Clean up the test favourite
+        mysqli_query($con, "DELETE FROM user_favourites WHERE member_id = $targetMemberId AND href = '$testHref'");
+    }
+
+    /** Unknown persona name defaults to member. */
     public function testViewAsUnknownPersonaDefaultsToMember(): void
     {
         $client = loginAsPersona('god');
@@ -170,7 +211,7 @@ class AccessMatrixTest extends TestCase
         $resp = $client->get('/home/?as=member', ['allow_redirects' => false]);
         $this->assertEquals(200, $resp->getStatusCode());
         $body = (string)$resp->getBody();
-        $this->assertStringContainsString('Viewing as security level', $body);
+        $this->assertStringContainsString('Viewing as persona', $body);
         $this->assertStringContainsString('member', $body);
     }
 }
