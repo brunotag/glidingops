@@ -1,6 +1,6 @@
 <?php session_start(); ?>
 <?php require_once __DIR__ . '/helpers/permissions.php'; require_perm('password.change'); ?>
-<?php require_once __DIR__ . '/helpers/csrf.php'; require_csrf(); ?>
+<?php require_once __DIR__ . '/helpers/csrf.php'; gops_require_csrf(); ?>
 <!DOCTYPE HTML>
 <html>
 

@@ -102,7 +102,7 @@ mysqli_close($con);
 <div id="user-form-container">
     <form id="user-form" class="form-horizontal">
         <input type="hidden" name="id" value="<?php echo $requestedId ?? ''; ?>">
-        <?php echo csrf_field(); ?>
+        <?php echo gops_csrf_field(); ?>
 
         <div class="form-group">
             <label class="control-label col-sm-2">Name <span class="required">*</span></label>

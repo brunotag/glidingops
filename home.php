@@ -576,7 +576,7 @@ $favMemberIdJson = json_encode($favMemberId);
       $a.append('<span class="fav-star' + (isFav ? ' active' : '') + '" data-href="' + href.replace(/"/g, '&quot;') + '" data-label="' + label.replace(/"/g, '&quot;') + '">' + (isFav ? '&#9733;' : '&#9734;') + '</span>');
     });
 
-    var csrfToken = '<?php echo generate_csrf_token(); ?>';
+    var csrfToken = '<?php echo gops_csrf_token(); ?>';
 
     $(document).on('click', '.fav-star', function(e) {
       e.preventDefault();

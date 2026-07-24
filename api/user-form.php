@@ -6,7 +6,7 @@ session_start();
 require_once __DIR__ . '/../helpers/logging.php';
 require_once __DIR__ . '/../helpers/permissions.php';
 require_once __DIR__ . '/../helpers/csrf.php';
-require_csrf();
+gops_require_csrf();
 logMsg("START method=" . $_SERVER['REQUEST_METHOD']);
 
 require_perm('api.user-form');

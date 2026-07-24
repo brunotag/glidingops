@@ -1,7 +1,7 @@
 <?php
 
-if (!function_exists('generate_csrf_token')) {
-function generate_csrf_token(): string
+if (!function_exists('gops_csrf_token')) {
+function gops_csrf_token(): string
 {
     if (empty($_SESSION['_csrf_token'])) {
         $_SESSION['_csrf_token'] = bin2hex(random_bytes(32));
@@ -10,15 +10,15 @@ function generate_csrf_token(): string
 }
 }
 
-if (!function_exists('csrf_field')) {
-function csrf_field(): string
+if (!function_exists('gops_csrf_field')) {
+function gops_csrf_field(): string
 {
-    return '<input type="hidden" name="_csrf" value="' . generate_csrf_token() . '">';
+    return '<input type="hidden" name="_csrf" value="' . gops_csrf_token() . '">';
 }
 }
 
-if (!function_exists('verify_csrf_token')) {
-function verify_csrf_token(): bool
+if (!function_exists('gops_verify_csrf')) {
+function gops_verify_csrf(): bool
 {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         return true;
@@ -34,10 +34,10 @@ function verify_csrf_token(): bool
 }
 }
 
-if (!function_exists('require_csrf')) {
-function require_csrf(): void
+if (!function_exists('gops_require_csrf')) {
+function gops_require_csrf(): void
 {
-    if (!verify_csrf_token()) {
+    if (!gops_verify_csrf()) {
         http_response_code(400);
         die("Invalid or missing CSRF token");
     }

@@ -10,7 +10,7 @@ include 'helpers/logging.php';
 require_once __DIR__ . '/helpers/csrf.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'send') {
-    require_csrf();
+    gops_require_csrf();
     header('Content-Type: application/json; charset=utf-8');
     error_log('[MessagingPage] POST send started, member=' . ($_SESSION['memberid'] ?? 'null'));
 
@@ -571,7 +571,7 @@ confirmSend.addEventListener('click', () => {
     sendMessages();
 });
 
-const csrfToken = '<?php echo generate_csrf_token(); ?>';
+const csrfToken = '<?php echo gops_csrf_token(); ?>';
 
 async function sendMessages() {
     progressModal.classList.add('active');

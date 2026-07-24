@@ -266,7 +266,7 @@ body { background: #f5f5f5; font-family: Arial, Helvetica, sans-serif; min-heigh
 var nextSeq = <?php echo $nextSeq; ?>;
 var editingFlightId = null;
 var editingSeq = null;
-var csrfToken = '<?php echo generate_csrf_token(); ?>';
+var csrfToken = '<?php echo gops_csrf_token(); ?>';
 
 function makeTs(dateStr, timeStr) {
     if (!timeStr) return 0;

@@ -129,7 +129,7 @@ mysqli_close($con);
 
 // Handle POST (save member)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_csrf();
+    gops_require_csrf();
     logMsg("POST - Opening new DB connection");
     $con = open_gliding_db();
     logMsg("POST mysqli_connect_errno: " . mysqli_connect_errno());

@@ -141,7 +141,7 @@ mysqli_close($con);
     <div id="message-area"></div>
 
     <form id="member-form" method="post" enctype="multipart/form-data">
-        <?php echo csrf_field(); ?>
+        <?php echo gops_csrf_field(); ?>
         <input type="hidden" name="id" id="member-id" value="<?php echo $memberId; ?>">
 
         <div class="row">

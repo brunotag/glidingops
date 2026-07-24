@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 // POST — toggle favourite
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_csrf();
+    gops_require_csrf();
     $input = json_decode(file_get_contents('php://input'), true);
     if (!$input || empty($input['href']) || empty($input['label'])) {
         apiExitWithError('href and label required', $con);

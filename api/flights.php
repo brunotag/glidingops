@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['error' => 'Method not allowed']);
     apiExit($con);
 }
-require_csrf();
+gops_require_csrf();
 
 $input = json_decode(file_get_contents('php://input'), true);
 if (!$input) {
