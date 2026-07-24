@@ -154,6 +154,13 @@ For example:
 - `BillingReport` before `BillingOptions`
 - `MyFlightsCSV` before `MyFlights`
 
+## Anchored RewriteRules
+Always use `^...$` anchors on RewriteRule patterns. An unanchored rule like
+`RewriteRule Users users-new.php` matches ANY URL containing "Users"
+(e.g. `PersonaUsers`, `AllUsers`). This is a recurring source of routing bugs —
+when you add a new route, check that no existing unanchored rule silently
+swallows it. Add `^...$` to existing rules when you find them.
+
 ## Modernized Pages (v2b pattern)
 All new list pages use DataTables server-side AJAX:
 - `members-list-v2b.php`

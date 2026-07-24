@@ -447,12 +447,13 @@ $favMemberIdJson = json_encode($favMemberId);
         <?php endif; ?>
 
         <!-- 9. Analytics -->
-        <?php if (has_any_perm('analytics.season-trends', 'analytics.dashboard')): ?>
+        <?php if (has_any_perm('analytics.season-trends', 'analytics.dashboard', 'analytics.pic-p2')): ?>
           <div class="nav-card">
             <div class="card-header">Analytics</div>
             <div class="card-body">
               <?php if (has_perm('analytics.season-trends')): ?><a href="/SeasonTrends">Trends Across Seasons</a><?php endif; ?>
               <?php if (has_perm('analytics.dashboard')): ?><a href="/Analytics">Compare Two Seasons / YTD</a><?php endif; ?>
+              <?php if (has_perm('analytics.pic-p2')): ?><a href="/PICP2Analytics">PIC with P2 Report</a><?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
