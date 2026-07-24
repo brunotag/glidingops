@@ -18,7 +18,7 @@ if (empty($pending_email) || empty($pending_provider) || empty($pending_provider
 }
 
 $existing_user = trim($_POST['existing_user'] ?? '');
-$existing_password = md5(trim($_POST['existing_password'] ?? ''));
+$existing_password = trim($_POST['existing_password'] ?? '');
 
 if (empty($existing_user) || empty($existing_password)) {
     header('Location: oauth-link.php?error=wrong_password');
@@ -40,13 +40,21 @@ $result = mysqli_stmt_get_result($stmt);
 $user = mysqli_fetch_assoc($result);
 mysqli_stmt_close($stmt);
 
-if (!$user) {
-    mysqli_close($con);
-    header('Location: oauth-link.php?error=no_user');
-    exit;
+$passwordOk = false;
+if (!empty($user['password_hash'])) {
+    $passwordOk = password_verify($existing_password, $user['password_hash']);
+} elseif (!empty($user['password'])) {
+    $passwordOk = (md5($existing_password) == $user['password']);
+    if ($passwordOk) {
+        $hash = password_hash($existing_password, PASSWORD_BCRYPT);
+        $updateStmt = mysqli_prepare($con, "UPDATE users SET password_hash = ?, password = NULL WHERE id = ?");
+        mysqli_stmt_bind_param($updateStmt, 'si', $hash, $user['id']);
+        mysqli_stmt_execute($updateStmt);
+        mysqli_stmt_close($updateStmt);
+    }
 }
 
-if ($user['password'] !== $existing_password) {
+if (!$user || !$passwordOk) {
     mysqli_close($con);
     header('Location: oauth-link.php?error=wrong_password');
     exit;

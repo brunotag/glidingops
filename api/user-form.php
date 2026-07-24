@@ -148,8 +148,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             force_pw_reset = $force_pw_reset";
 
         if (!empty($password)) {
-            $passwordEsc = mysqli_real_escape_string($con, md5($password));
-            $q .= ", password = '$passwordEsc'";
+            $hash = password_hash($password, PASSWORD_BCRYPT);
+            $hashEsc = mysqli_real_escape_string($con, $hash);
+            $q .= ", password_hash = '$hashEsc', password = NULL";
         }
 
         if (has_perm('organisations.manage')) {
@@ -159,8 +160,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $q .= " WHERE id = $userId";
     } else {
         // Build INSERT query
-        $passwordEsc = mysqli_real_escape_string($con, md5($password));
-        $q = "INSERT INTO users (name, usercode, password, org, expire, member, force_pw_reset) VALUES (
+        $hash = password_hash($password, PASSWORD_BCRYPT);
+        $passwordEsc = mysqli_real_escape_string($con, $hash);
+        $q = "INSERT INTO users (name, usercode, password_hash, org, expire, member, force_pw_reset) VALUES (
             '$nameEsc',
             '$usercodeEsc',
             '$passwordEsc',

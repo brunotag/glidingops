@@ -162,13 +162,13 @@ h1 { color: #063552; font-size: 20px; border-bottom: 2px solid #f26120; padding-
         echo htmlspecialchars($fullName) . " &lt;" . htmlspecialchars($m['email']) . "&gt; ... ";
         flush();
 
-        $tempPw = md5(bin2hex(random_bytes(16)));
+        $tempPw = password_hash(bin2hex(random_bytes(16)), PASSWORD_BCRYPT);
         $memId = $mid;
         $memOrg = intval($m['org']);
         $email = $m['email'];
         $displayname = $fullName;
 
-        $insertStmt = mysqli_prepare($con, "INSERT INTO users (name, org, usercode, password, force_pw_reset, member) VALUES (?, ?, ?, ?, 1, ?)");
+        $insertStmt = mysqli_prepare($con, "INSERT INTO users (name, org, usercode, password_hash, force_pw_reset, member) VALUES (?, ?, ?, ?, 1, ?)");
         mysqli_stmt_bind_param($insertStmt, 'sissi', $displayname, $memOrg, $email, $tempPw, $memId);
         if (mysqli_stmt_execute($insertStmt)) {
             $newUserId = mysqli_insert_id($con);

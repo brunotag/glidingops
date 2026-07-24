@@ -26,6 +26,7 @@ if (mysqli_connect_errno()) {
   $row = mysqli_fetch_array($r);
 
   $canChangePassword = false;
+  $userId = $row['id'];
   if (isset($_SESSION['force_pw_reset']) && $_SESSION['force_pw_reset'] == 1) {
     $canChangePassword = true;
   } elseif (isset($_SESSION['auth_via_magic_link']) && $_SESSION['auth_via_magic_link'] == 1) {
@@ -33,9 +34,17 @@ if (mysqli_connect_errno()) {
   } else {
     $mypasswordold = $_POST['pcodeold'];
     $mypasswordold = stripslashes($mypasswordold);
-    $mypasswordold = md5($mypasswordold);
-    if ($row['password'] == $mypasswordold) {
-      $canChangePassword = true;
+    if (!empty($row['password_hash'])) {
+      $canChangePassword = password_verify($mypasswordold, $row['password_hash']);
+    } elseif (!empty($row['password'])) {
+      $canChangePassword = (md5($mypasswordold) == $row['password']);
+      if ($canChangePassword) {
+        $hash = password_hash($mypasswordold, PASSWORD_BCRYPT);
+        $updateStmt = mysqli_prepare($con, "UPDATE users SET password_hash = ?, password = NULL WHERE id = ?");
+        mysqli_stmt_bind_param($updateStmt, 'si', $hash, $userId);
+        mysqli_stmt_execute($updateStmt);
+        mysqli_stmt_close($updateStmt);
+      }
     }
   }
 
@@ -47,8 +56,11 @@ if (mysqli_connect_errno()) {
     if ($newpw1 != $newpw2) {
       $errtxt =  "New passords not identicle";
     } else {
-      $sql = "UPDATE users SET password = '" . md5($newpw1) . "' , force_pw_reset = 0 where usercode='$myusername'";
-      $r = mysqli_query($con, $sql);
+      $hash = password_hash($newpw1, PASSWORD_BCRYPT);
+      $updateStmt = mysqli_prepare($con, "UPDATE users SET password_hash = ?, password = NULL, force_pw_reset = 0 WHERE id = ?");
+      mysqli_stmt_bind_param($updateStmt, 'si', $hash, $userId);
+      mysqli_stmt_execute($updateStmt);
+      mysqli_stmt_close($updateStmt);
       if (isset($_SESSION['force_pw_reset'])){
         unset($_SESSION['force_pw_reset']);
       }

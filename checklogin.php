@@ -13,7 +13,6 @@ $myusername=$_POST['user'];
 $mypassword=$_POST['pcode'];
 $myusername = stripslashes($myusername);
 $mypassword = stripslashes($mypassword);
-$mypassword = md5($mypassword);
 require_once __DIR__ . '/helpers/database.php';
 $con = open_gliding_db();
 if (mysqli_connect_errno())
@@ -24,7 +23,20 @@ if (mysqli_connect_errno())
 $sql="SELECT * FROM users WHERE usercode='$myusername'";
 $r = mysqli_query($con,$sql);
 $row = mysqli_fetch_array($r);
-if ($row['password'] == $mypassword)
+$passwordOk = false;
+if (!empty($row['password_hash'])) {
+    $passwordOk = password_verify($mypassword, $row['password_hash']);
+} elseif (!empty($row['password'])) {
+    $passwordOk = (md5($mypassword) == $row['password']);
+    if ($passwordOk) {
+        $hash = password_hash($mypassword, PASSWORD_BCRYPT);
+        $updateStmt = mysqli_prepare($con, "UPDATE users SET password_hash = ?, password = NULL WHERE id = ?");
+        mysqli_stmt_bind_param($updateStmt, 'si', $hash, $row['id']);
+        mysqli_stmt_execute($updateStmt);
+        mysqli_stmt_close($updateStmt);
+    }
+}
+if ($passwordOk)
 {
   $doForceCheck=1;
   $_SESSION['userid']=$row['id'];

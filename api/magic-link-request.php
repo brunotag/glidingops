@@ -84,11 +84,11 @@ if (!$foundUser) {
     $memberResult = mysqli_stmt_get_result($memberStmt);
 
     if ($memberRow = mysqli_fetch_assoc($memberResult)) {
-        $tempPw = md5(bin2hex(random_bytes(16)));
+        $tempPw = password_hash(bin2hex(random_bytes(16)), PASSWORD_BCRYPT);
         $memOrg = intval($memberRow['org']);
         $memId = intval($memberRow['id']);
         $insertStmt = mysqli_prepare($con, "
-            INSERT INTO users (name, org, usercode, password, force_pw_reset, member)
+            INSERT INTO users (name, org, usercode, password_hash, force_pw_reset, member)
             VALUES (?, ?, ?, ?, 1, ?)
         ");
         mysqli_stmt_bind_param($insertStmt, 'sissi',
