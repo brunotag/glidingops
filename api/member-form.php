@@ -5,6 +5,7 @@ session_start();
 
 require_once __DIR__ . '/../helpers/logging.php';
 require_once __DIR__ . '/../helpers/permissions.php';
+require_once __DIR__ . '/../helpers/csrf.php';
 
 logMsg("START method=" . $_SERVER['REQUEST_METHOD']);
 
@@ -128,6 +129,7 @@ mysqli_close($con);
 
 // Handle POST (save member)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_csrf();
     logMsg("POST - Opening new DB connection");
     $con = open_gliding_db();
     logMsg("POST mysqli_connect_errno: " . mysqli_connect_errno());

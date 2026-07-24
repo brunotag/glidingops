@@ -5,6 +5,7 @@ session_start();
 
 require_once __DIR__ . '/../helpers/logging.php';
 require_once __DIR__ . '/../helpers/permissions.php';
+require_once __DIR__ . '/../helpers/csrf.php';
 
 logMsg("START method=" . $_SERVER['REQUEST_METHOD']);
 
@@ -41,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['error' => 'Method not allowed']);
     apiExit($con);
 }
+require_csrf();
 
 $input = json_decode(file_get_contents('php://input'), true);
 if (!$input) {

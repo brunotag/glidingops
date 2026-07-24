@@ -4,6 +4,7 @@ $org = 0;
 if (isset($_SESSION['org'])) $org = $_SESSION['org'];
 
 require_once __DIR__ . '/helpers/permissions.php'; require_perm('password.change');
+require_once __DIR__ . '/helpers/csrf.php';
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -59,6 +60,7 @@ require_once __DIR__ . '/helpers/permissions.php'; require_perm('password.change
 <?php endif; ?>
 
           <form method='POST' action='changepw.php'>
+            <?php echo csrf_field(); ?>
             <div class="form-group">
               <label>Username</label>
               <input type='text' class="form-control" value="<?php echo htmlspecialchars($_SESSION['who']); ?>" disabled>

@@ -88,7 +88,7 @@ class PersonaAssignmentTest extends TestCase
         $memberId = personaId('member');
 
         $usercode = 'test-assign-' . time();
-        $resp = $client->post('/api/user-form.php', [
+        $resp = csrfPost($client, '/api/user-form.php', [
             'allow_redirects' => false,
             'form_params' => [
                 'id' => '',

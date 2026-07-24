@@ -1,6 +1,7 @@
 <?php session_start(); ?>
 <?php
 require_once __DIR__ . '/load_model.php';
+require_once __DIR__ . '/helpers/csrf.php';
 
 $org = 0;
 if (isset($_GET['org'])) {
@@ -101,6 +102,7 @@ mysqli_close($con);
 <div id="user-form-container">
     <form id="user-form" class="form-horizontal">
         <input type="hidden" name="id" value="<?php echo $requestedId ?? ''; ?>">
+        <?php echo csrf_field(); ?>
 
         <div class="form-group">
             <label class="control-label col-sm-2">Name <span class="required">*</span></label>

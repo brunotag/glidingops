@@ -37,7 +37,7 @@ class MemberCrudTest extends TestCase
         $surname = 'CrudT-' . $uid;
         $displayname = 'CrudT ' . $uid;
 
-        $resp = self::$client->post('/api/member-form.php', [
+        $resp = csrfPost(self::$client, '/api/member-form.php', [
             'form_params' => [
                 'firstname' => $firstname,
                 'surname' => $surname,
@@ -70,7 +70,7 @@ class MemberCrudTest extends TestCase
         $firstname = 'EditT-' . $uid;
         $surname = 'EditT-' . $uid;
 
-        $resp = self::$client->post('/api/member-form.php', [
+        $resp = csrfPost(self::$client, '/api/member-form.php', [
             'form_params' => [
                 'firstname' => $firstname,
                 'surname' => $surname,
@@ -85,7 +85,7 @@ class MemberCrudTest extends TestCase
 
         // Now edit
         $newSurname = 'Edited-' . $uid;
-        $resp2 = self::$client->post('/api/member-form.php', [
+        $resp2 = csrfPost(self::$client, '/api/member-form.php', [
             'form_params' => [
                 'id' => $this->createdId,
                 'firstname' => $firstname,
@@ -115,7 +115,7 @@ class MemberCrudTest extends TestCase
         $firstname = 'SearchMe-' . $uid;
         $surname = 'SearchMe-' . $uid;
 
-        $resp = self::$client->post('/api/member-form.php', [
+        $resp = csrfPost(self::$client, '/api/member-form.php', [
             'form_params' => [
                 'firstname' => $firstname,
                 'surname' => $surname,
@@ -141,7 +141,7 @@ class MemberCrudTest extends TestCase
 
     public function testCreateMemberRejectsMissingRequiredFields(): void
     {
-        $resp = self::$client->post('/api/member-form.php', [
+        $resp = csrfPost(self::$client, '/api/member-form.php', [
             'form_params' => [
                 'firstname' => '',
                 'surname' => '',

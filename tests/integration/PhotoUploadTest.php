@@ -39,6 +39,7 @@ class PhotoUploadTest extends TestCase
     {
         $resp = self::$client->post('/api/member-form.php', [
             'multipart' => [
+                ['name' => '_csrf', 'contents' => $GLOBALS['_csrf_token'] ?? ''],
                 ['name' => 'id', 'contents' => (string)self::$memberId],
                 ['name' => 'firstname', 'contents' => 'Fred'],
                 ['name' => 'surname', 'contents' => 'Gordon'],
@@ -79,6 +80,7 @@ class PhotoUploadTest extends TestCase
 
         $resp = self::$client->post('/api/member-form.php', [
             'multipart' => [
+                ['name' => '_csrf', 'contents' => $GLOBALS['_csrf_token'] ?? ''],
                 ['name' => 'id', 'contents' => (string)self::$memberId],
                 ['name' => 'firstname', 'contents' => 'Fred'],
                 ['name' => 'surname', 'contents' => 'Gordon'],

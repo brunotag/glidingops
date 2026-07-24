@@ -5,6 +5,7 @@ if (isset($_SESSION['org'])) $org = $_SESSION['org']; ?>
 include './helpers/timehelpers.php';
 require_once __DIR__ . '/helpers/logging.php';
 require_once __DIR__ . '/helpers/permissions.php';
+require_once __DIR__ . '/helpers/csrf.php';
 require_auth();
 
 require_once __DIR__ . '/helpers/database.php';
@@ -575,6 +576,8 @@ $favMemberIdJson = json_encode($favMemberId);
       $a.append('<span class="fav-star' + (isFav ? ' active' : '') + '" data-href="' + href.replace(/"/g, '&quot;') + '" data-label="' + label.replace(/"/g, '&quot;') + '">' + (isFav ? '&#9733;' : '&#9734;') + '</span>');
     });
 
+    var csrfToken = '<?php echo generate_csrf_token(); ?>';
+
     $(document).on('click', '.fav-star', function(e) {
       e.preventDefault();
       e.stopPropagation();
@@ -592,6 +595,7 @@ $favMemberIdJson = json_encode($favMemberId);
         data: JSON.stringify(data),
         contentType: 'application/json',
         dataType: 'json',
+        headers: { 'X-CSRF-Token': csrfToken },
         success: function(resp) {
           $star.toggleClass('active').html(resp.favourited ? '&#9733;' : '&#9734;');
           var href = $star.data('href');

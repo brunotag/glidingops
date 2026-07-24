@@ -2,6 +2,7 @@
 <?php
 require_once __DIR__ . '/helpers/logging.php';
 require_once __DIR__ . '/helpers/permissions.php';
+require_once __DIR__ . '/helpers/csrf.php';
 require_perm('self-launch.access');
 logMsg("START");
 
@@ -265,6 +266,7 @@ body { background: #f5f5f5; font-family: Arial, Helvetica, sans-serif; min-heigh
 var nextSeq = <?php echo $nextSeq; ?>;
 var editingFlightId = null;
 var editingSeq = null;
+var csrfToken = '<?php echo generate_csrf_token(); ?>';
 
 function makeTs(dateStr, timeStr) {
     if (!timeStr) return 0;
@@ -598,6 +600,7 @@ function deleteFlight(flightId, flightSeq) {
         data: JSON.stringify({ action: 'delete', id: flightId }),
         contentType: 'application/json',
         dataType: 'json',
+        headers: { 'X-CSRF-Token': csrfToken },
         success: function(resp) {
             if (resp.success) {
                 if (editingFlightId == flightId) cancelEdit();
@@ -669,6 +672,7 @@ $('#self-launch-form').on('submit', function(e) {
         data: JSON.stringify(data),
         contentType: 'application/json',
         dataType: 'json',
+        headers: { 'X-CSRF-Token': csrfToken },
         success: function(resp) {
             if (resp.success) {
                 $('#message-area').html(

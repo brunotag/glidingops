@@ -2,6 +2,7 @@
 <?php
 require_once __DIR__ . '/load_model.php';
 require_once __DIR__ . '/helpers/logging.php';
+require_once __DIR__ . '/helpers/csrf.php';
 
 logMsg("START - " . ($_GET['id'] ?? 'no id'));
 
@@ -140,6 +141,7 @@ mysqli_close($con);
     <div id="message-area"></div>
 
     <form id="member-form" method="post" enctype="multipart/form-data">
+        <?php echo csrf_field(); ?>
         <input type="hidden" name="id" id="member-id" value="<?php echo $memberId; ?>">
 
         <div class="row">

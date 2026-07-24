@@ -21,10 +21,23 @@ function loginClient(): Client
         'form_params' => ['user' => 'fgordon', 'pcode' => 'fgordon'],
     ]);
 
-    // Follow redirects to establish session
-    $client->get('/home');
+    // Follow redirects to establish session and extract CSRF token
+    $homeResp = $client->get('/home');
+    $body = (string)$homeResp->getBody();
+    if (preg_match("/var csrfToken\s*=\s*'([a-f0-9]+)'/", $body, $m)) {
+        $GLOBALS['_csrf_token'] = $m[1];
+    }
 
     return $client;
+}
+
+function csrfPost(Client $client, string $url, array $options = []): Psr\Http\Message\ResponseInterface
+{
+    $token = $GLOBALS['_csrf_token'] ?? null;
+    if ($token) {
+        $options['form_params'] = ($options['form_params'] ?? []) + ['_csrf' => $token];
+    }
+    return $client->post($url, $options);
 }
 
 function assertStatusCode($response, int $expected = 200, string $message = ''): void

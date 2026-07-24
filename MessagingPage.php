@@ -7,8 +7,10 @@ require_once __DIR__ . '/helpers/permissions.php'; require_perm('messages.send')
 include 'helpers.php';
 include 'helpers/mail.php';
 include 'helpers/logging.php';
+require_once __DIR__ . '/helpers/csrf.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'send') {
+    require_csrf();
     header('Content-Type: application/json; charset=utf-8');
     error_log('[MessagingPage] POST send started, member=' . ($_SESSION['memberid'] ?? 'null'));
 
@@ -569,6 +571,8 @@ confirmSend.addEventListener('click', () => {
     sendMessages();
 });
 
+const csrfToken = '<?php echo generate_csrf_token(); ?>';
+
 async function sendMessages() {
     progressModal.classList.add('active');
     progressText.textContent = 'Sending to ' + recipients.length + ' recipient(s)...';
@@ -587,7 +591,8 @@ async function sendMessages() {
                 message: message,
                 subject: subject,
                 fakeTwitter: postToFakeTwitter,
-                recipients: JSON.stringify(recipients)
+                recipients: JSON.stringify(recipients),
+                _csrf: csrfToken
             })
         });
 

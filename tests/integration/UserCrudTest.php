@@ -33,7 +33,7 @@ class UserCrudTest extends TestCase
         $uid = uniqueId();
         $usercode = 'crud-' . $uid;
 
-        $resp = self::$client->post('/api/user-form.php', [
+        $resp = csrfPost(self::$client, '/api/user-form.php', [
             'form_params' => [
                 'id' => '',
                 'name' => 'Test User ' . $uid,
@@ -64,7 +64,7 @@ class UserCrudTest extends TestCase
         $uid = uniqueId();
         $usercode = 'edit-' . $uid;
 
-        $resp = self::$client->post('/api/user-form.php', [
+        $resp = csrfPost(self::$client, '/api/user-form.php', [
             'form_params' => [
                 'id' => '',
                 'name' => 'Edit User ' . $uid,
@@ -80,7 +80,7 @@ class UserCrudTest extends TestCase
 
         // Now edit — change the name
         $newName = 'Edited Name ' . $uid;
-        $resp2 = self::$client->post('/api/user-form.php', [
+        $resp2 = csrfPost(self::$client, '/api/user-form.php', [
             'form_params' => [
                 'id' => $this->createdId,
                 'name' => $newName,
@@ -106,7 +106,7 @@ class UserCrudTest extends TestCase
         $usercode = 'perm-' . $uid;
         $memberPid = personaId('member');
 
-        $resp = self::$client->post('/api/user-form.php', [
+        $resp = csrfPost(self::$client, '/api/user-form.php', [
             'form_params' => [
                 'id' => '',
                 'name' => 'Perm User ' . $uid,
@@ -141,7 +141,7 @@ class UserCrudTest extends TestCase
 
     public function testCreateUserRejectsMissingRequiredFields(): void
     {
-        $resp = self::$client->post('/api/user-form.php', [
+        $resp = csrfPost(self::$client, '/api/user-form.php', [
             'form_params' => [
                 'id' => '',
                 'name' => '',

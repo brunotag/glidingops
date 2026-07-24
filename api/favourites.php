@@ -4,6 +4,7 @@ require_once __DIR__ . '/../helpers/api-base.php';
 apiMaybeResumeSession();
 
 require_once __DIR__ . '/../helpers/permissions.php';
+require_once __DIR__ . '/../helpers/csrf.php';
 
 require_perm('my-flights.view');
 
@@ -41,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 // POST — toggle favourite
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_csrf();
     $input = json_decode(file_get_contents('php://input'), true);
     if (!$input || empty($input['href']) || empty($input['label'])) {
         apiExitWithError('href and label required', $con);

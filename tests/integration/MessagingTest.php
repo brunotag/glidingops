@@ -34,7 +34,7 @@ class MessagingTest extends TestCase
      */
     private function sendMessage(string $uid, string $email): array
     {
-        $resp = self::$client->post('/MessagingPage.php', [
+        $resp = csrfPost(self::$client, '/MessagingPage.php', [
             'allow_redirects' => false,
             'form_params' => [
                 'action' => 'send',
