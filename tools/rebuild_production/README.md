@@ -79,7 +79,7 @@ These files exist on the old server but are not in the repo:
 
 Note: `config/database.php` and `lrv/.env` are written automatically by the setup script.
 
-### 5. Google Service Account (DB Backups)
+### 4. Google Service Account (DB Backups)
 
 The DB backup cron in setup.sh uses `mysqldump` to local disk. The old server additionally syncs backups to Google Shared Drive via `rclone`. This is optional:
 
@@ -92,13 +92,13 @@ The DB backup cron in setup.sh uses `mysqldump` to local disk. The old server ad
    30 12 * * * rclone sync /media/mysqldump/ gdrive:0AEZyHPh5TnGeUk9PVA
    ```
 
-### 6. Member Photos (No Longer Google Drive)
+### 5. Member Photos (No Longer Google Drive)
 
 The old system synced photos from Google Drive hourly. **This is no longer used.** Photos are now uploaded directly via the member form (`/MemberNew`) and stored at `img/members/<member_id>.jpg`. The `img/members/` directory is created automatically and must be writable by `www-data`.
 
 If you need to migrate existing photos, copy them from the old server's `img/members/` directory.
 
-### 7. DNS
+### 6. DNS
 
 Update the A record for `gops.wwgc.co.nz` to point to the new server's IP.
 
