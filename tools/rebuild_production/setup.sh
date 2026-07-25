@@ -54,6 +54,12 @@ sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOve
 # Set ServerName to suppress AH00558 warning
 echo "ServerName 127.0.0.1" >> /etc/apache2/apache2.conf
 
+# Uncomment Mutex directive (needed for rewrite/SSL on some systems)
+sed -i 's/#Mutex/Mutex/' /etc/apache2/apache2.conf
+
+# HTTP → HTTPS redirect
+sed -i '/^<\/VirtualHost>/i \    Redirect permanent / https:\/\/gops.wwgc.co.nz\/' /etc/apache2/sites-enabled/000-default.conf
+
 # UFW
 ufw allow "Apache Full"
 
@@ -104,7 +110,17 @@ rm -f index.html
 git clone https://github.com/brunotag/glidingops.git .
 
 # =============================================================================
-# 6. Composer install (Laravel dependencies)
+# 6. gops-reporting (monthly dashboard)
+# =============================================================================
+echo ">>> Cloning gops-reporting..."
+
+mkdir -p /var/local/gops-reporting
+cd /var/local/gops-reporting
+git clone https://github.com/brunotag/gopsreporting.git .
+composer install --no-dev -n
+
+# =============================================================================
+# 7. Composer install (Laravel dependencies)
 # =============================================================================
 echo ">>> Installing Composer..."
 curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
@@ -117,7 +133,7 @@ php artisan config:clear
 php artisan config:cache
 
 # =============================================================================
-# 7. Laravel .env
+# 8. Laravel .env
 # =============================================================================
 echo ">>> Writing Laravel .env..."
 
@@ -138,7 +154,7 @@ DB_TRACKS_PASSWORD=${TRACKS_DB_PASS}
 EOF
 
 # =============================================================================
-# 8. Application config/database.php
+# 9. Application config/database.php
 # =============================================================================
 echo ">>> Writing config/database.php..."
 
@@ -167,7 +183,7 @@ return [
 EOF
 
 # =============================================================================
-# 9. Permissions
+# 10. Permissions
 # =============================================================================
 echo ">>> Setting file permissions..."
 
@@ -180,14 +196,14 @@ mkdir -p /var/www/html/log
 chown www-data:www-data /var/www/html/log
 
 # =============================================================================
-# 10. SSL certificate (Let's Encrypt)
+# 11. SSL certificate (Let's Encrypt)
 # =============================================================================
 echo ">>> Obtaining SSL certificate..."
 
 certbot --apache -d "${DOMAIN}" --non-interactive --agree-tos -m "${ADMIN_EMAIL}"
 
 # =============================================================================
-# 11. Apache environment variables (for Google Maps API key, etc.)
+# 12. Apache environment variables (for Google Maps API key, etc.)
 # =============================================================================
 echo ">>> Setting Apache environment variables..."
 
@@ -197,13 +213,13 @@ sed -i '/^<\/VirtualHost>/i \    SetEnv SMS_KEY {{SMS_KEY}}' /etc/apache2/sites-
 sed -i '/^<\/VirtualHost>/i \    SetEnv SMS_HOST https://loc.nz/api/sms/v1/send' /etc/apache2/sites-enabled/000-default-le-ssl.conf
 
 # =============================================================================
-# 12. Journald — limit logs to 100M
+# 13. Journald — limit logs to 100M
 # =============================================================================
 sed -i 's/#SystemMaxUse=/SystemMaxUse=100M/' /etc/systemd/journald.conf
 systemctl restart systemd-journald
 
 # =============================================================================
-# 13. Disk space alert
+# 14. Disk space alert
 # =============================================================================
 cat > /opt/disk-alert.sh <<'EOF'
 #!/bin/bash
@@ -217,8 +233,9 @@ EOF
 chmod 755 /opt/disk-alert.sh
 
 # =============================================================================
-# 14. Crontab
+# 15. Crontab
 # =============================================================================
+mkdir -p /media/mysqldump
 cat > /tmp/gops-crontab <<EOF
 # SPOT tracking (overnight hours UTC = daytime NZ)
 */2 20-23 * * * sudo php /var/www/html/GetSpotTask.php -o 1
@@ -249,7 +266,7 @@ crontab /tmp/gops-crontab
 rm /tmp/gops-crontab
 
 # =============================================================================
-# 15. Restart Apache
+# 16. Restart Apache
 # =============================================================================
 systemctl restart apache2
 
@@ -285,9 +302,6 @@ echo ""
 echo "   d) /var/www/html/config/site.php"
 echo "      Maps API key (MAP_API_KEY), calendar IDs."
 echo ""
-echo "4. CLEAR SESSIONS (force all users to re-login)"
-echo "     rm -f /var/lib/php/sessions/*"
-echo ""
 echo "4. GOOGLE SERVICE ACCOUNT (DB BACKUPS — OPTIONAL)"
 echo "   See README.md for rclone setup to sync backups to Google Shared Drive."
 echo ""
@@ -296,16 +310,24 @@ echo "   No longer synced from Google Drive. Uploaded via /MemberNew form."
 echo "   Copy old img/members/ directory if needed."
 echo "   Directory is created automatically and must be www-data writable."
 echo ""
-echo "6. DNS"
+echo "6. GOPS-REPORTING CONFIG"
+echo "   Cloned to /var/local/gops-reporting but still needs:"
+echo "     - /var/local/gops-reporting/config.json (see config.live for template)"
+echo "     - /var/local/gops-reporting/google_sheet_cred.json (service account key)"
+echo ""
+echo "7. SFTP WEBCAM UPLOADS"
+echo "   See README.md step 8 for setup commands."
+echo ""
+echo "8. DNS"
 echo "   Point ${DOMAIN} to the new server's IP address."
 echo ""
-echo "7. VERIFY"
+echo "9. VERIFY"
 echo "   - Visit https://${DOMAIN}/ and log in"
 echo "   - Check /Logs for any errors"
 echo "   - Run a test flight entry"
 echo "   - Verify tracking data on the map"
 echo ""
-echo "8. OLD SERVER"
+echo "10. OLD SERVER"
 echo "   - Keep old server running for at least 48h"
 echo "   - Monitor both for issues"
 echo "   - Deprovision old server after confirming everything works"

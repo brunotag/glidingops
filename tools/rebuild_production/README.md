@@ -151,7 +151,7 @@ echo '/home/sftpwebcam/data /var/www/html/orgs/1/camera none defaults,bind 0 0' 
 |---------|--------|
 | WordPress | Abandoned — not running on production |
 | Postfix | Replaced by PHPMailer/SMTP in `helpers/mail.php` |
-| gops-reporting clone | Manual setup — key rotation means manual steps anyway |
+| gops-reporting config | Repo cloned by script, but config files (config.json, google_sheet_cred.json) are manual — see manual step 6 |
 | SFTP webcam upload | Restored — see manual step 8 |
 | Twitter API keys | Handled in the database, not in server config |
 
