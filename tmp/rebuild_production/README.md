@@ -58,17 +58,13 @@ gunzip < tracks-YYYYMMDD.sql.gz | mysql -u root -p'<root-pw>' tracks
 gunzip < particletrack-YYYYMMDD.sql.gz | mysql -u root -p'<root-pw>' particletrack
 ```
 
-### 2. Run Laravel Migrations
-
-```bash
-cd /var/www/html/lrv && php artisan migrate --force
-```
-
-### 3. Clear Sessions
+### 2. Clear Sessions
 
 ```bash
 rm -f /var/lib/php/sessions/*
 ```
+
+(Sessions are stored server-side — they don't survive the rebuild. Forces all users to re-login.)
 
 ### 4. Config Files (gitignored)
 
