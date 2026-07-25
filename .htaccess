@@ -29,7 +29,9 @@ Header always set Referrer-Policy "strict-origin-when-cross-origin"
 Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
 
 # HSTS and Secure cookie flag (HTTPS only — safe for HTTP dev)
-SetEnvIf HTTPS on HTTPS_SECURE
+# SetEnvIf HTTPS on HTTPS_SECURE
+RewriteCond %{HTTPS} on
+RewriteRule ^ - [E=HTTPS_SECURE:1]
 Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS_SECURE
 Header always set X-HTTPS-Test "on" env=HTTPS_SECURE
 Header edit Set-Cookie ^(.*)$ $1;Secure env=HTTPS_SECURE
