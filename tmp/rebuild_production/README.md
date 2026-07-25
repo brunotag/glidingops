@@ -57,7 +57,6 @@ gunzip < gliding-YYYYMMDD.sql.gz | mysql -u root -p'<root-pw>' gliding
 gunzip < tracks-YYYYMMDD.sql.gz | mysql -u root -p'<root-pw>' tracks
 gunzip < particletrack-YYYYMMDD.sql.gz | mysql -u root -p'<root-pw>' particletrack
 ```
-
 ### 2. Clear Sessions
 
 ```bash
@@ -66,12 +65,19 @@ rm -f /var/lib/php/sessions/*
 
 (Sessions are stored server-side — they don't survive the rebuild. Forces all users to re-login.)
 
-### 4. Config Files (gitignored)
+### 3. Config Files (gitignored — see samples and docs/_secrets.md)
 
 These files exist on the old server but are not in the repo:
 
-- **`config/mail.php`** — PHPMailer SMTP settings (see `config/mail.php.sample` for template)
-- **`config/site.php`** — if the old server has one
+| File | Contains | Template |
+|------|----------|----------|
+| `config/mail.php` | PHPMailer SMTP — dev: localhost:1025, prod: smtp.gmail.com:465 as `machinery.gops@wwgc.co.nz` | `config/mail.php.sample` |
+| `config/oauth.php` | Google + Facebook OAuth client IDs and secrets | `config/oauth.php.sample` |
+| `config/google-calendar.php` | Calendar ID, service account key path | — |
+| `lrv/storage/google-calendar-key.json` | PEM private key for Google Calendar service account | — |
+| `config/site.php` | `MAP_API_KEY`, `GOOGLE_CALENDAR_ID`, `GOOGLE_CALENDAR_SERVICE_ACCOUNT_KEY` | — |
+
+Note: `config/database.php` and `lrv/.env` are written automatically by the setup script.
 
 ### 5. Google Service Account (DB Backups)
 
