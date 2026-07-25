@@ -114,10 +114,6 @@ The DB backup cron in setup.sh uses `mysqldump` to local disk. The old server ad
 
 Photos are uploaded via the member form (`/MemberNew`) and stored at `img/members/<member_id>.jpg`. Copy from the old server's `img/members/` directory if migrating.
 
-### 7. DNS
-
-Update the A record for `gops.wwgc.co.nz` to point to the new server's IP. After DNS propagates (usually minutes, up to 48h), everyone hits the new server.
-
 ### 6. Verify (Before + After DNS Switch)
 
 | Check | How |
@@ -130,6 +126,10 @@ Update the A record for `gops.wwgc.co.nz` to point to the new server's IP. After
 | Cron jobs | `crontab -l` to verify all entries |
 | Database backups | Trigger manually: `mysqldump -u root -p gliding | gzip > /tmp/test.sql.gz` |
 | Google Photos | Check `/var/www/html/img/members/` has photos |
+
+### 7. DNS
+
+Update the A record for `gops.wwgc.co.nz` to point to the new server's IP. After DNS propagates (usually minutes, up to 48h), everyone hits the new server.
 
 ### 9. SFTP Webcam Uploads
 
