@@ -34,6 +34,9 @@ RewriteRule ^ - [E=HTTPS_SECURE:1]
 Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS_SECURE
 Header edit Set-Cookie ^(.*)$ $1;Secure env=HTTPS_SECURE
 
+# Content-Security-Policy (report-only — HTTPS only, see docs/CSP.md)
+Header always set Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' code.jquery.com maxcdn.bootstrapcdn.com cdnjs.cloudflare.com cdn.jsdelivr.net cdn.datatables.net unpkg.com maps.googleapis.com www.gstatic.com static.devt.nz; style-src 'self' 'unsafe-inline' maxcdn.bootstrapcdn.com cdnjs.cloudflare.com cdn.jsdelivr.net cdn.datatables.net unpkg.com fonts.googleapis.com; font-src 'self' data: fonts.gstatic.com; img-src 'self' data: *.tile.openstreetmap.org maps.googleapis.com *.googleapis.com *.gstatic.com; frame-src 'self'; connect-src 'self' maps.googleapis.com *.googleapis.com *.gstatic.com; object-src 'none'; base-uri 'self'" env=HTTPS_SECURE
+
 # if maintenance.trigger exists, then reply with
 # 503 Temporarily Unavailable
 RewriteCond %{ENV:REDIRECT_STATUS} !=503
