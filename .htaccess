@@ -35,7 +35,7 @@ Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains
 Header edit Set-Cookie ^(.*)$ $1;Secure env=HTTPS_SECURE
 
 # Content-Security-Policy (report-only — HTTPS only, see docs/CSP.md)
-Header always set Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' code.jquery.com maxcdn.bootstrapcdn.com cdnjs.cloudflare.com cdn.jsdelivr.net cdn.datatables.net unpkg.com maps.googleapis.com www.gstatic.com static.devt.nz; style-src 'self' 'unsafe-inline' maxcdn.bootstrapcdn.com cdnjs.cloudflare.com cdn.jsdelivr.net cdn.datatables.net unpkg.com fonts.googleapis.com; font-src 'self' data: fonts.gstatic.com; img-src 'self' data: *.tile.openstreetmap.org maps.googleapis.com *.googleapis.com *.gstatic.com; frame-src 'self'; connect-src 'self' maps.googleapis.com *.googleapis.com *.gstatic.com; object-src 'none'; base-uri 'self'" env=HTTPS_SECURE
+Header always set Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' code.jquery.com maxcdn.bootstrapcdn.com cdnjs.cloudflare.com cdn.jsdelivr.net cdn.datatables.net unpkg.com maps.googleapis.com www.gstatic.com static.devt.nz; style-src 'self' 'unsafe-inline' maxcdn.bootstrapcdn.com cdnjs.cloudflare.com cdn.jsdelivr.net cdn.datatables.net unpkg.com fonts.googleapis.com; font-src 'self' data: fonts.gstatic.com; img-src 'self' data: *.tile.openstreetmap.org maps.googleapis.com *.googleapis.com *.gstatic.com; frame-src 'self'; connect-src 'self' maps.googleapis.com *.googleapis.com *.gstatic.com; object-src 'none'; base-uri 'self'; report-uri /api/csp-report" env=HTTPS_SECURE
 
 # if maintenance.trigger exists, then reply with
 # 503 Temporarily Unavailable
@@ -198,6 +198,9 @@ RewriteRule ^api/date-members$ api/date-members.php [L,QSA]
 # Legal pages (no auth required)
 RewriteRule ^privacy$ privacy.php [L,QSA]
 RewriteRule ^data-deletion$ data-deletion.php [L,QSA]
+
+# CSP violation reporting endpoint
+RewriteRule ^api/csp-report$ api/csp-report.php [L,QSA]
 
 # OAuth login routes
 RewriteRule ^oauth-login$ oauth-login.php [L,QSA]

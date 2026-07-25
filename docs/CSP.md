@@ -21,10 +21,25 @@ img-src 'self' data: *.tile.openstreetmap.org
 frame-src 'self';
 connect-src 'self' maps.googleapis.com *.googleapis.com *.gstatic.com;
 object-src 'none';
-base-uri 'self'
+base-uri 'self';
+report-uri /api/csp-report
 ```
 
 HTTPS only — the header is not sent on HTTP (dev environment unaffected).
+
+## Violation Logging
+
+CSP reports are POSTed by the browser to `/api/csp-report` and logged to `log/csp.log`. Each entry includes:
+
+- Timestamp, source IP, page URL
+- Violated directive and blocked resource URL
+- Full CSP report JSON
+
+Monitor violations in real time:
+
+```bash
+tail -f log/csp.log
+```
 
 ## Why `'unsafe-inline'` Is Required
 
@@ -89,6 +104,12 @@ Open the browser DevTools console — CSP violations are logged as console warni
 [Report Only] Refused to connect to 'https://example.com'...
 ```
 
-For production monitoring, consider:
-- `report-uri` or `report-to` directive to a logging endpoint
-- Browser's built-in Reporting API (Chrome: `chrome://net-export/`)
+Violations are also POSTed to `/api/csp-report` and written to `log/csp.log`:
+
+```bash
+# Local dev (read directly)
+Get-Content log/csp.log -Tail 20
+
+# Production
+plink -ssh -pw '***' root@139.180.179.232 "tail -f /var/www/html/log/csp.log"
+```
