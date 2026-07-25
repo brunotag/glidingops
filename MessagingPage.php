@@ -332,6 +332,7 @@ foreach ($mailing_lists as $name => $email):
 <div class="modal-body">
 <div class="progress-spinner" id="progressSpinner"></div>
 <div class="progress-text" id="progressText">Sending...</div>
+<div style="font-size: 13px; color: #888; margin-top: 12px; line-height: 1.4;">This sends individually to each address. Allow ~6 seconds per address — e.g. ~1 min for 10 addresses.</div>
 </div>
 </div>
 </div>
