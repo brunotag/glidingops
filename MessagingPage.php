@@ -2,16 +2,21 @@
 session_start();
 $org = isset($_SESSION['org']) ? $_SESSION['org'] : 0;
 
-require_once __DIR__ . '/helpers/permissions.php'; require_perm('messages.send');
-
-include 'helpers.php';
-include 'helpers/mail.php';
-include 'helpers/logging.php';
-require_once __DIR__ . '/helpers/csrf.php';
+require_once __DIR__ . '/helpers/permissions.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'send') {
-    gops_require_csrf();
+    if (!isset($_SESSION['memberid'])) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['type' => 'result', 'success' => 0, 'failed' => [], 'error' => 'Session expired - please log in again']);
+        exit;
+    }
+    require_perm('messages.send');
+    include 'helpers.php';
+    include 'helpers/mail.php';
+    include 'helpers/logging.php';
+    require_once __DIR__ . '/helpers/csrf.php';
     header('Content-Type: application/json; charset=utf-8');
+    gops_require_csrf();
     error_log('[MessagingPage] POST send started, member=' . ($_SESSION['memberid'] ?? 'null'));
 
     function sendApiError($errno, $errstr, $errfile, $errline) {
@@ -141,6 +146,7 @@ if (mysqli_connect_errno()) {
     ]);
     exit;
 }
+require_perm('messages.send');
 ?>
 <!DOCTYPE HTML>
 <html>
