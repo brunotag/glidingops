@@ -147,6 +147,11 @@ if (mysqli_connect_errno()) {
     exit;
 }
 require_perm('messages.send');
+
+include 'helpers.php';
+include 'helpers/mail.php';
+include 'helpers/logging.php';
+require_once __DIR__ . '/helpers/csrf.php';
 ?>
 <!DOCTYPE HTML>
 <html>
