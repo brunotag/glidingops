@@ -330,7 +330,7 @@ foreach ($mailing_lists as $name => $email):
 <div class="modal-content">
 <div class="modal-header">Sending Messages...</div>
 <div class="modal-body">
-<div class="progress-spinner" id="progressSpinner"></div>
+<div class="progress-bar"><div class="progress-bar-fill" id="progressBarFill"></div></div>
 <div class="progress-text" id="progressText">Sending...</div>
 <div style="font-size: 13px; color: #888; margin-top: 12px; line-height: 1.4;">This sends individually to each address. Allow ~6 seconds per address — e.g. ~1 min for 10 addresses.</div>
 </div>
@@ -373,6 +373,7 @@ const cancelSend = document.getElementById('cancelSend');
 const confirmSend = document.getElementById('confirmSend');
 const progressModal = document.getElementById('progressModal');
 const progressText = document.getElementById('progressText');
+const progressBarFill = document.getElementById('progressBarFill');
 const resultModal = document.getElementById('resultModal');
 const resultIcon = document.getElementById('resultIcon');
 const resultHeader = document.getElementById('resultHeader');
@@ -576,7 +577,23 @@ const csrfToken = '<?php echo gops_csrf_token(); ?>';
 
 async function sendMessages() {
     progressModal.classList.add('active');
+    progressBarFill.style.width = '0%';
     progressText.textContent = 'Sending to ' + recipients.length + ' recipient(s)...';
+
+    // Animate progress bar to 95% over estimated time (6s per recipient)
+    const estimatedMs = recipients.length * 6000;
+    const startTime = Date.now();
+    let animFrame;
+
+    function animateProgress() {
+        const elapsed = Date.now() - startTime;
+        const pct = Math.min(95, (elapsed / estimatedMs) * 100);
+        progressBarFill.style.width = pct + '%';
+        if (pct < 95) {
+            animFrame = requestAnimationFrame(animateProgress);
+        }
+    }
+    animFrame = requestAnimationFrame(animateProgress);
 
     const message = messageText.value.trim();
     const subject = messageSubject.value.trim();
@@ -597,6 +614,8 @@ async function sendMessages() {
             })
         });
 
+        cancelAnimationFrame(animFrame);
+        progressBarFill.style.width = '100%';
         progressText.textContent = 'Processing response...';
 
         if (!response.ok) {
@@ -616,6 +635,7 @@ async function sendMessages() {
         showResults(data);
 
     } catch (e) {
+        cancelAnimationFrame(animFrame);
         progressModal.classList.remove('active');
         console.error('Send error:', e);
         alert('Error: ' + e.message);
