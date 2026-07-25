@@ -79,9 +79,27 @@ These files exist on the old server but are not in the repo:
 
 Note: `config/database.php` and `lrv/.env` are written automatically by the setup script.
 
-### 4. Google Service Account (DB Backups)
+### 4. Side-by-Side Checks (Do This Before DNS Switch)
 
-The DB backup cron in setup.sh uses `mysqldump` to local disk. The old server additionally syncs backups to Google Shared Drive via `rclone`. This is optional:
+Before pointing DNS to the new server, run both servers in parallel:
+
+1. **Edit your local `hosts` file** to resolve `gops.wwgc.co.nz` to the new server's IP:
+   ```
+   # C:\Windows\System32\drivers\etc\hosts (Windows)
+   # /etc/hosts (Linux/Mac)
+   NEW.SERVER.IP gops.wwgc.co.nz
+   ```
+2. Now your browser hits the new server while everyone else still hits the old server.
+3. Run through the full verify checklist below.
+4. Remove the hosts entry when done.
+
+**Backup path:** The new server writes DB dumps to `/media/mysqldump/` — the same path the old server uses, but on a different machine, so no clash.
+
+**Cron jobs on both:** Both servers will be running tracking, DayTimes, etc. during the parallel window. That's fine — they target the same database only after DNS switch (or their own local DB before restore). The new server has an empty DB until you restore, so its crons will be harmless.
+
+### 5. Google Service Account (DB Backups — Optional)
+
+The DB backup cron in setup.sh uses `mysqldump` to local disk. The old server additionally syncs backups to Google Shared Drive via `rclone`:
 
 1. Go to https://console.cloud.google.com/iam-admin/serviceaccounts (project: `gops-496411`)
 2. Create/download a new key for `gops-db-backups`
@@ -92,17 +110,15 @@ The DB backup cron in setup.sh uses `mysqldump` to local disk. The old server ad
    30 12 * * * rclone sync /media/mysqldump/ gdrive:0AEZyHPh5TnGeUk9PVA
    ```
 
-### 5. Member Photos (No Longer Google Drive)
+### 6. Member Photos (No Longer Google Drive)
 
-The old system synced photos from Google Drive hourly. **This is no longer used.** Photos are now uploaded directly via the member form (`/MemberNew`) and stored at `img/members/<member_id>.jpg`. The `img/members/` directory is created automatically and must be writable by `www-data`.
+Photos are uploaded via the member form (`/MemberNew`) and stored at `img/members/<member_id>.jpg`. Copy from the old server's `img/members/` directory if migrating.
 
-If you need to migrate existing photos, copy them from the old server's `img/members/` directory.
+### 7. DNS
 
-### 6. DNS
+Update the A record for `gops.wwgc.co.nz` to point to the new server's IP. After DNS propagates (usually minutes, up to 48h), everyone hits the new server.
 
-Update the A record for `gops.wwgc.co.nz` to point to the new server's IP.
-
-### 7. Verify
+### 6. Verify (Before + After DNS Switch)
 
 | Check | How |
 |-------|-----|
@@ -115,7 +131,7 @@ Update the A record for `gops.wwgc.co.nz` to point to the new server's IP.
 | Database backups | Trigger manually: `mysqldump -u root -p gliding | gzip > /tmp/test.sql.gz` |
 | Google Photos | Check `/var/www/html/img/members/` has photos |
 
-### 8. SFTP Webcam Uploads
+### 9. SFTP Webcam Uploads
 
 Confirmed active — `camera2-*.jpg` files arriving from the webcam every 4 minutes. Re-add if rebuilding:
 
@@ -139,7 +155,7 @@ mount --bind /home/sftpwebcam/data /var/www/html/orgs/1/camera
 echo '/home/sftpwebcam/data /var/www/html/orgs/1/camera none defaults,bind 0 0' >> /etc/fstab
 ```
 
-### 9. Old Server
+### 10. Old Server
 
 - Keep the old server running for at least 48 hours
 - Monitor both for issues
@@ -152,7 +168,7 @@ echo '/home/sftpwebcam/data /var/www/html/orgs/1/camera none defaults,bind 0 0' 
 | WordPress | Abandoned — not running on production |
 | Postfix | Replaced by PHPMailer/SMTP in `helpers/mail.php` |
 | gops-reporting config | Repo cloned by script, but config files (config.json, google_sheet_cred.json) are manual — see manual step 6 |
-| SFTP webcam upload | Restored — see manual step 8 |
+| SFTP webcam upload | Restored — see manual step 9 |
 | Twitter API keys | Handled in the database, not in server config |
 
 ## Changes from Ubuntu 18.04 to 24.04
