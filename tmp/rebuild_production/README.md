@@ -77,23 +77,26 @@ These files exist on the old server but are not in the repo:
 - **`config/mail.php`** — PHPMailer SMTP settings (see `config/mail.php.sample` for template)
 - **`config/site.php`** — if the old server has one
 
-### 5. Google Service Accounts
+### 5. Google Service Account (DB Backups)
 
-**Member photos** (GCP project: `membersphotosupdate`):
-1. Go to https://console.cloud.google.com/iam-admin/serviceaccounts
-2. Create/download a new key
-3. Place at `/usr/local/.gdrive/<key-file>.json`
-4. Add to crontab:
+The DB backup cron in setup.sh uses `mysqldump` to local disk. The old server additionally syncs backups to Google Shared Drive via `rclone`. This is optional:
+
+1. Go to https://console.cloud.google.com/iam-admin/serviceaccounts (project: `gops-496411`)
+2. Create/download a new key for `gops-db-backups`
+3. Place at `/usr/local/.gdrive/gops-496411-<key-id>.json`
+4. Install rclone and configure for the Shared Drive (`0AEZyHPh5TnGeUk9PVA`)
+5. Add to crontab:
    ```
-   0 0 * * * gdrive -c /usr/local/.gdrive --service-account <key-file> download query "'<folder-id>' in parents" --force --path /var/www/html/img/members >> /var/log/downloadGopsMembersPhotos.log 2>&1
+   30 12 * * * rclone sync /media/mysqldump/ gdrive:0AEZyHPh5TnGeUk9PVA
    ```
 
-**gops-reporting** (GCP project: `wwgcdashboard`):
-1. Create/download a new key
-2. Place at `/var/local/gops-reporting/google_sheet_cred.json`
-3. Set up `/var/local/gops-reporting/config.json` (see `config.live` on old server)
+### 6. Member Photos (No Longer Google Drive)
 
-### 6. DNS
+The old system synced photos from Google Drive hourly. **This is no longer used.** Photos are now uploaded directly via the member form (`/MemberNew`) and stored at `img/members/<member_id>.jpg`. The `img/members/` directory is created automatically and must be writable by `www-data`.
+
+If you need to migrate existing photos, copy them from the old server's `img/members/` directory.
+
+### 7. DNS
 
 Update the A record for `gops.wwgc.co.nz` to point to the new server's IP.
 
