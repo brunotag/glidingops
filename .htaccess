@@ -15,6 +15,10 @@ ErrorDocument 503 /error-page.php?code=503
 
 RewriteEngine On
 
+# Block WhatWeb scanner
+RewriteCond %{HTTP_USER_AGENT} WhatWeb [NC]
+RewriteRule ^ - [F,L]
+
 # if maintenance.trigger exists, then reply with
 # 503 Temporarily Unavailable
 RewriteCond %{ENV:REDIRECT_STATUS} !=503
