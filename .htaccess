@@ -29,10 +29,9 @@ Header always set Referrer-Policy "strict-origin-when-cross-origin"
 Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
 
 # HSTS and Secure cookie flag (HTTPS only — safe for HTTP dev)
-<If "%{HTTPS} == 'on'">
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-    Header always edit Set-Cookie ^(.*)$ $1;Secure
-</If>
+SetEnvIf HTTPS on HTTPS_SECURE
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS_SECURE
+Header always edit Set-Cookie ^(.*)$ $1;Secure env=HTTPS_SECURE
 
 # if maintenance.trigger exists, then reply with
 # 503 Temporarily Unavailable
