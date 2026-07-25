@@ -36,7 +36,8 @@
 1. Read this AGENTS.md file (mandatory)
 2. Recall past context: `agentmemory_memory_recall query="glidingops"` — this loads all past decisions, architecture, and lessons learned from previous sessions. Always do this first before any code changes.
 3. Check logs: `Get-Content log/app.log -Tail 30` and `Get-Content log/error.log -Tail 30`
-4. Run `git status`
+4. Check CSP violations: `Get-Content log/csp.log -Tail 20` (see docs/CSP.md for phase-out roadmap)
+5. Run `git status`
 
 ## CRITICAL RULES
 
