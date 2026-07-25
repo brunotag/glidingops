@@ -19,6 +19,21 @@ RewriteEngine On
 RewriteCond %{HTTP_USER_AGENT} WhatWeb [NC]
 RewriteRule ^ - [F,L]
 
+# Session cookie hardening
+php_value session.cookie_httponly 1
+php_value session.cookie_samesite "Lax"
+
+# Security headers
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+
+# HSTS and Secure cookie flag (HTTPS only — safe for HTTP dev)
+<If "%{HTTPS} == 'on'">
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header always edit Set-Cookie ^(.*)$ $1;Secure
+</If>
+
 # if maintenance.trigger exists, then reply with
 # 503 Temporarily Unavailable
 RewriteCond %{ENV:REDIRECT_STATUS} !=503
