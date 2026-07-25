@@ -115,7 +115,31 @@ Update the A record for `gops.wwgc.co.nz` to point to the new server's IP.
 | Database backups | Trigger manually: `mysqldump -u root -p gliding | gzip > /tmp/test.sql.gz` |
 | Google Photos | Check `/var/www/html/img/members/` has photos |
 
-### 8. Old Server
+### 8. SFTP Webcam Uploads
+
+Confirmed active — `camera2-*.jpg` files arriving from the webcam every 4 minutes. Re-add if rebuilding:
+
+```bash
+groupadd sftpgroup
+ftppass=$(perl -e 'print crypt("{{SFTP_PASSWORD}}","some_tasty_salt")')
+useradd -G sftpgroup -d /home/sftpwebcam -s /sbin/nologin -p $ftppass sftpwebcam
+mkdir -p /home/sftpwebcam && chown root /home/sftpwebcam && chmod g+rx /home/sftpwebcam
+mkdir -p /home/sftpwebcam/data && chown sftpwebcam:sftpwebcam /home/sftpwebcam/data
+
+echo 'Match Group sftpgroup' >> /etc/ssh/sshd_config
+echo 'ChrootDirectory %h' >> /etc/ssh/sshd_config
+echo 'X11Forwarding no' >> /etc/ssh/sshd_config
+echo 'AllowTcpForwarding no' >> /etc/ssh/sshd_config
+echo 'ForceCommand internal-sftp' >> /etc/ssh/sshd_config
+echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config
+systemctl restart sshd
+
+mkdir -p /var/www/html/orgs/1/camera
+mount --bind /home/sftpwebcam/data /var/www/html/orgs/1/camera
+echo '/home/sftpwebcam/data /var/www/html/orgs/1/camera none defaults,bind 0 0' >> /etc/fstab
+```
+
+### 9. Old Server
 
 - Keep the old server running for at least 48 hours
 - Monitor both for issues
@@ -128,7 +152,7 @@ Update the A record for `gops.wwgc.co.nz` to point to the new server's IP.
 | WordPress | Abandoned — not running on production |
 | Postfix | Replaced by PHPMailer/SMTP in `helpers/mail.php` |
 | gops-reporting clone | Manual setup — key rotation means manual steps anyway |
-| SFTP webcam upload | No longer used — verify before re-adding |
+| SFTP webcam upload | Restored — see manual step 8 |
 | Twitter API keys | Handled in the database, not in server config |
 
 ## Changes from Ubuntu 18.04 to 24.04
