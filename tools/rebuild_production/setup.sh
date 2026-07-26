@@ -37,7 +37,7 @@ apt install -y apache2 mysql-server git curl zip unzip \
   certbot python3-certbot-apache \
   php8.3 php8.3-cli php8.3-curl php8.3-xml php8.3-mysql \
   php8.3-mbstring php8.3-zip php8.3-gd php8.3-bcmath php8.3-intl \
-  php8.3-imagick
+  php8.3-imagick php8.3-xsl php8.3-sockets php8.3-ftp
 
 # =============================================================================
 # 2. Apache configuration

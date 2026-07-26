@@ -200,8 +200,8 @@ if ($row_cnt > 0)
            $flights .= "l" . $row['launchtype'];
 
       $flights .= "</plane>";
-      $flights .= "<glider>${row['glider']}</glider>";
-      $flights .= "<vector>${row['vector']}</vector>";
+      $flights .= "<glider>{$row['glider']}</glider>";
+      $flights .= "<vector>{$row['vector']}</vector>";
 
       $flights .= "<towpilot>";
       $flights .= $row['towpilot'];

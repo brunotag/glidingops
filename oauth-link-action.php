@@ -63,7 +63,7 @@ if (!$user || !$passwordOk) {
 $now = date('Y-m-d H:i:s');
 $stmt = mysqli_prepare($con, "INSERT INTO user_providers (user_id, provider, provider_id, created_at, last_login)
                                VALUES (?, ?, ?, ?, ?)
-                               ON DUPLICATE KEY UPDATE last_login = VALUES(last_login)");
+                               ON DUPLICATE KEY UPDATE last_login = last_login");
 mysqli_stmt_bind_param($stmt, 'issss', $user['id'], $pending_provider, $pending_provider_id, $now, $now);
 mysqli_stmt_execute($stmt);
 mysqli_stmt_close($stmt);

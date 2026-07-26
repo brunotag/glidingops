@@ -262,7 +262,7 @@ $role_tow = getRoleId($con,'Tow Pilot');
       else
          $q3 .= $plane;
 
-      $q3 .= ",glider='${glid}',vector='${vector}',towpilot=";
+      $q3 .= ",glider='{$glid}',vector='{$vector}',towpilot=";
 
       if ($townum =="null")
         $q3 .= "null";
@@ -320,7 +320,7 @@ $role_tow = getRoleId($con,'Tow Pilot');
       else
         $q3 .= $plane ;
 
-      $q3 .= ",'${glid}', '${vector}',";
+      $q3 .= ",'{$glid}', '{$vector}',";
 
      if ($townum =="null")
         $q3 .= "null";
