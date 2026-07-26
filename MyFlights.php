@@ -432,7 +432,7 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
                 html += '<td data-label="Comments"' + (e(comments) ? ' data-empty="1"' : '') + '>' + comments + '</td>';
                 html += '<td data-label="Charging"' + (e(billingOptions[row.billing_option]) ? ' data-empty="1"' : '') + '>' + (billingOptions[row.billing_option] || '') + '</td>';
                 var igcLink = 'OlcFile.igc?flightid=' + row.id;
-                html += '<td data-label="IGC" class="text-right"' + '><a href="' + igcLink + '">IGC</a></td>';
+                html += '<td data-label="IGC" class="text-right"' + (row.has_tracks == 1 ? '' : ' data-empty="1"') + '>' + (row.has_tracks == 1 ? '<a href="' + igcLink + '">IGC</a>' : '') + '</td>';
                 html += '</tr>';
             });
 

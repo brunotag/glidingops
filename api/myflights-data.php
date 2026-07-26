@@ -64,6 +64,13 @@ $sql = "SELECT f.localdate, f.glider, f.height, f.pic, f.p2, f.comments, f.launc
 $r = mysqli_query($con, $sql);
 if ($r) {
     while ($row = mysqli_fetch_assoc($r)) {
+        $startDt = (new DateTime())->setTimestamp(intval(floor($row['start'] / 1000)));
+        $landDt = (new DateTime())->setTimestamp(intval(floor($row['land'] / 1000)));
+        $g = mysqli_real_escape_string($con, $row['glider']);
+        $startStr = $startDt->format('Y-m-d H:i:s');
+        $landStr = $landDt->format('Y-m-d H:i:s');
+        $tr = mysqli_query($con, "SELECT 1 FROM tracks WHERE glider = '$g' AND point_time >= '$startStr' AND point_time <= '$landStr' LIMIT 1");
+        $row['has_tracks'] = ($tr && mysqli_num_rows($tr) > 0) ? 1 : 0;
         $flights[] = $row;
     }
 }
