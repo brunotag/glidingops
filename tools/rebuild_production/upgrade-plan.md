@@ -167,13 +167,13 @@ These are gitignored and must be copied from the old server or recreated from te
 
 ## 5. Migration Steps Checklist
 
-### Phase 1: Code Changes (Do Now, Before New Server)
+### Phase 1: Code Changes (Do Now, Before New Server) - ALL DONE
 
-- [ ] Fix `${var}` → `{$var}` in `dailysheet.php` (2 lines)
-- [ ] Fix `${var}` → `{$var}` in `updflights.php` (2 lines)
-- [ ] Fix `VALUES(last_login)` → `last_login` in `oauth-callback.php` and `oauth-link-action.php`
-- [ ] Update `tools/rebuild_production/setup.sh` — add missing PHP extensions (xsl, sockets, ftp)
-- [ ] Commit and push
+- [x] Fix `${var}` → `{$var}` in `dailysheet.php` (2 lines)
+- [x] Fix `${var}` → `{$var}` in `updflights.php` (2 lines)
+- [x] Fix `VALUES(last_login)` → `last_login` in `oauth-callback.php` and `oauth-link-action.php`
+- [x] Update `tools/rebuild_production/setup.sh` — add missing PHP extensions (xsl, sockets, ftp)
+- [x] Commit and push
 
 ### Phase 2: Provision New Server
 
