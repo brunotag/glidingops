@@ -371,7 +371,7 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
                 '<th style="cursor:pointer;" onclick="window._toggleDateSort()">Date' + sortArrow + '</th><th class="text-right">Glider</th><th class="text-right">Make/Model</th><th>Location</th>' +
                 '<th class="text-right">Duration</th><th class="text-right">Start</th><th class="text-right">Land</th>' +
                 '<th class="text-right">Tow Height</th><th class="text-right">Launch</th><th class="text-right">Type</th>' +
-                '<th>Comments</th><th>Charging</th></tr></thead><tbody>';
+                '<th class="text-right">IGC</th><th>Comments</th><th>Charging</th></tr></thead><tbody>';
 
             var totMins = 0;
             var cntP = cntP1 = cntP2 = cntI = 0;
@@ -429,6 +429,8 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
                 html += '<td data-label="Tow Height" class="text-right"' + (!/^\d+$/.test(launch.label) ? ' data-empty="1"' : '') + '>' + launch.label + '</td>';
                 html += '<td data-label="Launch" class="text-right"' + (e(launch.code) ? ' data-empty="1"' : '') + '>' + launch.code + '</td>';
                 html += '<td data-label="Type" class="text-right"' + (e(type) ? ' data-empty="1"' : '') + '>' + type + '</td>';
+                var igcLink = 'OlcFile.igc?flightid=' + row.id;
+                html += '<td data-label="IGC" class="text-right"' + '><a href="' + igcLink + '">IGC</a></td>';
                 html += '<td data-label="Comments"' + (e(comments) ? ' data-empty="1"' : '') + '>' + comments + '</td>';
                 html += '<td data-label="Charging"' + (e(billingOptions[row.billing_option]) ? ' data-empty="1"' : '') + '>' + (billingOptions[row.billing_option] || '') + '</td>';
                 html += '</tr>';
