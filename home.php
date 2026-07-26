@@ -132,7 +132,7 @@ $favMemberIdJson = json_encode($favMemberId);
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
   <title>Home - Gliding Ops</title>
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     <?php $inc = "./orgs/" . $org . "/heading2.css"; include $inc; ?>
   </style>
@@ -530,7 +530,7 @@ $favMemberIdJson = json_encode($favMemberId);
     </div>
   </div>
 
-  <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <script>
   (function() {
     var maxSeen = parseInt(localStorage.getItem('gops_broadcast_seen_max') || '0', 10);

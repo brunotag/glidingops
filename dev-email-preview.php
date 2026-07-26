@@ -49,7 +49,7 @@ if ($dbOk) mysqli_close($con);
 <head>
   <title>Dev Email Preview</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body { background: #f0f0ff; font-family: Arial, Helvetica, sans-serif; margin: 0; padding: 20px; }
     h1 { color: #063552; font-size: 20px; margin: 0 0 4px 0; }

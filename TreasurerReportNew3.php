@@ -152,7 +152,7 @@ SQL;
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
 <style><?php $inc = "./orgs/" . $org . "/heading2.css"; include $inc; ?></style>
 <style><?php $inc = "./orgs/" . $org . "/menu1.css"; include $inc; ?></style>
 <style>

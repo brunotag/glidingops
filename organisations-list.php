@@ -10,7 +10,7 @@ require_once __DIR__ . '/helpers/permissions.php'; require_perm('organisations.m
 <style>
 <?php $inc = "./orgs/" . $org . "/heading2.css"; include $inc; ?>
 </style>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="styletable1.css">
 <script>function goBack() {window.history.back()}</script>
 <style>

@@ -241,7 +241,7 @@ mysqli_close($con);
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Invite Users to Gliding Ops</title>
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body { margin: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f0f0ff; padding: 20px; }
     .container { max-width: 960px; margin: auto; }

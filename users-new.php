@@ -71,7 +71,7 @@ mysqli_close($con);
 <head>
     <title><?php echo $isEdit ? 'Edit User' : 'Create User'; ?></title>
     <?php include 'jsLibraies.php'; ?>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
     <style>
         body { padding: 0; }
         .padding-container { padding: 15px; }

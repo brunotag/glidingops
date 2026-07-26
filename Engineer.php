@@ -72,7 +72,7 @@ if (strGlider.length != 0)
 }
 }
 </script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
 <style>
 body { min-height: 100vh; }
 @media (max-width: 767px) {
