@@ -21,7 +21,7 @@ if (mysqli_connect_errno())
 
 if ($_SERVER["REQUEST_METHOD"] == "GET")
 {
- $org=$_GET['org'];
+ $org=intval($_GET['org']);
  if ($org < 1)
  {
     die("ERROR: No organisation specified");

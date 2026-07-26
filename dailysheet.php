@@ -3,7 +3,7 @@
 require_once __DIR__ . '/helpers/permissions.php';
 include 'helpers/secret_code_helpers.php';
 if (!isset($_SESSION['userid'])) {
-  $org = $_GET['org'];
+  $org = intval($_GET['org']);
   $key = $_GET['key'];
   if (checkSecretCode($org, $key)) {
     initiateServiceUserSession($org);
@@ -23,7 +23,7 @@ $location= '';
 $specific_date='';
 if ($_SERVER["REQUEST_METHOD"] == "GET")
 {
- $org = $_GET['org'];
+ $org = intval($_GET['org']);
  if (isset($_GET['location']) )
  {
   $location = $_GET['location'];

@@ -11,12 +11,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" || $_SERVER["REQUEST_METHOD"] == "POST" 
  if ( $_SERVER["REQUEST_METHOD"] == "GET")
  {
    $strxml = $_GET["upd"];
-   $org=$_GET['org'];
+   $org=intval($_GET['org']);
  }
  else
  {
    $strxml = $_POST["upd"];
-   $org=$_POST['org'];
+   $org=intval($_POST['org']);
  }
 $inc = "./orgs/" . $org . "/orgHelpers.php"; include $inc;
 

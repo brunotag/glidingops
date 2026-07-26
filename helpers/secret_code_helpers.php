@@ -10,7 +10,8 @@ function checkSecretCode($org, $key) {
         return false;
     }
 
-    $sql="SELECT secret_code FROM organisations WHERE id='$org'";
+    $org = intval($org);
+    $sql="SELECT secret_code FROM organisations WHERE id=$org";
     $r = mysqli_query($con,$sql);
     $row = mysqli_fetch_array($r);
     return $row[0] == $secretCode;
