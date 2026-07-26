@@ -392,7 +392,23 @@ logMsg("AUTH OK - memberid=" . $_SESSION['memberid']);
                 else if (type === 'I') { cntI++; totMinsI += Math.floor(durationMs / 60000); }
 
                 var launch = getLaunchInfo(row.launchtype, row.height);
-                var comments = row.comments ? row.comments.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+
+                var otherPilot = null;
+                if (parseInt(row.pic) === memberid && row.p2 && parseInt(row.p2) !== 0) {
+                    otherPilot = row.p2_name;
+                } else if (parseInt(row.p2) === memberid && row.pic && parseInt(row.pic) !== 0) {
+                    otherPilot = row.pic_name;
+                }
+                var commentParts = [];
+                if (otherPilot) {
+                    commentParts.push('Other POB: ' + otherPilot);
+                }
+                var trimmedComments = (row.comments || '').trim();
+                if (trimmedComments) {
+                    commentParts.push(trimmedComments);
+                }
+                var combinedComments = commentParts.join(' - ');
+                var comments = combinedComments ? combinedComments.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
                 var startStr = formatTime(row.start);
                 var landStr = formatTime(row.land);
                 var timeCombined = (startStr || landStr) ? (startStr + ' - ' + landStr + ' (' + duration + ')') : '';

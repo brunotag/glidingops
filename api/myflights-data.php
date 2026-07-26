@@ -52,9 +52,12 @@ while ($bro = mysqli_fetch_assoc($rs)) {
 
 $flights = [];
 $sql = "SELECT f.localdate, f.glider, f.height, f.pic, f.p2, f.comments, f.launchtype, f.location, f.start, f.land, f.id, f.billing_option,
-               a.make_model
+               a.make_model,
+               pic_m.displayname AS pic_name, p2_m.displayname AS p2_name
         FROM flights f 
         LEFT JOIN aircraft a ON a.rego_short = f.glider AND a.org = f.org
+        LEFT JOIN members pic_m ON pic_m.id = f.pic
+        LEFT JOIN members p2_m ON p2_m.id = f.p2
         WHERE f.type = " . intval($flightTypeGlider) . " AND (f.pic = " . intval($memberid) . " OR f.p2 = " . intval($memberid) . ")
         ORDER BY f.localdate, f.seq ASC";
 
