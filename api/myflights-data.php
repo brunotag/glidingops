@@ -68,26 +68,6 @@ if ($r) {
     }
 }
 
-$flightIdsWithTracks = [];
-if (!empty($flights)) {
-    $idList = implode(',', array_map(function($f) { return intval($f['id']); }, $flights));
-    $trackSql = "SELECT DISTINCT f.id FROM flights f
-                 INNER JOIN tracks t ON t.glider = f.glider
-                     AND t.point_time BETWEEN FROM_UNIXTIME(f.start/1000) AND FROM_UNIXTIME(f.land/1000)
-                 WHERE f.id IN ($idList)";
-    $tr = mysqli_query($con, $trackSql);
-    if ($tr) {
-        while ($trow = mysqli_fetch_assoc($tr)) {
-            $flightIdsWithTracks[intval($trow['id'])] = true;
-        }
-    }
-}
-
-foreach ($flights as &$f) {
-    $f['has_tracks'] = isset($flightIdsWithTracks[intval($f['id'])]) ? 1 : 0;
-}
-unset($f);
-
 $tows = [];
 if ($istowy) {
     $towSql = "SELECT f.localdate, a.rego_short, f.glider, f.height 
