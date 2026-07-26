@@ -53,7 +53,8 @@ while ($bro = mysqli_fetch_assoc($rs)) {
 $flights = [];
 $sql = "SELECT f.localdate, f.glider, f.height, f.pic, f.p2, f.comments, f.launchtype, f.location, f.start, f.land, f.id, f.billing_option,
                a.make_model,
-               pic_m.displayname AS pic_name, p2_m.displayname AS p2_name
+               pic_m.displayname AS pic_name, p2_m.displayname AS p2_name,
+               (SELECT COUNT(*) FROM tracks t WHERE t.glider = f.glider AND t.point_time BETWEEN FROM_UNIXTIME(f.start/1000) AND FROM_UNIXTIME(f.land/1000)) AS track_count
         FROM flights f 
         LEFT JOIN aircraft a ON a.rego_short = f.glider AND a.org = f.org
         LEFT JOIN members pic_m ON pic_m.id = f.pic
