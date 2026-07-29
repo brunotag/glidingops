@@ -223,3 +223,57 @@ Keep the old server running. If issues are found after DNS switch:
 3. Repeat cutover
 
 No data loss risk — both servers share the same DB backup source (old server's production DB). The new server only has a restored backup; it never writes to the live DB until DNS switch.
+
+---
+
+## 7. HTTP/3 (QUIC) — Future Enhancement
+
+Enable HTTP/3 on the new server via a reverse proxy (Caddy or Nginx) or Apache `mod_http3`.
+
+### Why
+
+- Faster connection establishment (0-RTT), especially beneficial for mobile users accessing the live tracking map at `/wgc`
+- Eliminates head-of-line blocking compared to HTTP/2 over TCP
+- Modern browsers default to HTTP/3 when advertised via Alt-Svc header
+
+### Recommendation: Caddy as Reverse Proxy
+
+Caddy has native HTTP/3 support baked in (no extra modules). The simplest approach:
+
+1. Install Caddy in front of Apache
+2. Caddy terminates TLS and proxies to Apache on localhost:8080
+3. HTTP/3 is enabled automatically — no config needed beyond enabling it in the global block
+
+```bash
+# Install Caddy
+sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+sudo apt update && sudo apt install caddy
+```
+
+Caddyfile (`/etc/caddy/Caddyfile`):
+```
+gops.wwgc.co.nz {
+    reverse_proxy localhost:8080
+}
+```
+
+Then change Apache to listen only on port 8080 (not 443 directly), and Caddy handles 443/443-UDP.
+
+### Alternative: Apache mod_http3
+
+Apache 2.4.62+ supports `mod_http3` via the `mpm_event` + `mod_proxy` + `mod_ssl` stack:
+
+```bash
+sudo a2enmod http3
+```
+
+Requires switching from `mpm_prefork` to `mpm_event` (which also means switching from `mod_php` to `php-fpm`). This is a bigger change — see section 3.1 note about `mpm_event` + `php-fpm`.
+
+### Checklist
+
+- [ ] Choose approach: Caddy reverse proxy (recommended) or Apache mod_http3 + php-fpm
+- [ ] Configure TLS certificate (Certbot / Let's Encrypt — already done for Apache)
+- [ ] Test HTTP/3 via https://http3check.net
+- [ ] Monitor `log/error.log` for any proxy-related issues
